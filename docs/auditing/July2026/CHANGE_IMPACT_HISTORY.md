@@ -9,6 +9,10 @@ complete tests, or full production responses. Those belong in
 `MATERIALGRAPH_AUDIT_RESOLUTION.md`. The canonical finding status remains in
 `MaterialGraph_Architecture_Implementation_Audit_v2_Regenerated.md`.
 
+`Production verified` means the listed behavior was observed on the deployed
+version for the recorded request and dataset. It does not imply exhaustive
+edge-case coverage or independent scientific validation.
+
 ## Impact legend
 
 - **Scientific result:** computed scientific values or conclusions changed.
@@ -307,11 +311,11 @@ coverage, status, and interpretation are exposed separately.
 
 ---
 
-## Stable pathway identity with tie-aware comparison
+## Stable pathway identity for tied pathways
 
 Related findings: MG-AUD-051  
 Release reference: v1.9.17  
-Status: Production verified
+Status: Production verified within pathway-identity scope
 
 ### Before
 

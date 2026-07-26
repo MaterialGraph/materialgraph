@@ -2,242 +2,179 @@
 
 ## Overview
 
-MaterialGraph is designed to assist researchers throughout the scientific exploration process.
+MaterialGraph is a deterministic research-assistance platform. It computes,
+ranks, compares, and explains material opportunities while researchers retain
+authority over interpretation, selection, and validation.
 
-Rather than replacing scientific judgment, MaterialGraph computes, ranks, explains, and contextualizes scientifically plausible research opportunities using deterministic graph intelligence.
-
-Researchers remain responsible for evaluating opportunities, selecting research directions, and validating scientific outcomes.
-
----
-
-# Research Philosophy
-
-MaterialGraph follows a researcher-in-the-loop architecture.
-
-The platform assists scientific exploration by:
-
-- computing deterministic research opportunities
-- explaining scientific reasoning
-- presenting strengths and trade-offs
-- communicating risks and assumptions
-- preserving researcher autonomy
-
-MaterialGraph does not make autonomous scientific decisions.
+Its outputs are hypotheses and prioritization signals—not proof of novelty,
+structural preservation, synthesis feasibility, physical performance, or
+scientific correctness.
 
 ---
 
-# Research Workflow
+## Researcher-in-the-Loop Workflow
 
-```text
-Research Objective
-        │
-        ▼
-Research Objective Exploration
-        │
-        ▼
-Research Opportunities
-        │
-        ▼
-Researcher Selection
-        │
-        ▼
-Scientific Pathway Analysis
-        │
-        ▼
-Experimental Validation
-        │
-        ▼
-Scientific Evidence
-        │
-        ▼
-Knowledge Enrichment
+```mermaid
+flowchart TD
+    A["Research objective"] --> B["Deterministic exploration"]
+    B --> C["Transparent opportunities"]
+    C --> D["Engineering validation"]
+    D --> E["Researcher review"]
+    E --> F["Literature, computation, or experiment"]
+    F --> G["Attributed evidence"]
+    G --> H["Reviewed, versioned improvement"]
 ```
 
-This workflow separates deterministic graph intelligence from experimental scientific validation.
+Engineering checks establish that MaterialGraph behaves as specified.
+Researchers and appropriate external methods determine whether an opportunity
+is scientifically meaningful.
 
 ---
 
-# Research Objective
+## Research Objective
 
-A research objective defines the scientific goal.
+A research objective expresses the intended exploration, for example:
 
-Examples include:
+- replace lithium while preserving specified elemental continuity;
+- reduce known criticality while maintaining a stability requirement;
+- explore sodium-containing alternatives;
+- investigate transition-metal substitutions.
 
-- Replace lithium while preserving phosphate chemistry.
-- Reduce criticality while maintaining stability.
-- Explore sodium-based alternatives.
-- Investigate transition-metal substitutions.
-
-Objectives guide exploration but do not directly determine outcomes.
-
----
-
-# Research Objective Exploration
-
-MaterialGraph combines existing graph intelligence to identify scientifically plausible opportunities.
-
-Current capabilities include:
-
-- discovery candidates
-- discovery chains
-- graph traversal
-- path ranking
-- material quality
-- graph analytics
-- community intelligence
-
-The result is a ranked collection of research opportunities.
+An objective must distinguish preferences, soft constraints, hard endpoint
+constraints, and hard path-wide constraints. Unknown evidence cannot satisfy a
+hard constraint unless explicitly allowed.
 
 ---
 
-# Research Opportunities
+## Deterministic Exploration
 
-MaterialGraph presents multiple opportunities rather than a single recommendation.
+Current implemented services combine:
 
-Each opportunity includes:
+- discovery candidates and chains;
+- research-objective exploration and evaluation;
+- graph traversal and path ranking;
+- material quality and graph analytics;
+- community and subgraph intelligence;
+- scientific pathway analysis;
+- comparative research intelligence;
+- endpoint-sensitive research ranking;
+- evidence summaries and validation priorities.
 
-- scientific facts
-- strengths
-- trade-offs
-- warnings
-- assumptions
-- confidence
-- recommended next investigation
-
-Opportunities are ranked but not automatically selected.
-
----
-
-# Researcher Selection
-
-The researcher evaluates available opportunities.
-
-Selection depends on factors outside the graph, including:
-
-- research goals
-- laboratory capabilities
-- available resources
-- domain expertise
-- industrial constraints
-
-MaterialGraph supports this decision but does not make it.
+These services identify opportunities supported by MaterialGraph's current
+source data, derived measurements, and encoded rules. “Implemented” does not
+mean independently scientifically validated.
 
 ---
 
-# Scientific Pathway Analysis
+## Research Opportunities
 
-Future versions will provide deeper analysis of selected opportunities.
+MaterialGraph should present multiple inspectable opportunities rather than
+declare one scientifically correct answer.
 
-Analysis may include:
+Each opportunity should expose:
 
-- pathway plausibility
-- framework preservation
-- intermediate importance
-- graph connectivity
-- community context
-- material quality
-- objective alignment
-- scientific trade-offs
+- source data and provenance;
+- derived scores and rule-based inferences;
+- strengths and trade-offs;
+- warnings, assumptions, and missing evidence;
+- objective and constraint satisfaction;
+- internal support and external evidence coverage;
+- validation priorities.
 
-This analysis supports informed scientific investigation.
-
----
-
-# Experimental Validation
-
-MaterialGraph does not replace experimentation.
-
-Researchers validate opportunities using:
-
-- laboratory experiments
-- computational chemistry
-- DFT calculations
-- molecular dynamics
-- literature review
-
-Experimental results determine scientific validity.
+The word **discovery** refers to computational exploration and prioritization,
+not experimental discovery or novelty confirmation.
 
 ---
 
-# Scientific Evidence
+## Scientific Pathway Analysis
 
-Experimental outcomes create scientific evidence.
+Scientific pathway analysis is implemented. It evaluates encoded pathway
+properties such as:
 
-Examples include:
+- elemental continuity;
+- introduced and removed elements;
+- material-family relationships;
+- graph connectivity;
+- intermediate and endpoint information;
+- material quality;
+- objective alignment;
+- comparative trade-offs.
 
-- successful synthesis
-- unsuccessful synthesis
-- measured properties
-- published literature
-- simulation results
-- experimental observations
-
-Evidence complements deterministic graph intelligence.
-
----
-
-# Knowledge Enrichment
-
-Future versions of MaterialGraph will allow researchers to record:
-
-- research projects
-- investigation sessions
-- observations
-- experimental outcomes
-- evidence
-- literature references
-- community insights
-
-This knowledge layer will preserve research history without altering deterministic graph computation.
+These are model-derived analyses. They do not prove a physical transformation
+mechanism, structural preservation, pathway feasibility, or synthesis
+feasibility.
 
 ---
 
-# Design Principles
+## Confidence, Evidence, and Readiness
 
-MaterialGraph research workflows follow several guiding principles.
+Research-facing outputs must separate:
 
-## Deterministic Reasoning
+| Dimension | Meaning |
+|---|---|
+| Internal rule support | Support produced by MaterialGraph's encoded relationships and rules |
+| Data completeness | Availability of required source fields |
+| External evidence coverage | Relevant literature, computation, structural, or experimental evidence |
+| Validation readiness | Clarity and availability of next validation steps |
+| Scientific validation status | Researcher, computational, or experimental validation actually completed |
 
-Scientific computation should always produce reproducible results.
-
----
-
-## Explainability
-
-Every recommendation should include explicit scientific reasoning.
-
----
-
-## Researcher-in-the-Loop
-
-Researchers remain responsible for scientific decisions.
+An internally strong pathway can still have no external validation evidence.
+“Confidence” is not a probability of scientific correctness.
 
 ---
 
-## Facts Before Recommendations
+## Researcher Selection and Validation
 
-Recommendations should be supported by observable scientific facts.
+Researchers evaluate opportunities using considerations outside the graph,
+including domain knowledge, laboratory capability, resources, safety,
+industrial constraints, and research goals.
 
----
+Validation may require:
 
-## Explicit Uncertainty
+- literature review;
+- crystallographic or structural comparison;
+- DFT or other domain computation;
+- molecular dynamics;
+- synthesis work;
+- laboratory measurement;
+- peer review.
 
-Unknowns should be communicated clearly.
-
----
-
-## Rank Rather Than Discard
-
-Scientific exploration should remain inclusive.
-
-Materials are ranked, explained, warned, and scored by default.
-
-Filtering should occur only when explicitly requested.
+MaterialGraph does not replace any of these activities.
 
 ---
 
-# Long-Term Vision
+## Evidence and Knowledge Enrichment
 
-MaterialGraph aims to become an explainable scientific exploration platform.
+A future scientific knowledge layer may record:
 
-The platform will continue strengthening deterministic graph intelligence while expanding support for research workflows, scientific evidence, and collaborative knowledge without replacing scientific judgment.
+- research projects and investigation sessions;
+- literature and attributed observations;
+- simulation and structural-analysis results;
+- successful and unsuccessful experiments;
+- disagreement and review status.
+
+Evidence must preserve provenance and must not automatically become system
+truth. Reviewed evidence may enter a later versioned dataset, rule, or scoring
+policy through an explicit governance process.
+
+---
+
+## Current Validation Status
+
+| Validation type | Current status |
+|---|---|
+| Unit and regression testing | Implemented; coverage continues to expand |
+| API and deterministic-behaviour verification | Implemented for tested workflows |
+| Architecture and implementation audit | Reconciled; remediation in progress |
+| Literature-backed case studies | Not yet completed |
+| Independent materials-researcher review | Not yet completed |
+| DFT cross-validation | Not yet completed |
+| Experimental validation | Not completed |
+
+---
+
+## Long-Term Direction
+
+MaterialGraph will strengthen deterministic graph intelligence, research
+workflows, evidence provenance, and collaborative knowledge management while
+preserving researcher authority and explicit scientific-validation boundaries.

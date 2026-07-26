@@ -2,218 +2,215 @@
 
 ## Vision
 
-MaterialGraph is evolving into a deterministic, explainable Materials Discovery Knowledge Graph that assists researchers throughout the scientific exploration lifecycle.
+MaterialGraph is evolving into a deterministic, explainable research-assistance
+knowledge graph. It computationally explores and prioritizes material
+opportunities while researchers retain authority over scientific interpretation
+and validation.
 
-The roadmap focuses on strengthening deterministic graph intelligence before introducing distributed computation, high-performance graph processing, and machine learning.
-
----
-
-# Development Philosophy
-
-MaterialGraph evolves incrementally.
-
-Each phase strengthens the existing foundation rather than replacing it.
-
-Priority is given to:
-
-- Deterministic reasoning
-- Explainable intelligence
-- Scientific transparency
-- Researcher-in-the-loop workflows
-- Production-ready architecture
+The roadmap separates implementation, engineering verification, audit
+remediation, researcher review, and scientific validation. A feature may be
+implemented without being scientifically validated.
 
 ---
 
-# Completed
+## Status Definitions
 
-## Foundation Intelligence
-
-✅ Material Graph Foundation
-
-✅ Material Neighborhood Intelligence
-
-✅ Material Family Intelligence
-
-✅ Similarity Engine
-
-✅ Recommendation Engine
-
-✅ Criticality Analysis
-
-✅ Scenario Policy Engine
+| Status | Meaning |
+|---|---|
+| Implemented | Code or endpoint exists |
+| Tested | Relevant automated tests exist and pass in the tested scope |
+| Audited | Reviewed against intended architecture and semantics |
+| Remediated | A specified audit defect was corrected and verified within scope |
+| Researcher-reviewed | Evaluated by relevant independent domain researchers |
+| Scientifically validated | Supported by appropriate literature, structural, computational, or experimental validation |
 
 ---
 
-## Discovery Intelligence
+## Implemented Capability Baseline — v1.9.6
 
-✅ Discovery Candidate Engine
+### Foundation Intelligence
 
-✅ Explainable Discovery Scoring
+- Material Graph Foundation;
+- Material Neighborhood and Family Intelligence;
+- Similarity and Recommendation Engines;
+- Criticality Analysis;
+- Scenario Policy Engine.
 
-✅ Discovery Warnings
+### Discovery Intelligence
 
-✅ Substitution Path Engine
+- Discovery Candidate Engine;
+- Explainable Discovery Scoring and Warnings;
+- Substitution Path Engine;
+- Multi-Hop Discovery Chains;
+- Discovery Path Ranking;
+- Research-Objective Exploration.
 
-✅ Multi-Hop Discovery Chains
+### Knowledge-Graph Intelligence
 
-✅ Discovery Path Ranking
+- Graph Builder and Traversal;
+- BFS, DFS, Dijkstra, and K-best path workflows;
+- Graph Analytics;
+- Community Detection and Intelligence;
+- Ranked Subgraph Exploration;
+- Material Quality;
+- Node and Edge Intelligence;
+- PostgreSQL-backed graph-job routes and persistence.
 
----
+### Research and Evidence Intelligence
 
-## Knowledge Graph Intelligence
+- Scientific Pathway Analysis;
+- Research Opportunity Analysis;
+- Objective Evaluation;
+- Comparative Research Intelligence;
+- Endpoint-Sensitive Research Ranking;
+- Evidence Summaries and Attribution;
+- Missing-Evidence and Weak-Assumption Reporting;
+- Validation Priorities and Evidence Readiness.
 
-✅ Graph Builder
-
-✅ Graph Traversal
-
-✅ Graph Algorithms
-
-- BFS
-- DFS
-- Dijkstra
-- K-shortest Paths
-
-✅ Graph Analytics
-
-- Degree Centrality
-- Betweenness Centrality
-- Closeness Centrality
-- Material Importance
-
-✅ Community Detection
-
-- Connected Components
-- Greedy Modularity
-
-✅ Community Intelligence
-
-✅ Ranked Subgraph Exploration
-
-✅ Material Quality
-
-✅ Node Intelligence
-
-✅ Edge Intelligence
+These capabilities are implemented and partly tested. They are not thereby
+independently scientifically validated.
 
 ---
 
-## Research Intelligence
+## Current Priority — Audit Remediation and Production Integrity
 
-✅ Research Objective Exploration
+The original architecture audit and independent post-remediation audit have
+been reconciled into one canonical register.
 
----
+At the time of this roadmap update:
 
-# Current Focus
+- 94 distinct canonical findings are tracked;
+- 23 are resolved within their documented engineering scope;
+- 71 remain open or require policy decisions.
 
-## Scientific Pathway Analysis
+Current remediation priorities are:
 
-MaterialGraph will assist researchers by evaluating multiple scientifically plausible pathways.
+1. scientific-scoring and abundance-direction correctness;
+2. unknown-risk propagation and non-favourable uncertainty handling;
+3. scenario and sensitivity semantics;
+4. graph, traversal, and path integrity;
+5. strict objective and endpoint-family enforcement;
+6. evidence-readiness and explanation accuracy;
+7. graph-job concurrency, ownership, and authorization;
+8. bounded K-best search and query-performance work.
 
-Rather than recommending a single "best" pathway, the platform will present explainable research opportunities together with strengths, trade-offs, risks, and assumptions.
-
-Researchers remain responsible for selecting the pathway to pursue.
-
----
-
-# Next Milestones
-
-## Research Opportunity Analysis
-
-Present multiple scientifically plausible opportunities for a research objective.
-
-Each opportunity will include:
-
-- scientific facts
-- strengths
-- trade-offs
-- warnings
-- confidence
-- recommended next investigation
+Resolution means engineering correction and scoped verification. It does not
+mean researcher or experimental validation.
 
 ---
 
-## Research Gap Analysis
+## Next Milestone — Engineering Validation Baseline
 
-Identify underexplored regions of the knowledge graph.
-
-Examples:
-
-- unexplored material families
-- sparse scientific communities
-- missing substitution pathways
-- potential future research directions
-
----
-
-## Hypothesis Exploration
-
-Assist researchers in generating deterministic research hypotheses using graph intelligence.
+- remediate or explicitly decide all P0/P1 findings;
+- expand focused and full regression coverage;
+- verify graph closure, depth, and canonical transition semantics;
+- unify constraint, tie, composition, and evidence interpretations;
+- enforce API input bounds and response contracts;
+- harden graph-job state transitions and ownership;
+- define dataset, configuration, and software-version provenance;
+- benchmark representative graph workloads;
+- publish documented known limitations.
 
 ---
 
-## Multi-objective Optimization
+## Research Validation Phase
 
-Support simultaneous optimization across multiple scientific objectives.
+After the high-priority engineering findings are addressed:
 
-Examples:
+- create literature-backed reference case studies;
+- recruit independent materials researchers for structured review;
+- compare selected pathways with structural evidence;
+- perform targeted DFT or other appropriate computational cross-validation;
+- record favourable, unfavourable, and inconclusive outcomes;
+- publish a validation matrix and limitations;
+- revise rules only through attributed, reviewed, versioned evidence.
 
-- lower criticality
-- preserve framework
-- improve stability
-- reduce toxicity
-
----
-
-# Phase 4 — Distributed Computation
-
-Future work includes:
-
-- PostgreSQL graph jobs
-- Go GraphCompute Worker
-- Background graph analytics
-- Background candidate ranking
-- Supply-risk recomputation
+Experimental validation is a separate later activity and may require research
+partners.
 
 ---
 
-# Phase 5 — High Performance Graph Engine
+## Research Workflow and Knowledge Milestones
 
-Future work includes:
-
-- Rust graph engine
-- Large-scale graph traversal
-- High-performance path search
-- Graph optimization
+- Research Validation Planning;
+- Research Gap Analysis;
+- Hypothesis Exploration;
+- genuine multi-objective optimization with explicit constraint semantics;
+- attributed evidence capture;
+- review and disagreement workflows;
+- versioned Scientific Knowledge Layer.
 
 ---
 
-# Long-Term Vision
+## Conditional Platform Milestone — Document-Oriented Features
 
-Future versions of MaterialGraph will extend beyond graph intelligence to support the complete scientific exploration workflow.
+PostgreSQL remains MaterialGraph's authoritative system of record. MongoDB is
+not required for the current scientific core and is not a replacement for
+relational material, composition, relationship, criticality, discovery,
+recommendation, or graph-job data.
 
-```
-Research Objective
-        │
-        ▼
-Research Objective Exploration
-        │
-        ▼
-Research Opportunities
-        │
-        ▼
-Researcher Selection
-        │
-        ▼
-Scientific Pathway Analysis
-        │
-        ▼
-Experimental Validation
-        │
-        ▼
-Scientific Evidence
-        │
-        ▼
-Knowledge Enrichment
-```
+Evaluate a secondary document store only after a concrete product feature
+requires flexible, nested, independently evolving documents, such as:
 
-MaterialGraph will continue to compute deterministic, explainable scientific intelligence while preserving researcher autonomy throughout the research lifecycle.
+- saved research sessions and exploration state;
+- user workspaces, collections, notes, and saved searches;
+- optional AI-assistant conversation and tool history;
+- versioned graph-result snapshots;
+- heterogeneous metadata from literature, patent, chemical, or materials-data
+  sources.
+
+Before implementation:
+
+1. define the workload, ownership boundary, retention policy, and consistency
+   requirements;
+2. compare MongoDB with PostgreSQL JSONB, Redis, object storage, and other
+   appropriate alternatives;
+3. document why a second database provides material benefit;
+4. define provenance, versioning, security, backup, recovery, and observability;
+5. prototype and benchmark the selected workload;
+6. adopt MongoDB only if the evidence justifies its added operational
+   complexity.
+
+If adopted, MongoDB will remain a complementary store. PostgreSQL will retain
+canonical scientific and transactional authority, and document records will
+reference canonical relational identifiers rather than establish competing
+material identities.
+
+---
+
+## Distributed Computation
+
+- harden PostgreSQL graph jobs before expansion;
+- introduce a Go GraphCompute Worker where profiling justifies it;
+- add bounded background analytics and candidate ranking;
+- preserve deterministic ordering, ownership, and retry semantics;
+- ensure performance work does not change graph meaning.
+
+---
+
+## High-Performance Graph Processing
+
+- evaluate a Rust graph engine after algorithmic and semantic correctness;
+- implement bounded large-scale traversal and path search;
+- replace exhaustive enumeration where necessary;
+- benchmark against the canonical Python implementation;
+- preserve reproducibility and explanation provenance.
+
+---
+
+## Governed ML and AI Integration
+
+Graph embeddings, machine learning, and optional LLM assistance may be explored
+only after the deterministic and validation foundations are stable.
+
+They may assist retrieval, summarization, interface workflows, or hypothesis
+organization, but must not silently replace canonical scientific computation or
+present generated text as validated evidence.
+
+---
+
+## Long-Term Outcome
+
+MaterialGraph should become useful because its opportunities are inspectable,
+its limits are explicit, its evidence is traceable, and its validation status
+is honest—not because internal scores are presented as scientific proof.

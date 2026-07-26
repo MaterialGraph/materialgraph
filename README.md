@@ -1,230 +1,202 @@
 # MaterialGraph
 
-> **Deterministic, Explainable Materials Discovery Knowledge Graph for
-> Scientific Exploration**
+> Deterministic, explainable materials research intelligence and decision
+> support
 
-MaterialGraph is an open-source platform for deterministic, explainable
-materials discovery and scientific decision support. It combines
-graph-based knowledge representation, explainable scoring, graph
-analytics, and research-oriented exploration to help researchers
-investigate scientifically plausible material alternatives.
+MaterialGraph is an open-source knowledge-graph platform that computationally
+generates, ranks, compares, and explains material opportunities using available
+data and explicit deterministic rules.
 
-Unlike autonomous AI systems, MaterialGraph does **not** replace
-scientific judgment. It computes, ranks, explains, and contextualizes
-research opportunities while keeping researchers in control of
-scientific decisions.
+MaterialGraph is a research-assistance system. Its outputs are hypotheses and
+prioritization signals—not proof of novelty, structural preservation,
+transformation or synthesis feasibility, physical performance, or scientific
+correctness. Researchers retain responsibility for interpretation and must
+validate relevant conclusions through literature, structural analysis,
+domain-specific computation, experiments, or other appropriate methods.
 
-------------------------------------------------------------------------
+In this project, **discovery** means deterministic computational exploration
+and prioritization. It does not mean experimental discovery, novelty
+confirmation, synthesis feasibility, or validated performance.
 
-# Why MaterialGraph?
+---
 
-Modern materials research requires balancing chemistry, stability,
-criticality, supply risk, and scientific plausibility.
+## Why MaterialGraph?
 
-MaterialGraph helps researchers:
+Materials research requires investigators to compare chemistry, stability,
+criticality, supply risk, evidence, and competing research constraints.
 
--   Discover scientifically related materials
--   Explore explainable substitution pathways
--   Analyze graph relationships and communities
--   Evaluate research objectives
--   Understand risks, trade-offs, and assumptions
--   Make informed scientific decisions
+MaterialGraph helps users:
 
-------------------------------------------------------------------------
+- find computationally related material opportunities;
+- explore inspectable substitution and pathway hypotheses;
+- analyze graph relationships and communities;
+- evaluate research objectives and constraints;
+- compare strengths, trade-offs, warnings, and assumptions;
+- identify missing evidence and validation priorities.
 
-## Documentation
+It does not autonomously select a scientifically correct material or pathway.
 
-Additional project documentation is available in the `docs/` directory.
+---
 
-| Document                                                            | Description                                                              |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [Getting Started](docs/guide/getting_started.md)                    | Local development setup and project bootstrapping                        |
-| [System Architecture](docs/architecture/system_architecture.md)     | Current architecture and intelligence layer design                       |
-| [Scientific Principles](docs/architecture/scientific_principles.md) | Scientific principles and design rationale                               |
-| [Research Architecture](docs/architecture/research_architecture.md) | Research-focused architecture and design decisions                       |
-| [Roadmap](docs/architecture/roadmap.md)                             | Future development plans and feature roadmap                             |
-| [Known Issues](docs/guide/technical_notes.md)                       | Current limitations and tracked issues                                   |
-| [Deployment Guide](docs/development/deployment.md)                  | Production deployment using AWS EC2, Neon PostgreSQL, systemd, and Nginx |
+## Core Principles
 
+- deterministic and reproducible computation;
+- explicit data, rules, scoring, provenance, and limitations;
+- researcher-in-the-loop decision support;
+- structured data before inferred representations;
+- unknown evidence is not favourable evidence;
+- internal model support is not external scientific validation;
+- scientific and graph semantics before performance;
+- no LLM reasoning in canonical scientific computation.
 
-------------------------------------------------------------------------
+Given the same inputs, source-data version, configuration, software version, and
+ordering rules, MaterialGraph should produce the same ordered outputs and
+explanations. Determinism makes results reproducible; it does not make them
+scientifically valid.
 
-# Core Principles
+---
 
--   Deterministic reasoning
--   Explainable intelligence
--   Graph-driven scientific exploration
--   Researcher-in-the-loop decision support
--   Rank, explain, warn, and score
--   No LLM reasoning in scientific computation
+## Current Capabilities — v1.9.6
 
-------------------------------------------------------------------------
+### Foundation Intelligence
 
-# Current Capabilities (v1.9.6)
+- Material Graph Foundation;
+- Material Neighborhood and Family Intelligence;
+- Similarity and Recommendation Engines;
+- Criticality Analysis;
+- Scenario Policy Engine.
 
-## Foundation Intelligence
+### Discovery Intelligence
 
--   Material Graph Foundation
--   Material Neighborhood Intelligence
--   Material Family Intelligence
--   Similarity Engine
--   Recommendation Engine
--   Criticality Analysis
--   Scenario Policy Engine
+- Discovery Candidate Engine;
+- Explainable Discovery Scoring and Warnings;
+- Substitution Path Engine;
+- Multi-Hop Discovery Chains;
+- Discovery Path Ranking;
+- Research-Objective Exploration.
 
-## Discovery Intelligence
+### Knowledge-Graph Intelligence
 
--   Discovery Candidate Engine
--   Explainable Discovery Scoring
--   Discovery Warnings
--   Substitution Path Engine
--   Multi-Hop Discovery Chains
--   Discovery Path Ranking
--   Research Objective Exploration
+- Graph Builder and Traversal;
+- BFS, DFS, Dijkstra, and K-best path workflows;
+- Community Detection and Intelligence;
+- Ranked Subgraph Exploration;
+- Graph Analytics;
+- Material Quality;
+- Node and Edge Intelligence;
+- PostgreSQL-backed graph-job routes and persistence.
 
-## Knowledge Graph Intelligence
+### Research and Evidence Intelligence
 
--   Graph Builder
--   Graph Traversal
--   BFS / DFS / Dijkstra / K-shortest Paths
--   Community Detection
--   Community Intelligence
--   Ranked Subgraph Exploration
--   Graph Analytics
--   Material Quality
--   Node & Edge Intelligence
+- Scientific Pathway Analysis;
+- Research Opportunity Analysis;
+- Objective Evaluation;
+- Comparative Research Intelligence;
+- Endpoint-Sensitive Research Ranking;
+- Structured Evidence Summaries and Attribution;
+- Missing-Evidence and Weak-Assumption Reporting;
+- Validation Priorities and Evidence Readiness.
 
-## Research Intelligence
+These capabilities are implemented and partly tested. “Implemented” does not
+mean independently scientifically validated.
 
--   Scientific Pathway Analysis
--   Explainable Confidence
--   Research Opportunity Analysis
--   Comparative Research Intelligence
--   Endpoint-Sensitive Research Ranking
+---
 
-## Evidence Intelligence
+## Interpreting Research Outputs
 
--   Structured Evidence Summary
--   Evidence Attribution
--   Explainable Missing Evidence
--   Structured Weak Assumptions
--   Validation Priorities
--   Evidence Readiness
+MaterialGraph distinguishes:
 
-## Comparative Research Intelligence — v1.9.5
+| Output category | Meaning |
+|---|---|
+| Source data | Imported or recorded fields such as composition and source identifiers |
+| Derived measurement | Deterministically calculated values such as criticality or centrality |
+| Rule-based inference | Classifications and pathway hypotheses produced by encoded rules |
+| External validation evidence | Literature, structural analysis, DFT, synthesis, or experimental results |
 
--   Deterministic multi-pathway comparison
--   Comparative strengths and trade-offs
--   Comparative research gaps
--   Comparative evidence readiness
--   Comparative assumptions
--   Adjacent pairwise pathway comparisons
--   Score-dimension difference explanations
--   Preservation of lower-ranked pathway advantages
--   Tie-aware pathway comparisons
--   Endpoint material comparisons
--   Neutral first-pathway / second-pathway semantics
--   Backward-compatible comparison aliases
--   Comparative element opportunity highlights
--   Introduced-element signals
--   Removed / avoided-element signals
--   Preserved-framework element signals
--   Element highlights grounded in pathway scientific facts
--   Explicit `requires_validation` boundaries
--   Researcher autonomy preserved
+Confidence and readiness fields describe support within MaterialGraph's current
+data and rules. They are not probabilities of scientific correctness.
 
-The comparative layer compares existing deterministic pathway opportunities. It
-does not invent a winner when pathway scores are tied, and it does not replace
-scientific judgment or experimental validation.
+The platform should separately expose internal rule support, data completeness,
+external evidence coverage, validation readiness, and scientific-validation
+status. A pathway can have strong internal support while having no external
+validation evidence.
 
-## Endpoint-Sensitive Research Ranking — v1.9.6
+Objectives distinguish preferences, soft constraints, hard endpoint
+constraints, and hard path-wide constraints. Unknown evidence cannot be assumed
+to satisfy a hard constraint unless explicitly permitted.
 
--   Preserves original `scientific_usefulness_score` values
--   Groups equal-score pathway opportunities
--   Reuses existing endpoint-specific quality, stability, energy-above-hull,
-    criticality, risk, and evidence-readiness signals
--   Differentiates tied pathways only when existing endpoint evidence justifies
-    deterministic ordering
--   Preserves genuine ties when endpoint-specific evidence is equivalent
--   Adds no arbitrary tie-breaker
--   Adds no duplicate scientific usefulness score
--   Exposes explicit differentiation status and reasons
--   Keeps endpoint evidence auditable
--   Marks endpoint conclusions as requiring validation
--   Preserves researcher decision authority
+---
 
-For the LiFePO4 → Na/phosphate research objective, five scientifically distinct
-endpoint opportunities received the same scientific usefulness score of
-`94.95`. MaterialGraph preserved the tie because the currently available
-endpoint-specific evidence was equivalent across the five endpoints. This is
-intentional: absence of justified differentiation is represented explicitly
-rather than hidden behind an arbitrary ranking rule.
+## Architecture
 
-------------------------------------------------------------------------
-
-# Architecture
-
-``` text
-Materials Project
-        │
-        ▼
-Material Graph Foundation
-        │
-        ▼
-Foundation Intelligence
-        │
-        ▼
-Discovery Intelligence
-        │
-        ▼
-Knowledge Graph Intelligence
-        │
-        ▼
-Research Intelligence
-        │
-        ▼
-Evidence Intelligence
-        │
-        ▼
-Comparative Research Intelligence
-        │
-        ▼
-Endpoint-Sensitive Research Ranking
-        │
-        ▼
-Scientific Knowledge Layer (Future)
+```mermaid
+flowchart TD
+    A["Materials source data"] --> B["Graph foundation"]
+    B --> C["Foundation intelligence"]
+    C --> D["Discovery intelligence"]
+    D --> E["Knowledge-graph intelligence"]
+    E --> F["Research and evidence intelligence"]
+    F --> G["Researcher review and external validation"]
 ```
 
-------------------------------------------------------------------------
+The planned Scientific Knowledge Layer will preserve attributed literature,
+observations, simulations, experiments, review status, and disagreement.
+Evidence will not silently alter canonical computation; reviewed evidence may
+enter later, explicitly versioned datasets or policies.
 
-# Technology Stack
+---
 
-## Backend
+## Current Validation and Audit Status
 
--   Python
--   FastAPI
--   SQLAlchemy
--   PostgreSQL
--   Alembic
--   NetworkX
--   Pydantic v2
+| Validation type | Status |
+|---|---|
+| Unit and regression testing | Implemented; coverage continues to expand |
+| API and deterministic-behaviour verification | Completed for tested workflows |
+| Architecture and implementation audit | Reconciled; remediation in progress |
+| Literature-backed case studies | Not yet completed |
+| Independent materials-researcher review | Not yet completed |
+| DFT cross-validation | Not yet completed |
+| Experimental validation | Not completed |
 
-## Infrastructure
+The reconciled canonical audit register currently tracks 94 findings: 23 are
+resolved within their documented engineering scope and 71 remain open or
+require policy decisions.
 
--   AWS EC2
--   Nginx
--   systemd
--   Docker
+“Resolved” means that a specified implementation defect was corrected and
+verified within scope. It does not mean that the affected output has been
+scientifically validated.
 
-## Testing
+---
 
--   pytest
+## Technology Stack
 
-------------------------------------------------------------------------
+### Backend
 
-# Quick Start
+- Python;
+- FastAPI;
+- SQLAlchemy;
+- Pydantic v2;
+- PostgreSQL;
+- Alembic;
+- NetworkX.
 
-``` bash
+### Infrastructure
+
+- AWS EC2;
+- Neon PostgreSQL;
+- Nginx;
+- systemd;
+- Docker for local development.
+
+### Testing
+
+- pytest.
+
+---
+
+## Quick Start
+
+```bash
 git clone https://github.com/<username>/materialgraph.git
 cd materialgraph
 
@@ -237,83 +209,56 @@ python scripts/import_materials_project.py
 uvicorn app.main:app --reload
 ```
 
-------------------------------------------------------------------------
+---
 
-# Documentation
+## Documentation
 
-See the `docs/` directory for:
+| Document | Description |
+|---|---|
+| [Getting Started](docs/guide/getting_started.md) | Local setup and project bootstrapping |
+| [System Architecture](docs/architecture/system_architecture.md) | Implemented layers and cross-cutting architecture |
+| [Scientific Principles](docs/architecture/scientific_principles.md) | Governing scientific and evidence boundaries |
+| [Research Architecture](docs/architecture/research_architecture.md) | Researcher workflow and validation responsibilities |
+| [Roadmap](docs/architecture/roadmap.md) | Remediation, validation, and future milestones |
+| [Known Issues](docs/guide/technical_notes.md) | Current limitations and tracked issues |
+| [Deployment Guide](docs/development/deployment.md) | AWS EC2, Neon PostgreSQL, systemd, and Nginx deployment |
+| [Security Documentation](docs/security/README.md) | Security architecture and implementation plan |
 
--   System Architecture
--   Scientific Principles
--   Getting Started
--   Deployment Guide
--   Technical Notes
--   Roadmap
+---
 
-------------------------------------------------------------------------
+## Roadmap Priorities
 
-# Roadmap
+1. Remediate scientific-correctness and unknown-risk findings.
+2. Correct graph, traversal, path, objective, and evidence semantics.
+3. Harden graph-job concurrency, ownership, authorization, and API contracts.
+4. Bound graph-search cost and remove query amplification.
+5. Establish literature-backed cases and independent researcher review.
+6. Add governed evidence capture and a versioned Scientific Knowledge Layer.
+7. Introduce Go or Rust computation only where profiling justifies it.
+8. Explore ML or LLM assistance without replacing canonical deterministic
+   computation.
 
-## Phase 2.5 -- Decision Intelligence
+See the [roadmap](docs/architecture/roadmap.md) for status definitions and the
+full sequence.
 
--   Multi-element constraints
--   Application-aware exploration
--   USGS criticality enrichment
--   Geopolitical, toxicity, and recyclability policies
+---
 
-## Phase 3 -- Knowledge Graph Intelligence
+## Project Scope
 
-Completed:
+MaterialGraph does not:
 
--   Community Detection
--   Community Intelligence
--   Ranked Subgraph Exploration
--   Research Objective Exploration
+- replace literature review or domain expertise;
+- prove structural or framework preservation;
+- replace crystallographic analysis, DFT, or other domain computation;
+- guarantee transformation or synthesis feasibility;
+- guarantee material performance or industrial scalability;
+- replace laboratory experiments, peer review, or scientific judgment.
 
-Completed:
-
--   Scientific Pathway Analysis
--   Research Opportunity Analysis
--   Explainable Confidence
--   Evidence Intelligence
--   Comparative Research Intelligence
--   Endpoint-Sensitive Research Ranking
-
-Future:
-
--   Research Validation Planning
--   Research Gap Analysis
--   Hypothesis Exploration
--   Multi-objective Optimization
-
-## Phase 4
-
--   PostgreSQL graph jobs
--   Go GraphCompute Worker
--   Background analytics
-
-## Phase 5
-
--   Rust graph engine
--   Large-scale traversal
--   High-performance scientific path search
-
-------------------------------------------------------------------------
-
-# Project Scope
-
-MaterialGraph assists scientific exploration. It does **not**:
-
--   Replace DFT calculations
--   Guarantee synthesis feasibility
--   Replace laboratory validation
--   Replace scientific judgment
-
-Researchers remain responsible for evaluating, selecting, and validating
+Researchers remain responsible for selecting, interpreting, and validating
 research opportunities.
 
-------------------------------------------------------------------------
+---
 
-# License
+## License
 
 MIT License

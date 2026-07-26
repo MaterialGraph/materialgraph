@@ -3,6 +3,7 @@
 **Document role:** Canonical register of audit findings and current status  
 **Status:** Active living audit  
 **Detailed remediation record:** `MATERIALGRAPH_AUDIT_RESOLUTION.md`
+**Independent source audit:** `MaterialGraph_Independent_Observation_Audit.md`
 
 This document contains only MaterialGraph audit findings. Update an existing finding's status here when its state changes, and add every newly confirmed finding here before recording implementation details elsewhere.
 
@@ -15,11 +16,20 @@ This document contains only MaterialGraph audit findings. Update an existing fin
 - **Domain decision required:** Implementation is known, but remediation depends on an explicit scientific or product-policy decision.
 - **Accepted behavior:** Verified behavior retained intentionally; document rather than remediate.
 
+`Resolved` means that the specified implementation defect was corrected and
+verified within its documented scope. It does not mean that the resulting
+scientific output has been independently validated by materials researchers,
+literature, domain-specific computation, or experiment.
+
+Verification evidence is tracked separately as automated testing, development
+endpoint verification, production endpoint verification, independent-audit
+review, and scientific validation.
+
 ## Register summary
 
-- **Total findings:** 54
+- **Total findings:** 94
 - **Resolved:** 23
-- **Not resolved:** 31
+- **Not resolved:** 71
 
 ## Correctness and Data Integrity
 
@@ -484,8 +494,6 @@ It does not prove:
 -   structural compatibility
 -   actual substitution mechanism
 
-## 4.3 Evidence, Risk, Criticality, and Quality
-
 ## Evidence, Risk, Criticality, and Quality
 
 ### MG-AUD-021 — Risk and Criticality Share Upstream Evidence
@@ -542,7 +550,7 @@ Two distinct coverage layers exist:
 
 ### MG-AUD-025 — Legacy Numeric Risk APIs Retain Unknown → 0.0
 
-- **Status:** Confirmed and intentional
+- **Status:** Domain decision required
 - **Priority:** P1
 - **Confidence:** Confirmed
 
@@ -612,8 +620,6 @@ states.
 
 Values and coverage should travel together when downstream decisions
 depend on them.
-
-## 4.4 Discovery, Ranking, and Search Space
 
 ## Discovery, Ranking, and Search Space
 
@@ -1069,6 +1075,114 @@ oxide structure similarity is not validated similarity score 110.0
 **Impact:** Numeric scores, ranking, and scientific classifications are not
 affected. The defect reduces readability and can make independently generated
 explanation clauses appear to form one unsupported statement.
+
+## Independent Post-Remediation Audit Reconciliation
+
+The completed independent audit recorded 44 correctness/security findings and
+5 performance findings. Reconciliation is behavior-based: independent IDs are
+preserved as provenance, but only distinct defects receive new canonical IDs.
+
+### Reconciliation crosswalk
+
+| Independent ID | Disposition | Canonical ID | Reconciliation note |
+|---|---|---|---|
+| MG-IND-001 | New confirmed finding | MG-AUD-055 | Conflicting seed scales were not covered previously. |
+| MG-IND-002 | New confirmed finding | MG-AUD-056 | Dependency source selects another checkout. |
+| MG-IND-003 | New confirmed finding | MG-AUD-057 | Documented API-key name is not consumed. |
+| MG-IND-004 | New confirmed finding | MG-AUD-058 | Project version has incompatible authorities. |
+| MG-IND-005 | New confirmed finding | MG-AUD-059 | Normalized duplicate elements can still be persisted. |
+| MG-IND-006 | New confirmed finding | MG-AUD-060 | Graph-job claiming is non-atomic. |
+| MG-IND-007 | New confirmed finding | MG-AUD-061 | Graph-job lifecycle permits contradictory transitions. |
+| MG-IND-008 | Duplicate | MG-AUD-019 | Same magnesium taxonomy defect. |
+| MG-IND-009 | Duplicate | MG-AUD-033 | Same irreversible similarity preselection defect. |
+| MG-IND-010 | Follow-on regression | MG-AUD-062 | Unknown criticality remains favorably tie-ordered. |
+| MG-IND-011 | New confirmed finding | MG-AUD-063 | Neighborhood response can contain dangling edges. |
+| MG-IND-012 | New confirmed finding | MG-AUD-064 | Abundance direction contradicts documented meaning. |
+| MG-IND-013 | Existing finding broadened | MG-AUD-023, MG-AUD-024 | Confirms incomplete evidence can appear complete. |
+| MG-IND-014 | Duplicate | MG-AUD-008 | Same partial-evidence quality-bonus defect. |
+| MG-IND-015 | Duplicate | MG-AUD-025 | Same public unknown-risk numeric fallback. |
+| MG-IND-016 | Follow-on regression | MG-AUD-065 | Nullable risk remains favorably ranked in screening. |
+| MG-IND-017 | Follow-on regression | MG-AUD-066 | Scenario ranking cannot compare nullable risk. |
+| MG-IND-018 | Follow-on regression | MG-AUD-067 | Sensitivity multiplies nullable baseline risk. |
+| MG-IND-019 | New confirmed finding | MG-AUD-068 | Named scenario element is disconnected from adjustment. |
+| MG-IND-020 | New confirmed finding | MG-AUD-069 | Two scenario types compute identically. |
+| MG-IND-021 | Follow-on regression | MG-AUD-070 | Substitution retains maximally favorable unknown risk. |
+| MG-PERF-001 | New confirmed finding | MG-AUD-071 | Similarity amplifies criticality queries per candidate. |
+| MG-PERF-002 | New confirmed finding | MG-AUD-072 | Neighborhood limit does not bound traversal work. |
+| MG-PERF-003 | Duplicate | MG-AUD-047 | Same screening N+1 pattern. |
+| MG-PERF-004 | New confirmed finding | MG-AUD-073 | Substitution performs per-candidate element/risk queries. |
+| MG-IND-022 | New confirmed finding | MG-AUD-074 | `max_hops` behaves as exact depth. |
+| MG-IND-023 | New confirmed finding | MG-AUD-075 | Weighted-path state pruning loses valid shallow routes. |
+| MG-IND-024 | New confirmed finding | MG-AUD-076 | Edge-score saturation removes intended distinctions. |
+| MG-IND-025 | New confirmed finding | MG-AUD-077 | K-best bypasses canonical transition validation. |
+| MG-IND-026 | New confirmed finding | MG-AUD-078 | Rejected candidates remain as disconnected nodes. |
+| MG-IND-027 | New confirmed finding | MG-AUD-079 | Material metadata can come from the wrong incoming edge. |
+| MG-PERF-005 | New confirmed finding | MG-AUD-080 | K-best enumerates all simple paths before applying `k`. |
+| MG-IND-028 | New confirmed finding | MG-AUD-081 | Reported depth differs from effective guarded depth. |
+| MG-IND-029 | New confirmed finding | MG-AUD-082 | Independent limits break graph closure. |
+| MG-IND-030 | New confirmed finding | MG-AUD-083 | Subgraph filtering occurs after truncation. |
+| MG-IND-031 | New confirmed finding | MG-AUD-084 | Path lookup ignores `max_hops` and searches direct paths. |
+| MG-IND-032 | Existing finding broadened | MG-AUD-045 | Confirms public research-contract bypasses. |
+| MG-IND-033 | Duplicate | MG-AUD-017 | Same failure to enforce strict constraints. |
+| MG-IND-034 | Duplicate | MG-AUD-040 | Same future-transition evidence attribution. |
+| MG-IND-035 | New distinct finding | MG-AUD-085 | Stable identity did not resolve inconsistent tie semantics. |
+| MG-IND-036 | New confirmed finding | MG-AUD-086 | Earlier transitions can satisfy endpoint family. |
+| MG-IND-037 | Follow-on regression | MG-AUD-087 | Scientific analysis reparses explicit empty membership. |
+| MG-IND-038 | New confirmed finding | MG-AUD-088 | Readiness can be strong without external evidence. |
+| MG-IND-039 | Follow-on regression | MG-AUD-089 | Continuity is narrated as transition plausibility. |
+| MG-IND-040 | New confirmed finding | MG-AUD-090 | Equivalent route inputs use inconsistent validation. |
+| MG-IND-041 | New confirmed finding | MG-AUD-091 | Community endpoints bypass response validation. |
+| MG-IND-042 | New confirmed finding | MG-AUD-092 | Graph jobs lack authorization and ownership boundaries. |
+| MG-IND-043 | New confirmed finding | MG-AUD-093 | Nonexistent chemical symbols pass public validation. |
+| MG-IND-044 | New confirmed finding | MG-AUD-094 | Analytical endpoints accept invalid result limits. |
+
+### Canonical findings added by reconciliation
+
+All findings below are **Confirmed**, awaiting remediation unless an explicit
+domain or product-policy decision is later recorded.
+
+| Canonical ID | Priority | Finding | Impact |
+|---|---:|---|---|
+| MG-AUD-055 | P0 | Conflicting risk-profile seed scales produce execution-order-dependent data. | Identical source/year metadata can yield materially different risk results. |
+| MG-AUD-056 | P1 | Standard dependency installation selects a different repository checkout. | Builds are not reliably reproducible from the intended source. |
+| MG-AUD-057 | P1 | Setup documentation configures an API-key name the importer does not read. | A documented installation can fail at runtime. |
+| MG-AUD-058 | P2 | Project version is defined by incompatible authorities. | Runtime identity and reproducibility can diverge. |
+| MG-AUD-059 | P1 | Duplicate element normalization is not honored during persistence. | Composition membership can violate normalized scientific identity. |
+| MG-AUD-060 | P0 | Pending graph-job claiming is not concurrency-safe. | Multiple workers can claim and execute the same job. |
+| MG-AUD-061 | P1 | Graph-job lifecycle permits contradictory state transitions. | Persisted job status can misrepresent actual execution. |
+| MG-AUD-062 | P0 | Missing criticality evidence receives favorable tie ordering. | Unknown evidence can outrank known positive criticality. |
+| MG-AUD-063 | P1 | Limited neighborhood responses can contain dangling edges. | Returned graph structures can be internally invalid. |
+| MG-AUD-064 | P0 | Higher abundance increases criticality despite the declared beneficial direction. | Scientific scores can move in the wrong direction. |
+| MG-AUD-065 | P0 | Unknown risk receives a favorable screening rank. | Preserved null semantics still create favorable uncertainty. |
+| MG-AUD-066 | P0 | Scenario ranking cannot handle unknown material risk. | Valid unknown-risk inputs can cause unhandled failures. |
+| MG-AUD-067 | P0 | Sensitivity analysis cannot handle unknown baseline risk. | Valid baseline uncertainty can cause unhandled failures. |
+| MG-AUD-068 | P0 | Supply-risk scenario adjustment is disconnected from the named element. | Scenario meaning does not match its public input. |
+| MG-AUD-069 | P1 | Supply-risk and geopolitical sensitivity scenarios compute identically. | Distinct analytical claims have no distinct computation. |
+| MG-AUD-070 | P0 | Unknown risk is maximally favorable in substitution ranking. | Missing evidence can be recommended as lowest risk. |
+| MG-AUD-071 | P2 | Similarity performs per-candidate criticality query amplification. | Query count grows with the candidate set. |
+| MG-AUD-072 | P2 | Neighborhood response limits do not bound traversal work. | Small responses can still trigger broad computation. |
+| MG-AUD-073 | P2 | Substitution performs per-candidate element and risk queries. | Query count grows repeatedly with candidate count. |
+| MG-AUD-074 | P0 | Discovery-chain `max_hops` behaves as an exact required depth. | Valid shorter chains can be omitted. |
+| MG-AUD-075 | P0 | Hop-bounded weighted search prunes valid shallower states. | A cheaper deep state can block a valid bounded route. |
+| MG-AUD-076 | P1 | Edge-score saturation erases framework and plausibility distinctions. | Intended ranking signals collapse to equal scores. |
+| MG-AUD-077 | P0 | K-best paths bypass canonical transition validation. | Invalid transitions can enter research-facing paths. |
+| MG-AUD-078 | P1 | Rejected transition candidates remain as disconnected graph nodes. | Graph contents imply candidates unsupported by valid edges. |
+| MG-AUD-079 | P1 | K-best material metadata can come from the wrong incoming edge. | Path explanations can describe the wrong evidence. |
+| MG-AUD-080 | P0 | K-best enumerates every simple path before applying `k`. | Graph growth can cause combinatorial production failure. |
+| MG-AUD-081 | P1 | Discovery graph reports requested rather than effective depth. | Responses misstate the executed search boundary. |
+| MG-AUD-082 | P1 | Independent node and edge limits break graph closure. | Returned edges and nodes need not form a valid graph. |
+| MG-AUD-083 | P1 | Subgraph filters are applied after source-graph truncation. | Eligible results can disappear because of unrelated preselection. |
+| MG-AUD-084 | P0 | Discovery path lookup ignores `max_hops` and searches direct paths only. | Valid multi-hop paths are omitted despite the API contract. |
+| MG-AUD-085 | P1 | Research comparison layers use incompatible tie semantics. | The same pathways can be tied and non-tied simultaneously. |
+| MG-AUD-086 | P0 | Target-family filtering can accept a chain whose endpoint does not match. | Endpoint objective satisfaction is overstated. |
+| MG-AUD-087 | P0 | Scientific analysis reparses explicitly empty endpoint membership. | Structured-data authority differs across research services. |
+| MG-AUD-088 | P0 | Evidence readiness can be strong while every external category is missing. | Internal support is presented like external scientific readiness. |
+| MG-AUD-089 | P0 | Scientific explanations call shared-element continuity transition plausibility. | Public reasoning overstates the evidence basis. |
+| MG-AUD-090 | P2 | Equivalent discovery inputs receive inconsistent route validation. | API behavior depends on route rather than domain meaning. |
+| MG-AUD-091 | P2 | Community endpoints bypass response-contract validation. | Malformed response structures can escape serialization checks. |
+| MG-AUD-092 | P0 | Graph-job mutation and global history lack authorization and ownership. | Callers can create work and inspect global job state without isolation. |
+| MG-AUD-093 | P1 | Public validation accepts nonexistent chemical symbols. | Invalid domain inputs enter scoring and research workflows. |
+| MG-AUD-094 | P2 | Analytical endpoints accept negative or unbounded result limits. | Negative slicing has unintended semantics and large requests are unbounded. |
 
 ## Maintenance rule
 

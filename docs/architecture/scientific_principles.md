@@ -1,203 +1,202 @@
 # MaterialGraph Scientific Principles
 
-## Introduction
+## Purpose and Scientific Boundary
 
-MaterialGraph is built on the belief that scientific software should assist researchers through deterministic, explainable, and transparent computation rather than replace scientific judgment.
+MaterialGraph is a deterministic research-assistance and decision-support
+platform. It computationally generates, ranks, compares, and explains material
+opportunities using available data and explicit rules.
 
-The platform is designed to compute, rank, explain, and contextualize research opportunities while preserving researcher autonomy.
+MaterialGraph outputs are hypotheses and prioritization signals. They do not
+establish novelty, structural preservation, transformation or synthesis
+feasibility, physical performance, or scientific correctness. Researchers
+retain responsibility for interpretation and must validate relevant conclusions
+through literature, structural analysis, domain-specific computation,
+experiments, or other appropriate scientific methods.
 
-These principles guide every architectural and implementation decision within MaterialGraph.
-
----
-
-# 1. Deterministic Reasoning
-
-MaterialGraph uses deterministic algorithms for all scientific reasoning.
-
-The same inputs should always produce the same outputs.
-
-Scientific conclusions should never depend on non-deterministic reasoning.
+These principles govern every architectural and implementation decision.
 
 ---
 
-# 2. Explainability
+## 1. Reproducible Deterministic Computation
 
-Every recommendation should be explainable.
+Given the same explicit inputs, source-data version, configuration, software
+version, and ordering rules, MaterialGraph should produce the same ordered
+outputs and explanations.
 
-MaterialGraph should always provide the reasoning behind:
-
-- recommendations
-- rankings
-- graph traversal
-- pathway selection
-- scientific opportunities
-
-Opaque scores without explanation are not acceptable.
+Determinism makes computation reproducible and auditable. It does not make an
+output scientifically valid.
 
 ---
 
-# 3. Researcher-in-the-Loop
+## 2. Explainability
 
-MaterialGraph assists scientific research.
+Every recommendation, ranking, traversal result, pathway hypothesis, and
+research opportunity should expose the data, rules, scores, assumptions,
+warnings, and limitations that materially influenced it.
 
-Researchers make scientific decisions.
-
-MaterialGraph never replaces scientific judgement.
-
-The platform presents opportunities.
-
-Researchers decide which opportunities to investigate.
+An explanation describes how MaterialGraph produced an output. It is not proof
+that the output is scientifically correct.
 
 ---
 
-# 4. Rank Rather Than Discard
+## 3. Researcher Authority
 
-MaterialGraph follows an inclusive exploration philosophy.
+MaterialGraph assists research; it does not make autonomous scientific
+decisions.
 
-By default, materials are:
-
-- ranked
-- explained
-- warned
-- scored
-
-They are not discarded unless explicit constraints require filtering.
-
-Potentially valuable discoveries should remain visible whenever scientifically reasonable.
+The platform presents opportunities. Researchers decide which opportunities to
+investigate and how to validate them.
 
 ---
 
-# 5. Facts Before Recommendations
+## 4. Ranking and Constraint Semantics
 
-Recommendations should be supported by explicit scientific facts.
+MaterialGraph is inclusive by default: candidates are ranked, explained,
+warned, and scored rather than silently discarded.
 
-Examples include:
+Objectives must distinguish:
 
-- preserved frameworks
-- substitution pathways
-- material quality
-- graph relationships
-- community membership
-- criticality analysis
+- **Preference** — influences ranking without excluding a result.
+- **Soft constraint** — applies a penalty and warning.
+- **Hard endpoint constraint** — excludes a result whose endpoint does not
+  satisfy the requirement.
+- **Hard path-wide constraint** — excludes a result when any disallowed path
+  condition occurs.
 
-MaterialGraph should distinguish computed facts from interpretation.
-
----
-
-# 6. Explicit Uncertainty
-
-Scientific uncertainty should never be hidden.
-
-MaterialGraph should clearly distinguish between:
-
-Known
-
-- graph relationships
-- computed scores
-- pathway structure
-- objective alignment
-
-Unknown
-
-- synthesis feasibility
-- laboratory validation
-- industrial scalability
-- long-term performance
-
-Unknowns should be presented explicitly.
+Unknown evidence must not be assumed to satisfy a hard constraint unless the
+objective explicitly permits unknown values.
 
 ---
 
-# 7. Scientific Opportunities
+## 5. Evidence Taxonomy
 
-MaterialGraph does not search for a single "best" answer.
+MaterialGraph must not describe every computed relationship as a scientific
+fact. Outputs should be classified as:
 
-Instead, it presents multiple scientifically plausible opportunities.
+| Category | Examples |
+|---|---|
+| Source data | Composition, Materials Project identifier, reported stability fields |
+| Derived measurement | Criticality score, normalized composition, graph centrality |
+| Rule-based inference | Material-family classification, substitution classification, pathway hypothesis |
+| External validation evidence | Literature, structural comparison, DFT result, synthesis outcome, experiment |
 
-Each opportunity should describe:
-
-- strengths
-- trade-offs
-- risks
-- assumptions
-- confidence
-- required validation
-
-Researchers choose which opportunity to pursue.
+A graph relationship can be a reproducible fact about MaterialGraph's model
+without being a validated physical relationship.
 
 ---
 
-# 8. Research Evidence
+## 6. Explicit Uncertainty
 
-MaterialGraph separates computation from evidence.
+MaterialGraph must expose uncertainty and distinguish:
 
-Deterministic graph intelligence computes opportunities.
+- known favourable evidence;
+- known unfavourable evidence;
+- incomplete or unknown evidence;
+- internal rule support;
+- external evidence coverage;
+- scientific validation status.
 
-Researchers generate evidence through:
-
-- experiments
-- simulations
-- literature
-- observations
-
-Evidence enriches the platform but should not alter deterministic computation without explicit validation.
-
----
-
-# 9. Continuous Scientific Evolution
-
-MaterialGraph is designed as a scientific platform that evolves incrementally.
-
-New capabilities should strengthen existing deterministic foundations rather than replace them.
-
-The long-term vision is an explainable scientific exploration platform that combines graph intelligence, research workflows, and scientific knowledge management.
+Missing evidence must remain unknown. It must not improve rankings, scores,
+readiness, confidence, or recommendations.
 
 ---
 
-# 10. Structured Scientific Data Takes Precedence
+## 7. Research Opportunities, Not Scientific Conclusions
 
-Whenever structured scientific data is available, MaterialGraph shall use it as
-the canonical source of truth.
+MaterialGraph presents multiple computationally identified opportunities rather
+than declaring a single scientifically correct answer.
 
-Derived or inferred representations (such as parsing chemical formulas) should
-never override structured scientific measurements.
+Each opportunity should communicate:
 
-Scientific calculations should preserve the fidelity of the original data source.
+- strengths and trade-offs;
+- risks and warnings;
+- assumptions and missing evidence;
+- internal support;
+- validation priorities;
+- applicable constraints.
 
----
-
-# 11. Unknown Evidence Is Not Favorable Evidence
-
-Missing scientific evidence shall never be interpreted as favorable evidence.
-
-MaterialGraph distinguishes between:
-
-- known favorable evidence
-- known unfavorable evidence
-- unknown evidence
-
-Unknown evidence should remain explicit and should not improve rankings,
-scores, confidence, or recommendations.
+In MaterialGraph, **discovery** means deterministic computational exploration
+and prioritization. It does not mean experimental discovery, confirmed novelty,
+synthesis feasibility, or validated performance.
 
 ---
 
-# 12. Scientific Semantics Before Performance
+## 8. Confidence and Readiness Vocabulary
 
-Performance optimizations must preserve scientific semantics.
+Confidence and readiness outputs describe support within MaterialGraph's
+available data and deterministic rules. They are not probabilities of
+scientific correctness.
 
-Caching, indexing, batching, graph expansion limits, or parallel execution
-must not change scientific meaning unless explicitly documented and validated.
+Where applicable, the platform should keep these dimensions separate:
 
-Scientific correctness always takes precedence over computational efficiency.
+- internal rule support;
+- source-data completeness;
+- external evidence coverage;
+- validation readiness;
+- scientific validation status.
+
+Internal support must never be presented as external scientific evidence.
 
 ---
 
-# 13. One Canonical Scientific Interpretation
+## 9. Evidence and Reviewed Evolution
 
-MaterialGraph should maintain a single canonical implementation for each
-scientific concept.
+Researchers may contribute evidence through experiments, simulations,
+literature, structural analysis, and observations.
 
-Normalization, scoring, composition handling, and evidence interpretation
-should be implemented once and reused throughout the platform.
+Evidence must remain attributed, reviewable, and versioned. It must not silently
+or automatically alter scientific computation. Reviewed evidence may influence
+later, explicitly versioned datasets, rules, models, or scoring policies while
+preserving provenance and reproducibility.
 
-Duplicated scientific logic increases the risk of inconsistent reasoning.
+Researcher feedback is valuable evidence, but it is not automatically treated
+as authoritative truth.
+
+---
+
+## 10. Structured Scientific Data Takes Precedence
+
+When structured scientific data is available, MaterialGraph must use it as the
+canonical source for that field.
+
+Formula parsing and other inferred representations must not override explicitly
+provided structured values, including explicitly empty values.
+
+---
+
+## 11. Scientific Semantics Before Performance
+
+Caching, indexing, batching, graph limits, pruning, and parallel execution must
+preserve documented scientific and graph semantics.
+
+An optimization must not change candidate eligibility, path meaning, evidence
+meaning, ordering, or explanations unless the change is explicit, versioned,
+tested, and documented.
+
+---
+
+## 12. Canonical Interpretation and Provenance
+
+Each scientific concept should have one canonical implementation reused across
+the platform. Normalization, composition handling, scoring, constraint
+evaluation, evidence interpretation, and tie semantics must not diverge between
+services.
+
+Every research-facing result should retain enough provenance to identify the
+source data, derived signals, rules, configuration, and software version that
+produced it.
+
+---
+
+## 13. Validation Status Must Be Explicit
+
+Implementation, testing, audit remediation, researcher review, computational
+validation, and experimental validation are different states.
+
+MaterialGraph is currently engineering-tested and undergoing audit remediation.
+It has not yet been independently scientifically validated by materials
+researchers, DFT cross-validation, or experiment.
+
+Resolving an implementation finding means that the specified defect was
+corrected and verified within its documented engineering scope. It does not
+scientifically validate the affected output.

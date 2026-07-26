@@ -1,7 +1,7 @@
 # MaterialGraph Architecture & Implementation Audit Resolution
 
-Version: 1.5
-Last Updated: 2026-07-22
+Version: 1.6
+Last Updated: 2026-07-26
 
 ---
 
@@ -20,8 +20,14 @@ Each finding records:
 - regression testing
 - lessons learned
 
-Only findings that complete implementation, testing, and scientific
-verification are marked as Resolved.
+Only findings whose specified implementation defect has been corrected and
+verified within its documented scope are marked as Resolved. This status does
+not mean that the resulting scientific output has been independently validated
+by researchers, literature, domain-specific computation, or experiment.
+
+This document contains remediation evidence only. Unresolved findings and the
+authoritative current status remain in
+`MaterialGraph_Architecture_Implementation_Audit_v2_Regenerated.md`.
 
 ---
 
@@ -32,7 +38,7 @@ verification are marked as Resolved.
 | Open | Investigation not started |
 | In Progress | Remediation underway |
 | Verification | Code completed, verification pending |
-| Resolved | Fully implemented and verified |
+| Resolved | Specified defect corrected and verified within documented scope |
 | Deferred | Intentionally postponed |
 | Accepted Risk | Known limitation accepted |
 | Rejected | Audit finding determined to be invalid |
@@ -154,6 +160,13 @@ High
 Status
 
 ✅ Resolved
+
+Scope qualification
+
+Resolved for endpoint objective alignment in DiscoveryPathRankingService.
+MG-AUD-087 separately tracks ScientificPathwayAnalysisService reparsing
+explicitly empty endpoint membership; this entry does not claim cross-service
+closure of that follow-on defect.
 
 Resolution Version
 
@@ -340,11 +353,16 @@ High
 
 Status
 
-Verification
+✅ Resolved
 
 Resolution Version
 
-Post-v1.9.18 remediation (release tag pending)
+Post-v1.9.18
+
+Verification scope
+
+Production verification confirms the listed request and deployed dataset. It
+does not establish every path shape or external scientific validity.
 
 Affected Components
 
@@ -609,6 +627,12 @@ High
 Status
 
 ✅ Resolved
+
+Scope qualification
+
+Resolved for the corrected criticality and documented downstream consumers.
+MG-AUD-062 and MG-AUD-065 through MG-AUD-070 track distinct favorable-ordering
+and nullable-risk failures exposed by the independent post-remediation audit.
 
 Resolution Version
 
@@ -1259,6 +1283,13 @@ High
 Status
 
 ✅ Resolved
+
+Scope qualification
+
+Resolved for CandidateScreeningService and CandidateComparisonService
+preserving unknown risk as null. MG-AUD-065 and MG-AUD-066 separately track
+favorable screening order and scenario-ranking failure; null preservation
+alone does not establish a neutral uncertainty policy across all consumers.
 
 Resolution Version
 
@@ -2737,6 +2768,12 @@ Medium
 Status
 
 ✅ Resolved
+
+Scope qualification
+
+Resolved for stable pathway identity and deterministic position. MG-AUD-085
+separately tracks incompatible tie thresholds across comparison layers; this
+entry does not claim globally consistent tie semantics.
 
 Resolution Version
 
