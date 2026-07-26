@@ -261,7 +261,7 @@ def test_scientific_pathway_analysis_exposes_partial_objective_satisfaction(
     # Path-event coverage remains partial, while ranking uses the
     # final material's endpoint composition.
     assert opportunity["score_breakdown"]["objective_alignment"] == 18.75
-    assert opportunity["scientific_usefulness_score"] == 89.4
+    assert opportunity["scientific_usefulness_score"] == 89.75
 
 
 def test_scientific_pathway_analysis_assigns_unique_pathway_identity(

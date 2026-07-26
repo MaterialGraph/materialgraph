@@ -98,7 +98,7 @@ def test_element_without_profile_is_excluded_from_criticality_aggregation():
         },
     )
 
-    assert result["criticality_score"] == 80.0
+    assert result["criticality_score"] == 68.0
     assert result["criticality_known"] is True
 
     assert result["criticality_profile_coverage"] == 0.5
@@ -119,6 +119,15 @@ def test_element_without_profile_is_excluded_from_criticality_aggregation():
         for item in result["elements"]
         if item["symbol"] == "B"
     )
+
+    # The response must expose raw abundance, not inverted abundance risk.
+    known_detail = next(
+        item
+        for item in result["elements"]
+        if item["symbol"] == "A"
+    )
+
+    assert known_detail["abundance_score"] == 8.0
 
     assert unknown_detail["criticality_known"] is False
     assert unknown_detail["element_criticality_score"] is None
@@ -256,8 +265,10 @@ def test_fully_known_criticality_evidence_is_complete():
         },
     )
 
-    # (40 × 0.25) + (80 × 0.75) = 70
-    assert result["criticality_score"] == 70.0
+    # A: (10 - 4) × 10 = 60
+    # B: (10 - 8) × 10 = 20
+    # (60 × 0.25) + (20 × 0.75) = 30
+    assert result["criticality_score"] == 30.0
     assert result["criticality_known"] is True
 
     assert result["criticality_profile_coverage"] == 1.0
@@ -369,3 +380,30 @@ def test_material_criticality_bulk_missing_material_is_safe(db_session):
     assert missing["criticality_evidence_complete"] is False
     assert missing["unknown_criticality_elements"] == []
     assert missing["elements"] == []
+
+
+def test_higher_abundance_reduces_element_criticality():
+    service = MaterialCriticalityService.__new__(
+        MaterialCriticalityService
+    )
+
+    low_abundance_score = (
+        service._calculate_element_criticality_score(
+            _risk_profile(
+                element_id=1,
+                abundance_score=2.0,
+            )
+        )
+    )
+    high_abundance_score = (
+        service._calculate_element_criticality_score(
+            _risk_profile(
+                element_id=1,
+                abundance_score=8.0,
+            )
+        )
+    )
+
+    assert low_abundance_score == 80.0
+    assert high_abundance_score == 20.0
+    assert high_abundance_score < low_abundance_score

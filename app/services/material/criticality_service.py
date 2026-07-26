@@ -334,10 +334,19 @@ class MaterialCriticalityService:
         risk_profile: ElementRiskProfile,
     ) -> float | None:
         scores = [
-            risk_profile.abundance_score,
+            (
+                10.0 - risk_profile.abundance_score
+                if risk_profile.abundance_score is not None
+                else None
+            ),
             risk_profile.supply_risk_score,
             risk_profile.toxicity_score,
             risk_profile.geopolitical_risk_score,
+            (
+                10.0 - risk_profile.recyclability_score
+                if risk_profile.recyclability_score is not None
+                else None
+            ),
         ]
 
         valid_scores = [
@@ -346,12 +355,10 @@ class MaterialCriticalityService:
             if score is not None
         ]
 
-        recyclability_score = risk_profile.recyclability_score
-
-        if recyclability_score is not None:
-            valid_scores.append(10 - recyclability_score)
-
         if not valid_scores:
             return None
 
-        return (sum(valid_scores) / len(valid_scores)) * 10
+        return round(
+            (sum(valid_scores) / len(valid_scores)) * 10.0,
+            2,
+        )
