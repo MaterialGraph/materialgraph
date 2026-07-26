@@ -1,7 +1,6 @@
 from app.core.database import SessionLocal
 from app.models.application import Application
 from app.models.element import Element
-from app.models.element_risk_profile import ElementRiskProfile
 
 
 ELEMENTS = [
@@ -31,80 +30,6 @@ APPLICATIONS = [
     },
 ]
 
-# Phase 1 normalized seed values.
-# Scale convention:
-# - abundance_score: higher is better
-# - recyclability_score: higher is better
-# - supply_risk_score: higher is worse
-# - toxicity_score: higher is worse
-# - geopolitical_risk_score: higher is worse
-RISK_PROFILES = {
-    "Li": {
-        "abundance_score": 0.45,
-        "supply_risk_score": 0.65,
-        "toxicity_score": 0.25,
-        "recyclability_score": 0.45,
-        "geopolitical_risk_score": 0.55,
-    },
-    "Na": {
-        "abundance_score": 0.90,
-        "supply_risk_score": 0.15,
-        "toxicity_score": 0.15,
-        "recyclability_score": 0.50,
-        "geopolitical_risk_score": 0.10,
-    },
-    "Mg": {
-        "abundance_score": 0.80,
-        "supply_risk_score": 0.20,
-        "toxicity_score": 0.15,
-        "recyclability_score": 0.55,
-        "geopolitical_risk_score": 0.20,
-    },
-    "Fe": {
-        "abundance_score": 0.85,
-        "supply_risk_score": 0.20,
-        "toxicity_score": 0.20,
-        "recyclability_score": 0.75,
-        "geopolitical_risk_score": 0.20,
-    },
-    "Mn": {
-        "abundance_score": 0.65,
-        "supply_risk_score": 0.45,
-        "toxicity_score": 0.35,
-        "recyclability_score": 0.50,
-        "geopolitical_risk_score": 0.45,
-    },
-    "Co": {
-        "abundance_score": 0.30,
-        "supply_risk_score": 0.85,
-        "toxicity_score": 0.65,
-        "recyclability_score": 0.60,
-        "geopolitical_risk_score": 0.90,
-    },
-    "Ni": {
-        "abundance_score": 0.50,
-        "supply_risk_score": 0.60,
-        "toxicity_score": 0.45,
-        "recyclability_score": 0.65,
-        "geopolitical_risk_score": 0.60,
-    },
-    "P": {
-        "abundance_score": 0.70,
-        "supply_risk_score": 0.35,
-        "toxicity_score": 0.25,
-        "recyclability_score": 0.40,
-        "geopolitical_risk_score": 0.30,
-    },
-    "O": {
-        "abundance_score": 1.00,
-        "supply_risk_score": 0.05,
-        "toxicity_score": 0.05,
-        "recyclability_score": 0.80,
-        "geopolitical_risk_score": 0.05,
-    },
-}
-
-
 def seed_elements(db):
     for item in ELEMENTS:
         existing = db.query(Element).filter(Element.symbol == item["symbol"]).first()
@@ -125,47 +50,12 @@ def seed_applications(db):
         db.add(Application(**item))
 
 
-def seed_risk_profiles(db, year: int = 2026):
-    elements = db.query(Element).all()
-    element_by_symbol = {element.symbol: element for element in elements}
-
-    for symbol, values in RISK_PROFILES.items():
-        element = element_by_symbol.get(symbol)
-
-        if element is None:
-            continue
-
-        existing = (
-            db.query(ElementRiskProfile)
-            .filter(
-                ElementRiskProfile.element_id == element.id,
-                ElementRiskProfile.year == year,
-            )
-            .first()
-        )
-
-        if existing:
-            continue
-
-        db.add(
-            ElementRiskProfile(
-                element_id=element.id,
-                year=year,
-                source="manual_phase_1_seed",
-                **values,
-            )
-        )
-
-
 def main():
     db = SessionLocal()
 
     try:
         seed_elements(db)
         seed_applications(db)
-        db.commit()
-
-        seed_risk_profiles(db)
         db.commit()
 
         print("Core seed data inserted successfully.")
