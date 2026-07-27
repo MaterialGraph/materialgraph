@@ -38,6 +38,31 @@ It does not autonomously select a scientifically correct material or pathway.
 
 ---
 
+## The MaterialGraph Research Cycle
+
+MaterialGraph is designed as an explainable scientific exploration workspace,
+not as a collection of disconnected endpoints or isolated analysis tools. A
+researcher should be able to move through one continuous investigation:
+
+```mermaid
+flowchart TD
+    A["Start from a material"] --> B["Define a research objective"]
+    B --> C["Generate ranked, explained candidates"]
+    C --> D["Inspect evidence, assumptions, and gaps"]
+    D --> E["Explore relationships and pathways"]
+    E --> F["Compare alternatives"]
+    F --> G["Save the investigation"]
+    G --> H["Share and collaborate"]
+    H --> I["Refine the objective"]
+    I --> C
+```
+
+The cycle is iterative because scientific exploration rarely ends with one
+ranking or comparison. Each result should help the researcher refine the
+question, inspect another possibility, or identify the next validation step.
+
+---
+
 ## Core Principles
 
 - deterministic and reproducible computation;

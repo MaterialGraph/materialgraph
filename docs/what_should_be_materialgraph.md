@@ -73,6 +73,78 @@ MaterialGraph must not claim to replace:
 
 ------------------------------------------------------------------------
 
+## 2.1. The MaterialGraph Research Cycle
+
+MaterialGraph should not feel like a collection of scientific APIs, endpoint
+pages, or isolated analysis tools. It should feel like one continuous,
+inspectable research investigation.
+
+> **MaterialGraph should help a researcher move from a scientific question to
+> an evidence-backed material decision through a continuous, explainable, and
+> iterative workflow.**
+
+The intended cycle is:
+
+``` text
+Start From a Material
+        │
+        ▼
+Define a Research Objective
+        │
+        ▼
+Generate Ranked, Explained Candidates
+        │
+        ▼
+Inspect Evidence, Assumptions, and Gaps
+        │
+        ▼
+Explore Relationships and Pathways
+        │
+        ▼
+Compare Alternatives
+        │
+        ▼
+Save the Investigation
+        │
+        ▼
+Share and Collaborate
+        │
+        ▼
+Refine the Objective
+        │
+        └───────────────────────────────↺
+```
+
+The loop is essential. Scientific exploration rarely ends after one ranked
+result or comparison. Researchers revise constraints, test another hypothesis,
+inspect different evidence, and continue from what they learned. MaterialGraph
+should preserve that continuity rather than forcing each query to begin as an
+unrelated task.
+
+### Product identity rule
+
+The platform's differentiation should come less from any single algorithm and
+more from how naturally the complete workflow supports scientific exploration.
+Algorithms, scores, graph operations, evidence views, and collaboration
+features should contribute to a coherent investigation rather than exist as a
+feature collection.
+
+### Design and roadmap gate
+
+Every proposed capability should answer at least one of these questions:
+
+1. Which stage of the Research Cycle does it improve?
+2. How does it help the researcher move to the next stage?
+3. Does it preserve the context, evidence, and decisions from earlier stages?
+4. Does it support refinement and continued exploration?
+
+If a feature does not materially improve the Research Cycle, its priority
+should be questioned before implementation. This rule complements the
+scientific and architectural gates elsewhere in this document and helps prevent
+MaterialGraph from becoming a disconnected feature factory.
+
+------------------------------------------------------------------------
+
 ## 3. The System Should Work as One Intelligence Pipeline
 
 The reviewed implementation shows a meaningful layered flow:

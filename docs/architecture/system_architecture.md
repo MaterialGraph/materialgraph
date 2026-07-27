@@ -24,6 +24,29 @@ flowchart TD
     F --> G["Researcher review and external validation"]
 ```
 
+### Research Experience Architecture
+
+The intelligence layers should be exposed through the **MaterialGraph Research
+Cycle**: start from a material, define an objective, generate explained
+candidates, inspect evidence, explore pathways, compare alternatives, save and
+share the investigation, and refine the objective.
+
+This cycle is a researcher-facing orchestration boundary rather than a new
+scientific-computation layer. It should compose canonical outputs from the
+existing services, preserve investigation context and provenance, and avoid
+reimplementing scoring, constraints, evidence interpretation, or graph
+semantics in the frontend or workspace layer.
+
+```mermaid
+flowchart LR
+    A["Material and objective"] --> B["Canonical intelligence services"]
+    B --> C["Explainable research workspace"]
+    C --> D["Saved investigation context"]
+    D --> E["Collaboration and review"]
+    E --> F["Refined objective"]
+    F --> B
+```
+
 ### Graph Foundation
 
 **Purpose**

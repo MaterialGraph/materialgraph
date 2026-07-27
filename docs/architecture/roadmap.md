@@ -113,6 +113,44 @@ mean researcher or experimental validation.
 
 ---
 
+## Product Milestone — Integrated Research Workspace
+
+After the high-priority engineering baseline is stable, the next product
+milestone is to make the implemented intelligence available through the
+**MaterialGraph Research Cycle** rather than through disconnected endpoint or
+feature views.
+
+The workspace should allow a researcher to:
+
+1. start from a material;
+2. define a research objective;
+3. receive ranked, explained candidates;
+4. inspect evidence, assumptions, warnings, and missing information;
+5. explore relationships and pathways;
+6. compare alternatives without manufacturing false certainty;
+7. save the investigation and its reproducibility context;
+8. share or collaborate with appropriate access controls;
+9. refine the objective and continue the investigation.
+
+Initial delivery priorities:
+
+- material search and identity-aware selection;
+- objective editor with explicit preference and constraint semantics;
+- candidate and explanation workspace;
+- evidence and validation-gap inspection;
+- pathway and graph exploration;
+- side-by-side comparison;
+- investigation state and reproducibility metadata;
+- bounded export or sharing for controlled research review;
+- iterative objective refinement without losing prior context.
+
+This milestone should be treated as workflow integration, not as permission to
+add unrelated features. Each frontend or collaboration capability should state
+which stage of the Research Cycle it improves and how it preserves scientific
+meaning, provenance, uncertainty, and researcher authority.
+
+---
+
 ## Research Validation Phase
 
 After the high-priority engineering findings are addressed:

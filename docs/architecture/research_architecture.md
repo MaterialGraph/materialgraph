@@ -12,22 +12,46 @@ scientific correctness.
 
 ---
 
-## Researcher-in-the-Loop Workflow
+## The MaterialGraph Research Cycle
+
+The researcher-facing architecture should support one continuous investigation
+rather than expose the intelligence layers as disconnected tools.
 
 ```mermaid
 flowchart TD
-    A["Research objective"] --> B["Deterministic exploration"]
-    B --> C["Transparent opportunities"]
-    C --> D["Engineering validation"]
-    D --> E["Researcher review"]
-    E --> F["Literature, computation, or experiment"]
-    F --> G["Attributed evidence"]
-    G --> H["Reviewed, versioned improvement"]
+    A["Start from a material"] --> B["Define a research objective"]
+    B --> C["Generate ranked, explained candidates"]
+    C --> D["Inspect evidence, assumptions, and gaps"]
+    D --> E["Explore relationships and pathways"]
+    E --> F["Compare alternatives"]
+    F --> G["Save the investigation"]
+    G --> H["Share and collaborate"]
+    H --> I["Refine the objective"]
+    I --> C
+```
+
+This cycle is the primary product workflow. The deterministic intelligence
+pipeline supplies the opportunities, explanations, evidence context, and
+comparisons used within it. The researcher retains authority over selection,
+interpretation, and validation at every stage.
+
+### Researcher-in-the-loop validation flow
+
+```mermaid
+flowchart TD
+    A["Research Cycle output"] --> B["Engineering validation"]
+    B --> C["Researcher review"]
+    C --> D["Literature, computation, or experiment"]
+    D --> E["Attributed evidence"]
+    E --> F["Reviewed, versioned improvement"]
+    F --> G["Refined or new research objective"]
+    G --> A
 ```
 
 Engineering checks establish that MaterialGraph behaves as specified.
 Researchers and appropriate external methods determine whether an opportunity
-is scientifically meaningful.
+is scientifically meaningful. Reviewed evidence may strengthen future
+investigations, but it must not silently become canonical truth.
 
 ---
 
