@@ -671,3 +671,68 @@ returned:
 - Ranking: **Potentially; paths with reversed or incomplete endpoint outcomes can score lower**
 - API contract: **No structural change; numeric results and human-readable wording may change**
 - Data migration: **No**
+
+---
+
+## Canonical risk-profile scale and provenance
+
+Related findings: MG-AUD-055  
+Date: 2026-07-27  
+Release reference: Post-v1.9.18  
+Status: Resolved; production verified 2026-07-27
+
+### Before
+
+Risk-profile seeds used incompatible scales under indistinguishable metadata.
+Eight element profiles used `1–10`, while nickel used `0–1`, making stored
+scientific evidence dependent on seed execution order.
+
+### After
+
+One idempotent canonical seed uses a `1–10` scale and versioned provenance:
+`materialgraph_canonical_risk_profile_v1`. Nickel now uses canonical values
+`5, 6, 4, 7, 6` for abundance, supply risk, toxicity, recyclability, and
+geopolitical risk.
+
+Local PostgreSQL and production Neon were updated in place. Each run reported
+`Created: 0, Updated: 9`; uniqueness checks found no duplicate
+`(element_id, year)` rows.
+
+### Impact
+
+- Scientific result: **Yes, for nickel-containing materials**
+- Ranking: **Potentially, where corrected nickel evidence affects scoring**
+- API contract: **No**
+- Data migration: **Yes**
+
+---
+
+## Beneficial abundance direction in criticality
+
+Related findings: MG-AUD-064  
+Date: 2026-07-27  
+Release reference: Post-v1.9.18  
+Status: Resolved; production verified 2026-07-27
+
+### Before
+
+Raw abundance was averaged as though a higher value represented greater risk.
+More abundant elements could therefore increase criticality. Null abundance
+or recyclability could also cause arithmetic failure.
+
+### After
+
+Criticality internally uses `10 - abundance_score`, matching the declared
+beneficial direction, while API responses retain raw abundance values. Null
+dimensions remain excluded, and an all-null profile remains unknown.
+
+For production LiFePO4, element criticality scores are now Li `56`, P `38`,
+Fe `10`, and O `6`. Stoichiometric weighting produces material criticality
+`18.29`, replacing the former production value `32.0`.
+
+### Impact
+
+- Scientific result: **Yes**
+- Ranking: **Potentially, wherever criticality contributes**
+- API contract: **No structural change; numeric values may change**
+- Data migration: **No calculation migration; related seed data updated under MG-AUD-055**

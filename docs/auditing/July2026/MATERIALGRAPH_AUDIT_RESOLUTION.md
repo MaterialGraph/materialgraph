@@ -1,7 +1,7 @@
 # MaterialGraph Architecture & Implementation Audit Resolution
 
-Version: 1.6
-Last Updated: 2026-07-26
+Version: 1.7
+Last Updated: 2026-07-27
 
 ---
 
@@ -143,6 +143,221 @@ Principle 10
 Related ADR
 
 ADR-002
+
+---
+
+# MG-AUD-055
+
+Title
+
+Conflicting risk-profile seed scales produced execution-order-dependent data.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Canonical element-risk profile seed
+- `ElementRiskProfile` persistence
+- Local PostgreSQL data
+- Production Neon data
+- Criticality and downstream scientific scoring
+
+Root Cause
+
+Multiple seed definitions used the same element, year, and source identity
+while supplying incompatible numeric scales. Most element profiles used the
+intended `1–10` scale, but nickel used `0–1` values. The stored result therefore
+depended on which seed path executed last, while provenance could not
+distinguish the incompatible datasets.
+
+Scientific Impact
+
+Identically labelled risk evidence could produce materially different element,
+material, recommendation, and pathway scores. Nickel was especially affected,
+and repeated deployment or setup actions could silently alter scientific
+results.
+
+Resolution
+
+✓ Established one deterministic canonical `1–10` risk-profile dataset.
+
+✓ Added versioned provenance:
+`materialgraph_canonical_risk_profile_v1`.
+
+✓ Made the canonical seed idempotently update existing
+`(element_id, year)` profiles rather than insert duplicates.
+
+✓ Corrected nickel to canonical values: abundance `5`, supply risk `6`,
+toxicity `4`, recyclability `7`, and geopolitical risk `6`.
+
+Regression Verification
+
+✓ Local pre-remediation inventory confirmed mixed-scale data.
+
+✓ Local canonical seed reported `Created: 0` and `Updated: 9`.
+
+✓ Local post-seed inventory confirmed all nine profiles use the canonical
+scale and provenance.
+
+✓ Local uniqueness query returned `[]`.
+
+✓ Production Neon pre-remediation inventory independently confirmed the same
+mixed-scale state.
+
+✓ Production seed reported `Created: 0` and `Updated: 9`.
+
+✓ Production post-seed inventory confirmed the corrected values and uniform
+versioned provenance.
+
+Scientific Changes
+
+Nickel risk evidence changed from incompatible fractional values to the
+canonical `1–10` values. Any scientific results involving nickel can change.
+Other stored numeric values remained unchanged, while their provenance became
+explicit and versioned.
+
+Breaking API
+
+No.
+
+Database Migration
+
+Yes. Nine existing local profiles and nine existing production profiles were
+updated in place. No duplicate rows were created.
+
+Lessons Learned
+
+Scientific seed data requires a single scale contract, versioned provenance,
+and idempotent persistence. Matching element/year/source labels are not enough
+when the numeric meaning is not also controlled.
+
+Related Findings
+
+MG-AUD-064
+
+---
+
+# MG-AUD-064
+
+Title
+
+Higher abundance increased criticality despite its declared beneficial
+direction.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- MaterialCriticalityService
+- Criticality response element details
+- Material quality and recommendation inputs
+- Scientific pathway usefulness scoring
+- Criticality regression tests
+
+Root Cause
+
+`abundance_score` was averaged directly with adverse risk dimensions. Because
+higher abundance is beneficial, direct averaging made a more abundant element
+appear more critical. The same calculation also attempted arithmetic on null
+abundance or recyclability values, while an all-null profile needed to remain
+unknown.
+
+Scientific Impact
+
+Element and material criticality could move in the wrong direction. This
+propagated into quality, recommendation, comparison, and scientific-pathway
+scores that consume criticality.
+
+Resolution
+
+✓ Criticality calculation now uses `10 - abundance_score`.
+
+✓ Recyclability continues to use `10 - recyclability_score`.
+
+✓ Both beneficial-direction conversions are guarded for null values.
+
+✓ A profile with no populated criticality dimensions returns unknown rather
+than favorable zero or raising an arithmetic error.
+
+✓ API element details continue to expose raw stored abundance and
+recyclability values; inversion occurs only inside criticality calculation.
+
+Regression Verification
+
+✓ Focused criticality-service tests passed.
+
+✓ The all-null profile regression test confirms unknown criticality,
+zero evidence coverage, and a null element criticality score.
+
+✓ Raw abundance exposure is protected independently from internal inversion.
+
+✓ The scientific-pathway regression baseline was updated from `89.4` to
+`89.75` to reflect the corrected downstream calculation.
+
+✓ The full test suite passed.
+
+✓ Local and production LiFePO4 responses returned:
+
+- Li element criticality: `56`
+- P element criticality: `38`
+- Fe element criticality: `10`
+- O element criticality: `6`
+- Composition-weighted material criticality: `18.29`
+
+✓ Production evidence metadata reported complete profile and fraction coverage,
+four known elements, zero unknown elements, and
+`criticality_evidence_complete: true`.
+
+Scientific Changes
+
+Criticality now decreases as abundance increases, all else equal. The verified
+LiFePO4 material criticality changed from the former production result `32.0`
+to `18.29`. Downstream scores and rankings may change where corrected
+criticality distinguishes materials.
+
+Breaking API
+
+No structural change. Numeric criticality values and dependent scores may
+change.
+
+Database Migration
+
+No migration was required for the calculation itself. The related canonical
+risk-profile data remediation is recorded under MG-AUD-055.
+
+Lessons Learned
+
+Every scientific dimension must declare whether higher values are beneficial
+or adverse, and aggregation must normalize those directions explicitly.
+Derived risk transformations must remain separate from raw API evidence.
+
+Related Findings
+
+MG-AUD-001
+
+MG-AUD-002
+
+MG-AUD-055
 
 ---
 

@@ -1138,8 +1138,9 @@ preserved as provenance, but only distinct defects receive new canonical IDs.
 
 ### Canonical findings added by reconciliation
 
-All findings below are **Confirmed**, awaiting remediation unless an explicit
-domain or product-policy decision is later recorded.
+All findings below were **Confirmed** when added. Findings whose remediation
+has since been verified are explicitly marked as resolved in the canonical
+status updates following the table.
 
 | Canonical ID | Priority | Finding | Impact |
 |---|---:|---|---|
@@ -1183,6 +1184,42 @@ domain or product-policy decision is later recorded.
 | MG-AUD-092 | P0 | Graph-job mutation and global history lack authorization and ownership. | Callers can create work and inspect global job state without isolation. |
 | MG-AUD-093 | P1 | Public validation accepts nonexistent chemical symbols. | Invalid domain inputs enter scoring and research workflows. |
 | MG-AUD-094 | P2 | Analytical endpoints accept negative or unbounded result limits. | Negative slicing has unintended semantics and large requests are unbounded. |
+
+### Canonical status updates
+
+#### MG-AUD-055 — Resolved
+
+The conflicting risk-profile seed paths were replaced by one idempotent
+canonical dataset on a documented `1–10` scale. The seed updates existing
+`(element_id, year)` rows instead of creating execution-order-dependent
+duplicates and records versioned provenance as
+`materialgraph_canonical_risk_profile_v1`.
+
+Local PostgreSQL and production Neon inventories both initially confirmed the
+mixed-scale defect: nickel used `0–1` values while the other eight profiles
+used `1–10`. The canonical seed reported `Created: 0, Updated: 9` in both
+environments. Post-seed inventories confirmed canonical nickel values
+`5, 6, 4, 7, 6`, uniform provenance, and no duplicate
+`(element_id, year)` rows.
+
+Status: **Resolved and production verified on 2026-07-27.**
+
+#### MG-AUD-064 — Resolved
+
+Element criticality now interprets abundance in the declared beneficial
+direction by using `10 - abundance_score` internally. Recyclability retains
+the same guarded beneficial-direction conversion. Null values remain unknown,
+including profiles in which every criticality dimension is null. API element
+details continue to expose the raw stored abundance value rather than the
+derived risk contribution.
+
+Focused criticality tests and the full regression suite passed. Production
+verification for LiFePO4 returned element criticality scores of `56` for Li,
+`38` for P, `10` for Fe, and `6` for O. Stoichiometric weighting produced the
+expected material criticality score of `18.29`, with complete evidence
+coverage and no unknown elements.
+
+Status: **Resolved and production verified on 2026-07-27.**
 
 ## Maintenance rule
 
