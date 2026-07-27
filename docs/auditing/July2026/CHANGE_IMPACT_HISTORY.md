@@ -736,3 +736,73 @@ Fe `10`, and O `6`. Stoichiometric weighting produces material criticality
 - Ranking: **Potentially, wherever criticality contributes**
 - API contract: **No structural change; numeric values may change**
 - Data migration: **No calculation migration; related seed data updated under MG-AUD-055**
+
+---
+
+## Evidence-aware similarity tie ordering
+
+Related findings: MG-AUD-062  
+Date: 2026-07-27  
+Release reference: Post-v1.9.18  
+Status: Resolved; test-verified 2026-07-27
+
+### Before
+
+Within an equal-similarity group, missing criticality evidence could receive a
+favorable tie position. Public null values were preserved, but the internal
+ordering still treated uncertainty as advantageous.
+
+### After
+
+Similarity score remains primary. Equal-similarity candidates with known
+criticality evidence now precede candidates with unknown evidence. Unknown
+criticality and delta values remain null, and complete ties remain
+deterministic.
+
+Focused tests and the full regression suite passed. Development endpoint
+responses verified normal known-criticality ordering and general regression
+behavior. Because the available development records did not include an
+equal-similarity known-versus-unknown pair, controlled automated fixtures
+provide direct verification of the corrected branch.
+
+### Impact
+
+- Scientific result: **Yes; missing criticality is no longer favorable**
+- Ranking: **Yes, for equal-similarity candidates with different evidence availability**
+- API contract: **No structural change; ordering may change**
+- Data migration: **No**
+
+---
+
+## Evidence-aware candidate screening and comparison
+
+Related findings: MG-AUD-065  
+Date: 2026-07-27  
+Release reference: Post-v1.9.18  
+Status: Resolved; test-verified 2026-07-27
+
+### Before
+
+Unknown material risk produced no calculable risk penalty and could therefore
+rank ahead of known-risk evidence through the numeric screening score. Pairwise
+comparison inherited the same favorable-uncertainty behavior.
+
+### After
+
+Screening and comparison share an evidence-aware deterministic decision key.
+Known risk evidence precedes unknown risk before the remaining score and risk
+dimensions are considered. Unknown risk stays null, receives no fabricated
+penalty, and is never described as low risk. Complete-key equality remains an
+explicit, request-order-independent tie.
+
+Focused screening and comparison tests and the full regression suite passed.
+Normal development endpoints remained operational. Controlled automated
+fixtures directly verify the otherwise-equivalent known-versus-unknown branch,
+which was not present in the normal development dataset.
+
+### Impact
+
+- Scientific result: **Yes; missing risk evidence is no longer rewarded**
+- Ranking: **Yes; screening order and comparison winners can change**
+- API contract: **No structural change; ordering and reasons may change**
+- Data migration: **No**

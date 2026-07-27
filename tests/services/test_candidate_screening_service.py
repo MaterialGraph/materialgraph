@@ -178,6 +178,8 @@ def test_unknown_risk_does_not_gain_a_false_low_risk_explanation():
         )
     )
 
+    assert [result.material_id for result in results] == [1, 2]
+
     by_id = {
         result.material_id: result
         for result in results
@@ -185,7 +187,41 @@ def test_unknown_risk_does_not_gain_a_false_low_risk_explanation():
 
     assert by_id[1].risk_known is True
     assert by_id[1].risk_penalty == 10.0
-
+    
     assert by_id[2].risk_known is False
     assert by_id[2].risk_penalty == 0.0
     assert by_id[2].material_risk_score is None
+
+
+def test_screening_uses_material_id_for_deterministic_final_order():
+    material_a = _material(2, formula="A")
+    material_b = _material(1, formula="B")
+
+    service = CandidateScreeningService(
+        FakeDB([material_a, material_b])
+    )
+    service.material_risk_service = FakeRiskService(
+        {
+            1: _risk_signal(
+                1,
+                risk_score=2.0,
+                risk_known=True,
+                coverage=1.0,
+                complete=True,
+            ),
+            2: _risk_signal(
+                2,
+                risk_score=2.0,
+                risk_known=True,
+                coverage=1.0,
+                complete=True,
+            ),
+        }
+    )
+    service._get_material_element_symbols = lambda material_id: {"A"}
+
+    results = service.screen_candidates(
+        CandidateScreeningRequest(require_stable=True)
+    )
+
+    assert [result.material_id for result in results] == [1, 2]

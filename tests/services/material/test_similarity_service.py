@@ -53,3 +53,72 @@ def test_criticality_direction(
     expected_direction,
 ):
     assert service._criticality_direction(criticality_delta) == expected_direction
+
+
+def test_similarity_ranking_prefers_known_criticality_over_unknown(
+    service,
+):
+    known = {
+        "material_id": 2,
+        "similarity_score": 100.0,
+        "criticality_delta": 5.0,
+    }
+    unknown = {
+        "material_id": 1,
+        "similarity_score": 100.0,
+        "criticality_delta": None,
+    }
+
+    ranked = sorted(
+        [unknown, known],
+        key=service._similarity_ranking_key,
+        reverse=True,
+    )
+
+    assert [item["material_id"] for item in ranked] == [2, 1]
+
+
+def test_similarity_ranking_prefers_smaller_known_delta(
+    service,
+):
+    closer = {
+        "material_id": 2,
+        "similarity_score": 100.0,
+        "criticality_delta": -2.0,
+    }
+    farther = {
+        "material_id": 1,
+        "similarity_score": 100.0,
+        "criticality_delta": 5.0,
+    }
+
+    ranked = sorted(
+        [farther, closer],
+        key=service._similarity_ranking_key,
+        reverse=True,
+    )
+
+    assert [item["material_id"] for item in ranked] == [2, 1]
+
+
+def test_similarity_ranking_is_deterministic_for_complete_tie(
+    service,
+):
+    higher_id = {
+        "material_id": 20,
+        "similarity_score": 100.0,
+        "criticality_delta": -2.0,
+    }
+    lower_id = {
+        "material_id": 10,
+        "similarity_score": 100.0,
+        "criticality_delta": -2.0,
+    }
+
+    ranked = sorted(
+        [higher_id, lower_id],
+        key=service._similarity_ranking_key,
+        reverse=True,
+    )
+
+    assert [item["material_id"] for item in ranked] == [10, 20]

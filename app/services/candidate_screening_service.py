@@ -144,7 +144,7 @@ class CandidateScreeningService:
 
         ranked_results = sorted(
             results,
-            key=lambda item: item.score,
+            key=self._ranking_key,
             reverse=True,
         )
 
@@ -184,6 +184,30 @@ class CandidateScreeningService:
             "unknown_risk_elements": sorted(element_symbols),
             "risk_evidence_complete": False,
         }
+
+
+    def _decision_key(
+        self,
+        candidate: CandidateScreeningResult,
+    ) -> tuple[float, bool, float]:
+        pre_risk_score = candidate.score + candidate.risk_penalty
+
+        return (
+            pre_risk_score,
+            candidate.risk_known,
+            candidate.score,
+        )
+
+
+    def _ranking_key(
+        self,
+        candidate: CandidateScreeningResult,
+    ) -> tuple[float, bool, float, int]:
+        return (
+            *self._decision_key(candidate),
+            -candidate.material_id,
+        )
+
 
     def _score_material(
         self,

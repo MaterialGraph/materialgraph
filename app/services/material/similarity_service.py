@@ -66,10 +66,7 @@ class MaterialSimilarityService:
             )
 
         similar_materials.sort(
-            key=lambda item: (
-                item["similarity_score"],
-                -abs(item["criticality_delta"] or 0),
-            ),
+            key=self._similarity_ranking_key,
             reverse=True,
         )
 
@@ -108,6 +105,25 @@ class MaterialSimilarityService:
             "criticality_score": None,
             "similar_materials": [],
         }
+
+    
+    def _similarity_ranking_key(
+        self,
+        item: dict,
+    ) -> tuple[float, bool, float, int]:
+        criticality_delta = item["criticality_delta"]
+
+        return (
+            item["similarity_score"],
+            criticality_delta is not None,
+            (
+                -abs(criticality_delta)
+                if criticality_delta is not None
+                else 0.0
+            ),
+            -item["material_id"],
+        )
+
 
     def _calculate_criticality_delta(
         self,

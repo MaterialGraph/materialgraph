@@ -1,10 +1,43 @@
-from app.schemas.comparison import (
-    CandidateComparisonRequest,
-)
+from app.schemas.comparison import CandidateComparisonRequest
 from app.schemas.screening import CandidateScreeningResult
 from app.services.candidate_comparison_service import (
     CandidateComparisonService,
 )
+from app.services.candidate_screening_service import (
+    CandidateScreeningService,
+)
+
+
+class FakeScreeningService:
+    def __init__(
+        self,
+        candidates: list[CandidateScreeningResult],
+    ) -> None:
+        self.candidates = candidates
+
+    def screen_candidates(
+        self,
+        request,
+    ) -> list[CandidateScreeningResult]:
+        return self.candidates
+
+    def _decision_key(
+        self,
+        candidate: CandidateScreeningResult,
+    ) -> tuple[float, bool, float]:
+        return CandidateScreeningService._decision_key(
+            self,
+            candidate,
+        )
+
+    def _ranking_key(
+        self,
+        candidate: CandidateScreeningResult,
+    ) -> tuple[float, bool, float, int]:
+        return CandidateScreeningService._ranking_key(
+            self,
+            candidate,
+        )
 
 
 def _candidate(
@@ -23,17 +56,11 @@ def _candidate(
         score=score,
         material_risk_score=risk_score,
         risk_known=risk_known,
-        risk_profile_coverage=(
-            1.0 if risk_known else 0.0
-        ),
-        known_risk_element_count=(
-            1 if risk_known else 0
-        ),
+        risk_profile_coverage=1.0 if risk_known else 0.0,
+        known_risk_element_count=1 if risk_known else 0,
         total_element_count=1,
         risk_evidence_complete=risk_known,
-        unknown_risk_elements=(
-            [] if risk_known else [formula]
-        ),
+        unknown_risk_elements=[] if risk_known else [formula],
         risk_penalty=(
             risk_score * 5
             if risk_known and risk_score is not None
@@ -87,7 +114,7 @@ def test_compare_candidates_returns_none_for_missing_material(
     assert result is None
 
 
-def test_compare_candidates_returns_explicit_tie(monkeypatch):
+def test_compare_candidates_returns_explicit_tie():
     service = CandidateComparisonService.__new__(
         CandidateComparisonService
     )
@@ -103,11 +130,9 @@ def test_compare_candidates_returns_explicit_tie(monkeypatch):
         score=70.0,
     )
 
-    class FakeScreeningService:
-        def screen_candidates(self, request):
-            return [material_a, material_b]
-
-    service.screening_service = FakeScreeningService()
+    service.screening_service = FakeScreeningService(
+        [material_a, material_b]
+    )
 
     result = service.compare_candidates(
         CandidateComparisonRequest(
@@ -132,8 +157,7 @@ def test_compare_candidates_returns_explicit_tie(monkeypatch):
         for reason in result.reasons
     )
     assert any(
-        "neither candidate"
-        in reason.lower()
+        "neither candidate" in reason.lower()
         for reason in result.reasons
     )
 
@@ -154,11 +178,9 @@ def test_tie_result_is_independent_of_request_order():
         score=80.0,
     )
 
-    class FakeScreeningService:
-        def screen_candidates(self, request):
-            return [material_a, material_b]
-
-    service.screening_service = FakeScreeningService()
+    service.screening_service = FakeScreeningService(
+        [material_a, material_b]
+    )
 
     first = service.compare_candidates(
         CandidateComparisonRequest(
@@ -199,7 +221,6 @@ def test_comparison_preserves_unknown_risk_as_none():
         risk_score=None,
         risk_known=False,
     )
-
     known_candidate = _candidate(
         material_id=2,
         formula="B",
@@ -208,14 +229,9 @@ def test_comparison_preserves_unknown_risk_as_none():
         risk_known=True,
     )
 
-    class FakeScreeningService:
-        def screen_candidates(self, request):
-            return [
-                unknown_candidate,
-                known_candidate,
-            ]
-
-    service.screening_service = FakeScreeningService()
+    service.screening_service = FakeScreeningService(
+        [unknown_candidate, known_candidate]
+    )
 
     result = service.compare_candidates(
         CandidateComparisonRequest(
@@ -225,10 +241,15 @@ def test_comparison_preserves_unknown_risk_as_none():
     )
 
     assert result is not None
+    assert result.comparison_type == "winner"
     assert result.material_a_risk_score is None
     assert result.material_b_risk_score == 2.0
-    assert result.winner_material_id == 1
+    assert result.winner_material_id == 2
 
+    assert any(
+        "known evidence" in reason.lower()
+        for reason in result.reasons
+    )
     assert not any(
         "lower material risk score" in reason.lower()
         for reason in result.reasons
@@ -247,7 +268,6 @@ def test_comparison_does_not_claim_unknown_risk_is_lower():
         risk_score=None,
         risk_known=False,
     )
-
     known_candidate = _candidate(
         material_id=2,
         formula="B",
@@ -267,3 +287,84 @@ def test_comparison_does_not_claim_unknown_risk_is_lower():
         "lower material risk score" in reason.lower()
         for reason in reasons
     )
+
+
+def test_equal_scores_with_different_evidence_are_not_a_tie():
+    service = CandidateComparisonService.__new__(
+        CandidateComparisonService
+    )
+
+    unknown_candidate = _candidate(
+        material_id=1,
+        formula="Unknown",
+        score=60.0,
+        risk_score=None,
+        risk_known=False,
+    )
+    known_candidate = _candidate(
+        material_id=2,
+        formula="Known",
+        score=60.0,
+        risk_score=2.0,
+        risk_known=True,
+    )
+
+    service.screening_service = FakeScreeningService(
+        [unknown_candidate, known_candidate]
+    )
+
+    result = service.compare_candidates(
+        CandidateComparisonRequest(
+            material_a_id=1,
+            material_b_id=2,
+        )
+    )
+
+    assert result is not None
+    assert result.comparison_type == "winner"
+    assert result.winner_material_id == 2
+    assert result.material_a_risk_score is None
+    assert result.material_b_risk_score == 2.0
+
+    assert any(
+        "known evidence" in reason.lower()
+        for reason in result.reasons
+    )
+
+
+def test_complete_decision_key_tie_remains_explicit_tie():
+    service = CandidateComparisonService.__new__(
+        CandidateComparisonService
+    )
+
+    material_a = _candidate(
+        material_id=30,
+        formula="A",
+        score=60.0,
+        risk_score=2.0,
+        risk_known=True,
+    )
+    material_b = _candidate(
+        material_id=40,
+        formula="B",
+        score=60.0,
+        risk_score=2.0,
+        risk_known=True,
+    )
+
+    service.screening_service = FakeScreeningService(
+        [material_a, material_b]
+    )
+
+    result = service.compare_candidates(
+        CandidateComparisonRequest(
+            material_a_id=30,
+            material_b_id=40,
+        )
+    )
+
+    assert result is not None
+    assert result.comparison_type == "tie"
+    assert result.winner_material_id is None
+    assert result.tied_material_ids == [30, 40]
+    assert result.score_difference == 0.0

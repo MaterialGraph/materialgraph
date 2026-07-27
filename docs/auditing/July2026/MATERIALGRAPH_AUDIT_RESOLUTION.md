@@ -146,6 +146,217 @@ ADR-002
 
 ---
 
+# MG-AUD-062
+
+Title
+
+Missing criticality evidence received favorable tie ordering.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- SimilarityService
+- Similar-material ranking
+- Recommendation and discovery consumers of similarity results
+
+Root Cause
+
+The similarity tie-break key treated a missing criticality delta as
+numerically favorable. Although the public nullable fields preserved the
+absence of evidence, internal ordering could still place an unknown candidate
+ahead of a candidate with known positive criticality evidence.
+
+Scientific Impact
+
+Missing criticality evidence could be interpreted operationally as preferable
+evidence. This made ranking confidence inconsistent with the public null
+semantics.
+
+Resolution
+
+✓ Kept similarity score as the primary ranking criterion.
+
+✓ Added evidence availability to the deterministic tie-break decision.
+
+✓ Ranked known criticality evidence before unknown evidence within an equal
+similarity group.
+
+✓ Preserved unknown `criticality_score` and `criticality_delta` values as null
+and retained the `UNKNOWN` direction.
+
+✓ Preserved deterministic ordering for complete decision-key ties.
+
+Regression Verification
+
+✓ Focused similarity tests covered equal-similarity known-versus-unknown
+ordering and nullable output semantics.
+
+✓ The full regression suite passed.
+
+✓ Development similar-material and recommendation responses confirmed
+normal known-criticality ordering, deterministic complete ties, internally
+consistent deltas and directions, and downstream regression safety.
+
+Verification Scope Note
+
+The available development records all exposed known criticality. Consequently,
+the endpoint responses did not directly contain an equal-similarity
+known-versus-unknown pair. The exact corrected branch is verified by controlled
+automated fixtures; endpoint checks establish deployment-independent general
+regression behavior only. No artificial unknown-evidence record was added to
+production.
+
+Scientific Changes
+
+Ranking now reflects evidence availability without inventing a scientific
+value for missing criticality.
+
+Breaking API
+
+No. Nullable fields and response structure are unchanged; ordering can change
+for equal-similarity candidates with different evidence availability.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Preserving null in a response is insufficient when a ranking key separately
+converts missing evidence into a favorable position. Evidence availability
+must participate explicitly in every deterministic decision key.
+
+Related Findings
+
+MG-AUD-003
+
+MG-AUD-025
+
+MG-AUD-065
+
+---
+
+# MG-AUD-065
+
+Title
+
+Unknown risk received a favorable screening rank.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- CandidateScreeningService
+- CandidateComparisonService
+- Candidate screening and material comparison responses
+
+Root Cause
+
+Screening preserved nullable material risk but ranked primarily by the numeric
+screening score. Because an unknown-risk candidate received no calculable risk
+penalty, missing evidence could increase its numeric position relative to a
+candidate with known risk.
+
+Scientific Impact
+
+The system could operationally reward uncertainty and present missing supply-
+risk evidence as though it supported a safer recommendation.
+
+Resolution
+
+✓ Introduced one shared evidence-aware deterministic decision key for
+screening and pairwise comparison.
+
+✓ Ranked known risk evidence before unknown risk evidence before applying the
+remaining score and risk tie-break dimensions.
+
+✓ Preserved `material_risk_score: null`, `risk_known: false`,
+`risk_evidence_complete: false`, and a zero uncomputed risk penalty for unknown
+evidence.
+
+✓ Prevented explanations from describing unknown risk as low or lower risk.
+
+✓ Added comparison reasons that identify known evidence when it determines the
+winner.
+
+✓ Preserved explicit, request-order-independent ties when the complete
+decision keys are equal.
+
+Regression Verification
+
+✓ Focused screening tests covered known-versus-unknown ordering and null
+preservation.
+
+✓ Focused comparison tests covered evidence-aware winners, explanation
+semantics, complete-key ties, and request-order independence.
+
+✓ The full regression suite passed.
+
+✓ Development discovery, similarity, recommendation, research-objective, and
+community responses remained operational after the ranking correction.
+
+Verification Scope Note
+
+The normal development materials used for endpoint checks had known risk
+evidence. The exact otherwise-equivalent known-versus-unknown decision was
+therefore verified with controlled automated fixtures rather than by adding
+artificial unknown-risk records to production. Endpoint responses provide
+general regression evidence, not direct coverage of that branch.
+
+Scientific Changes
+
+Missing risk evidence is no longer favorable. No artificial risk value or
+penalty is assigned; ordering instead communicates the relative strength of
+the available evidence.
+
+Breaking API
+
+No structural change. Candidate ordering, comparison winners, and explanatory
+reasons can change when evidence availability differs.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+A zero uncomputed penalty must not be interpreted as measured zero risk.
+Nullable scientific evidence requires both honest serialization and
+evidence-aware decision semantics.
+
+Related Findings
+
+MG-AUD-003
+
+MG-AUD-025
+
+MG-AUD-062
+
+MG-AUD-066
+
+---
+
 # MG-AUD-055
 
 Title

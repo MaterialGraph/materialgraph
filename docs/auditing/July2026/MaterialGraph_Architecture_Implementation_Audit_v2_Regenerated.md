@@ -1221,6 +1221,50 @@ coverage and no unknown elements.
 
 Status: **Resolved and production verified on 2026-07-27.**
 
+#### MG-AUD-062 — Resolved
+
+Similarity tie ordering now distinguishes known criticality evidence from
+unknown evidence. Similarity score remains the primary ranking criterion; when
+similarity scores tie, candidates with known criticality deltas precede
+candidates whose criticality is unavailable. Unknown values remain null and
+are not converted into favorable numeric deltas.
+
+Focused similarity-service tests and the full regression suite passed.
+Development endpoint responses confirmed normal known-criticality ordering,
+deterministic complete-tie ordering, null-safe downstream operation, and no
+general similarity regression. The available development dataset did not
+contain an equal-similarity known-versus-unknown pair, so that exact branch is
+verified by targeted automated tests rather than direct endpoint data.
+
+Status: **Resolved and test-verified on 2026-07-27; endpoint regression
+verified with controlled unknown-evidence coverage provided by automated
+fixtures.**
+
+#### MG-AUD-065 — Resolved
+
+Candidate screening and comparison now use an evidence-aware deterministic
+decision key. Candidates with known material-risk evidence precede otherwise
+comparable candidates with unknown risk, preventing missing evidence from
+receiving a favorable rank. Unknown risk remains represented as
+`material_risk_score: null`, `risk_known: false`, and a zero calculated penalty
+that means “not calculable,” not “zero risk.”
+
+Candidate comparison applies the same decision semantics. A known-evidence
+candidate wins over an otherwise comparable unknown-evidence candidate, and
+the explanation identifies the evidence distinction without claiming that
+unknown risk is lower. Exact decision-key equality remains an explicit,
+request-order-independent tie.
+
+Focused screening and comparison tests and the full regression suite passed.
+Available development endpoint responses exercised normal known-risk behavior
+but did not contain a controlled otherwise-equivalent known-versus-unknown
+pair; the exact uncertainty-ordering branch is therefore verified through
+targeted automated fixtures.
+
+Status: **Resolved and test-verified on 2026-07-27; endpoint regression
+verified with controlled unknown-evidence coverage provided by automated
+fixtures.**
+
 ## Maintenance rule
 
 For future audit work:

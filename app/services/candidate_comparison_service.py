@@ -55,7 +55,14 @@ class CandidateComparisonService:
             3,
         )
 
-        if score_difference == 0:
+        material_a_decision_key = self.screening_service._decision_key(
+            material_a
+        )
+        material_b_decision_key = self.screening_service._decision_key(
+            material_b
+        )
+
+        if material_a_decision_key == material_b_decision_key:
             return self._build_tie_result(
                 material_a=material_a,
                 material_b=material_b,
@@ -157,10 +164,14 @@ class CandidateComparisonService:
         CandidateScreeningResult,
         CandidateScreeningResult,
     ]:
-        if material_a.score > material_b.score:
+        material_a_key = self.screening_service._ranking_key(material_a)
+        material_b_key = self.screening_service._ranking_key(material_b)
+
+        if material_a_key > material_b_key:
             return material_a, material_b
 
         return material_b, material_a
+
 
     def _build_reasons(
         self,
@@ -205,6 +216,13 @@ class CandidateComparisonService:
             reasons.append(
                 f"{winner.pretty_formula} avoids excluded "
                 f"element(s): {', '.join(avoid_elements)}"
+            )
+
+        if winner.risk_known and not loser.risk_known:
+            reasons.append(
+                f"{winner.pretty_formula} is preferred because its material "
+                "risk is supported by known evidence, while the competing "
+                "candidate has unknown risk evidence"
             )
 
         if winner.score > loser.score:
