@@ -21,6 +21,7 @@ class ScenarioPolicyResult:
 
 
 class ScenarioPolicyEvaluator:
+    DEFAULT_SUPPLY_RISK_EXPOSURE_WEIGHT = 20.0
     DEFAULT_AVOID_ELEMENT_PENALTY = 20.0
     DEFAULT_PREFER_ELEMENT_BONUS = 10.0
 
@@ -33,10 +34,23 @@ class ScenarioPolicyEvaluator:
         score = recommendation_score
         reasons: list[str] = []
 
-        if policy.supply_risk_multiplier != 1.0:
-            score *= policy.supply_risk_multiplier
+        if (
+            policy.supply_risk_multiplier != 1.0
+            and contains_element(candidate_formula, policy.element)
+        ):
+            risk_change = policy.supply_risk_multiplier - 1.0
+            supply_risk_adjustment = (
+                self.DEFAULT_SUPPLY_RISK_EXPOSURE_WEIGHT * risk_change
+            )
+            score -= supply_risk_adjustment
+
+            adjustment_type = (
+                "penalty" if supply_risk_adjustment >= 0 else "bonus"
+            )
             reasons.append(
-                f"supply risk multiplier {policy.supply_risk_multiplier} applied"
+                f"supply risk multiplier {policy.supply_risk_multiplier} "
+                f"for element {policy.element}, {adjustment_type} "
+                f"{abs(round(supply_risk_adjustment, 2))}"
             )
 
         avoided = [

@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 25
-- **Not resolved:** 69
+- **Resolved:** 27
+- **Not resolved:** 67
 
 ## Correctness and Data Integrity
 
@@ -1292,6 +1292,44 @@ scenario-ranking, and sensitivity regression tests passed. Known-risk
 calculations remain unchanged. This remediation addresses nullable-risk
 correctness only; `MG-AUD-068` and `MG-AUD-069` continue to track the
 element-specific and scenario-type semantics.
+
+Status: **Resolved and test-verified on 2026-07-28.**
+
+#### MG-AUD-068 — Resolved
+
+Scenario-policy evaluation now connects the declared supply-risk element to the
+actual adjustment. A supply-risk increase affects only a candidate whose
+composition contains the named element, and the adjustment is a transparent,
+fixed-weight penalty rather than a multiplier on the entire recommendation
+score. Candidates without the named element receive no supply-risk adjustment.
+Existing avoid- and prefer-element adjustments continue to compose with the
+scenario result.
+
+Focused scenario-policy tests verified affected and unaffected compositions,
+penalty direction, explanatory reasons, combined policy behavior, and
+`scenario_delta` consistency. The related scenario and screening regression
+tests passed.
+
+Status: **Resolved and test-verified on 2026-07-28.**
+
+#### MG-AUD-069 — Resolved
+
+Sensitivity analysis now derives distinct material-level supply-risk and
+geopolitical-risk baselines from their corresponding element-level evidence.
+Each scenario adjusts only its named dimension and exposes the dimension,
+baseline component value, and adjusted component value. Equal multipliers no
+longer imply identical results unless the underlying component evidence is
+itself equal.
+
+Missing evidence remains dimension-specific and nullable. A missing supply-risk
+component does not erase available geopolitical evidence, and vice versa.
+Completely unavailable evidence retains the `MG-AUD-067` contract:
+`sensitivity_level: "UNKNOWN"` with nullable derived results.
+
+Focused sensitivity tests verified distinct component baselines and deltas,
+partial missing-evidence behavior, and the all-unknown contract. The related
+scenario-ranking, scenario-policy, candidate-screening, and sensitivity
+regression tests passed.
 
 Status: **Resolved and test-verified on 2026-07-28.**
 

@@ -544,6 +544,203 @@ MG-AUD-069
 
 ---
 
+# MG-AUD-068
+
+Title
+
+Supply-risk scenario adjustment was disconnected from the named element.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- ScenarioPolicyEvaluator
+- Scenario-policy scoring and explanations
+- Scenario-policy regression tests
+
+Root Cause
+
+Scenario-policy evaluation multiplied the full recommendation score by the
+supply-risk multiplier without checking whether the candidate contained the
+policy's named element. A multiplier above `1.0` therefore increased the score
+and could reward increased risk, including for candidates with no exposure to
+the named element.
+
+Scientific Impact
+
+The public scenario input implied element-specific supply-risk exposure, but
+the computation was global and directionally inverted. This could produce
+recommendations whose ranking contradicted the scenario being evaluated.
+
+Resolution
+
+✓ Applied supply-risk adjustment only when the candidate composition contains
+the named element.
+
+✓ Converted an increase above the neutral multiplier into a deterministic
+penalty rather than multiplying the full recommendation score.
+
+✓ Used a fixed, auditable exposure weight so unrelated recommendation
+components do not amplify the adjustment.
+
+✓ Left candidates without the named element unchanged by the supply-risk
+adjustment.
+
+✓ Preserved independent avoid- and prefer-element adjustments and exact
+`scenario_delta` calculation.
+
+Regression Verification
+
+✓ Focused tests covered affected and unaffected candidate formulas, penalty
+direction, explanation content, combined policy adjustments, and delta
+consistency.
+
+✓ The related scenario-policy, sensitivity, scenario-ranking, and
+candidate-screening regression tests passed.
+
+Scientific Changes
+
+The scenario now models declared element exposure consistently and treats
+increased supply risk as adverse. The fixed exposure weight is an explicit
+deterministic policy parameter; it is not presented as experimentally
+validated materials science.
+
+Breaking API
+
+No structural breaking change. Scenario scores, deltas, and reasons can change
+because the adjustment is now element-specific and directionally correct.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Scenario inputs must be connected to the exact scientific entity they name.
+Risk multipliers should modify an explicit risk contribution, not scale an
+entire composite recommendation score.
+
+Related Findings
+
+MG-AUD-004
+
+MG-AUD-067
+
+MG-AUD-069
+
+---
+
+# MG-AUD-069
+
+Title
+
+Supply-risk and geopolitical sensitivity scenarios used identical
+calculations.
+
+Severity
+
+High
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Sensitivity response schema
+- SensitivityAnalysisService
+- MaterialRiskService component evidence consumption
+- Sensitivity-analysis regression tests
+
+Root Cause
+
+Both named scenario types multiplied the same aggregate material-risk score.
+The calculation did not retrieve or use the separate element-level
+`supply_risk_score` and `geopolitical_risk_score` evidence already available
+from `MaterialRiskService`.
+
+Scientific Impact
+
+Distinct analytical claims produced identical computations, so the response
+could not show whether a material was more sensitive to supply-risk changes or
+to geopolitical-risk changes.
+
+Resolution
+
+✓ Derived separate material-level supply-risk and geopolitical-risk baselines
+from the available element-level values for each dimension.
+
+✓ Made every scenario adjust only its named risk dimension.
+
+✓ Extended scenario results with the adjusted risk dimension and its baseline
+and adjusted component values.
+
+✓ Extended the overall response with separate baseline supply-risk and
+geopolitical-risk scores while retaining the aggregate baseline for
+compatibility.
+
+✓ Preserved dimension-specific missing evidence as `null`; missing evidence in
+one dimension does not discard valid evidence in the other.
+
+✓ Preserved the `MG-AUD-067` all-unknown contract with
+`sensitivity_level: "UNKNOWN"` and nullable derived results.
+
+Regression Verification
+
+✓ Focused tests covered distinct component baselines, dimension-specific
+adjustments, partial missing evidence, completely unknown evidence, and
+different deltas under equal multipliers when the baselines differ.
+
+✓ The related sensitivity, scenario-policy, scenario-ranking, and
+candidate-screening regression tests passed.
+
+Scientific Changes
+
+Sensitivity output now distinguishes supply-risk evidence from geopolitical
+risk evidence. Component aggregation uses the mean of available element-level
+values for the corresponding dimension and preserves missing evidence rather
+than inferring it from the aggregate score.
+
+Breaking API
+
+Additive response-schema change. New dimension and component-baseline fields
+are exposed. Existing aggregate baseline fields remain available. Scenario
+numeric results can change because they now use the correct component.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Labels do not create analytical distinctions. Each named scenario dimension
+must trace to its own evidence and calculation, and uncertainty must propagate
+at the same dimensional granularity.
+
+Related Findings
+
+MG-AUD-025
+
+MG-AUD-067
+
+MG-AUD-068
+
+---
+
 # MG-AUD-055
 
 Title

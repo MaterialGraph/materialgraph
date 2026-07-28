@@ -847,3 +847,46 @@ and `MG-AUD-069`.
 - Ranking: **No intended change for materials with known risk**
 - API contract: **No breaking structural change; unknown derived sensitivity values are nullable and use `UNKNOWN` classification**
 - Data migration: **No**
+
+---
+
+## Element-specific scenario policy and dimension-specific sensitivity
+
+Related findings: MG-AUD-068, MG-AUD-069  
+Date: 2026-07-28  
+Release reference: Post-v1.9.18  
+Status: Resolved; test-verified 2026-07-28
+
+### Before
+
+Scenario-policy evaluation multiplied the entire recommendation score by the
+supply-risk multiplier, regardless of whether the candidate contained the
+named element. A multiplier above `1.0` could therefore reward increased risk.
+
+Sensitivity analysis applied supply-risk and geopolitical-risk scenario names
+to identical calculations over the same aggregate material-risk score. The
+underlying dimension-specific evidence was not used.
+
+### After
+
+Supply-risk policy adjustment applies only to candidates containing the named
+element. Increased exposure produces a fixed-weight, auditable penalty;
+unaffected candidates receive no supply-risk adjustment. Existing avoid- and
+prefer-element adjustments remain independent.
+
+Sensitivity analysis derives separate supply-risk and geopolitical-risk
+baselines from their corresponding element-level evidence. Each scenario
+adjusts only its named dimension and reports the dimension, baseline component,
+and adjusted component. Partial missing evidence remains local to the affected
+dimension, while completely unavailable evidence retains
+`sensitivity_level: "UNKNOWN"` and nullable derived values.
+
+Focused scenario-policy and sensitivity-analysis tests passed. The related
+scenario-ranking and candidate-screening regression tests also passed.
+
+### Impact
+
+- Scientific result: **Yes; scenario outputs now reflect the named element and risk dimension**
+- Ranking: **Yes; scenario scores can change because increased risk is penalized only for exposed candidates**
+- API contract: **Additive sensitivity fields; existing aggregate baseline retained**
+- Data migration: **No**

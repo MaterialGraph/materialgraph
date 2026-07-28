@@ -11,6 +11,62 @@ def evaluator():
     return ScenarioPolicyEvaluator()
 
 
+def test_supply_risk_increase_penalizes_candidate_containing_named_element(
+    evaluator,
+):
+    result = evaluator.evaluate(
+        recommendation_score=100.0,
+        candidate_formula="LiFePO4",
+        policy=ScenarioPolicy(
+            element="Li",
+            supply_risk_multiplier=1.5,
+        ),
+    )
+
+    assert result.scenario_score == 90.0
+    assert result.scenario_delta == -10.0
+    assert (
+        "supply risk multiplier 1.5 for element Li, penalty 10.0"
+        in result.scenario_reason
+    )
+    assert "final scenario penalty 10.0" in result.scenario_reason
+
+
+def test_supply_risk_change_does_not_adjust_unexposed_candidate(evaluator):
+    result = evaluator.evaluate(
+        recommendation_score=100.0,
+        candidate_formula="NaFePO4",
+        policy=ScenarioPolicy(
+            element="Li",
+            supply_risk_multiplier=1.5,
+        ),
+    )
+
+    assert result.scenario_score == 100.0
+    assert result.scenario_delta == 0.0
+    assert result.scenario_reason == "no final scenario adjustment"
+
+
+def test_supply_risk_adjustment_combines_with_avoid_and_prefer_rules(evaluator):
+    result = evaluator.evaluate(
+        recommendation_score=100.0,
+        candidate_formula="LiNaFePO4",
+        policy=ScenarioPolicy(
+            element="Li",
+            supply_risk_multiplier=1.5,
+            avoid_elements=["Li"],
+            prefer_elements=["Na"],
+        ),
+    )
+
+    assert result.scenario_score == 80.0
+    assert result.scenario_delta == -20.0
+    assert "element Li, penalty 10.0" in result.scenario_reason
+    assert "contains avoided element Li, penalty 20.0" in result.scenario_reason
+    assert "contains preferred element Na, bonus 10.0" in result.scenario_reason
+    assert "final scenario penalty 20.0" in result.scenario_reason
+
+
 def test_preferred_element_produces_positive_delta_and_bonus_reason(evaluator):
     result = evaluator.evaluate(
         recommendation_score=100.0,
