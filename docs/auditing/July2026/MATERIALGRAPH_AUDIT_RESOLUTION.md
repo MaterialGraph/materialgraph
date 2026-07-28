@@ -146,6 +146,209 @@ ADR-002
 
 ---
 
+# MG-AUD-074
+
+Title
+
+Discovery-chain `max_hops` behaved as an exact required depth.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- DiscoveryChainService
+- Discovery chain endpoint
+- ScientificPathwayAnalysisService regression expectations
+- Discovery chain and research service tests
+
+Root Cause
+
+`DiscoveryChainService._build_chains()` added a chain to the result only when
+its transition count equaled `max_hops`. The implementation therefore treated
+the request value as an exact target depth rather than an upper bound. Valid
+shorter paths disappeared when expansion ended early because of a dead end,
+cycle prevention, transition rejection, or the result topology itself.
+
+Scientific Impact
+
+Researchers could be told that no pathway existed even when a valid path was
+available within the requested hop budget. Downstream research ranking also
+could not compare scientifically useful shorter paths against longer paths.
+
+Resolution
+
+✓ Record every valid newly created non-zero-hop chain.
+
+✓ Continue expanding a chain only while its hop count remains below
+`max_hops`.
+
+✓ Preserve cycle prevention, transition validation, deterministic behavior,
+and the exclusion of the source-only path.
+
+✓ Preserve existing public response fields and route/schema contracts.
+
+Regression Verification
+
+✓ Focused tests verified coexistence of shorter and maximum-depth chains,
+dead-end retention, retention when all continuations are invalid or cyclic,
+zero-hop exclusion, and strict enforcement of the hop ceiling.
+
+✓ The full regression suite passed.
+
+✓ The scientific-pathway regression was updated from `89.75` to `93.75`
+because a valid one-hop opportunity can now rank ahead of the former two-hop
+opportunity. The exposed score remains the rounded sum of its unchanged
+breakdown components.
+
+Endpoint Verification
+
+✓ A development request using `max_hops=2` and `limit=20` returned five
+one-hop and fifteen two-hop chains.
+
+✓ No result exceeded two hops, no zero-hop chain was returned, and no path
+revisited a material.
+
+✓ For every returned chain, material and transition counts matched
+`hop_count`, and transition endpoints matched consecutive materials.
+
+✓ Representative results included `5 → 6` and `5 → 6 → 7`.
+
+Scientific Changes
+
+The candidate and transition rules are unchanged. The result set can now
+include valid shorter pathways, and those pathways can change downstream
+ranking when they are more efficient.
+
+Breaking API
+
+No structural change. Response contents and ordering can change because valid
+shorter chains are no longer omitted.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+A hop limit is a resource bound unless the public contract explicitly defines
+an exact depth. Enumeration tests must cover shorter valid paths, dead ends,
+invalid continuations, and the maximum boundary.
+
+Related Findings
+
+MG-AUD-075
+
+MG-AUD-084
+
+---
+
+# MG-AUD-075
+
+Title
+
+Hop-bounded weighted search pruned valid shallower states.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- DiscoveryGraphAlgorithmsService
+- Weighted shortest-path search
+- Discovery graph-algorithm tests
+
+Root Cause
+
+Weighted shortest-path search stored one best cost per material ID. Under a hop
+limit, material identity alone is not a complete search state: reaching the
+same material at different depths leaves different remaining hop capacity. A
+cheaper deep arrival could overwrite or suppress a costlier shallow arrival
+that was the only state capable of reaching the target within `max_depth`.
+
+Scientific Impact
+
+A valid bounded pathway could be reported as unavailable because an internally
+cheaper route consumed too much of the hop budget. This made weighted traversal
+incorrect under the public depth constraint.
+
+Resolution
+
+✓ Key best-cost state by `(material_id, depth)`.
+
+✓ Retain independent costs for arrivals at the same material with different
+consumed hop counts.
+
+✓ Compare popped queue entries with the matching depth-aware state and skip
+stale entries.
+
+✓ Preserve the existing route and response contracts.
+
+Regression Verification
+
+✓ A targeted competing-route fixture verifies that a cheaper depth-two arrival
+cannot suppress a costlier depth-one arrival that can still reach the target.
+
+✓ Tests verify that the returned weighted path respects `max_depth`.
+
+✓ Related chain, element-membership, graph-algorithm, path-ranking, research
+service, and full regression suites passed.
+
+Verification Scope Note
+
+The defect depends on controlled competing arrivals at the same internal node
+with different depths and costs. Ordinary endpoint data does not reliably
+contain that topology, so the decisive behavior is verified by the targeted
+automated fixture rather than inferred from a normal endpoint response.
+
+Scientific Changes
+
+Edge weights and path cost calculations are unchanged. The search now preserves
+all cost states necessary for correct hop-bounded traversal, so the selected
+path can change when the previous implementation incorrectly pruned a viable
+shallower state.
+
+Breaking API
+
+No structural change. Corrected bounded search can change which path is
+returned.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Resource-constrained shortest-path state must include every resource dimension
+that affects future feasibility. Cost dominance at one depth does not imply
+dominance at another depth.
+
+Related Findings
+
+MG-AUD-074
+
+MG-AUD-084
+
+---
+
 # MG-AUD-062
 
 Title

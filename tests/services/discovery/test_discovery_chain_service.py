@@ -1,3 +1,25 @@
+from types import SimpleNamespace
+
+
+def _candidate(material_id):
+    return {
+        "material_id": material_id,
+        "mp_id": f"mp-{material_id}",
+        "pretty_formula": f"M{material_id}",
+        "formula": f"M{material_id}",
+    }
+
+
+def _transition(from_material, to_candidate):
+    return {
+        "from_material_id": from_material["material_id"],
+        "to_material_id": to_candidate["material_id"],
+        "transition_type": "shared_chemistry",
+        "reason": "Test transition.",
+        "preserved_framework": ["O"],
+    }
+
+
 def test_discovery_chains_returns_valid_response(db_session):
     from app.services.discovery.chain_service import DiscoveryChainService
 
@@ -94,3 +116,140 @@ def test_discovery_chains_missing_material_returns_empty_response(db_session):
     assert result["mp_id"] is None
     assert result["base_formula"] is None
     assert result["chains"] == []
+
+
+def test_build_chains_treats_max_hops_as_upper_bound(
+    db_session,
+    monkeypatch,
+):
+    from app.services.discovery.chain_service import DiscoveryChainService
+
+    service = DiscoveryChainService(db_session)
+    candidates = {
+        1: [_candidate(2)],
+        2: [_candidate(3)],
+        3: [],
+    }
+
+    monkeypatch.setattr(
+        service,
+        "_get_next_candidates",
+        lambda material_id, **_: candidates[material_id],
+    )
+    monkeypatch.setattr(
+        service,
+        "_build_transition",
+        lambda from_material, to_candidate, **_: _transition(
+            from_material,
+            to_candidate,
+        ),
+    )
+
+    chains = service._build_chains(
+        base_material=SimpleNamespace(
+            id=1,
+            mp_id="mp-1",
+            pretty_formula="M1",
+            formula="M1",
+        ),
+        elements_map={},
+        avoid_elements=frozenset(),
+        prefer_elements=frozenset(),
+        max_hops=2,
+        limit=10,
+    )
+
+    assert [chain["hop_count"] for chain in chains] == [1, 2]
+    assert [
+        [material["material_id"] for material in chain["materials"]]
+        for chain in chains
+    ] == [[1, 2], [1, 2, 3]]
+
+
+def test_build_chains_retains_dead_end_prefix(
+    db_session,
+    monkeypatch,
+):
+    from app.services.discovery.chain_service import DiscoveryChainService
+
+    service = DiscoveryChainService(db_session)
+
+    monkeypatch.setattr(
+        service,
+        "_get_next_candidates",
+        lambda material_id, **_: (
+            [_candidate(2)] if material_id == 1 else []
+        ),
+    )
+    monkeypatch.setattr(
+        service,
+        "_build_transition",
+        lambda from_material, to_candidate, **_: _transition(
+            from_material,
+            to_candidate,
+        ),
+    )
+
+    chains = service._build_chains(
+        base_material=SimpleNamespace(
+            id=1,
+            mp_id="mp-1",
+            pretty_formula="M1",
+            formula="M1",
+        ),
+        elements_map={},
+        avoid_elements=frozenset(),
+        prefer_elements=frozenset(),
+        max_hops=3,
+        limit=10,
+    )
+
+    assert len(chains) == 1
+    assert chains[0]["hop_count"] == 1
+
+
+def test_build_chains_retains_prefix_with_only_invalid_continuation(
+    db_session,
+    monkeypatch,
+):
+    from app.services.discovery.chain_service import DiscoveryChainService
+
+    service = DiscoveryChainService(db_session)
+
+    monkeypatch.setattr(
+        service,
+        "_get_next_candidates",
+        lambda material_id, **_: {
+            1: [_candidate(2)],
+            2: [_candidate(3)],
+        }.get(material_id, []),
+    )
+
+    def build_transition(from_material, to_candidate, **_):
+        if from_material["material_id"] == 2:
+            return None
+        return _transition(from_material, to_candidate)
+
+    monkeypatch.setattr(
+        service,
+        "_build_transition",
+        build_transition,
+    )
+
+    chains = service._build_chains(
+        base_material=SimpleNamespace(
+            id=1,
+            mp_id="mp-1",
+            pretty_formula="M1",
+            formula="M1",
+        ),
+        elements_map={},
+        avoid_elements=frozenset(),
+        prefer_elements=frozenset(),
+        max_hops=3,
+        limit=10,
+    )
+
+    assert len(chains) == 1
+    assert chains[0]["hop_count"] == 1
+    assert all(chain["hop_count"] <= 3 for chain in chains)

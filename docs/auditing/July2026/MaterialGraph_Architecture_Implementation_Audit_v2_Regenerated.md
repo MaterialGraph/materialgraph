@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 28
-- **Not resolved:** 66
+- **Resolved:** 30
+- **Not resolved:** 64
 
 ## Correctness and Data Integrity
 
@@ -1360,6 +1360,55 @@ tests rather than an artificial production fixture.
 
 Status: **Resolved and test-verified on 2026-07-28; endpoint regression-verified
 with known-risk data.**
+
+#### MG-AUD-074 — Resolved
+
+Discovery-chain enumeration now treats `max_hops` as an inclusive upper bound
+rather than an exact required depth. Every valid non-zero-hop chain is retained
+when created, while only chains below the hop bound remain eligible for further
+expansion. Valid shorter paths, dead ends, and prefixes whose remaining
+continuations are cyclic or invalid are therefore no longer discarded. The
+source-only zero-hop path remains excluded, and no returned chain can exceed
+the requested bound.
+
+Focused regressions covered coexistence of one-hop and two-hop chains,
+dead-end retention, invalid-continuation retention, zero-hop exclusion, and
+the hop ceiling. The full regression suite passed after updating the
+scientific-pathway test expectation: a newly eligible one-hop pathway can rank
+above the former two-hop result, changing that fixture's usefulness score from
+`89.75` to `93.75` without changing the scoring formula.
+
+Development endpoint verification with `max_hops=2` and `limit=20` returned
+five one-hop and fifteen two-hop chains. Every result satisfied
+`len(materials) = hop_count + 1` and
+`len(transitions) = hop_count`; transition endpoints matched consecutive
+materials, no source-only or cyclic chain was returned, and the maximum depth
+was two. Examples included `5 → 6` and `5 → 6 → 7`.
+
+Status: **Resolved, full-suite tested, and development endpoint-verified on
+2026-07-28.**
+
+#### MG-AUD-075 — Resolved
+
+Hop-bounded weighted shortest-path search now keys its best-cost state by
+`(material_id, depth)` instead of material ID alone. Arrivals at the same
+material with different consumed hop counts therefore remain distinct. A
+cheaper deep arrival that has exhausted its hop capacity can no longer suppress
+a costlier shallower arrival that can still reach the target. A depth-aware
+stale-queue guard also prevents obsolete queued states from being expanded.
+
+Focused regression coverage reproduces the exact competing-route failure mode,
+verifies that the shallower viable state is retained, and confirms that the
+returned path respects `max_depth`. Related chain, graph-algorithm,
+element-membership, path-ranking, research-service, and full-suite regressions
+passed. No schema or route change was required.
+
+The decisive condition depends on two controlled arrivals at the same internal
+node with different depths and costs. It is therefore verified directly by the
+targeted automated fixture rather than claimed from an ordinary endpoint
+response whose dataset may not contain that competing-route topology.
+
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
 
 ## Maintenance rule
 

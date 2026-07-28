@@ -933,3 +933,50 @@ production fixture.
 - Ranking: **Yes; known-evidence candidates precede unknown-evidence candidates**
 - API contract: **Additive evidence fields and nullable source/candidate risk scores**
 - Data migration: **No**
+
+---
+
+## Hop-bounded chain enumeration and weighted path state
+
+Related findings: MG-AUD-074, MG-AUD-075  
+Date: 2026-07-28  
+Release reference: Post-v1.9.18  
+Status: Resolved; full-suite test-verified 2026-07-28; MG-AUD-074 development
+endpoint-verified
+
+### Before
+
+Discovery-chain enumeration returned a chain only when its length exactly
+equaled `max_hops`. Valid shorter chains, dead ends, and prefixes with no valid
+continuation were omitted.
+
+Weighted shortest-path search stored one best cost per material. Under a hop
+bound, a cheap deep arrival could suppress a costlier shallower arrival even
+when only the shallower state retained enough hop capacity to reach the target.
+
+### After
+
+`max_hops` is now an inclusive upper bound. Every valid non-zero-hop chain is
+retained, while only chains below the bound are expanded further. The source
+alone is not returned, and the hop ceiling remains strict.
+
+Weighted search stores costs per `(material_id, depth)` and applies a
+depth-aware stale-state check. Different arrivals at the same material retain
+their distinct future feasibility.
+
+Focused tests covered shorter and maximum-depth chains, dead ends, invalid or
+cyclic continuations, hop-ceiling enforcement, and the controlled
+deep-versus-shallow weighted-search failure mode. The full suite passed.
+
+A development chain request with `max_hops=2` and `limit=20` returned five
+one-hop and fifteen two-hop chains, with no result beyond two hops and with
+internally consistent material/transition counts and endpoints. The specialized
+weighted-state condition remains directly verified by its targeted fixture
+rather than by incidental endpoint topology.
+
+### Impact
+
+- Scientific result: **Yes; valid bounded pathways are no longer omitted**
+- Ranking: **Yes; newly retained shorter paths can rank higher, and corrected weighted search can select a previously pruned route**
+- API contract: **No structural change; result contents and ordering can change**
+- Data migration: **No**

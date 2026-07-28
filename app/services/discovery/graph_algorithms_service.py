@@ -180,12 +180,20 @@ class DiscoveryGraphAlgorithmsService:
         adjacency = self._build_edge_adjacency(graph["edges"])
 
         queue = [(0.0, start_material_id, [start_material_id])]
-        best_costs: dict[int, float] = {
-            start_material_id: 0.0,
+        best_costs: dict[tuple[int, int], float] = {
+            (start_material_id, 0): 0.0,
         }
 
         while queue:
             current_cost, material_id, path = heapq.heappop(queue)
+            current_depth = len(path) - 1
+            current_state = (material_id, current_depth)
+
+            if current_cost > best_costs.get(
+                current_state,
+                float("inf"),
+            ):
+                continue
 
             if material_id == target_material_id:
                 return {
@@ -198,7 +206,7 @@ class DiscoveryGraphAlgorithmsService:
                     "path": path,
                 }
 
-            if len(path) - 1 >= max_depth:
+            if current_depth >= max_depth:
                 continue
 
             for edge in adjacency.get(material_id, []):
@@ -213,9 +221,14 @@ class DiscoveryGraphAlgorithmsService:
                 )
 
                 new_cost = current_cost + edge_cost
+                next_depth = current_depth + 1
+                next_state = (next_id, next_depth)
 
-                if new_cost < best_costs.get(next_id, float("inf")):
-                    best_costs[next_id] = new_cost
+                if new_cost < best_costs.get(
+                    next_state,
+                    float("inf"),
+                ):
+                    best_costs[next_state] = new_cost
                     heapq.heappush(
                         queue,
                         (

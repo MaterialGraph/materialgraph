@@ -258,10 +258,17 @@ def test_scientific_pathway_analysis_exposes_partial_objective_satisfaction(
     assert satisfaction["overall_coverage"] == 0.5
     assert satisfaction["status"] == "partial"
 
-    # Path-event coverage remains partial, while ranking uses the
-    # final material's endpoint composition.
+    # Path-event coverage remains partial, while endpoint composition
+    # determines the ranking objective alignment.
     assert opportunity["score_breakdown"]["objective_alignment"] == 18.75
-    assert opportunity["scientific_usefulness_score"] == 89.75
+
+    # MG-AUD-074 permits a shorter valid pathway to rank first, changing
+    # the expected usefulness score from 89.75 to 93.75.
+    assert opportunity["scientific_usefulness_score"] == round(
+        sum(opportunity["score_breakdown"].values()),
+        2,
+    )
+    assert opportunity["scientific_usefulness_score"] == 93.75
 
 
 def test_scientific_pathway_analysis_assigns_unique_pathway_identity(

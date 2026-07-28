@@ -175,14 +175,14 @@ class DiscoveryChainService:
                     },
                 }
 
-                if len(next_chain["transitions"]) == max_hops:
-                    completed_chains.append(
-                        self._finalize_chain(next_chain)
-                    )
+                completed_chains.append(
+                    self._finalize_chain(next_chain)
+                )
 
-                    if len(completed_chains) >= limit:
-                        break
-                else:
+                if len(completed_chains) >= limit:
+                    break
+
+                if len(next_chain["transitions"]) < max_hops:
                     queue.append(next_chain)
 
         return completed_chains[:limit]

@@ -68,3 +68,61 @@ def test_weighted_shortest_path_returns_response(db_session):
     assert "path_found" in result
     assert "path" in result
     assert "path_cost" in result
+
+
+def test_weighted_shortest_path_preserves_shallower_state(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryGraphAlgorithmsService(db_session)
+    graph = {
+        "nodes": [
+            {"material_id": material_id}
+            for material_id in (1, 2, 3, 4, 5)
+        ],
+        "edges": [
+            {
+                "source_material_id": 1,
+                "target_material_id": 2,
+                "test_cost": 1.0,
+            },
+            {
+                "source_material_id": 2,
+                "target_material_id": 4,
+                "test_cost": 1.0,
+            },
+            {
+                "source_material_id": 1,
+                "target_material_id": 4,
+                "test_cost": 5.0,
+            },
+            {
+                "source_material_id": 4,
+                "target_material_id": 5,
+                "test_cost": 1.0,
+            },
+        ],
+    }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        lambda **_: graph,
+    )
+    monkeypatch.setattr(
+        service,
+        "_calculate_edge_cost",
+        lambda edge, target_node: edge["test_cost"],
+    )
+
+    result = service.weighted_shortest_path(
+        start_material_id=1,
+        target_material_id=5,
+        max_depth=2,
+    )
+
+    assert result["path_found"] is True
+    assert result["path"] == [1, 4, 5]
+    assert result["hop_count"] == 2
+    assert result["path_cost"] == 6.0
+    assert result["hop_count"] <= 2
