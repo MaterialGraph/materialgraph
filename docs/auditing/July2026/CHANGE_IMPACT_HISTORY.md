@@ -890,3 +890,46 @@ scenario-ranking and candidate-screening regression tests also passed.
 - Ranking: **Yes; scenario scores can change because increased risk is penalized only for exposed candidates**
 - API contract: **Additive sensitivity fields; existing aggregate baseline retained**
 - Data migration: **No**
+
+---
+
+## Evidence-aware substitution risk ranking
+
+Related finding: MG-AUD-070  
+Date: 2026-07-28  
+Release reference: Post-v1.9.18  
+Status: Resolved; test-verified 2026-07-28; endpoint regression-verified with
+known-risk data
+
+### Before
+
+Substitution analysis consumed the legacy numeric risk API, so missing risk
+evidence became `0.0`. The rank formula then gave that fabricated zero the
+maximum low-risk contribution and could describe an unknown-risk candidate as
+lower risk.
+
+### After
+
+Source and candidate risk values remain nullable. Unknown risk receives no
+low-risk contribution, known evidence is ordered before unknown evidence, and
+material ID breaks otherwise equal ties deterministically. The response now
+reports risk-known state, evidence coverage and completeness, and unknown-risk
+elements. Explanations identify unavailable evidence without calling it low
+risk.
+
+Focused substitution tests covered nullable evidence, score construction,
+known-before-unknown ordering, deterministic ties, metadata, and explanations.
+Related screening, comparison, and material-risk regressions passed.
+
+The development endpoint check confirmed serialization, known-risk ranking,
+explanation consistency, and deterministic equal-score ordering. Because the
+available records all had complete risk evidence, the unknown-risk endpoint
+branch remains directly verified by controlled automated tests rather than a
+production fixture.
+
+### Impact
+
+- Scientific result: **Yes; missing risk evidence is no longer represented as minimum risk**
+- Ranking: **Yes; known-evidence candidates precede unknown-evidence candidates**
+- API contract: **Additive evidence fields and nullable source/candidate risk scores**
+- Data migration: **No**

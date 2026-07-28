@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 27
-- **Not resolved:** 67
+- **Resolved:** 28
+- **Not resolved:** 66
 
 ## Correctness and Data Integrity
 
@@ -1332,6 +1332,34 @@ scenario-ranking, scenario-policy, candidate-screening, and sensitivity
 regression tests passed.
 
 Status: **Resolved and test-verified on 2026-07-28.**
+
+#### MG-AUD-070 — Resolved
+
+Substitution analysis now preserves source and candidate material-risk values
+as nullable evidence. Missing risk no longer becomes numeric zero or receives
+the maximum low-risk ranking contribution. Candidates with known risk evidence
+are ordered before candidates with unknown risk evidence, and material ID
+provides deterministic tie-breaking within otherwise equal results.
+
+The response now exposes source and candidate risk-known state, profile
+coverage, evidence completeness, and unknown-risk elements. Explanations for
+missing evidence state that risk is unavailable and do not describe the
+candidate as low risk or lower risk.
+
+Focused substitution-analysis tests verified nullable source and candidate
+risk, removal of the favorable unknown-risk contribution, evidence-aware
+ordering even when an unknown candidate has a higher raw score, deterministic
+ties, and explanation correctness. Related screening, comparison, and
+material-risk regression tests passed.
+
+A development endpoint check verified routing, serialization, known-risk
+ranking, explanation consistency, and deterministic equal-score ordering. The
+available database response contained only complete known-risk evidence, so
+the direct unknown-risk endpoint case remains covered by controlled automated
+tests rather than an artificial production fixture.
+
+Status: **Resolved and test-verified on 2026-07-28; endpoint regression-verified
+with known-risk data.**
 
 ## Maintenance rule
 

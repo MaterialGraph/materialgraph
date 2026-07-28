@@ -1,7 +1,7 @@
 # MaterialGraph Architecture & Implementation Audit Resolution
 
-Version: 1.7
-Last Updated: 2026-07-27
+Version: 1.8
+Last Updated: 2026-07-28
 
 ---
 
@@ -738,6 +738,131 @@ MG-AUD-025
 MG-AUD-067
 
 MG-AUD-068
+
+---
+
+# MG-AUD-070
+
+Title
+
+Unknown risk was maximally favorable in substitution ranking.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Substitution response schema
+- SubstitutionAnalysisService
+- Substitution ranking and explanations
+- Substitution-analysis regression tests
+
+Root Cause
+
+Substitution analysis consumed the legacy numeric material-risk API. Missing
+risk evidence therefore became `0.0`, and the ranking formula assigned it the
+maximum low-risk contribution:
+
+```text
+(10 - 0) / 10 = 1.0
+```
+
+The fabricated zero was returned publicly and could also be described as lower
+risk.
+
+Scientific Impact
+
+A candidate with no risk evidence could be ranked as though it had the safest
+known risk profile. This rewarded missing evidence and could mislead
+substitution recommendations.
+
+Resolution
+
+✓ Preserved source and candidate material-risk scores as nullable values.
+
+✓ Removed the maximum low-risk score contribution when risk evidence is
+unknown.
+
+✓ Ordered candidates with known risk evidence before candidates with unknown
+risk evidence.
+
+✓ Added deterministic material-ID tie-breaking within otherwise equal
+rankings.
+
+✓ Exposed risk-known state, profile coverage, evidence completeness, and
+unknown-risk elements for the source and candidates.
+
+✓ Made unknown-risk explanations state that evidence is unavailable and
+prevented them from claiming low or lower risk.
+
+Regression Verification
+
+✓ Focused substitution-analysis tests covered nullable source and candidate
+risk, evidence-aware ordering, removal of favorable unknown-risk scoring,
+deterministic ties, evidence metadata, and explanation correctness.
+
+✓ A controlled regression proved that an unknown-risk candidate follows a
+known-risk candidate even when its raw score would otherwise be higher.
+
+✓ Related candidate-screening, candidate-comparison, and material-risk tests
+passed.
+
+✓ Development endpoint verification confirmed routing, schema serialization,
+known-risk score ordering, explanation consistency, and deterministic
+material-ID ordering for equal scores.
+
+Verification Qualification
+
+The available endpoint response contained only materials with complete known
+risk evidence. It therefore provides integration regression evidence but does
+not directly exercise the unknown-risk endpoint branch. That branch is
+verified by the targeted automated fixtures; no artificial unknown-risk record
+was added to production.
+
+Scientific Changes
+
+Unknown risk is now treated as unavailable evidence rather than as evidence of
+minimum risk. This is an evidence-ordering correction, not independent
+scientific validation of the underlying risk model.
+
+Breaking API
+
+Additive response-schema change. Risk-known, coverage, completeness, and
+unknown-element fields are exposed, and source/candidate risk scores can now be
+`null`. Candidate ordering and explanations can change.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Nullable evidence must remain nullable through scoring, ordering, response
+serialization, and explanations. A neutral numeric fallback is not neutral
+when the downstream formula rewards lower values.
+
+Related Findings
+
+MG-AUD-002
+
+MG-AUD-003
+
+MG-AUD-025
+
+MG-AUD-062
+
+MG-AUD-065
+
+MG-AUD-073
 
 ---
 
