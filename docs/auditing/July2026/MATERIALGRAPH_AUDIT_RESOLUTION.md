@@ -4112,6 +4112,265 @@ ADR-002
 
 ---
 
+# MG-AUD-077
+
+Title
+
+K-best paths bypassed canonical transition validation.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- DiscoveryGraphBuilder
+- DiscoveryTransitionValidator
+- DiscoveryKBestPathService
+- K-best and graph-builder regression tests
+
+Root Cause
+
+Canonical graph construction validated proposed edges through
+`DiscoveryTransitionValidator`, but K-best consumed a raw candidate adjacency.
+It could therefore enumerate and return a candidate edge that the canonical
+graph rejected, while independently reconstructing transition metadata from
+candidate fields.
+
+Scientific Impact
+
+Research-facing K-best results could contain an invalid transition or describe
+it with metadata that did not represent the canonical validation decision.
+
+Resolution
+
+✓ Applied canonical transition validation while building K-best adjacency.
+
+✓ Excluded validator-rejected candidates before enumeration.
+
+✓ Carried the accepted canonical transition alongside candidate metadata.
+
+✓ Used that validated transition directly when constructing returned paths.
+
+Regression Verification
+
+✓ A focused invalid-edge fixture confirms that a rejected candidate cannot
+enter a K-best path.
+
+✓ Returned K-best transitions correspond to canonically accepted graph edges.
+
+✓ Focused graph-builder, transition, path-ranking, and K-best tests passed.
+
+✓ Full regression suite passed locally.
+
+Scientific Changes
+
+Yes. Invalid or noncanonical transitions can no longer enter K-best results.
+Valid-path scoring and ranking semantics are unchanged.
+
+Breaking API
+
+No. K-best is not exposed through a public route or research-service schema.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Every traversal consumer must share one edge-admission authority. Reconstructing
+transition semantics downstream can silently diverge from canonical validation.
+
+Related Findings
+
+MG-AUD-079
+
+MG-AUD-080
+
+---
+
+# MG-AUD-079
+
+Title
+
+K-best material metadata could come from the wrong incoming edge.
+
+Severity
+
+High
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- DiscoveryKBestPathService
+- K-best path material and explanation construction
+
+Root Cause
+
+For each non-root material, K-best searched every adjacency list and used the
+first candidate matching the material ID. A material reachable through
+multiple parents could therefore receive metadata from an edge that was not
+part of the returned path.
+
+Scientific Impact
+
+Path materials and explanations could describe unrelated evidence, weakening
+traceability even when the sequence of material IDs was correct.
+
+Resolution
+
+✓ Replaced graph-wide target-only lookup with source-aware
+`(source_material_id, target_material_id)` lookup.
+
+✓ Resolved each non-root material from its actual incoming edge in the path.
+
+✓ Removed dependence on adjacency iteration order for path metadata.
+
+Regression Verification
+
+✓ A multiply-reachable-material fixture confirms metadata comes from the
+incoming edge actually traversed.
+
+✓ K-best ordering, path limiting, and transition construction regressions
+passed.
+
+✓ Full regression suite passed locally.
+
+Scientific Changes
+
+Yes. Returned evidence and explanations now remain aligned with the actual
+path. Path topology, scoring formula, and valid-edge ranking are unchanged.
+
+Breaking API
+
+No.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Path evidence is edge-contextual. A target identifier alone is insufficient
+when a graph permits more than one incoming relationship.
+
+Related Findings
+
+MG-AUD-077
+
+---
+
+# MG-AUD-080
+
+Title
+
+K-best enumerated every simple path before applying `k`.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- DiscoveryKBestPathService
+- Simple-path enumeration
+- K-best result metadata
+
+Root Cause
+
+The service declared an internal path limit but did not enforce it.
+Enumeration explored every simple path within `max_hops`, stored all
+target-reaching paths, ranked the complete collection, and applied `k` only
+afterward. A target-path limit alone would also have left sparse or unreachable
+searches capable of excessive state expansion.
+
+Scientific Impact
+
+The defect did not intentionally change scientific scoring, but graph growth
+could cause excessive latency or memory use and make the analysis unavailable.
+
+Resolution
+
+✓ Enforced `INTERNAL_PATH_LIMIT = 100` for accepted target-reaching paths.
+
+✓ Enforced `INTERNAL_STATE_LIMIT = 1000` for processed search states.
+
+✓ Stopped ranking work at the bounded accepted-path collection.
+
+✓ Added `search_truncated` to identify a search stopped by either budget.
+
+✓ Defined `total_path_count` as the number of valid paths evaluated during the
+bounded search, not an exhaustive graph-wide count when truncated.
+
+✓ Retained `path_count` as the number of paths returned after applying `k`.
+
+Regression Verification
+
+✓ Focused fixtures verify path-budget and state-budget truncation.
+
+✓ Ranking calls remain bounded by the internal accepted-path limit.
+
+✓ Tests require non-empty ordinary results and verify deterministic ordering,
+`k` limiting, simple-path behavior, and `max_hops`.
+
+✓ Full regression suite passed locally.
+
+Verification Scope Note
+
+K-best currently has no public route, response schema, or research-service
+consumer. The additive service-level truncation field therefore required no
+public API change. No endpoint claim is made for this remediation.
+
+Scientific Changes
+
+No scoring-formula change. In a search space exceeding an internal budget, the
+returned K-best set is selected from the bounded evaluated paths and is
+explicitly marked truncated rather than presented as exhaustive.
+
+Breaking API
+
+No public API change. The internal service result adds `search_truncated` and
+clarifies `total_path_count`.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Bounding returned results does not bound computation. Graph algorithms need
+explicit budgets for both successful outputs and processed search states, plus
+honest truncation semantics.
+
+Related Findings
+
+MG-AUD-077
+
+---
+
 # MG-AUD-013
 
 Title

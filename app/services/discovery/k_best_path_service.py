@@ -10,6 +10,7 @@ class DiscoveryKBestPathService:
     DEFAULT_MAX_HOPS = 2
     DEFAULT_K = 5
     INTERNAL_PATH_LIMIT = 100
+    INTERNAL_STATE_LIMIT = 1000
 
     def __init__(self, db: Session):
         self.db = db
@@ -25,7 +26,7 @@ class DiscoveryKBestPathService:
         max_hops: int = DEFAULT_MAX_HOPS,
         k: int = DEFAULT_K,
     ) -> dict:
-        ranked_paths = self._build_ranked_paths(
+        ranked_paths, search_truncated = self._build_ranked_paths(
             start_material_id=start_material_id,
             target_material_id=target_material_id,
             avoid_element=avoid_element,
@@ -46,6 +47,7 @@ class DiscoveryKBestPathService:
             "target_material_id": target_material_id,
             "path_count": len(limited_paths),
             "total_path_count": len(ranked_paths),
+            "search_truncated": search_truncated,
             "k": k,
             "max_hops": max_hops,
             "paths": limited_paths,
@@ -60,7 +62,7 @@ class DiscoveryKBestPathService:
         max_hops: int = DEFAULT_MAX_HOPS,
         k: int = DEFAULT_K,
     ) -> dict:
-        ranked_paths = self._build_ranked_paths(
+        ranked_paths, search_truncated = self._build_ranked_paths(
             start_material_id=start_material_id,
             target_material_id=target_material_id,
             avoid_element=avoid_element,
@@ -83,6 +85,7 @@ class DiscoveryKBestPathService:
             "target_material_id": target_material_id,
             "path_count": len(limited_paths),
             "total_path_count": len(ranked_paths),
+            "search_truncated": search_truncated,
             "k": k,
             "max_hops": max_hops,
             "paths": limited_paths,
@@ -95,7 +98,7 @@ class DiscoveryKBestPathService:
         avoid_element: str | None,
         prefer_element: str | None,
         max_hops: int,
-    ) -> list[dict]:
+    ) -> tuple[list[dict], bool]:
         adjacency = self.graph_builder.build_adjacency(
             start_material_id=start_material_id,
             avoid_element=avoid_element,
@@ -103,7 +106,7 @@ class DiscoveryKBestPathService:
             max_depth=max_hops,
         )
 
-        paths = self._enumerate_simple_paths(
+        paths, search_truncated = self._enumerate_simple_paths(
             start_material_id=start_material_id,
             target_material_id=target_material_id,
             adjacency=adjacency,
@@ -141,7 +144,7 @@ class DiscoveryKBestPathService:
                 }
             )
 
-        return ranked_paths
+        return ranked_paths, search_truncated
 
     def _enumerate_simple_paths(
         self,
@@ -149,12 +152,19 @@ class DiscoveryKBestPathService:
         target_material_id: int,
         adjacency: dict[int, list[dict]],
         max_hops: int,
-    ) -> list[list[int]]:
+    ) -> tuple[list[list[int]], bool]:
         paths: list[list[int]] = []
         queue = deque([(start_material_id, [start_material_id])])
+        processed_states = 0
+        search_truncated = False
 
         while queue:
+            if processed_states >= self.INTERNAL_STATE_LIMIT:
+                search_truncated = True
+                break
+
             current_id, path = queue.popleft()
+            processed_states += 1
             hop_count = len(path) - 1
 
             if hop_count > max_hops:
@@ -162,6 +172,11 @@ class DiscoveryKBestPathService:
 
             if current_id == target_material_id:
                 paths.append(path)
+
+                if len(paths) >= self.INTERNAL_PATH_LIMIT:
+                    search_truncated = bool(queue)
+                    break
+
                 continue
 
             if hop_count == max_hops:
@@ -175,7 +190,7 @@ class DiscoveryKBestPathService:
 
                 queue.append((next_id, [*path, next_id]))
 
-        return paths
+        return paths, search_truncated
 
     def _materials_for_path(
         self,
@@ -190,8 +205,9 @@ class DiscoveryKBestPathService:
                 materials.append({"material_id": start_material_id})
                 continue
 
-            candidate = self._find_candidate_by_id(
-                material_id=material_id,
+            candidate = self._find_candidate_in_adjacency(
+                source_id=path_ids[index - 1],
+                target_id=material_id,
                 adjacency=adjacency,
             )
 
@@ -231,30 +247,41 @@ class DiscoveryKBestPathService:
             if candidate is None:
                 continue
 
-            substitution_path = candidate.get("substitution_path") or {}
+            transition = candidate.get("validated_transition")
+
+            if transition is None:
+                continue
 
             transitions.append(
                 {
                     "source_material_id": source_id,
                     "target_material_id": target_id,
-                    "transition_type": substitution_path.get("path_type")
-                    or self._infer_transition_type(candidate),
-                    "family": self._infer_family(candidate),
-                    "preserved_framework": substitution_path.get(
+                    "transition_type": transition["transition_type"],
+                    "family": transition.get("family"),
+                    "preserved_framework": transition.get(
                         "preserved_framework",
                         [],
                     ),
-                    "removed_elements": substitution_path.get(
-                        "replaced_elements",
+                    "preservation_basis": transition.get(
+                        "preservation_basis",
+                    ),
+                    "structural_preservation_validated": transition.get(
+                        "structural_preservation_validated",
+                        False,
+                    ),
+                    "removed_elements": transition.get(
+                        "removed_elements",
                         [],
                     ),
-                    "introduced_elements": substitution_path.get(
+                    "introduced_elements": transition.get(
                         "introduced_elements",
                         [],
                     ),
-                    "scientific_reason": substitution_path.get("reason")
-                    or candidate.get("explanation")
-                    or "Scientific transition identified by deterministic path rules.",
+                    "scientific_reason": (
+                        transition.get("scientific_reason")
+                        or transition.get("reason")
+                        or "Scientific transition identified by deterministic path rules."
+                    ),
                 }
             )
 
@@ -269,51 +296,5 @@ class DiscoveryKBestPathService:
         for candidate in adjacency.get(source_id, []):
             if candidate["material_id"] == target_id:
                 return candidate
-
-        return None
-
-    def _find_candidate_by_id(
-        self,
-        material_id: int,
-        adjacency: dict[int, list[dict]],
-    ) -> dict | None:
-        for candidates in adjacency.values():
-            for candidate in candidates:
-                if candidate["material_id"] == material_id:
-                    return candidate
-
-        return None
-
-    def _infer_transition_type(
-        self,
-        candidate: dict,
-    ) -> str:
-        paths = set(candidate.get("discovery_path", []))
-
-        if "alkali_substitution" in paths:
-            return "alkali_substitution"
-
-        if "family_related" in paths:
-            return "family_expansion"
-
-        if "shared_chemistry" in paths:
-            return "shared_element_continuity"
-
-        return "candidate_transition"
-
-    def _infer_family(
-        self,
-        candidate: dict,
-    ) -> str | None:
-        paths = set(candidate.get("discovery_path", []))
-
-        if "phosphate_related" in paths:
-            return "phosphate"
-
-        if "oxide_related" in paths:
-            return "oxide"
-
-        if "alkali_substitution" in paths:
-            return "alkali"
 
         return None

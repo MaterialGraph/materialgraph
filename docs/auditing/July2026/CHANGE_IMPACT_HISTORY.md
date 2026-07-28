@@ -980,3 +980,52 @@ rather than by incidental endpoint topology.
 - Ranking: **Yes; newly retained shorter paths can rank higher, and corrected weighted search can select a previously pruned route**
 - API contract: **No structural change; result contents and ordering can change**
 - Data migration: **No**
+
+---
+
+## Canonically validated and bounded K-best traversal
+
+Related findings: MG-AUD-077, MG-AUD-079, MG-AUD-080  
+Date: 2026-07-28  
+Release reference: Post-v1.9.18  
+Status: Resolved; full-suite test-verified 2026-07-28
+
+### Before
+
+K-best search consumed raw discovery-candidate adjacency rather than the
+canonical transition validator. It could therefore return an edge rejected by
+the canonical graph and reconstruct different transition metadata.
+
+Material metadata was found through a graph-wide first match by target ID, so
+a multiply reachable material could receive evidence from the wrong incoming
+edge.
+
+Simple-path enumeration explored and ranked every reachable path before
+applying `k`. The declared internal path limit was unused, and no independent
+processed-state budget protected sparse or unreachable searches.
+
+### After
+
+Adjacency now admits only canonically validated transitions and carries each
+accepted transition into K-best path construction. Material metadata is
+resolved from the actual `(source, target)` edge traversed by the path.
+
+Enumeration accepts at most 100 target-reaching paths and processes at most
+1,000 search states before ranking. `search_truncated` reports when either
+budget stops the search. `total_path_count` records valid paths evaluated
+within the bounded search; it is not an exhaustive count when truncated.
+`path_count` remains the number returned after applying `k`.
+
+Focused tests covered invalid-edge exclusion, path-specific metadata, both
+computational budgets, bounded ranking calls, deterministic ordering, result
+limiting, simple paths, and hop limits. The full regression suite passed.
+K-best has no current public route or research-service consumer, so no endpoint
+or public-schema change was required.
+
+### Impact
+
+- Scientific result: **Yes; invalid transitions and wrong-edge evidence are excluded**
+- Ranking: **No formula change; very large searches rank only the explicitly bounded evaluated set**
+- Performance: **Yes; enumeration and ranking now have enforceable path and state budgets**
+- API contract: **No public change; internal service metadata adds `search_truncated` and clarifies count semantics**
+- Data migration: **No**

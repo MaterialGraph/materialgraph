@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 30
-- **Not resolved:** 64
+- **Resolved:** 33
+- **Not resolved:** 61
 
 ## Correctness and Data Integrity
 
@@ -1407,6 +1407,58 @@ The decisive condition depends on two controlled arrivals at the same internal
 node with different depths and costs. It is therefore verified directly by the
 targeted automated fixture rather than claimed from an ordinary endpoint
 response whose dataset may not contain that competing-route topology.
+
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
+
+#### MG-AUD-077 — Resolved
+
+K-best adjacency construction now applies the canonical
+`DiscoveryTransitionValidator` before an edge becomes eligible for path
+enumeration. Rejected candidates do not enter the searchable adjacency, and
+each accepted adjacency record carries the validated transition metadata used
+by returned K-best paths. K-best therefore no longer reconstructs or infers a
+different transition from unvalidated candidate data.
+
+Focused regressions verified that validator-rejected candidates cannot appear
+in K-best results and that every returned transition corresponds to an edge
+accepted by the canonical graph-building path. Graph-builder, transition,
+path-ranking, and K-best regressions passed as part of the full test suite.
+
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
+
+#### MG-AUD-079 — Resolved
+
+K-best material construction now resolves each non-root material from the
+actual incoming `(source_material_id, target_material_id)` adjacency record for
+that path. It no longer performs a graph-wide first-match lookup by target ID.
+When the same material is reachable through multiple incoming edges, its
+candidate metadata and explanation therefore remain aligned with the edge
+actually traversed.
+
+A focused multiply-reachable-material fixture verified that K-best selects
+metadata from the path-specific incoming edge rather than an earlier unrelated
+adjacency entry. The full regression suite passed.
+
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
+
+#### MG-AUD-080 — Resolved
+
+K-best simple-path enumeration now enforces two independent computational
+budgets: at most `100` accepted target-reaching paths and at most `1,000`
+processed search states. These bounds apply to internal work before ranking and
+before the caller's `k` result limit, protecting both dense target-rich graphs
+and sparse or unreachable searches.
+
+The service response now reports `search_truncated` when either internal budget
+stops enumeration. `total_path_count` means the number of valid paths actually
+evaluated during the bounded search; it does not claim an exhaustive count when
+`search_truncated` is true. `path_count` remains the number returned after
+applying `k`. K-best is not currently exposed through a public route or
+research service, so no public schema change was required.
+
+Focused regressions verified path-budget and state-budget enforcement, bounded
+ranking work, deterministic result ordering, `k` limiting, simple-path
+behavior, and the hop ceiling. The full regression suite passed.
 
 Status: **Resolved and full-suite test-verified on 2026-07-28.**
 

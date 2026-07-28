@@ -205,10 +205,11 @@ class DiscoveryGraphBuilder:
     ) -> dict[int, list[dict]]:
         adjacency: dict[int, list[dict]] = {}
         visited: set[int] = set()
-        frontier: list[tuple[int, int]] = [(start_material_id, 0)]
+        frontier = deque([(start_material_id, 0)])
+        elements_map = self._get_material_elements_map()
 
         while frontier:
-            material_id, depth = frontier.pop(0)
+            material_id, depth = frontier.popleft()
 
             if material_id in visited:
                 continue
@@ -218,19 +219,62 @@ class DiscoveryGraphBuilder:
             if depth >= max_depth:
                 continue
 
+            source_material = self.db.get(Material, material_id)
+
+            if source_material is None:
+                continue
+
+            source_node = {
+                "material_id": source_material.id,
+                "mp_id": source_material.mp_id,
+                "pretty_formula": source_material.pretty_formula,
+                "formula": (
+                    source_material.pretty_formula
+                    or source_material.formula
+                ),
+            }
+
             candidates = self._get_candidates(
                 material_id=material_id,
                 avoid_element=avoid_element,
                 prefer_element=prefer_element,
             )
 
-            adjacency[material_id] = candidates
+            validated_candidates = []
 
             for candidate in candidates:
                 candidate_id = candidate["material_id"]
+                target_node = {
+                    "material_id": candidate_id,
+                    "mp_id": candidate.get("mp_id"),
+                    "pretty_formula": candidate.get("pretty_formula"),
+                    "formula": (
+                        candidate.get("pretty_formula")
+                        or candidate.get("formula")
+                    ),
+                }
+
+                transition = self._build_transition(
+                    from_material=source_node,
+                    to_candidate=target_node,
+                    elements_map=elements_map,
+                    avoid_element=avoid_element,
+                    prefer_element=prefer_element,
+                )
+
+                if transition is None:
+                    continue
+
+                validated_candidate = {
+                    **candidate,
+                    "validated_transition": transition,
+                }
+                validated_candidates.append(validated_candidate)
 
                 if candidate_id not in visited:
                     frontier.append((candidate_id, depth + 1))
+
+            adjacency[material_id] = validated_candidates
 
         return adjacency
 
