@@ -14,7 +14,7 @@ class ScenarioRankingResult(BaseModel):
     formula: str
     pretty_formula: str
     score: float
-    material_risk_score: float
+    material_risk_score: float | None
     risk_penalty: float
     reasons: list[str]
     ranking_explanation: list[str]

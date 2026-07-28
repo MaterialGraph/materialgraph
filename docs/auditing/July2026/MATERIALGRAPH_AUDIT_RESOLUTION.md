@@ -357,6 +357,193 @@ MG-AUD-066
 
 ---
 
+# MG-AUD-066
+
+Title
+
+Scenario ranking could not handle unknown material risk.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Scenario ranking response schema
+- ScenarioRankingService
+- Scenario-ranking explanations
+
+Root Cause
+
+Scenario ranking preserved nullable material risk but compared the value
+directly with numeric risk thresholds. A valid unknown value could therefore
+evaluate an expression equivalent to `None <= threshold` and raise a
+`TypeError`.
+
+Scientific Impact
+
+A material with incomplete risk evidence could cause an unhandled failure
+instead of returning an honest uncertainty result. Attempting to avoid the
+failure with a numeric fallback would also risk misclassifying unknown risk as
+low, moderate, or high.
+
+Resolution
+
+✓ Made the scenario-ranking risk classification null-aware.
+
+✓ Preserved `material_risk_score: null` in the public response.
+
+✓ Added an explicit explanation that aggregate material risk is unknown when
+the evidence is unavailable.
+
+✓ Prevented unknown risk from receiving low-, moderate-, or high-risk wording.
+
+✓ Preserved existing calculations and explanations for known material risk.
+
+Regression Verification
+
+✓ Focused scenario-ranking tests covered nullable risk, explanation semantics,
+and unchanged known-risk behavior.
+
+✓ The related candidate-screening, scenario-ranking, and sensitivity-analysis
+regression tests passed.
+
+Scientific Changes
+
+Unknown aggregate risk is now represented as uncertainty rather than forced
+into a numeric risk class. No scientific value is fabricated.
+
+Breaking API
+
+No structural breaking change. The risk field remains nullable, and
+explanatory wording is corrected for unknown values.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Making a scientific field nullable at the schema boundary is insufficient
+unless every downstream comparison and explanation implements the same
+nullable-evidence contract.
+
+Related Findings
+
+MG-AUD-025
+
+MG-AUD-065
+
+MG-AUD-067
+
+MG-AUD-068
+
+MG-AUD-069
+
+---
+
+# MG-AUD-067
+
+Title
+
+Sensitivity analysis could not handle unknown baseline material risk.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Sensitivity response schema
+- SensitivityAnalysisService
+- Risk-derived sensitivity scenarios
+
+Root Cause
+
+Sensitivity analysis assumed that every material had a numeric baseline risk
+score and multiplied that value by each scenario multiplier. A valid unknown
+baseline therefore attempted arithmetic equivalent to `None * multiplier`
+and raised a `TypeError`.
+
+Scientific Impact
+
+Materials with incomplete risk evidence could not be analyzed safely.
+Substituting zero would have falsely communicated both zero baseline risk and
+zero sensitivity.
+
+Resolution
+
+✓ Made sensitivity calculations null-aware.
+
+✓ Preserved `baseline_material_risk_score: null`.
+
+✓ Added `sensitivity_level: "UNKNOWN"` for an unknown baseline.
+
+✓ Returned `adjusted_score: null` and `score_delta: null` for risk-derived
+scenario results when the baseline is unavailable.
+
+✓ Preserved existing calculations and sensitivity classification for known
+baseline risk.
+
+✓ Kept the existing scenario definitions unchanged so the separate
+`MG-AUD-068` and `MG-AUD-069` analytical-semantic findings remain explicit.
+
+Regression Verification
+
+✓ Focused sensitivity-analysis tests covered unknown baselines, null result
+fields, `UNKNOWN` classification, and unchanged known-risk calculations.
+
+✓ The related candidate-screening, scenario-ranking, and sensitivity-analysis
+regression tests passed.
+
+Scientific Changes
+
+Unknown baseline risk now propagates as unknown through derived sensitivity
+results. The service no longer manufactures zero-valued scientific outputs.
+
+Breaking API
+
+No breaking structural change. Nullable derived scores and the `UNKNOWN`
+sensitivity level extend the response contract for valid missing evidence.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Derived scientific quantities must propagate source uncertainty explicitly.
+Null-safe arithmetic should preserve the absence of evidence rather than
+silently converting it into a favorable or neutral number.
+
+Related Findings
+
+MG-AUD-025
+
+MG-AUD-066
+
+MG-AUD-068
+
+MG-AUD-069
+
+---
+
 # MG-AUD-055
 
 Title

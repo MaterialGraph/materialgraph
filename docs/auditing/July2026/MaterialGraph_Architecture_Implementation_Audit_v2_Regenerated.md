@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 23
-- **Not resolved:** 71
+- **Resolved:** 25
+- **Not resolved:** 69
 
 ## Correctness and Data Integrity
 
@@ -1264,6 +1264,36 @@ targeted automated fixtures.
 Status: **Resolved and test-verified on 2026-07-27; endpoint regression
 verified with controlled unknown-evidence coverage provided by automated
 fixtures.**
+
+#### MG-AUD-066 — Resolved
+
+Scenario ranking now handles unknown aggregate material risk without comparing
+`null` to numeric risk thresholds. The response preserves
+`material_risk_score: null`, and the explanation identifies the risk as
+unknown instead of classifying it as low, moderate, or high.
+
+Focused scenario-ranking tests and the related screening, scenario-ranking,
+and sensitivity regression tests passed. Known-risk ranking behavior remains
+unchanged.
+
+Status: **Resolved and test-verified on 2026-07-28.**
+
+#### MG-AUD-067 — Resolved
+
+Sensitivity analysis now handles an unknown baseline material-risk score
+without multiplying `null` by scenario multipliers. The response preserves
+`baseline_material_risk_score: null`, reports
+`sensitivity_level: "UNKNOWN"`, and returns `adjusted_score: null` and
+`score_delta: null` for risk-derived scenario results rather than fabricating
+zero risk or zero sensitivity.
+
+Focused sensitivity-analysis tests and the related screening,
+scenario-ranking, and sensitivity regression tests passed. Known-risk
+calculations remain unchanged. This remediation addresses nullable-risk
+correctness only; `MG-AUD-068` and `MG-AUD-069` continue to track the
+element-specific and scenario-type semantics.
+
+Status: **Resolved and test-verified on 2026-07-28.**
 
 ## Maintenance rule
 

@@ -46,21 +46,29 @@ class SensitivityAnalysisService:
             baseline_risk_score=baseline.material_risk_score,
         )
 
-        max_delta = max(abs(item.score_delta) for item in scenarios)
+        if baseline.material_risk_score is None:
+            sensitivity_level = "UNKNOWN"
+        else:
+            max_delta = max(
+                abs(item.score_delta)
+                for item in scenarios
+                if item.score_delta is not None
+            )
+            sensitivity_level = self._classify_sensitivity(max_delta)
 
         return SensitivityAnalysisResult(
             material_id=baseline.material_id,
             formula=baseline.pretty_formula,
             baseline_score=baseline.score,
             baseline_material_risk_score=baseline.material_risk_score,
-            sensitivity_level=self._classify_sensitivity(max_delta),
+            sensitivity_level=sensitivity_level,
             scenarios=scenarios,
         )
 
     def _build_sensitivity_scenarios(
         self,
         baseline_score: float,
-        baseline_risk_score: float,
+        baseline_risk_score: float | None,
     ) -> list[SensitivityScenarioResult]:
         scenario_definitions = [
             ("supply_risk_plus_25_percent", 1.25),
@@ -68,6 +76,16 @@ class SensitivityAnalysisService:
             ("geopolitical_risk_plus_25_percent", 1.25),
             ("geopolitical_risk_plus_50_percent", 1.50),
         ]
+
+        if baseline_risk_score is None:
+            return [
+                SensitivityScenarioResult(
+                    scenario=name,
+                    adjusted_score=None,
+                    score_delta=None,
+                )
+                for name, _ in scenario_definitions
+            ]
 
         results = []
 

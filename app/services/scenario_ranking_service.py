@@ -81,7 +81,12 @@ class ScenarioRankingService:
             else:
                 explanations.append("Candidate contains cobalt")
 
-        if result.material_risk_score <= 2:
+        if result.material_risk_score is None:
+            explanations.append(
+                "Aggregate material risk is unknown because risk evidence "
+                "is unavailable"
+            )
+        elif result.material_risk_score <= 2:
             explanations.append("Candidate has low aggregate material risk")
         elif result.material_risk_score <= 5:
             explanations.append("Candidate has moderate aggregate material risk")

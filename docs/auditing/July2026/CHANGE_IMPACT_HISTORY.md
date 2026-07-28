@@ -806,3 +806,44 @@ which was not present in the normal development dataset.
 - Ranking: **Yes; screening order and comparison winners can change**
 - API contract: **No structural change; ordering and reasons may change**
 - Data migration: **No**
+
+---
+
+## Nullable risk in scenario ranking and sensitivity analysis
+
+Related findings: MG-AUD-066, MG-AUD-067  
+Date: 2026-07-28  
+Release reference: Post-v1.9.18  
+Status: Resolved; test-verified 2026-07-28
+
+### Before
+
+Scenario ranking compared nullable material risk directly with numeric
+thresholds, so an unknown value could raise a `TypeError`. Sensitivity analysis
+multiplied a nullable baseline risk by scenario multipliers, causing the same
+class of failure. A zero fallback would have incorrectly represented missing
+evidence as measured zero risk.
+
+### After
+
+Scenario ranking preserves `material_risk_score: null` and explains that
+aggregate risk is unknown without assigning a low, moderate, or high label.
+Sensitivity analysis preserves `baseline_material_risk_score: null`, reports
+`sensitivity_level: "UNKNOWN"`, and returns `adjusted_score: null` and
+`score_delta: null` for risk-derived scenarios.
+
+Focused scenario-ranking and sensitivity-analysis tests passed. The related
+candidate-screening, scenario-ranking, and sensitivity-analysis regression
+tests also passed, while known-risk behavior remained unchanged.
+
+This change is limited to nullable-risk correctness. The existing scenario
+definitions are unchanged; element-specific scenario adjustment and distinct
+supply-risk versus geopolitical calculations remain tracked by `MG-AUD-068`
+and `MG-AUD-069`.
+
+### Impact
+
+- Scientific result: **Yes; unknown risk now propagates explicitly instead of becoming a failure or fabricated zero**
+- Ranking: **No intended change for materials with known risk**
+- API contract: **No breaking structural change; unknown derived sensitivity values are nullable and use `UNKNOWN` classification**
+- Data migration: **No**
