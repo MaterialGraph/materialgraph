@@ -90,9 +90,9 @@ Required banner:
 - Saved investigation versions are immutable.
 - A newer dataset must not silently replace historical results.
 
-## 9. Required Future Backend Metadata
+## 9. Required Reproducibility Metadata
 
-Every computational response should converge on:
+Every computational response must converge on a standard backend payload:
 
 ```json
 {
@@ -100,11 +100,43 @@ Every computational response should converge on:
   "reason": null,
   "dataset_version": "2026.07",
   "methodology_version": "discovery-ranking-v1.4",
-  "objective_hash": "...",
-  "generated_at": "...",
+  "objective_hash": "a8f9c2...",
+  "generated_at": "2026-07-30T09:15:00Z",
+  "materialgraph_version": "v1.9.6-remediated",
   "request_id": "...",
   "result_metadata": {
     "is_complete": true
   }
 }
 ```
+
+The API adapter maps the backend snake-case representation into the canonical frontend contract:
+
+```ts
+export interface ReproducibilityMetadata {
+  datasetVersion: string;
+  methodologyVersion: string;
+  objectiveHash: string;
+  generatedAt: string;
+  materialGraphVersion: string;
+  computationStatus:
+    | "COMPLETED"
+    | "COMPLETED_PARTIAL"
+    | "COMPLETED_NO_RESULTS";
+}
+```
+
+Mapping rules:
+
+| Backend field | Frontend field |
+|---|---|
+| `dataset_version` | `datasetVersion` |
+| `methodology_version` | `methodologyVersion` |
+| `objective_hash` | `objectiveHash` |
+| `generated_at` | `generatedAt` |
+| `materialgraph_version` | `materialGraphVersion` |
+| `status` | `computationStatus` |
+
+Every computational screen and reusable result component must consume this normalized object. Components must not individually rename fields, infer versions, or source computation status from HTTP codes.
+
+Saved investigation versions persist this payload unchanged as part of the immutable scientific artifact.

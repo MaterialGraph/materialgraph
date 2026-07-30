@@ -87,6 +87,56 @@ src/
 - map transport failures separately from computation statuses;
 - include dataset and methodology version in query keys.
 
+### 4.1 TanStack Query freshness policy
+
+Cache policy must reflect the scientific mutability of the resource rather than applying one global default.
+
+#### Active drafts and open exploration
+
+Use a standard five-minute freshness window for mutable or actively recomputed resources:
+
+```ts
+const ACTIVE_EXPLORATION_STALE_TIME = 5 * 60 * 1000;
+```
+
+Typical resources include:
+
+- active investigation drafts;
+- current material workspaces;
+- unsaved objective execution;
+- open candidate and pathway exploration;
+- current dataset-backed material details.
+
+Background refetching is permitted only when it cannot silently change a historical scientific artifact.
+
+#### Historical investigation versions
+
+Saved investigation versions at routes such as `/investigations/:id/versions/:versionId` are immutable scientific artifacts and must use:
+
+```ts
+const historicalVersionQueryOptions = {
+  staleTime: Infinity,
+  gcTime: Infinity,
+} as const;
+```
+
+The client must not background-refetch, revalidate, or silently replace a closed historical version. A user-requested refresh may verify availability or integrity, but it must not mutate the version's dataset snapshot, methodology version, objective hash, generated timestamp, computation status, or stored result payload.
+
+A rerun against newer data or methodology creates a new investigation version with a new query key. It never invalidates or overwrites the historical version cache entry.
+
+Query keys for saved versions must include at minimum:
+
+```ts
+[
+  "investigation-version",
+  investigationId,
+  versionId,
+  datasetVersion,
+  methodologyVersion,
+  objectiveHash,
+]
+```
+
 ## 5. Testing Strategy
 
 ### Unit

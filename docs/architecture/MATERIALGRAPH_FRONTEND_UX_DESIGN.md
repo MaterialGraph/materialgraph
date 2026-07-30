@@ -52,7 +52,7 @@ The product should help users:
 
 ---
 
-## 3. Core Design Philosophy
+## 2. Core Design Philosophy
 
 ### 3.1 Scientific honesty before visual simplicity
 
@@ -84,7 +84,7 @@ Color, size, position, line weight, animation, and ordering must not imply scien
 
 ---
 
-## 4. MaterialGraph Research Cycle
+## 3. MaterialGraph Research Cycle
 
 The user experience follows a continuous cycle:
 
@@ -151,7 +151,7 @@ Every frontend capability should improve at least one stage of the Research Cycl
 
 ---
 
-## 5. Scientific UX Invariants
+## 4. Scientific UX Invariants
 
 These rules are mandatory across all screens and components.
 
@@ -248,7 +248,7 @@ The interface must distinguish:
 
 ---
 
-## 6. Target Users
+## 5. Target Users
 
 ### 6.1 Materials researcher
 
@@ -282,7 +282,7 @@ The interface must distinguish:
 
 ---
 
-## 7. Core Research Scenarios
+## 6. Core Research Scenarios
 
 The initial design must support at least these scenarios:
 
@@ -293,7 +293,7 @@ The initial design must support at least these scenarios:
 5. Preserve a chemical framework while replacing one element.
 6. Explore direct and multi-hop substitution paths.
 7. Compare tied candidates with different evidence coverage.
-8. Save and rerun an investigation against a newer dataset snapshot.
+7. Save and rerun an investigation against a newer dataset snapshot.
 
 The canonical reference flow is:
 
@@ -366,7 +366,7 @@ The current stage, completed stages, and available next actions must remain visi
 
 ---
 
-## 9. Route Model
+## 8. Route Model
 
 Suggested initial route hierarchy:
 
@@ -397,7 +397,7 @@ URL state should contain only shareable and reproducible navigation state. Tempo
 
 ---
 
-## 10. Investigation State Model
+## 9. Investigation State Model
 
 Canonical investigation states:
 
@@ -874,18 +874,42 @@ Unexpected failures should provide:
 
 ## 17. Reproducibility Header
 
-Every computational result and saved investigation version should expose:
+Every computational result and saved investigation version must expose a standardized reproducibility payload.
+
+```ts
+export interface ReproducibilityMetadata {
+  datasetVersion: string;       // e.g. "2026.07"
+  methodologyVersion: string;   // e.g. "discovery-ranking-v1.4"
+  objectiveHash: string;        // e.g. "a8f9c2..."
+  generatedAt: string;          // ISO-8601 timestamp
+  materialGraphVersion: string; // e.g. "v1.9.6-remediated"
+  computationStatus:
+    | "COMPLETED"
+    | "COMPLETED_PARTIAL"
+    | "COMPLETED_NO_RESULTS";
+}
+```
+
+Every computational component rendered inside an investigation screen must receive this metadata through a standardized prop contract rather than reconstructing it from unrelated query state.
+
+```ts
+export interface ReproducibleComponentProps {
+  reproducibility: ReproducibilityMetadata;
+}
+```
+
+The `ReproducibilityHeader` renders the compact form:
 
 ```text
 Dataset snapshot: 2026.07
-Methodology: discovery-ranking v1.4
-Objective hash: …
-Generated at: …
-MaterialGraph version: …
+Methodology: discovery-ranking-v1.4
+Objective hash: a8f9c2…
+Generated at: 2026-07-30T09:15:00Z
+MaterialGraph version: v1.9.6-remediated
 Computation status: COMPLETED_PARTIAL
 ```
 
-The compact header expands into full technical metadata.
+The compact header expands into full technical metadata. Field names, status values, and formatting must remain consistent across candidate, comparison, pathway, graph, export, and saved-version surfaces.
 
 ---
 
@@ -908,17 +932,52 @@ Every node and edge encoding must have a legend. No encoding may imply unsupport
 
 Every graph must have a navigable tabular or ordered-path alternative. Keyboard users must be able to inspect nodes and transitions.
 
-### 18.4 Library selection
+### 18.4 Graph library allocation
 
-Choose React Flow, Cytoscape.js, or another library only after validating:
+MaterialGraph uses two graph libraries because pathway explanation and dense network exploration have different interaction and performance requirements.
 
-- dense graph performance;
-- edge inspection;
-- accessible alternatives;
-- layout control;
-- path highlighting;
-- community visualization;
-- export requirements.
+#### React Flow — Pathway Explorer
+
+React Flow is the default renderer for bounded, pathway-oriented views such as:
+
+- ordered substitution paths;
+- K-best pathway comparison;
+- objective-specific multi-hop traces;
+- DAG-like or near-linear `A → B → C` explanations.
+
+React Flow is selected here because native React nodes make it straightforward to embed MaterialGraph components directly inside pathway nodes and edge overlays, including:
+
+- `TransitionCard`;
+- `CoverageBadge`;
+- `EvidenceStateBadge`;
+- inline `ProvenancePopover`;
+- partial-boundary markers;
+- tied-path labels.
+
+Pathway views must remain deliberately bounded. React Flow must not be used as the default renderer for dense material-family networks where DOM node count would impair performance.
+
+#### Cytoscape.js — Neighborhood and Community Explorer
+
+Cytoscape.js is the default engine for:
+
+- material neighborhoods;
+- community and family exploration;
+- dense relationship networks;
+- centrality and graph-metric overlays;
+- networks expected to exceed approximately 100 visible nodes.
+
+Cytoscape.js is selected for its graph-oriented data model, mature layouts, filtering, and support for graph analytics. When profiling shows that canvas rendering is insufficient for the target graph density, the implementation may use a compatible WebGL-capable renderer or extension. WebGL is an escalation path, not an assumed property of the core Cytoscape.js renderer.
+
+#### Shared requirements
+
+Both renderers must provide:
+
+- identical scientific node and edge semantics;
+- accessible tabular or ordered-path alternatives;
+- inspectable provenance;
+- documented legends;
+- URL- or investigation-recoverable selection state;
+- export behavior that preserves scientific labels and boundary notices.
 
 ---
 
@@ -1082,16 +1141,15 @@ The frontend architecture is implementation-ready when:
 
 ## 26. Open Design Decisions
 
-1. React Flow versus Cytoscape.js for primary graph interaction.
-2. URL-state boundaries for filters, selection, and comparison.
-3. Authentication and institutional identity provider strategy.
-4. Final investigation persistence schema.
-5. Export formats and citation metadata.
-6. Public investigation indexing policy.
-7. Frontend state management beyond server-state caching.
-8. Design token and branding direction.
-9. Dataset and methodology version comparison UX.
-10. Backend standardization of partial computation contracts.
+1. URL-state boundaries for filters, selection, and comparison.
+2. Authentication and institutional identity provider strategy.
+3. Final investigation persistence schema.
+4. Export formats and citation metadata.
+5. Public investigation indexing policy.
+6. Frontend state management beyond server-state caching.
+7. Design token and branding direction.
+8. Dataset and methodology version comparison UX.
+9. Backend standardization of partial computation contracts.
 
 ---
 
