@@ -21,6 +21,7 @@ class ResearchEvidenceIntelligenceService:
             "evidence_readiness": self._evidence_readiness(
                 supporting_signals=supporting_signals,
                 weak_assumptions=weak_assumptions,
+                missing_evidence=missing_evidence,
             ),
         }
 
@@ -217,11 +218,16 @@ class ResearchEvidenceIntelligenceService:
         self,
         supporting_signals: list[dict],
         weak_assumptions: list[dict],
+        missing_evidence: list[dict],
     ) -> str:
         signal_count = len(supporting_signals)
         weak_count = len(weak_assumptions)
 
-        if signal_count >= 5 and weak_count <= 2:
+        if (
+            signal_count >= 5
+            and weak_count <= 2
+            and not missing_evidence
+        ):
             return "strong"
 
         if signal_count >= 3:

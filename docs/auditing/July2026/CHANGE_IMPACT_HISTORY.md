@@ -1140,3 +1140,47 @@ valid phosphate endpoints whose formulas independently contained P and O.
 - Ranking: **Potentially; unsupported family bonuses are removed**
 - API contract: **No structural change; accepted results and scores can change**
 - Data migration: **No**
+
+---
+
+## Evidence-aware readiness and evidence-aligned pathway explanations
+
+Related findings: MG-AUD-088, MG-AUD-089  
+Date: 2026-07-31  
+Release reference: Post-v1.9.18  
+Status: Resolved; full-suite test-verified, lint-verified, and endpoint smoke-tested
+
+### Before
+
+Evidence readiness could be classified as `strong` from internal deterministic
+signals even while all external validation categories were missing. Scientific
+pathway explanations also used shared-element continuity to narrate transition
+plausibility, conflating two independent evidence components.
+
+### After
+
+Readiness evaluation now receives missing-evidence information explicitly.
+Strong internal support is capped at `moderate` while external gaps remain,
+weak support remains `limited`, and `strong` is reserved for a future
+evidence-complete state.
+
+Pathway strengths and confidence reasons now inspect
+`transition_plausibility` for plausibility claims. Shared-element continuity is
+reported independently and remains qualified because structural preservation
+is not validated.
+
+Focused tests covered readiness capping, weak support, evidence-gap input,
+continuity/plausibility independence, and qualified explanation wording. A
+temporary regression of explicit-empty endpoint membership was caught during
+verification and corrected before completion. The focused suites, full test
+suite, and Ruff checks then passed. The development scientific-pathways
+response returned five pathways with `moderate` readiness, disclosed all five
+external-evidence gaps, and supported each strong-plausibility statement with
+`transition_plausibility: 20`.
+
+### Impact
+
+- Scientific result: **Yes; readiness and explanations now match their evidence basis**
+- Ranking: **No direct score or ordering change; downstream grouping by readiness can change**
+- API contract: **No structural change; readiness labels and explanatory text can change**
+- Data migration: **No**

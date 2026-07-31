@@ -520,3 +520,61 @@ def test_common_shared_elements_prefers_primary_field(
     ]
 
     assert service._common_shared_elements(transitions) == []
+
+
+def test_high_continuity_does_not_imply_strong_transition_plausibility():
+    service = ScientificPathwayAnalysisService.__new__(
+        ScientificPathwayAnalysisService
+    )
+    chain = {
+        "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "transition_plausibility": 0.0,
+        }
+    }
+
+    strengths = service._strengths(chain, [])
+    confidence = service._confidence(
+        score=80.0,
+        chain=chain,
+        quality_summary={},
+    )
+
+    assert "Transition plausibility score is strong." not in strengths
+    assert not any(
+        "Transition plausibility is strong" in reason
+        for reason in confidence["reasons"]
+    )
+    assert any(
+        "Shared-element continuity" in reason
+        for reason in confidence["reasons"]
+    )
+
+
+def test_high_transition_plausibility_is_narrated_independently():
+    service = ScientificPathwayAnalysisService.__new__(
+        ScientificPathwayAnalysisService
+    )
+    chain = {
+        "score_breakdown": {
+            "shared_element_continuity": 0.0,
+            "transition_plausibility": 15.0,
+        }
+    }
+
+    strengths = service._strengths(chain, [])
+    confidence = service._confidence(
+        score=80.0,
+        chain=chain,
+        quality_summary={},
+    )
+
+    assert "Transition plausibility score is strong." in strengths
+    assert any(
+        "Transition plausibility is strong" in reason
+        for reason in confidence["reasons"]
+    )
+    assert not any(
+        "Shared-element continuity" in reason
+        for reason in confidence["reasons"]
+    )

@@ -273,6 +273,7 @@ class ScientificPathwayAnalysisService:
         endpoint = materials[-1]
 
         structured_elements = endpoint.get("elements")
+
         if structured_elements is not None:
             return sorted(set(structured_elements))
 
@@ -464,7 +465,7 @@ class ScientificPathwayAnalysisService:
                 "Continues within a related material family instead of jumping to an unrelated chemistry space."
             )
 
-        if breakdown.get("shared_element_continuity", 0.0) >= 15:
+        if breakdown.get("transition_plausibility", 0.0) >= 15:
             strengths.append("Transition plausibility score is strong.")
 
         return strengths or ["Available for structured scientific review."]
@@ -539,7 +540,7 @@ class ScientificPathwayAnalysisService:
                 "The pathway aligns well with the stated research objective."
             )
 
-        if breakdown.get("shared_element_continuity", 0.0) >= 15:
+        if breakdown.get("transition_plausibility", 0.0) >= 15:
             reasons.append(
                 "Transition plausibility is strong under the encoded deterministic rules."
             )

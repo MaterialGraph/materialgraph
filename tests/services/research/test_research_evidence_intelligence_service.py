@@ -120,6 +120,36 @@ def test_research_evidence_readiness_is_valid():
     }
 
 
+def test_external_evidence_gaps_cap_strong_internal_support_at_moderate():
+    service = ResearchEvidenceIntelligenceService()
+
+    evidence = service.build_evidence_summary(_sample_opportunity())
+
+    assert len(evidence["supporting_signals"]) >= 5
+    assert evidence["missing_evidence"]
+    assert evidence["evidence_readiness"] == "moderate"
+
+
+def test_weak_internal_support_remains_limited():
+    service = ResearchEvidenceIntelligenceService()
+
+    evidence = service.build_evidence_summary({})
+
+    assert evidence["evidence_readiness"] == "limited"
+
+
+def test_strong_readiness_requires_no_external_evidence_gaps():
+    service = ResearchEvidenceIntelligenceService()
+
+    readiness = service._evidence_readiness(
+        supporting_signals=[{} for _ in range(5)],
+        weak_assumptions=[{}],
+        missing_evidence=[],
+    )
+
+    assert readiness == "strong"
+
+
 def test_enrich_opportunity_adds_evidence_summary():
     service = ResearchEvidenceIntelligenceService()
 

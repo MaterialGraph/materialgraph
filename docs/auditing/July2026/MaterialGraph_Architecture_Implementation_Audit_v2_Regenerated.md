@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 37
-- **Not resolved:** 57
+- **Resolved:** 39
+- **Not resolved:** 55
 
 ## Correctness and Data Integrity
 
@@ -1551,6 +1551,43 @@ development scientific-pathways endpoint returned five valid phosphate
 pathways without response-contract or server errors; the explicit-empty branch
 remains decisively verified by controlled automated fixtures because the public
 response does not expose endpoint `elements`.
+
+Status: **Resolved, full-suite test-verified, lint-verified, and development
+endpoint smoke-tested on 2026-07-31.**
+
+#### MG-AUD-088 — Resolved
+
+Evidence-readiness evaluation now accounts explicitly for missing evidence.
+Strong internal deterministic support is capped at `moderate` while external
+validation categories remain unavailable; weak internal support remains
+`limited`. The `strong` state is retained for a future condition in which
+sufficient support exists without outstanding external-evidence gaps.
+
+Focused regressions verified that internal signals alone cannot produce
+`strong`, that strong internal support with external gaps produces `moderate`,
+and that weak internal support remains `limited`. The full regression suite
+and Ruff checks passed. Development endpoint verification returned five
+pathways, all with `evidence_readiness: "moderate"` and all five external
+evidence categories disclosed as missing.
+
+Status: **Resolved, full-suite test-verified, lint-verified, and development
+endpoint smoke-tested on 2026-07-31.**
+
+#### MG-AUD-089 — Resolved
+
+Scientific pathway strengths and confidence reasons now use the actual
+`transition_plausibility` component when describing transition plausibility.
+Shared-element continuity remains a separate statement and retains the
+qualification that structural preservation is not validated.
+
+Focused regressions verified that high continuity with low transition
+plausibility does not generate a strong-plausibility claim, while high
+transition plausibility can do so independently of continuity. During focused
+verification, an outdated truthiness check briefly reintroduced MG-AUD-087;
+the explicit-empty-membership rule was restored before completion, and the
+focused suites, full regression suite, and Ruff checks all passed afterward.
+The development response showed `transition_plausibility: 20` for every
+pathway that narrated strong plausibility.
 
 Status: **Resolved, full-suite test-verified, lint-verified, and development
 endpoint smoke-tested on 2026-07-31.**

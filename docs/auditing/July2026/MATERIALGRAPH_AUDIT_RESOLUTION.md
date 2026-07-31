@@ -4893,3 +4893,182 @@ scientific evidence must not silently trigger inference from a secondary source.
 Related Findings
 
 MG-AUD-086
+
+---
+
+# MG-AUD-088
+
+Title
+
+Evidence readiness could be strong while every external category was missing.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- ResearchEvidenceIntelligenceService
+- Evidence-readiness classification
+- Research evidence regression tests
+
+Root Cause
+
+Readiness was derived only from the count and weakness of internal signals.
+The classifier did not consider the external-evidence gaps returned by the
+same service, so sufficiently numerous internal signals could produce
+`strong` even when experimental, literature, DFT, performance, and
+manufacturing evidence were all unavailable.
+
+Scientific Impact
+
+Internally derived deterministic support could be presented as strong
+scientific readiness despite the absence of every external validation class.
+
+Resolution
+
+✓ Missing evidence is passed explicitly into readiness evaluation.
+
+✓ `strong` is unavailable while external-evidence gaps remain.
+
+✓ Strong internal evidence with external gaps produces `moderate`.
+
+✓ Weak internal evidence remains `limited`.
+
+✓ `strong` remains available for a future evidence-complete state.
+
+Regression Verification
+
+✓ Focused tests cover strong internal support with external gaps, weak internal
+support, and explicit use of missing evidence in readiness classification.
+
+✓ The focused suites, full regression suite, and Ruff checks passed.
+
+Endpoint Verification
+
+✓ `POST /api/v1/materials/5/research/scientific-pathways` returned five
+pathways, all capped at `evidence_readiness: "moderate"`.
+
+✓ Every pathway disclosed all five missing external-evidence categories.
+
+Scientific Changes
+
+Current deterministic evidence can no longer be presented as strong evidence
+readiness while external validation remains absent.
+
+Breaking API
+
+No structural change. The readiness label changes from `strong` to `moderate`
+for internally well-supported pathways that still have external-evidence gaps.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Evidence quantity and evidence independence are different dimensions. Internal
+signals cannot substitute for external scientific validation.
+
+Related Findings
+
+MG-AUD-089
+
+---
+
+# MG-AUD-089
+
+Title
+
+Scientific explanations called shared-element continuity transition plausibility.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- ScientificPathwayAnalysisService
+- Strength and confidence explanation generation
+- Scientific pathway regression tests
+
+Root Cause
+
+The strength and confidence builders inspected `shared_element_continuity`
+when deciding whether to narrate transition plausibility. A continuity score
+could therefore generate a claim about a different evidence component.
+
+Scientific Impact
+
+Public explanations could overstate pathway support by describing composition
+continuity as evidence that the encoded transition itself was plausible.
+
+Resolution
+
+✓ Plausibility statements now inspect only `transition_plausibility`.
+
+✓ Shared-element continuity remains a separate claim.
+
+✓ Continuity wording retains the qualification that structural preservation
+is not validated.
+
+Regression Verification
+
+✓ High continuity with low transition plausibility does not produce a strong
+plausibility statement.
+
+✓ High transition plausibility can produce the statement independently of
+continuity.
+
+✓ A temporary MG-AUD-087 regression detected during focused testing was
+corrected before completion; explicit `elements: []` is again authoritative.
+
+✓ The focused suites, full regression suite, and Ruff checks passed after the
+correction.
+
+Endpoint Verification
+
+✓ The development scientific-pathways response used strong-plausibility
+wording only where `transition_plausibility` was `20`.
+
+✓ Continuity statements remained separately qualified, and no response or
+server error occurred.
+
+Scientific Changes
+
+Research explanations now attribute continuity and transition plausibility to
+their correct, independent score components.
+
+Breaking API
+
+No structural change. Explanatory text can change where continuity previously
+triggered an unsupported plausibility claim.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Every scientific explanation must be generated from the exact evidence field
+named by the claim.
+
+Related Findings
+
+MG-AUD-088
