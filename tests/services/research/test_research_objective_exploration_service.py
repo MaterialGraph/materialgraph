@@ -165,3 +165,57 @@ def test_exploration_cannot_recover_candidate_missing_from_generated_chains(
 
     assert returned_ids == {7}
     assert 999 not in returned_ids
+
+
+def test_exploration_does_not_award_family_bonus_from_earlier_transition(
+    db_session,
+):
+    service = ResearchObjectiveExplorationService(db_session)
+    objective = ResearchObjective(
+        avoid_elements=[],
+        prefer_elements=[],
+        preserve_elements=[],
+        target_family="phosphate",
+        max_hops=2,
+        limit=5,
+    )
+
+    score = service._score_material(
+        material={
+            "material_id": 103,
+            "elements": ["Na", "Co", "O"],
+            "formula": "NaCoO2",
+        },
+        transitions=[{"family": "phosphate"}],
+        objective=objective,
+        mode="balanced",
+    )
+
+    assert score == 50.0
+
+
+def test_exploration_awards_family_bonus_from_candidate_composition(
+    db_session,
+):
+    service = ResearchObjectiveExplorationService(db_session)
+    objective = ResearchObjective(
+        avoid_elements=[],
+        prefer_elements=[],
+        preserve_elements=[],
+        target_family="phosphate",
+        max_hops=1,
+        limit=5,
+    )
+
+    score = service._score_material(
+        material={
+            "material_id": 104,
+            "elements": ["Na", "Fe", "P", "O"],
+            "formula": "NaFePO4",
+        },
+        transitions=[],
+        objective=objective,
+        mode="balanced",
+    )
+
+    assert score == 60.0

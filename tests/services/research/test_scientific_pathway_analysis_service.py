@@ -427,6 +427,30 @@ def test_endpoint_element_extraction_uses_exact_formula_elements():
     assert "N" not in elements
 
 
+def test_endpoint_element_extraction_preserves_explicit_empty_membership():
+    service = ScientificPathwayAnalysisService.__new__(
+        ScientificPathwayAnalysisService
+    )
+
+    elements = service._endpoint_elements(
+        [{"elements": [], "formula": "NaFePO4"}]
+    )
+
+    assert elements == []
+
+
+def test_endpoint_element_extraction_falls_back_when_membership_is_none():
+    service = ScientificPathwayAnalysisService.__new__(
+        ScientificPathwayAnalysisService
+    )
+
+    elements = service._endpoint_elements(
+        [{"elements": None, "formula": "NaFePO4"}]
+    )
+
+    assert elements == ["Fe", "Na", "O", "P"]
+
+
 def test_endpoint_objective_satisfaction_handles_empty_objectives():
     service = ScientificPathwayAnalysisService.__new__(
         ScientificPathwayAnalysisService

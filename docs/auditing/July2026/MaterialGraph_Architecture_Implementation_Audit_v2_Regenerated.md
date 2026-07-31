@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 34
-- **Not resolved:** 60
+- **Resolved:** 37
+- **Not resolved:** 57
 
 ## Correctness and Data Integrity
 
@@ -1483,6 +1483,77 @@ ranking work, deterministic result ordering, `k` limiting, simple-path
 behavior, and the hop ceiling. The full regression suite passed.
 
 Status: **Resolved and full-suite test-verified on 2026-07-28.**
+
+#### MG-AUD-084 — Resolved
+
+Discovery path lookup now treats `max_hops` as an enforced inclusive search
+boundary rather than ignoring it and inspecting direct edges only. Graph
+construction receives the requested hop limit, and deterministic breadth-first
+search returns the shortest valid path within that limit. Path-local visited
+state prevents cycles, and traversal does not expand a path after it reaches
+the hop ceiling.
+
+Returned multi-hop paths contain the complete ordered material and transition
+sequences. A target reachable only beyond the requested limit is reported as
+not found, while direct and otherwise reachable bounded paths retain the
+existing response contract.
+
+Focused regressions covered direct and two-hop paths, rejection of a two-hop
+target at `max_hops=1`, deterministic shortest-path selection, unreachable
+targets, cyclic graphs, material/transition counts, endpoint continuity, and
+the hop ceiling. The full regression suite passed.
+
+Development runtime inspection found no multi-hop-only source-target pair
+among the tested graph sources because every depth-two node was already
+directly reachable. Therefore, differential one-hop/two-hop behavior remains
+verified by controlled automated fixtures rather than by modifying scientific
+data to manufacture a case. A public smoke test for
+`GET /api/v1/materials/5/discovery/path?target_material_id=7&max_hops=1`
+returned a valid deterministic one-hop path with two materials, one continuous
+transition, and `hop_count: 1`.
+
+Status: **Resolved, full-suite test-verified, and development endpoint
+smoke-tested on 2026-07-31.**
+
+#### MG-AUD-086 — Resolved
+
+Target-family filtering and exploration scoring now derive family membership
+from the material being evaluated. Chain admission inspects only the final
+endpoint, while exploration scoring inspects the candidate itself. Earlier
+transitions, transition types, and explanatory prose are no longer accepted as
+evidence that an endpoint satisfies the requested family.
+
+Structured endpoint `elements` are authoritative whenever the field is not
+`null`, including an explicitly empty list. Formula parsing is used only when
+structured membership is absent or `null`. The supported phosphate rule
+therefore requires the evaluated endpoint or candidate itself to contain both
+P and O.
+
+Focused regressions covered rejection when only an earlier transition matched,
+acceptance from endpoint composition, explicit-empty membership, formula
+fallback, and candidate-local family bonuses. The full regression suite and
+Ruff checks passed. Development endpoint verification returned five phosphate
+pathways whose endpoint formulas independently contained P and O.
+
+Status: **Resolved, full-suite test-verified, lint-verified, and development
+endpoint smoke-tested on 2026-07-31.**
+
+#### MG-AUD-087 — Resolved
+
+Scientific pathway analysis now preserves explicitly empty structured endpoint
+membership instead of treating it as missing and reparsing the formula.
+Formula-derived membership remains available only when `elements` is absent or
+`null`, aligning structured-data authority across the research services.
+
+Focused regressions verified explicit `elements: []`, missing membership, and
+`null` membership. The full regression suite and Ruff checks passed. The
+development scientific-pathways endpoint returned five valid phosphate
+pathways without response-contract or server errors; the explicit-empty branch
+remains decisively verified by controlled automated fixtures because the public
+response does not expose endpoint `elements`.
+
+Status: **Resolved, full-suite test-verified, lint-verified, and development
+endpoint smoke-tested on 2026-07-31.**
 
 ## Maintenance rule
 

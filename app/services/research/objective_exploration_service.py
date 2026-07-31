@@ -110,8 +110,14 @@ class ResearchObjectiveExplorationService:
             if transition.get("transition_type") == "alkali_substitution":
                 score += 10.0
 
-            if transition.get("family") == objective.target_family:
-                score += 10.0
+        if (
+            objective.target_family is not None
+            and self.objective_service.material_matches_target_family(
+                material=material,
+                target_family=objective.target_family,
+            )
+        ):
+            score += 10.0
 
         if mode == "exploratory":
             score += 5.0

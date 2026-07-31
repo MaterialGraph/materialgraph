@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.services.discovery.chain_service import DiscoveryChainService
 from app.services.discovery.path_ranking_service import DiscoveryPathRankingService
+from app.utils.chemical_formula import extract_elements
 
 
 class ResearchObjectiveService:
@@ -104,34 +105,41 @@ class ResearchObjectiveService:
         if target_family is None:
             return True
 
-        target = target_family.lower()
+        materials = chain.get("materials", [])
+        if not materials:
+            return False
 
-        if target == "phosphate":
-            required = {"P", "O"}
+        return self.material_matches_target_family(
+            material=materials[-1],
+            target_family=target_family,
+        )
 
-            for transition in chain["transitions"]:
-                shared_elements = (
-                    transition.get("shared_elements")
-                    or transition.get("preserved_framework", [])
-                )
-                if required.issubset(set(shared_elements)):
-                    return True
+    @staticmethod
+    def material_matches_target_family(
+        material: dict,
+        target_family: str | None,
+    ) -> bool:
+        if target_family is None:
+            return True
 
-        for transition in chain["transitions"]:
-            transition_type = transition.get("transition_type", "")
-            reason = (
-                transition.get("scientific_reason")
-                or transition.get("reason")
-                or ""
-            )
+        structured_elements = material.get("elements")
+        if structured_elements is None:
+            formula = material.get("formula") or material.get("pretty_formula")
+            elements = extract_elements(formula) if formula else []
+        else:
+            elements = structured_elements
 
-            if target in transition_type.lower():
-                return True
+        required_elements_by_family = {
+            "phosphate": {"P", "O"},
+        }
+        required_elements = required_elements_by_family.get(
+            target_family.strip().lower()
+        )
 
-            if target in reason.lower():
-                return True
-
-        return False
+        return (
+            required_elements is not None
+            and required_elements.issubset(set(elements))
+        )
 
     def _rank_chains(
         self,

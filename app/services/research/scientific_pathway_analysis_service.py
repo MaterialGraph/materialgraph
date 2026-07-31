@@ -273,7 +273,7 @@ class ScientificPathwayAnalysisService:
         endpoint = materials[-1]
 
         structured_elements = endpoint.get("elements")
-        if structured_elements:
+        if structured_elements is not None:
             return sorted(set(structured_elements))
 
         formula = endpoint.get("formula") or endpoint.get("pretty_formula")

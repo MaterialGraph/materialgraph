@@ -306,3 +306,75 @@ def test_shared_elements_take_precedence_over_compatibility_alias(
         chain=chain,
         preserve_elements=["Fe"],
     )
+
+
+def test_target_family_uses_only_endpoint_composition(db_session):
+    service = ResearchObjectiveService(db_session)
+    chain = {
+        "materials": [
+            {"material_id": 1, "elements": ["Li", "Fe", "P", "O"]},
+            {"material_id": 2, "elements": ["Na", "Fe", "P", "O"]},
+            {"material_id": 3, "elements": ["Na", "Co", "O"]},
+        ],
+        "transitions": [
+            {
+                "family": "phosphate",
+                "transition_type": "phosphate_substitution",
+                "shared_elements": ["Fe", "P", "O"],
+                "scientific_reason": "Earlier phosphate transition.",
+            },
+            {
+                "family": "oxide",
+                "transition_type": "family_expansion",
+                "shared_elements": ["Na", "O"],
+            },
+        ],
+    }
+
+    assert not service._matches_target_family(chain, "phosphate")
+
+
+def test_target_family_accepts_matching_endpoint_composition(db_session):
+    service = ResearchObjectiveService(db_session)
+    chain = {
+        "materials": [
+            {"material_id": 1, "elements": ["Li", "Fe", "P", "O"]},
+            {"material_id": 2, "elements": ["Na", "Fe", "P", "O"]},
+        ],
+        "transitions": [],
+    }
+
+    assert service._matches_target_family(chain, "PHOSPHATE")
+
+
+def test_target_family_preserves_explicit_empty_endpoint_membership(db_session):
+    service = ResearchObjectiveService(db_session)
+    chain = {
+        "materials": [
+            {
+                "material_id": 2,
+                "elements": [],
+                "formula": "NaFePO4",
+            },
+        ],
+        "transitions": [],
+    }
+
+    assert not service._matches_target_family(chain, "phosphate")
+
+
+def test_target_family_parses_formula_when_endpoint_membership_is_missing(
+    db_session,
+):
+    service = ResearchObjectiveService(db_session)
+    chain = {
+        "materials": [
+            {
+                "material_id": 2,
+                "formula": "NaFePO4",
+            },
+        ],
+        "transitions": [],
+    }
+
+    assert service._matches_target_family(chain, "phosphate")

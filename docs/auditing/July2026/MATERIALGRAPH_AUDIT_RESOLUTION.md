@@ -1,7 +1,7 @@
 # MaterialGraph Architecture & Implementation Audit Resolution
 
-Version: 1.8
-Last Updated: 2026-07-28
+Version: 1.9
+Last Updated: 2026-07-31
 
 ---
 
@@ -4695,3 +4695,201 @@ Related Findings
 MG-AUD-074
 
 MG-AUD-075
+
+---
+
+# MG-AUD-086
+
+Title
+
+Target-family filtering could accept a chain whose endpoint did not match.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- ResearchObjectiveService
+- ResearchObjectiveExplorationService
+- Target-family filtering and exploration scoring
+- Research objective regression tests
+
+Root Cause
+
+Target-family satisfaction could be inferred from any transition in a chain,
+including transition type or explanatory prose. Exploration scoring likewise
+awarded family credit from the chain's transitions rather than from the
+candidate being scored. An earlier phosphate-related hop could therefore admit
+or promote an endpoint whose own composition did not match the requested
+family.
+
+Scientific Impact
+
+Endpoint objective satisfaction could be overstated, and candidate ranking
+could include family credit unsupported by the candidate's own composition.
+
+Resolution
+
+✓ Chain filtering now evaluates only the final endpoint's composition.
+
+✓ Exploration scoring evaluates the candidate's own composition and awards
+the family bonus once.
+
+✓ Earlier transitions, transition types, and explanatory prose are no longer
+used as endpoint-family evidence.
+
+✓ Structured `elements` are authoritative whenever not `null`, including an
+explicitly empty list; formula parsing is used only when membership is absent
+or `null`.
+
+✓ The supported phosphate rule requires both P and O in the evaluated material.
+
+Regression Verification
+
+✓ Focused tests reject a chain whose earlier transition matches while its
+endpoint does not, and accept an endpoint whose own composition matches.
+
+✓ Focused tests preserve explicit-empty membership, verify formula fallback,
+and ensure candidate-local family scoring.
+
+✓ The focused suites, full regression suite, and Ruff checks passed.
+
+Endpoint Verification
+
+✓ `POST /api/v1/materials/5/discovery/objective/explore` returned five
+one-hop candidates within the requested limit and hop boundary.
+
+✓ Every returned endpoint formula independently contained P and O, excluded Li,
+and contained preferred Na. No response-contract or server error occurred.
+
+Verification Scope Note
+
+The public response does not expose endpoint `elements`, so authoritative
+structured membership and explicit-empty behavior are verified by controlled
+automated fixtures. Runtime verification confirms normal endpoint-family
+behavior using the development dataset.
+
+Scientific Changes
+
+Chains and candidates can no longer satisfy or receive credit for a target
+family solely from evidence belonging to an earlier hop.
+
+Breaking API
+
+No structural change. Results and scores can change where earlier-transition
+evidence previously supplied unsupported family satisfaction.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Endpoint objectives must be evaluated from endpoint evidence. Transition
+history and researcher-facing prose are not substitutes for structured
+composition.
+
+Related Findings
+
+MG-AUD-087
+
+---
+
+# MG-AUD-087
+
+Title
+
+Scientific analysis reparsed explicitly empty endpoint membership.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- ScientificPathwayAnalysisService
+- Endpoint element-membership resolution
+- Scientific pathway regression tests
+
+Root Cause
+
+The endpoint-membership helper used truthiness to decide whether structured
+`elements` were available. An explicit empty list was therefore treated as
+missing, and the service reparsed the formula to invent membership that the
+authoritative structured field did not contain.
+
+Scientific Impact
+
+Research services could disagree about endpoint composition, and scientific
+analysis could report objective coverage unsupported by the supplied
+structured endpoint data.
+
+Resolution
+
+✓ Explicitly empty structured membership is preserved as authoritative.
+
+✓ Formula parsing occurs only when `elements` is absent or `null`.
+
+✓ Scientific analysis now follows the same structured-data authority rule as
+the objective services.
+
+Regression Verification
+
+✓ Focused tests cover explicit `elements: []`, missing membership, and `null`
+membership.
+
+✓ The focused suites, full regression suite, and Ruff checks passed.
+
+Endpoint Verification
+
+✓ `POST /api/v1/materials/5/research/scientific-pathways` returned five valid
+one-hop pathways within the requested limit and hop boundary.
+
+✓ Every endpoint formula independently contained P and O, excluded Li, and
+contained preferred Na. No response-contract or server error occurred.
+
+Verification Scope Note
+
+The public response does not serialize endpoint `elements`; therefore the
+explicit-empty branch is fixture-verified rather than directly observable in
+the development response.
+
+Scientific Changes
+
+Scientific pathway analysis no longer derives endpoint membership when an
+authoritative empty structured value was explicitly supplied.
+
+Breaking API
+
+No structural change. Objective-coverage results can change for inputs that
+explicitly provide empty endpoint membership.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Presence and truthiness are different data-contract states. Empty structured
+scientific evidence must not silently trigger inference from a secondary source.
+
+Related Findings
+
+MG-AUD-086
