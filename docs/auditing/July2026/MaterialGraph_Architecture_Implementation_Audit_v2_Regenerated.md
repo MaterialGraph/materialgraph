@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 33
-- **Not resolved:** 61
+- **Resolved:** 34
+- **Not resolved:** 60
 
 ## Correctness and Data Integrity
 
@@ -1409,6 +1409,28 @@ targeted automated fixture rather than claimed from an ordinary endpoint
 response whose dataset may not contain that competing-route topology.
 
 Status: **Resolved and full-suite test-verified on 2026-07-28.**
+
+#### MG-AUD-076 — Resolved
+
+Edge scoring now reserves part of the `0–100` scale for framework-continuity
+and elemental-exchange evidence instead of allowing transition plausibility to
+saturate the score by itself. The plausibility contribution was rescaled from
+`scientific_plausibility × 100` to `scientific_plausibility × 80`; the existing
+evidence contributions remain up to 10 points for P–O continuity, 5 points for
+oxygen continuity, and 5 points for a removed-and-introduced element exchange.
+
+This preserves the established maximum of `100` while allowing scientifically
+different edges with the same transition type to remain distinguishable. For
+example, alkali-substitution edges now score `80`, `85`, or `100` depending on
+their available continuity and exchange evidence rather than all saturating at
+`100`. The correction is confined to graph-edge intelligence; K-best and path
+ranking use their own scoring model and were not changed.
+
+Focused regressions updated the affected score expectations and verified strict
+ordering between otherwise identical transition types with full, partial, and
+baseline evidence. The full regression suite passed.
+
+Status: **Resolved and full-suite test-verified on 2026-07-31.**
 
 #### MG-AUD-077 — Resolved
 

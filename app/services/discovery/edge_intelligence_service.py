@@ -66,7 +66,19 @@ class DiscoveryEdgeIntelligenceService:
         removed_elements: list[str],
         introduced_elements: list[str],
     ) -> float:
-        score = scientific_plausibility * 100
+        """
+        Calculate edge score based on scientific plausibility and framework preservation.
+        
+        Args:
+            scientific_plausibility: Scientific plausibility score (0-1)
+            preserved_framework: List of preserved framework elements
+            removed_elements: List of removed elements
+            introduced_elements: List of introduced elements
+            
+        Returns:
+            Edge score (0-100)
+        """
+        score = scientific_plausibility * 80
 
         framework = set(preserved_framework)
 

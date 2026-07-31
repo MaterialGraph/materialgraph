@@ -1029,3 +1029,40 @@ or public-schema change was required.
 - Performance: **Yes; enumeration and ranking now have enforceable path and state budgets**
 - API contract: **No public change; internal service metadata adds `search_truncated` and clarifies count semantics**
 - Data migration: **No**
+
+---
+
+## Edge-intelligence score differentiation
+
+Related finding: MG-AUD-076  
+Date: 2026-07-31  
+Release reference: Post-v1.9.18  
+Status: Resolved; full-suite test-verified 2026-07-31
+
+### Before
+
+Edge scoring multiplied scientific plausibility by 100 and then added
+framework-continuity and elemental-exchange bonuses before clamping the result
+to 100. High-plausibility transitions could therefore reach or exceed the
+maximum without the additional evidence, causing scientifically different
+edges to collapse to the same score.
+
+### After
+
+Scientific plausibility contributes at most 80 points. The remaining 20 points
+are reserved for the existing evidence signals: P–O continuity, oxygen
+continuity, and a removed-and-introduced element exchange. The score remains
+bounded to `0–100`, but each intended component can now affect the result.
+
+Focused regression coverage demonstrates that alkali-substitution edges with
+full, partial, and baseline evidence score `100.0`, `85.0`, and `80.0`,
+respectively. Updated edge-intelligence tests and the full regression suite
+passed. K-best and path-ranking formulas were not changed because they do not
+consume `edge_score`.
+
+### Impact
+
+- Scientific result: **Yes; edge evidence distinctions are now preserved**
+- Ranking: **Graph-edge score ordering can change; K-best/path ranking is unchanged**
+- API contract: **No structural change; numeric `edge_score` values can change**
+- Data migration: **No**

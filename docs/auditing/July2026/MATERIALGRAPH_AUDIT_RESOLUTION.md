@@ -4112,6 +4112,97 @@ ADR-002
 
 ---
 
+# MG-AUD-076
+
+Title
+
+Edge-score saturation erased framework and plausibility distinctions.
+
+Severity
+
+High
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- DiscoveryEdgeIntelligenceService
+- Graph-edge intelligence responses
+
+Root Cause
+
+The edge-score formula multiplied `scientific_plausibility` by `100` before
+adding framework-continuity and elemental-exchange evidence and then clamped
+the result to `100`. An alkali substitution therefore reached the maximum from
+plausibility alone, and other strong transitions could also saturate after only
+part of the available evidence was added.
+
+Scientific Impact
+
+Scientifically different edges could receive identical scores even when their
+framework-continuity or elemental-exchange evidence differed. This weakened
+the interpretability and discriminative value of graph-edge intelligence.
+K-best and path ranking were not directly affected because they do not consume
+`edge_score`.
+
+Resolution
+
+✓ Rescaled the plausibility contribution from
+`scientific_plausibility × 100` to `scientific_plausibility × 80`.
+
+✓ Preserved up to 20 points for the existing evidence signals: 10 points for
+P–O continuity, 5 points for oxygen continuity, and 5 points for a
+removed-and-introduced element exchange.
+
+✓ Retained the existing `0–100` score range and upper clamp.
+
+✓ Kept the change confined to edge intelligence; no K-best or path-ranking
+formula was altered.
+
+Regression Verification
+
+✓ Updated affected edge-score expectations for the corrected scale.
+
+✓ Added a distinction-focused regression proving that otherwise identical
+alkali-substitution edges with full, partial, and baseline evidence score
+`100.0`, `85.0`, and `80.0`, respectively.
+
+✓ Full regression suite passed locally.
+
+Scientific Changes
+
+Yes. Edge-score values can decrease where plausibility previously consumed the
+entire scale, and framework-continuity and elemental-exchange evidence now
+produce observable score distinctions. The maximum score remains `100`.
+
+Breaking API
+
+No structural API change. Numeric `edge_score` values can change.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+A bounded composite score must reserve capacity for every intended component.
+Applying a clamp after one component can independently reach the maximum makes
+the remaining evidence signals ineffective.
+
+Related Findings
+
+MG-AUD-075
+
+MG-AUD-077
+
+---
+
 # MG-AUD-077
 
 Title
