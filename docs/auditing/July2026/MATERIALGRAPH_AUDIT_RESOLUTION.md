@@ -144,8 +144,6 @@ Related ADR
 
 ADR-002
 
----
-
 # MG-AUD-074
 
 Title
@@ -4585,3 +4583,115 @@ MG-AUD-012
 Related ADR
 
 ADR-002
+
+---
+
+# MG-AUD-084
+
+Title
+
+Discovery path lookup ignored `max_hops` and searched direct paths only.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- DiscoveryTraversalService
+- Public discovery path lookup
+- Discovery traversal regression tests
+
+Root Cause
+
+`DiscoveryTraversalService.get_path()` accepted `max_hops` but built the graph
+with a hard-coded depth of one. It then scanned the returned edges only for an
+exact direct `(source, target)` match. The public route passed the caller's
+value correctly, but the service did not use it.
+
+Scientific Impact
+
+Valid multi-hop discovery paths were reported as unavailable even when they
+were reachable within the API's requested hop boundary. Increasing
+`max_hops` had no effect, so public behavior did not match the route contract.
+
+Resolution
+
+✓ Passed the caller's `max_hops` value into discovery-graph construction.
+
+✓ Replaced direct-edge-only lookup with deterministic breadth-first search,
+which returns the shortest valid path within the requested bound.
+
+✓ Stopped expansion at the hop ceiling and prevented material repetition
+within each candidate path.
+
+✓ Constructed the complete ordered materials and transitions for every
+returned multi-hop path before applying the existing path-ranking logic.
+
+✓ Preserved the existing not-found response when the target is unreachable or
+reachable only beyond the requested ceiling.
+
+Regression Verification
+
+✓ Focused tests cover direct and two-hop paths, rejection beyond the hop limit,
+deterministic shortest-path choice, unreachable targets, cycles, exact
+material/transition counts, and endpoint continuity.
+
+✓ The discovery traversal, supporting graph-algorithm tests, and full
+regression suite passed locally.
+
+Endpoint Verification
+
+✓ The public discovery graph endpoint remained operational with
+`max_hops=2`.
+
+✓ Runtime comparison across sources `1`, `5`, `6`, `7`, `8`, `9`, and `10`
+found no multi-hop-only target: every material returned at depth two was
+already a direct neighbor. No scientific data was altered merely to create a
+demonstration case.
+
+✓ A public path smoke test for material `5` to target `7` with `max_hops=1`
+returned `path_found: true`, `hop_count: 1`, two materials, one transition,
+and continuous endpoints `5 → 7`.
+
+Verification Scope Note
+
+The decisive `path_found: false` at one hop and `path_found: true` at two hops
+condition is verified by controlled automated fixtures. The current
+development dataset cannot demonstrate that differential behavior because its
+tested graph region contains no multi-hop-only source-target pair.
+
+Scientific Changes
+
+Valid bounded multi-hop paths can now be returned instead of being omitted.
+Direct-path scoring and the public response structure are unchanged.
+
+Breaking API
+
+No. The implementation now honors the existing `max_hops` contract; result
+contents can change for targets reachable through multiple hops.
+
+Database Migration
+
+No.
+
+Lessons Learned
+
+Accepting and forwarding a traversal boundary at the route layer is
+insufficient unless the executing service enforces it during search. Runtime
+verification must also distinguish absence of a suitable dataset topology
+from failure of the bounded traversal implementation.
+
+Related Findings
+
+MG-AUD-074
+
+MG-AUD-075

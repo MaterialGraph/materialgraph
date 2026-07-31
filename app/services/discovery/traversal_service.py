@@ -1,3 +1,5 @@
+from collections import deque
+
 from sqlalchemy.orm import Session
 
 from app.models.material import Material
@@ -235,44 +237,101 @@ class DiscoveryTraversalService:
             start_material_id=material_id,
             avoid_element=avoid_element,
             prefer_element=prefer_element,
-            max_depth=1,
+            max_depth=max_hops,
         )
 
         node_by_id = {
             node["material_id"]: node
             for node in graph["nodes"]
         }
-        
-        for edge in graph["edges"]:
-            if (
-                edge["source_material_id"] == material_id
-                and edge["target_material_id"] == target_material_id
-            ):
-                ranking = self.path_ranking_service.rank_path(
-                    materials=[
-                        node_by_id[material_id],
-                        node_by_id[target_material_id],
-                    ],
-                    transitions=[edge],
-                    avoid_element=avoid_element,
-                    prefer_element=prefer_element,
+        edge_adjacency = self._build_edge_adjacency(graph["edges"])
+        path = self._find_shortest_path(
+            start_material_id=material_id,
+            target_material_id=target_material_id,
+            edge_adjacency=edge_adjacency,
+            max_hops=max_hops,
+        )
+
+        if path is not None:
+            path_ids, transitions = path
+
+            if not all(path_id in node_by_id for path_id in path_ids):
+                return self._empty_path_response(
+                    material_id,
+                    target_material_id,
                 )
 
-                return {
-                    "material_id": material_id,
-                    "target_material_id": target_material_id,
-                    "path_found": True,
-                    "hop_count": 1,
-                    "materials": [
-                        node_by_id[material_id],
-                        node_by_id[target_material_id],
-                    ],
-                    "transitions": [edge],
-                    "path_reason": self._build_path_reason([edge]),
-                    **ranking,
-                }
+            materials = [
+                node_by_id[path_id]
+                for path_id in path_ids
+            ]
+            ranking = self.path_ranking_service.rank_path(
+                materials=materials,
+                transitions=transitions,
+                avoid_element=avoid_element,
+                prefer_element=prefer_element,
+            )
+
+            return {
+                "material_id": material_id,
+                "target_material_id": target_material_id,
+                "path_found": True,
+                "hop_count": len(transitions),
+                "materials": materials,
+                "transitions": transitions,
+                "path_reason": self._build_path_reason(transitions),
+                **ranking,
+            }
 
         return self._empty_path_response(material_id, target_material_id)
+
+    def _build_edge_adjacency(
+        self,
+        edges: list[dict],
+    ) -> dict[int, list[dict]]:
+        adjacency: dict[int, list[dict]] = {}
+
+        for edge in edges:
+            source_id = edge["source_material_id"]
+            adjacency.setdefault(source_id, []).append(edge)
+
+        return adjacency
+
+    def _find_shortest_path(
+        self,
+        start_material_id: int,
+        target_material_id: int,
+        edge_adjacency: dict[int, list[dict]],
+        max_hops: int,
+    ) -> tuple[list[int], list[dict]] | None:
+        queue = deque(
+            [(start_material_id, [start_material_id], [])]
+        )
+
+        while queue:
+            material_id, path_ids, transitions = queue.popleft()
+
+            if material_id == target_material_id:
+                return path_ids, transitions
+
+            if len(transitions) >= max_hops:
+                continue
+
+            for edge in edge_adjacency.get(material_id, []):
+                next_id = edge["target_material_id"]
+
+                if next_id in path_ids:
+                    continue
+
+                queue.append(
+                    (
+                        next_id,
+                        [*path_ids, next_id],
+                        [*transitions, edge],
+                    )
+                )
+
+        return None
 
     def _build_path_reason(self, transitions: list[dict]) -> str:
         if not transitions:

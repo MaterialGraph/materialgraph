@@ -1,1068 +1,1525 @@
-# MaterialGraph Change Impact History
+# MaterialGraph Architecture & Implementation Audit Findings Register
 
-This document is the concise chronological record of externally meaningful
-scientific, scoring, explanation, and API behavior changes made through the
-MaterialGraph audit.
+**Document role:** Canonical register of audit findings and current status  
+**Status:** Active living audit  
+**Detailed remediation record:** `MATERIALGRAPH_AUDIT_RESOLUTION.md`
+**Independent source audit:** `MaterialGraph_Independent_Observation_Audit.md`
 
-It does not contain root-cause analysis, file-level implementation details,
-complete tests, or full production responses. Those belong in
-`MATERIALGRAPH_AUDIT_RESOLUTION.md`. The canonical finding status remains in
-`MaterialGraph_Architecture_Implementation_Audit_v2_Regenerated.md`.
+This document contains only MaterialGraph audit findings. Update an existing finding's status here when its state changes, and add every newly confirmed finding here before recording implementation details elsewhere.
 
-`Production verified` means the listed behavior was observed on the deployed
-version for the recorded request and dataset. It does not imply exhaustive
-edge-case coverage or independent scientific validation.
+## Status legend
 
-## Impact legend
+- **Confirmed:** Verified defect or semantic risk awaiting resolution.
+- **Verification:** Remediation implemented and locally verified; remaining
+  deployment or production checks are pending.
+- **Resolved:** Implemented, regression-tested, and—where applicable—production-verified.
+- **Domain decision required:** Implementation is known, but remediation depends on an explicit scientific or product-policy decision.
+- **Accepted behavior:** Verified behavior retained intentionally; document rather than remediate.
 
-- **Scientific result:** computed scientific values or conclusions changed.
-- **Ranking:** candidate or pathway order may change.
-- **API contract:** response fields or serialized values changed.
-- **Data migration:** stored data required recalculation or backfill.
+`Resolved` means that the specified implementation defect was corrected and
+verified within its documented scope. It does not mean that the resulting
+scientific output has been independently validated by materials researchers,
+literature, domain-specific computation, or experiment.
 
----
+Verification evidence is tracked separately as automated testing, development
+endpoint verification, production endpoint verification, independent-audit
+review, and scientific validation.
 
-## Composition-aware criticality weighting
+## Register summary
 
-Related findings: MG-AUD-001  
-Release reference: v1.9.7  
-Status: Production verified
+- **Total findings:** 94
+- **Resolved:** 35
+- **Not resolved:** 59
 
-### Before
+## Correctness and Data Integrity
 
-Material criticality treated constituent elements without correct
-stoichiometric weighting.
+### MG-AUD-001 — Materials Project Import Discards Composition Weighting
 
-### After
+- **Status:** Resolved
+- **Priority:** P0
+- **Confidence:** Confirmed
 
-Criticality uses composition-aware weighting. For the reference material
-LiFePO4, criticality changed from `36.5` to `32.0`, and the reference pathway's
-scientific usefulness changed from `94.95` to `95.65`.
-
-### Impact
-
-- Scientific result: **Yes**
-- Ranking: **Potentially**, where corrected values distinguish candidates
-- API contract: **No**
-- Data migration: **Yes**
-
----
-
-## Unknown criticality remains unknown
-
-Related findings: MG-AUD-002  
-Release reference: v1.9.8  
-Status: Production verified
-
-### Before
-
-Missing criticality evidence could be treated like favorable zero criticality
-and contribute a quality advantage.
-
-### After
-
-Unknown criticality remains `null` and receives no favorable quality bonus.
-Known-material values and the LiFePO4 reference workflow are unchanged.
-
-### Impact
-
-- Scientific result: **Yes**, for materials with incomplete evidence
-- Ranking: **Potentially**, for affected materials
-- API contract: **No**
-- Data migration: **No**
-
----
-
-## Unknown risk preserved during candidate screening
-
-Related findings: MG-AUD-003  
-Release reference: v1.9.9  
-Status: Production verified
-
-### Before
-
-Candidate screening and comparison could collapse unknown risk into a
-favorable numeric value.
-
-### After
-
-Unknown risk remains unknown throughout screening and comparison. Candidate
-responses expose risk-evidence metadata, and bulk loading avoids repeated
-per-material lookups.
-
-### Impact
-
-- Scientific result: **Yes**, for candidates with unknown risk
-- Ranking: **Potentially**, for affected candidates
-- API contract: **Additive metadata only**
-- Data migration: **No**
-
----
-
-## Exact chemical-element membership
-
-Related findings: MG-AUD-004  
-Release reference: v1.9.10  
-Status: Production verified
-
-### Before
-
-Some discovery logic used raw formula substring matching, which could confuse
-symbols such as `N` and `Na`, `S` and `Si`, or `C` and `Ca`.
-
-### After
-
-Candidate scoring, chain filtering, warnings, and research-objective logic use
-structured or parsed chemical-element membership.
-
-### Impact
-
-- Scientific result: **Yes**, for ambiguous element symbols
-- Ranking: **Potentially**, for affected objectives
-- API contract: **No**
-- Data migration: **No**
-
----
-
-## Qualified framework-preservation provenance
-
-Related findings: MG-AUD-005  
-Release reference: v1.9.11  
-Status: Production verified
-
-### Before
-
-Shared elements could be described as framework preservation without exposing
-the limits of the underlying evidence.
-
-### After
-
-Discovery and research outputs distinguish shared-element continuity from
-validated structural preservation. They expose `shared_elements`,
-`preservation_basis: "element_overlap"`, and
-`structural_preservation_validated: false`. The existing
-`preserved_framework` field remains as a compatibility alias.
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No**
-- API contract: **Additive metadata; compatibility field retained**
-- Data migration: **No**
-
----
-
-## Reconciled discovery-score provenance
-
-Related findings: MG-AUD-006  
-Release reference: v1.9.12  
-Status: Production verified
-
-### Before
-
-Candidate merging could combine score breakdowns from competing sources, so a
-displayed breakdown did not always describe the final score.
-
-### After
-
-The winning source's score and breakdown remain together while contextual
-discovery evidence is aggregated. For every candidate:
-
-```text
-sum(score_breakdown) = discovery_score
-```
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No**
-- API contract: **No**
-- Data migration: **No**
-
----
-
-## Source-diversity bonus based on distinct sources
-
-Related findings: MG-AUD-007  
-Release reference: v1.9.13  
-Status: Production verified
-
-### Before
-
-Repeated encounters and previously aggregated scores could inflate the
-source-diversity contribution.
-
-### After
-
-The bonus uses distinct discovery source types: one source receives `0`, two
-receive `10`, and three receive `20`. Base-score provenance is kept separate
-from the diversity bonus so the bonus is applied once.
-
-### Impact
-
-- Scientific result: **Yes**, where prior source accounting was inflated
-- Ranking: **Potentially**, for affected candidates
-- API contract: **No**
-- Data migration: **No**
-
----
-
-## Complete evidence required for favorable risk-quality bonuses
-
-Related findings: MG-AUD-008  
-Release reference: v1.9.14  
-Status: Production verified
-
-### Before
-
-A calculable risk score based on incomplete material-element coverage could
-still qualify for a favorable risk-quality bonus.
-
-### After
-
-Low- and medium-risk quality bonuses require complete constituent-element risk
-evidence. Partial evidence remains visible but is not treated as favorable.
-The LiFePO4 and inspected Na-phosphate reference materials had complete
-coverage and therefore retained their results.
-
-### Impact
-
-- Scientific result: **Yes**, for incomplete-evidence materials
-- Ranking: **Potentially**, across quality-dependent graph and pathway ranking
-- API contract: **No**
-- Data migration: **No**
-
----
-
-## Exact community element membership
-
-Related findings: MG-AUD-049  
-Release reference: v1.9.14 development cycle  
-Status: Production verified
-
-### Before
-
-Graph community summaries could count elements using formula substrings.
-
-### After
-
-Community analytics use exact element membership, preventing false matches
-between short and longer chemical symbols.
-
-### Impact
-
-- Scientific result: **Yes**, for ambiguous symbols in community summaries
-- Ranking: **No**
-- API contract: **No**
-- Data migration: **No**
-
----
-
-## Multi-element research objectives
-
-Related findings: MG-AUD-009  
-Release reference: v1.9.15  
-Status: Production verified
-
-### Before
-
-Objective alignment could evaluate only the first avoided and preferred
-element even when several were requested.
-
-### After
-
-Every requested avoided and preferred element contributes to deterministic
-objective evaluation. Responses expose matched and unmatched elements,
-coverage percentages, and completion status. Single-element behavior remains
-unchanged; multi-element objectives may now receive different scores.
-
-### Impact
-
-- Scientific result: **Yes**, for multi-element objectives
-- Ranking: **Potentially**, for multi-element objectives
-- API contract: **Additive objective-satisfaction metadata**
-- Data migration: **No**
-
----
-
-## Path-wide and endpoint-specific objective satisfaction
-
-Related findings: MG-AUD-050  
-Release reference: v1.9.16  
-Status: Production verified
-
-### Before
-
-Path-wide transition events could be interpreted as proof that the final
-material satisfied the same objective.
-
-### After
-
-Research responses distinguish objective events anywhere along a path from the
-composition of the final endpoint. Endpoint matched and unmatched elements,
-coverage, status, and interpretation are exposed separately.
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No**
-- API contract: **Additive endpoint-evaluation fields**
-- Data migration: **No**
-
----
-
-## Stable pathway identity for tied pathways
-
-Related findings: MG-AUD-051  
-Release reference: v1.9.17  
-Status: Production verified within pathway-identity scope
-
-### Before
-
-Comparative research could use rank as pathway identity, causing distinct tied
-pathways to be conflated.
-
-### After
-
-Each pathway exposes a stable `pathway_id`, `position`, and `rank`.
-Comparative summaries and element aggregation reference pathway identity while
-preserving competition ranking and valid ties.
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No**
-- API contract: **Additive pathway identity fields**
-- Data migration: **No**
-
----
-
-## Canonical criticality comparison terminology
-
-Related findings: MG-AUD-036  
-Release reference: v1.9.18  
-Status: Production verified
-
-### Before
-
-The `criticality_direction` field used risk-oriented values even though it was
-derived from `criticality_score`.
-
-### After
-
-Serialized values use `LOWER_CRITICALITY`, `HIGHER_CRITICALITY`,
-`SAME_CRITICALITY`, and `UNKNOWN`. Numeric deltas, bonuses, ranking, and
-human-readable explanations are unchanged.
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No**
-- API contract: **Yes; serialized enum values changed**
-- Data migration: **No**
-
----
-
-## Direction-aware scenario explanations
-
-Related findings: MG-AUD-052  
-Release reference: Post-v1.9.18  
-Status: Production verified
-
-### Before
-
-Scenario explanations could describe a positive adjustment as a negative
-penalty or display a signed penalty inconsistently.
-
-### After
-
-Positive deltas are described as bonuses, negative deltas as penalties using
-their absolute magnitude, and zero as no adjustment. The invariant is:
-
-```text
-scenario_delta = scenario_score - recommendation_score
-```
-
-Numeric scores, weights, ranking, and response fields are unchanged.
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No**
-- API contract: **No; human-readable wording only**
-- Data migration: **No**
-
----
-
-## Correct discovery base-score selection and deterministic ties
-
-Related findings: MG-AUD-053  
-Release reference: Post-v1.9.18  
-Status: Production verified
-
-### Before
-
-A stronger incoming source could be rejected when an earlier candidate's
-displayed score appeared larger only because it already included a diversity
-bonus. Exact-score ordering also lacked an explicit stable tie-breaker.
-
-### After
-
-Source merging compares base score with base score. Results remain sorted by
-descending `discovery_score`, with ascending `material_id` used only for exact
-ties. Valid equal-evidence scores, including the family-only `125.0` ties, are
-preserved.
-
-### Impact
-
-- Scientific result: **Yes**, when the wrong base source previously won
-- Ranking: **Yes**, for affected merges and deterministic exact ties
-- API contract: **No**
-- Data migration: **No**
-
----
-
-## Evidence-calibrated phosphate and oxide explanations
-
-Related findings: MG-AUD-011  
-Date: 2026-07-22  
-Status: Production verified
-
-### Before
-
-Researcher-facing explanations used phrases such as `shares phosphate
-framework`, `shares oxide chemistry`, and path wording that could imply
-validated structural preservation from elemental overlap alone.
-
-### After
-
-Explanations now state the evidence and its limit:
-
-- both materials contain phosphorus and oxygen; structural framework
-  similarity is not validated;
-- both materials contain oxygen; oxide structure similarity is not validated;
-- paths retain shared elemental overlap; structural preservation is not
-  validated.
-
-Compatibility fields such as `preserved_framework` remain available and are
-qualified by element-overlap provenance.
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No**
-- API contract: **No; human-readable wording only**
-- Data migration: **No**
-
----
-
-## Evidence-calibrated transition classifications
-
-Related findings: MG-AUD-012  
-Date: 2026-07-22  
-Release reference: Post-v1.9.18  
-Status: Production verified; replacement branches covered by automated tests
-
-### Before
-
-Element overlap or an evidence-free validator fallback could be serialized as
-`framework_preserving`, implying stronger structural evidence than the system
-possessed.
-
-### After
-
-Qualifying elemental-overlap transitions use `shared_element_continuity`.
-The validator's evidence-free final fallback uses `candidate_transition`.
-Compatibility evidence fields remain available and structural validation
-continues to be reported as false.
-
-### Impact
-
-- Scientific result: **No; terminology now matches evidence strength**
-- Ranking: **No; existing numeric weights were retained**
-- API contract: **Yes; affected serialized transition values changed**
-- Data migration: **No**
-
----
-
-## Shared-element continuity scoring semantics
-
-Related findings: MG-AUD-013  
-Date: 2026-07-22  
-Release reference: Post-v1.9.18  
-Status: Resolved; production verified 2026-07-23
-
-### Before
-
-The path-ranking score breakdown exposed `framework_preservation`, although
-the dimension was computed from shared-element overlap rather than independent
-bonding, structure-matching, or crystallographic evidence.
-
-### After
-
-The score dimension is `shared_element_continuity`. Research evidence,
-pathway analysis, comparative explanations, and provenance use the same term
-and explicitly state that structural preservation is not validated. Existing
-continuity weights and valid final scores are retained.
-
-Regression checks also confirmed that one-hop path efficiency remains `10.0`
-and empty paths receive `0.0` efficiency. Local objective exploration for
-material 5 returned `shared_element_continuity: 30` with the expected total
-score of `95.65`.
-
-Production verification on 2026-07-23 confirmed the same score breakdown and
-total. The response exposed `preservation_basis: element_overlap`,
-`structural_preservation_validated: false`, and no
-`framework_preservation` score field or unsupported structural-preservation
-claim.
-
-### Impact
-
-- Scientific result: **No; the evidence label is now scientifically qualified**
-- Ranking: **No; final weights and valid rankings are unchanged**
-- API contract: **Yes; one score-breakdown key changed**
-- Data migration: **No**
-
----
-
-## Contributor-aware recommendation explanations
-
-Related findings: MG-AUD-037  
-Date: 2026-07-23  
-Release reference: Post-v1.9.18  
-Status: Resolved; production verified 2026-07-23
-
-### Before
-
-Recommendation reasons mixed scoring contributors with contextual comparisons.
-Criticality could be mentioned even when its preference was disabled, shared
-elements and applications were not identified as the basis of the similarity
-score, and the low-energy-above-hull contribution was omitted from the reason.
-
-### After
-
-Recommendation reasons now distinguish:
-
-- the similarity score and its shared-element/shared-application basis;
-- active score contributors, including stability, qualifying low energy above
-  hull, and criticality when lower criticality is preferred;
-- non-scoring criticality comparison under `context` when the preference is
-  disabled; and
-- the final recommendation score.
-
-Local checks confirmed that a similarity score of `130.0`, stability bonus of
-`10`, and low-energy bonus of `5` produce `145.0` when criticality preference is
-disabled. With the preference enabled, the applicable criticality adjustment
-is also reflected in both the score and explanation.
-
-Production verification on 2026-07-23 passed for both
-`prefer_lower_criticality=true` and `false` using material 5. Active
-contributors reconciled with returned scores, while criticality was retained
-only as context when the preference was disabled.
-
-### Impact
-
-- Scientific result: **No**
-- Ranking: **No; scoring policy and numeric calculations are unchanged**
-- API contract: **No; human-readable wording only**
-- Data migration: **No**
-
----
-
-## Path-wide shared-element continuity
-
-Related findings: MG-AUD-014  
-Date: 2026-07-23  
-Release reference: Post-v1.9.18  
-Status: Resolved; production verified 2026-07-23
-
-### Before
-
-Research-objective preservation could be satisfied by the union of elements
-shared by different transitions. Scientific pathway analysis also read only
-the compatibility field `preserved_framework`, ignored authoritative
-`shared_elements`, and could omit transitions without evidence.
-
-### After
-
-Required preservation is evaluated from the intersection of shared-element
-evidence across every transition. `shared_elements` is authoritative whenever
-present, including when explicitly empty; `preserved_framework` is used only
-when the primary field is absent. Every transition participates in the
-intersection, and an empty path does not establish preservation.
-
-Twenty-six focused research-service tests and the full regression suite passed.
-A local two-hop objective response correctly reported:
+**Finding:** The Materials Project import path creates every `MaterialElement` row
+with:
 
 ``` text
-{Fe, O, P} ∩ {Fe, Na, O, P} = {Fe, O, P}
+fraction = 1.0
 ```
 
-The chain explanation consequently reported `Fe-O-P shared-element
-continuity`; regression coverage separately confirmed that union-only evidence
-is rejected.
-
-### Impact
-
-- Scientific result: **Yes; invalid union-only preservation is rejected**
-- Ranking: **Potentially; paths failing continuous preservation may be filtered or evaluated differently**
-- API contract: **No; existing fields retain their shape**
-- Data migration: **No**
-
----
-
-## Endpoint-based discovery path objective alignment
-
-Related findings: MG-AUD-015  
-Date: 2026-07-24  
-Release reference: Post-v1.9.18  
-Status: Resolved; development endpoint verified 2026-07-24
-
-### Before
-
-Discovery path ranking unioned removed and introduced elements across every
-transition. A path could therefore earn objective-alignment credit when an
-avoided element was removed and later reintroduced, or when a preferred
-element was introduced and later removed, even though the final material did
-not satisfy the objective. Usefulness explanations also described accumulated
-transition events without distinguishing final endpoint composition.
-
-### After
-
-Objective alignment is determined from the final material's exact element
-composition:
-
-- structured endpoint `elements` are authoritative whenever the field is
-  present, including when explicitly empty;
-- otherwise, endpoint `formula` or `pretty_formula` is evaluated with the
-  canonical chemical-formula parser;
-- missing endpoint composition earns no objective credit;
-- avoid and prefer objectives retain their established proportional scoring,
-  with each side contributing at most `12.5`; and
-- transition events remain available as pathway evidence but no longer prove
-  endpoint satisfaction.
-
-Usefulness explanations now separately report events that occur during the
-path and objective outcomes at the endpoint. They also state when endpoint
-composition is unavailable. Discovery transition separators were standardized
-from the Unicode arrow to ASCII `->` to prevent mojibake in terminal-rendered
-API responses.
-
-Regression coverage includes endpoint reversals, partial and complete
-multi-element objectives, missing endpoint evidence, structured-element
-precedence, and explanation semantics. The full test suite passed.
-
-Development verification of:
+`MaterialCriticalityService` later treats this field as an aggregation
+weight:
 
 ``` text
-LiFePO4 -> Na3Fe3(PO4)4
+Σ(element_criticality × fraction) / Σ(fraction)
 ```
 
-returned:
+**Impact:** For imported LiFePO4:
 
-- `objective_alignment: 25.0`;
-- `scientific_usefulness_score: 99.47`;
-- path-event explanations for removing Li and introducing Na; and
-- endpoint explanations confirming that Li is excluded and Na is present.
+``` text
+current criticality
+= (C_Li + C_Fe + C_P + C_O) / 4
+```
 
-### Impact
+rather than stoichiometric weighting:
 
-- Scientific result: **Yes; endpoint objective credit now reflects the final material**
-- Ranking: **Potentially; paths with reversed or incomplete endpoint outcomes can score lower**
-- API contract: **No structural change; numeric results and human-readable wording may change**
-- Data migration: **No**
+``` text
+Li = 1/7
+Fe = 1/7
+P  = 1/7
+O  = 4/7
+```
 
----
+### MG-AUD-002 — Unknown Criticality Evidence Becomes Favorable Zero
 
-## Canonical risk-profile scale and provenance
+- **Status:** Resolved
+- **Priority:** P0
+- **Confidence:** Confirmed
 
-Related findings: MG-AUD-055  
-Date: 2026-07-27  
-Release reference: Post-v1.9.18  
-Status: Resolved; production verified 2026-07-27
+**Finding:** Two paths produce element criticality `0.0`:
 
-### Before
+-   no `ElementRiskProfile`
+-   profile exists but all relevant dimensions are null
 
-Risk-profile seeds used incompatible scales under indistinguishable metadata.
-Eight element profiles used `1–10`, while nickel used `0–1`, making stored
-scientific evidence dependent on seed execution order.
+The element fraction remains in the material denominator.
 
-### After
+``` text
+missing criticality evidence
+→ 0.0
+→ weighted aggregation
+→ apparently lower material criticality
+```
 
-One idempotent canonical seed uses a `1–10` scale and versioned provenance:
-`materialgraph_canonical_risk_profile_v1`. Nickel now uses canonical values
-`5, 6, 4, 7, 6` for abundance, supply risk, toxicity, recyclability, and
-geopolitical risk.
+**Impact:** Unknown evidence can look like favorable low criticality.
 
-Local PostgreSQL and production Neon were updated in place. Each run reported
-`Created: 0, Updated: 9`; uniqueness checks found no duplicate
+### MG-AUD-003 — Screening Uses Legacy Unknown-Risk-as-Zero Semantics
+
+- **Status:** Resolved
+- **Priority:** P0
+- **Confidence:** Confirmed
+
+**Finding:** `CandidateScreeningService` uses the legacy numeric risk API.
+
+``` text
+unknown risk
+→ risk_score = 0.0
+→ risk penalty = 0.0
+→ favorable screening effect
+```
+
+The explanation can also present unknown risk as a real numeric zero.
+
+### MG-AUD-004 — Formula Substring Membership Corrupts Element Constraints
+
+- **Status:** Resolved
+- **Priority:** P0
+- **Confidence:** Confirmed
+
+**Finding:** Discovery scoring uses string membership:
+
+``` text
+prefer_element in formula
+avoid_element in formula
+avoid_element not in formula
+```
+
+Unsafe examples:
+
+-   `N` in `Na...`
+-   `S` in `Si...`
+-   `C` in `Ca...`
+
+### MG-AUD-005 — `preserved_framework` Is Element Overlap, Not Structural Preservation
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** `DiscoveryTransitionValidator` derives `preserved_framework` from
+source/target element-set intersection.
+
+No independent analysis was found for:
+
+-   crystallographic framework
+-   bonding topology
+-   coordination environment
+-   motif preservation
+-   site correspondence
+
+**Impact:** Scientific semantics and evidence provenance improved.
+
+No numerical scientific scores changed.
+
+LiFePO4 Scientific Usefulness
+
+95.65 → 95.65
+
+### MG-AUD-006 — Discovery Score and Breakdown Arithmetic Diverge
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Candidate score merging used:
+
+``` text
+max(existing_score, incoming_score)
++ source diversity bonus
+```
+
+while score-breakdown fields were merged additively.
+
+**Impact:** The final breakdown could materially exceed and fail to decompose
+`discovery_score`.
+
+### MG-AUD-007 — Source Diversity Is Actually Repeated-Encounter Accumulation
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** The source-diversity bonus previously incremented whenever an existing
+candidate was encountered.
+
+No distinct source identity was tracked, so repeated encounters could be
+treated as additional source diversity.
+
+**Impact:** Source diversity now represents distinct discovery evidence channels
+rather than repeated candidate encounters.
+
+Scientific pathway scoring remains unchanged.
+
+LiFePO4 Scientific Usefulness
+
+95.65 → 95.65
+
+### MG-AUD-008 — Partial Risk Evidence Can Unlock Full Low-Risk Bonus Eligibility
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** If at least one material element had calculable risk:
+
+``` text
+risk_known = True
+```
+
+Coverage could still be below 1.0.
+
+Before remediation, `MaterialQualityService` used `risk_known` and
+`risk_score` for low-risk bonus eligibility without requiring complete
+material-element risk coverage.
+
+**Impact:** ``` text
+partial coverage
+→ risk_known = True
+→ low known-element average
+→ same full low-risk bonus path as complete evidence
+```
+
+This allowed partial evidence to unlock favorable treatment equivalent to
+complete evidence.
+
+### MG-AUD-009 — Multi-Element Research Objectives Were Reduced to Single-Element Evaluation
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** The public research objective API accepted collections of avoided and
+preferred elements.
+
+However, downstream deterministic pathway evaluation and objective-alignment
+scoring only considered the first avoided element and the first preferred
+element.
+
+As a result, multi-element research objectives were effectively reduced to
+single-element evaluation.
+
+**Impact:** Researchers specifying objectives such as:
+
+```text
+avoid:  Li, Co
+prefer: Na, K
+```
+
+received deterministic scoring equivalent to:
+
+```text
+avoid:  Li
+prefer: Na
+```
+
+Additional requested objective elements were ignored during objective
+evaluation, pathway scoring, and researcher-facing explanations.
+
+### MG-AUD-010 — Stable Pathway Identity and Tie-Aware Comparative Research
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Three different concepts had become conflated:
+
+- pathway identity
+- deterministic ordering
+- scientific ranking
+
+For example:
+
+```text
+rank = 1
+rank = 1
+rank = 1
+```
+
+represents three equally ranked pathways, but rank alone cannot uniquely
+identify them.
+
+This ambiguity propagated into comparative summaries, research gaps,
+assumptions, pairwise comparisons, and element aggregation.
+
+**Impact:** No deterministic scientific scoring defect existed.
+
+Scientific usefulness, pathway ranking, objective alignment, and endpoint
+evaluation remained correct.
+
+The limitation affected researcher explainability, deterministic API
+contracts, and future extensibility.
+
+## Scientific and Domain Semantics
+
+### MG-AUD-011 — Framework Explanations Overstate Evidence
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Shared elements can become wording such as:
+
+-   "preserving Fe-O-P chemistry"
+-   "shares phosphate framework"
+
+The implementation establishes membership overlap, not preserved bonding
+or structure.
+
+### MG-AUD-012 — `framework_preserving` Fallback Lacks Independent Validation
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** The transition type can be emitted without independent
+structural-preservation evidence.
+
+**Impact:** Elemental overlap could be serialized as a stronger structural
+claim than the available evidence supported. The remediation changed the
+unvalidated overlap classification to `shared_element_continuity` and the
+evidence-free fallback to `candidate_transition`; admission rules and numeric
+scores were unchanged.
+
+### MG-AUD-013 — Framework Scoring Inherits Overlap Semantics
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Observed path-ranking contribution:
+
+-   P and O common: 30/30
+-   O common: 21/30
+-   any common element: 15/30
+-   none: 0/30
+
+The numeric precision exceeds the strength of the underlying structural
+evidence.
+
+**Remediation:** Renamed the score dimension from `framework_preservation` to
+`shared_element_continuity` throughout path ranking, research evidence,
+scientific pathway analysis, comparative intelligence, and test fixtures. The
+numeric continuity weights were retained, but researcher-facing explanations
+now qualify the signal as elemental overlap and explicitly state that
+structural preservation is not validated.
+
+During remediation, regression checks detected and corrected two unrelated
+efficiency defects: the path-efficiency calculation briefly referenced the
+wrong weight, and an empty path received a one-hop efficiency bonus. The final
+implementation uses `EFFICIENCY_WEIGHT = 10.0` and assigns `0.0` efficiency to
+an empty path.
+
+**Verification:** The focused tests and full regression suite passed locally.
+Local and production objective exploration for material 5 returned `200 OK`,
+emitted `shared_element_continuity: 30`, retained the expected total usefulness
+score of `95.65`, and made no unsupported structural-preservation claim.
+Production verification on 2026-07-23 also confirmed
+`preservation_basis: element_overlap`,
+`structural_preservation_validated: false`, and the absence of the legacy
+`framework_preservation` score field.
+
+### MG-AUD-014 — Preservation Can Be Satisfied by Union Across Transitions
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Example:
+
+``` text
+required = {Fe, P, O}
+T1 preserves {Fe}
+T2 preserves {P, O}
+union satisfies required
+```
+
+This does not prove continuous preservation through the path.
+
+**Remediation:** Research-objective preservation now requires the requested
+elements to occur in the intersection of shared-element evidence across every
+transition. `shared_elements` takes precedence whenever present, including
+when explicitly empty; `preserved_framework` is used only as a compatibility
+fallback when the primary field is absent. Every transition participates in
+the intersection, missing evidence contributes an empty set, and a
+zero-transition path does not establish preservation. Scientific pathway facts
+now use the same semantics.
+
+**Verification:** All 26 focused research-service tests and the full regression
+suite passed. Regression coverage rejects disjoint union-only evidence, empty
+paths, missing transition evidence, and fallback from an explicitly empty
+primary field. Local two-hop objective exploration correctly reported the
+intersection of `{Fe, O, P}` and `{Fe, Na, O, P}` as `Fe-O-P` shared-element
+continuity. Production deployment and EC2 endpoint verification remain
+pending.
+
+### MG-AUD-015 — Objective Alignment Uses Path-Wide Events
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Removed and introduced elements are unioned across transitions.
+
+A path can receive credit because an avoided element was removed
+somewhere or a preferred element appeared somewhere without proving
+endpoint satisfaction.
+
+Distinguish:
+
+-   transition event alignment
+-   path continuity
+-   endpoint satisfaction
+
+**Remediation:** Discovery path objective alignment now uses the final
+material's exact endpoint composition. Structured `elements` data is
+authoritative when present, including when explicitly empty; otherwise the
+canonical chemical-formula parser is used. Avoid and prefer objectives remain
+proportional and transition events are retained only as separate pathway
+evidence. Usefulness explanations now distinguish path events from endpoint
+outcomes and report unavailable endpoint composition without awarding credit.
+
+**Verification:** Regression coverage confirms that introduced-then-removed
+preferred elements and removed-then-reintroduced avoided elements receive no
+endpoint credit, partial multi-element objectives remain proportional, and
+missing endpoint evidence receives no credit. The full test suite passed.
+Development endpoint verification for
+`LiFePO4 -> Na3Fe3(PO4)4` returned objective alignment `25.0`, a total
+scientific usefulness score of `99.47`, and separate path-event and endpoint
+explanations. Discovery reason separators were also standardized to ASCII
+`->` for consistent terminal and API rendering.
+
+### MG-AUD-016 — Avoid/Prefer Constraints Are Soft in Candidate Scoring
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** -   preferred element present: bonus
+-   avoided element absent: bonus
+-   avoided element present: penalty
+
+An avoided-element candidate can remain if other sources outweigh the
+penalty.
+
+### MG-AUD-017 — Strict Exploration Does Not Guarantee Hard Rejection
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Avoided-element violations can remain with penalties and warnings.
+
+Hard versus soft semantics must be defined explicitly.
+
+### MG-AUD-018 — Family Relationships Are Composition Heuristics
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Key rules:
+
+-   `shared_chemistry`: at least 3 shared elements
+-   `transition_metal_related`: at least one shared configured
+    transition metal
+-   `phosphate_related`: base contains P; candidate contains P and O
+-   `oxide_related`: both contain O
+-   `alkali_substitution`: configured alkali-like sets differ and at
+    least 3 elements are shared
+
+These are deterministic and explainable, but are not validated
+structural-family assignments.
+
+### MG-AUD-019 — Family Taxonomy Includes Mg as Alkali
+
+- **Status:** Confirmed implementation; domain intent unverified
+- **Priority:** P1
+- **Confidence:** High
+
+**Finding:** `ALKALI_ELEMENTS` includes Mg, although Mg is an alkaline-earth metal.
+
+Verify intended domain policy and tests before remediation.
+
+### MG-AUD-020 — Alkali Substitution Does Not Prove Mechanism
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** The rule proves differing configured element sets plus shared elements.
+
+It does not prove:
+
+-   site equivalence
+-   one-for-one substitution
+-   charge compensation
+-   structural compatibility
+-   actual substitution mechanism
+
+## Evidence, Risk, Criticality, and Quality
+
+### MG-AUD-021 — Risk and Criticality Share Upstream Evidence
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Both use:
+
+-   supply risk
+-   geopolitical risk
+-   toxicity
+
+Criticality additionally uses abundance and inverted recyclability.
+
+They are distinct metrics, but not independent evidence dimensions.
+
+### MG-AUD-022 — Risk and Criticality Aggregate Differently
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** -   risk: equal average across calculable elements
+-   criticality: `MaterialElement.fraction`-weighted average
+
+Do not unify them without defining metric intent.
+
+### MG-AUD-023 — Partial Criticality Profiles Look Complete
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** A criticality score can be computed from one available dimension without
+dimension-level coverage metadata.
+
+### MG-AUD-024 — Risk Completeness Measures Element Coverage Only
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** `risk_evidence_complete` means each material element produced some
+calculable risk score.
+
+It does not prove all expected dimensions are present.
+
+Two distinct coverage layers exist:
+
+1.  material-element coverage
+2.  profile-dimension coverage
+
+### MG-AUD-025 — Legacy Numeric Risk APIs Retain Unknown → 0.0
+
+- **Status:** Domain decision required
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Legacy compatibility APIs preserve numeric zero for unknown risk.
+
+Correctness-sensitive consumers must use evidence-aware signals.
+
+### MG-AUD-026 — Material Quality Scale Is Intentionally 0--15
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** `QUALITY_SCORE_MAX = 15.0`.
+
+Allocation:
+
+-   stable flag: 5.25
+-   very low energy above hull: 5.25
+-   low criticality: 2.25
+-   low known risk: 2.25
+
+No missing multiplication bug was found.
+
+### MG-AUD-027 — Stability and Energy Are Imported Separately but Reused
+
+- **Status:** Confirmed behavior; policy open
+- **Priority:** P2
+- **Confidence:** Confirmed implementation / Medium policy
+
+**Finding:** `is_stable` and `energy_above_hull` are imported separately from
+Materials Project.
+
+Both are rewarded in:
+
+-   quality
+-   similarity
+-   recommendation
+
+Repeated weighting is confirmed. Scientific appropriateness remains a
+policy question.
+
+### MG-AUD-028 — Internal Deterministic Support Can Look Like Scientific Evidence
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Framework-derived and other internal signals can increase
+evidence/readiness even when external evidence is absent.
+
+Future semantics should distinguish:
+
+-   internal support strength
+-   external evidence readiness
+-   evidence coverage
+-   validation readiness
+
+### MG-AUD-029 — Risk Coverage Is Not Fully Propagated to Endpoint Evidence
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Equal numeric risk values can represent different evidence coverage
+states.
+
+Values and coverage should travel together when downstream decisions
+depend on them.
+
+## Discovery, Ranking, and Search Space
+
+### MG-AUD-030 — Bounded Search Shapes the Opportunity Set
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** -   objective filtering occurs after bounded chain generation
+-   completed-chain limit shapes discovery, not only presentation
+-   candidate expansion is bounded per node
+-   search order can affect which opportunities survive
+
+``` text
+production search bounds ≠ scientific completeness
+```
+
+Do not remove production guards blindly.
+
+### MG-AUD-031 — Family Ordering Can Affect Bounded Discovery
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Family candidates are ordered by:
+
+1.  relationship-label count
+2.  shared-element count
+
+Correlated labels derived from the same composition facts can multiply
+search priority.
+
+### MG-AUD-032 — Equal-Key Family Ordering Lacks a Final Tie-Breaker
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Equal-key candidates can inherit database-return order.
+
+Under bounded expansion, this can affect which chains survive.
+
+### MG-AUD-033 — Recommendation Pipeline Contains Irreversible Preselection
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** ``` text
+structured neighbors
+→ neighbor ranking
+→ top-N truncation
+→ similarity scoring
+→ recommendation scoring
+→ scenario evaluation
+```
+
+Candidates excluded before similarity scoring cannot be recovered later.
+
+The upstream and similarity stages share the same 2:3
+element/application weighting ratio, which makes the gate coherent but
+still irreversible.
+
+### MG-AUD-034 — Recommendation Defaults to Lower Criticality
+
+- **Status:** Confirmed behavior; policy open
+- **Priority:** P2
+- **Confidence:** Confirmed implementation
+
+**Finding:** `get_recommendations()` defaults `prefer_lower_criticality=True`.
+
+Scenario recommendations also force this preference in their base
+recommendation stage.
+
+Whether this is appropriate for every objective remains open.
+
+### MG-AUD-035 — Similarity and Recommendation Use Different Criticality Policies
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** -   similarity tie ordering prefers smaller absolute criticality
+    difference
+-   recommendation scoring prefers lower criticality
+
+These are layered policies, not necessarily contradictions.
+
+### MG-AUD-036 — Criticality Direction Uses Risk Terminology
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Criticality deltas produce:
+
+-   `LOWER_RISK`
+-   `HIGHER_RISK`
+-   `SAME_RISK`
+
+This is a terminology/contract mismatch.
+
+### MG-AUD-037 — Recommendation Reasons Mix Contributors and Context
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Reasons can:
+
+-   mention criticality when the preference flag is disabled
+-   omit the low-energy score contribution
+-   include shared elements/applications as context even when not
+    directly added in recommendation scoring
+
+Contributor facts and contextual facts are not distinguished.
+
+**Remediation:** Recommendation explanation generation now receives
+`prefer_lower_criticality` and distinguishes the similarity basis, active score
+contributors, contextual criticality information, and the final recommendation
+score. Shared elements and applications are labelled as components of the
+similarity score rather than independent recommendation bonuses. The
+low-energy-above-hull contribution is included when its scoring condition
+(`energy_above_hull <= 0.01`) is satisfied. Criticality is presented as an
+active contributor only when the preference is enabled; otherwise it remains
+available under `context`.
+
+**Verification:** Focused recommendation-service tests and the full regression
+suite passed locally. Local and production endpoint checks for material 5
+confirmed that
+`prefer_lower_criticality=true` includes criticality in scoring and that
+`prefer_lower_criticality=false` excludes it from the score while retaining the
+comparison as context. Displayed recommendation scores reconciled with their
+stated contributors in both modes. Production verification passed on
+2026-07-23.
+
+### MG-AUD-038 — Path Efficiency Is Hop-Count Based
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Equal-hop paths receive equal path-efficiency contributions,
+contributing to score collapse.
+
+### MG-AUD-039 — Path Material Quality Is Averaged Across the Path
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** ``` text
+A → B → C
+path quality = average(quality(A), quality(B), quality(C))
+```
+
+Shared bases/intermediates can dilute endpoint differences.
+
+### MG-AUD-040 — Exploration Attribution Can Use Future Transitions
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** For `A → B → C`, candidate B can receive reasons or bonuses using
+`B → C`, even though that transition did not produce B.
+
+## 4.5 Comparison, Endpoint Ranking, and Contracts
+
+## Comparison, Endpoint Ranking, and Contracts
+
+### MG-AUD-041 — Endpoint Ranking Uses Implicit Lexicographic Policy
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Ordering:
+
+``` text
+quality
+→ stability
+→ energy above hull
+→ criticality
+→ risk
+→ evidence readiness
+```
+
+Earlier dimensions dominate later ones.
+
+Do not replace with weighted scoring without policy justification.
+
+### MG-AUD-042 — Exact Numeric Differences Can Split Evidence Groups
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Tiny numeric differences can separate endpoints without a defined
+precision or meaningful-difference policy.
+
+Do not add arbitrary epsilon thresholds.
+
+### MG-AUD-043 — Comparative Summaries Are Not Uniformly Tie-Aware
+
+- **Status:** Confirmed
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Some layers preserve ties, while:
+
+-   `top_ranked_pathway`
+-   highest-readiness summaries
+-   legacy candidate comparison
+
+can select one representative.
+
+### MG-AUD-044 — Comparison Conflates Filtered and Unavailable Candidates
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** If either candidate does not survive screening, comparison returns no
+result without distinguishing:
+
+-   missing material
+-   filtered by stability
+-   filtered by energy threshold
+-   otherwise unavailable
+
+### MG-AUD-045 — API Contracts Are Under-Typed or Semantically Broader Than Implementation
+
+- **Status:** Confirmed/open mix
+- **Priority:** P2
+- **Confidence:** High
+
+**Finding:** Issues include:
+
+-   multi-element objective promise exceeds scalar handling
+-   requested `preserve_elements` differs from inferred
+    `preserved_framework`
+-   evidence readiness is an unconstrained string
+-   confidence scope is ambiguous
+-   nested quality/comparison structures are under-typed
+-   objective validation remains open for casing, invalid symbols,
+    empties, and contradictions
+
+Type contracts should strengthen after semantic stabilization.
+
+## 4.6 Production and Performance
+
+## Production and Performance
+
+### MG-AUD-046 — Family Discovery Performs Global Scans
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Each family request loads the global material-element map and scans
+non-test materials in Python.
+
+Benchmark before redesign.
+
+### MG-AUD-047 — Candidate Screening Has N+1 Access Patterns
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Screening loads all materials, then performs per-material:
+
+-   element lookup
+-   risk lookup
+
+Bulk risk capabilities already exist.
+
+### MG-AUD-048 — Candidate Service Duplicates Global Element-Map Loading
+
+- **Status:** Confirmed
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** `MaterialFamilyService` and `DiscoveryCandidateService` can each load
+global material-element mappings in the same request path.
+
+### MG-AUD-049 — Community Analytics Uses Raw Formula Substring Matching for Element Membership
+
+- **Status:** Resolved
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** `DiscoveryGraphAnalyticsService._summarize_community()` determined configured
+element membership by checking raw element-symbol substrings against chemical
+formula text.
+
+Conceptually:
+
+``` text
+element in formula
+```
+
+Chemical formulas are structured scientific data. Raw substring membership is
+not a valid general exact-element-membership test.
+
+The configured symbol set limited obvious collisions in the current dataset,
+but the implementation was structurally unsafe and could misclassify membership
+as the supported element vocabulary expanded.
+
+**Impact:** The affected dependency chain was:
+
+``` text
+formula substring membership
+→ element_counts
+→ dominant_elements
+→ researcher-facing community summary
+```
+
+Dependency inspection confirmed that these counts did not feed:
+
+- community membership
+- connected-component detection
+- greedy modularity community detection
+- degree centrality
+- betweenness centrality
+- closeness centrality
+- hub selection
+- density
+- average degree
+- average quality score
+- average edge score
+- community importance score
+
+No numeric graph-ranking or community-scoring defect was confirmed.
+
+### MG-AUD-050 — Scientific Pathway Responses Did Not Distinguish Path-Wide and Endpoint-Specific Objective Satisfaction
+
+- **Status:** Resolved
+- **Priority:** P2
+- **Confidence:** Confirmed
+
+**Finding:** Scientific pathway responses exposed:
+
+- requested objective elements
+- matched objective elements
+- unmatched objective elements
+- objective coverage
+- completion status
+
+These correctly described deterministic path-wide transition evidence.
+
+However, they did not distinguish whether the final endpoint material
+itself satisfied the requested research objective.
+
+**Impact:** No scientific scoring defect existed.
+
+Objective alignment, deterministic traversal, scientific usefulness,
+transition plausibility, and pathway ranking were already correct.
+
+The limitation affected researcher explainability only.
+
+Researchers could not immediately distinguish:
+
+- objective satisfied somewhere along the pathway
+- objective satisfied by the final endpoint material
+
+### MG-AUD-051 — Comparative Research Outputs Used Ranking as Pathway Identity
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Competition rank was used as both ordering and identity. Tied pathways therefore became ambiguous in comparative analyses.
+
+**Impact:** Researchers could not uniquely reference tied pathways, and comparative aggregation could collapse distinct pathways sharing the same rank.
+
+### MG-AUD-052 — Scenario Explanation Sign and Label Can Contradict the Score Contribution
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Scenario recommendation explanations can label a beneficial adjustment as
+a penalty and can render the final value with the opposite sign from its
+effect on the score.
+
+Observed examples include:
+
+```text
+contains preferred element Na, bonus 10.0; final scenario penalty -10.0
+```
+
+and responses where `scenario_score` is greater than
+`recommendation_score` while the explanation still reports a negative
+"final scenario penalty."
+
+For an avoided-element candidate, the wording can instead report:
+
+```text
+contains avoided element Li, penalty 20.0; final scenario penalty 20.0
+```
+
+The individual preferred/avoided-element clauses are understandable, but
+the shared final label and sign convention do not reliably communicate
+whether the scenario stage increased or decreased the candidate score.
+
+**Impact:** -   Numeric scenario scoring and ordering appear internally consistent in
+    the inspected responses.
+-   Researcher-facing explanations can misstate the direction of the score
+    adjustment.
+-   API consumers cannot safely interpret the final prose as a faithful
+    description of `scenario_delta` without inspecting the numeric fields.
+
+### MG-AUD-053 — Discovery Base-Score Selection and Deterministic Tie Ordering
+
+- **Status:** Resolved
+- **Priority:** P1
+- **Confidence:** Confirmed
+
+**Finding:** Discovery candidate source merging compared an incoming base score with the
+existing displayed `discovery_score`, which could already contain a
+source-diversity bonus. The comparison therefore mixed two score stages and
+could retain a weaker existing base score.
+
+Exact score ties were also sorted only by `discovery_score`, leaving their
+final order dependent on upstream insertion order rather than an explicit
+deterministic response rule.
+
+**Impact:** -   A stronger incoming source could fail to become the candidate's winning
+    base score and score-breakdown provenance.
+-   Exact ties could lack reproducible ordering if source encounter order
+    changed.
+-   Artificially changing weights to split valid ties would claim scientific
+    differentiation unsupported by the available evidence.
+
+### MG-AUD-054 — Discovery Explanation Clauses Can Lack a Separator
+
+- **Status:** Confirmed
+- **Priority:** P3
+- **Confidence:** Confirmed
+
+**Finding:** A discovery explanation can concatenate an evidence-limitation
+clause and the next score clause without punctuation, producing wording such
+as:
+
+```text
+oxide structure similarity is not validated similarity score 110.0
+```
+
+**Impact:** Numeric scores, ranking, and scientific classifications are not
+affected. The defect reduces readability and can make independently generated
+explanation clauses appear to form one unsupported statement.
+
+## Independent Post-Remediation Audit Reconciliation
+
+The completed independent audit recorded 44 correctness/security findings and
+5 performance findings. Reconciliation is behavior-based: independent IDs are
+preserved as provenance, but only distinct defects receive new canonical IDs.
+
+### Reconciliation crosswalk
+
+| Independent ID | Disposition | Canonical ID | Reconciliation note |
+|---|---|---|---|
+| MG-IND-001 | New confirmed finding | MG-AUD-055 | Conflicting seed scales were not covered previously. |
+| MG-IND-002 | New confirmed finding | MG-AUD-056 | Dependency source selects another checkout. |
+| MG-IND-003 | New confirmed finding | MG-AUD-057 | Documented API-key name is not consumed. |
+| MG-IND-004 | New confirmed finding | MG-AUD-058 | Project version has incompatible authorities. |
+| MG-IND-005 | New confirmed finding | MG-AUD-059 | Normalized duplicate elements can still be persisted. |
+| MG-IND-006 | New confirmed finding | MG-AUD-060 | Graph-job claiming is non-atomic. |
+| MG-IND-007 | New confirmed finding | MG-AUD-061 | Graph-job lifecycle permits contradictory transitions. |
+| MG-IND-008 | Duplicate | MG-AUD-019 | Same magnesium taxonomy defect. |
+| MG-IND-009 | Duplicate | MG-AUD-033 | Same irreversible similarity preselection defect. |
+| MG-IND-010 | Follow-on regression | MG-AUD-062 | Unknown criticality remains favorably tie-ordered. |
+| MG-IND-011 | New confirmed finding | MG-AUD-063 | Neighborhood response can contain dangling edges. |
+| MG-IND-012 | New confirmed finding | MG-AUD-064 | Abundance direction contradicts documented meaning. |
+| MG-IND-013 | Existing finding broadened | MG-AUD-023, MG-AUD-024 | Confirms incomplete evidence can appear complete. |
+| MG-IND-014 | Duplicate | MG-AUD-008 | Same partial-evidence quality-bonus defect. |
+| MG-IND-015 | Duplicate | MG-AUD-025 | Same public unknown-risk numeric fallback. |
+| MG-IND-016 | Follow-on regression | MG-AUD-065 | Nullable risk remains favorably ranked in screening. |
+| MG-IND-017 | Follow-on regression | MG-AUD-066 | Scenario ranking cannot compare nullable risk. |
+| MG-IND-018 | Follow-on regression | MG-AUD-067 | Sensitivity multiplies nullable baseline risk. |
+| MG-IND-019 | New confirmed finding | MG-AUD-068 | Named scenario element is disconnected from adjustment. |
+| MG-IND-020 | New confirmed finding | MG-AUD-069 | Two scenario types compute identically. |
+| MG-IND-021 | Follow-on regression | MG-AUD-070 | Substitution retains maximally favorable unknown risk. |
+| MG-PERF-001 | New confirmed finding | MG-AUD-071 | Similarity amplifies criticality queries per candidate. |
+| MG-PERF-002 | New confirmed finding | MG-AUD-072 | Neighborhood limit does not bound traversal work. |
+| MG-PERF-003 | Duplicate | MG-AUD-047 | Same screening N+1 pattern. |
+| MG-PERF-004 | New confirmed finding | MG-AUD-073 | Substitution performs per-candidate element/risk queries. |
+| MG-IND-022 | New confirmed finding | MG-AUD-074 | `max_hops` behaves as exact depth. |
+| MG-IND-023 | New confirmed finding | MG-AUD-075 | Weighted-path state pruning loses valid shallow routes. |
+| MG-IND-024 | New confirmed finding | MG-AUD-076 | Edge-score saturation removes intended distinctions. |
+| MG-IND-025 | New confirmed finding | MG-AUD-077 | K-best bypasses canonical transition validation. |
+| MG-IND-026 | New confirmed finding | MG-AUD-078 | Rejected candidates remain as disconnected nodes. |
+| MG-IND-027 | New confirmed finding | MG-AUD-079 | Material metadata can come from the wrong incoming edge. |
+| MG-PERF-005 | New confirmed finding | MG-AUD-080 | K-best enumerates all simple paths before applying `k`. |
+| MG-IND-028 | New confirmed finding | MG-AUD-081 | Reported depth differs from effective guarded depth. |
+| MG-IND-029 | New confirmed finding | MG-AUD-082 | Independent limits break graph closure. |
+| MG-IND-030 | New confirmed finding | MG-AUD-083 | Subgraph filtering occurs after truncation. |
+| MG-IND-031 | New confirmed finding | MG-AUD-084 | Path lookup ignores `max_hops` and searches direct paths. |
+| MG-IND-032 | Existing finding broadened | MG-AUD-045 | Confirms public research-contract bypasses. |
+| MG-IND-033 | Duplicate | MG-AUD-017 | Same failure to enforce strict constraints. |
+| MG-IND-034 | Duplicate | MG-AUD-040 | Same future-transition evidence attribution. |
+| MG-IND-035 | New distinct finding | MG-AUD-085 | Stable identity did not resolve inconsistent tie semantics. |
+| MG-IND-036 | New confirmed finding | MG-AUD-086 | Earlier transitions can satisfy endpoint family. |
+| MG-IND-037 | Follow-on regression | MG-AUD-087 | Scientific analysis reparses explicit empty membership. |
+| MG-IND-038 | New confirmed finding | MG-AUD-088 | Readiness can be strong without external evidence. |
+| MG-IND-039 | Follow-on regression | MG-AUD-089 | Continuity is narrated as transition plausibility. |
+| MG-IND-040 | New confirmed finding | MG-AUD-090 | Equivalent route inputs use inconsistent validation. |
+| MG-IND-041 | New confirmed finding | MG-AUD-091 | Community endpoints bypass response validation. |
+| MG-IND-042 | New confirmed finding | MG-AUD-092 | Graph jobs lack authorization and ownership boundaries. |
+| MG-IND-043 | New confirmed finding | MG-AUD-093 | Nonexistent chemical symbols pass public validation. |
+| MG-IND-044 | New confirmed finding | MG-AUD-094 | Analytical endpoints accept invalid result limits. |
+
+### Canonical findings added by reconciliation
+
+All findings below were **Confirmed** when added. Findings whose remediation
+has since been verified are explicitly marked as resolved in the canonical
+status updates following the table.
+
+| Canonical ID | Priority | Finding | Impact |
+|---|---:|---|---|
+| MG-AUD-055 | P0 | Conflicting risk-profile seed scales produce execution-order-dependent data. | Identical source/year metadata can yield materially different risk results. |
+| MG-AUD-056 | P1 | Standard dependency installation selects a different repository checkout. | Builds are not reliably reproducible from the intended source. |
+| MG-AUD-057 | P1 | Setup documentation configures an API-key name the importer does not read. | A documented installation can fail at runtime. |
+| MG-AUD-058 | P2 | Project version is defined by incompatible authorities. | Runtime identity and reproducibility can diverge. |
+| MG-AUD-059 | P1 | Duplicate element normalization is not honored during persistence. | Composition membership can violate normalized scientific identity. |
+| MG-AUD-060 | P0 | Pending graph-job claiming is not concurrency-safe. | Multiple workers can claim and execute the same job. |
+| MG-AUD-061 | P1 | Graph-job lifecycle permits contradictory state transitions. | Persisted job status can misrepresent actual execution. |
+| MG-AUD-062 | P0 | Missing criticality evidence receives favorable tie ordering. | Unknown evidence can outrank known positive criticality. |
+| MG-AUD-063 | P1 | Limited neighborhood responses can contain dangling edges. | Returned graph structures can be internally invalid. |
+| MG-AUD-064 | P0 | Higher abundance increases criticality despite the declared beneficial direction. | Scientific scores can move in the wrong direction. |
+| MG-AUD-065 | P0 | Unknown risk receives a favorable screening rank. | Preserved null semantics still create favorable uncertainty. |
+| MG-AUD-066 | P0 | Scenario ranking cannot handle unknown material risk. | Valid unknown-risk inputs can cause unhandled failures. |
+| MG-AUD-067 | P0 | Sensitivity analysis cannot handle unknown baseline risk. | Valid baseline uncertainty can cause unhandled failures. |
+| MG-AUD-068 | P0 | Supply-risk scenario adjustment is disconnected from the named element. | Scenario meaning does not match its public input. |
+| MG-AUD-069 | P1 | Supply-risk and geopolitical sensitivity scenarios compute identically. | Distinct analytical claims have no distinct computation. |
+| MG-AUD-070 | P0 | Unknown risk is maximally favorable in substitution ranking. | Missing evidence can be recommended as lowest risk. |
+| MG-AUD-071 | P2 | Similarity performs per-candidate criticality query amplification. | Query count grows with the candidate set. |
+| MG-AUD-072 | P2 | Neighborhood response limits do not bound traversal work. | Small responses can still trigger broad computation. |
+| MG-AUD-073 | P2 | Substitution performs per-candidate element and risk queries. | Query count grows repeatedly with candidate count. |
+| MG-AUD-074 | P0 | Discovery-chain `max_hops` behaves as an exact required depth. | Valid shorter chains can be omitted. |
+| MG-AUD-075 | P0 | Hop-bounded weighted search prunes valid shallower states. | A cheaper deep state can block a valid bounded route. |
+| MG-AUD-076 | P1 | Edge-score saturation erases framework and plausibility distinctions. | Intended ranking signals collapse to equal scores. |
+| MG-AUD-077 | P0 | K-best paths bypass canonical transition validation. | Invalid transitions can enter research-facing paths. |
+| MG-AUD-078 | P1 | Rejected transition candidates remain as disconnected graph nodes. | Graph contents imply candidates unsupported by valid edges. |
+| MG-AUD-079 | P1 | K-best material metadata can come from the wrong incoming edge. | Path explanations can describe the wrong evidence. |
+| MG-AUD-080 | P0 | K-best enumerates every simple path before applying `k`. | Graph growth can cause combinatorial production failure. |
+| MG-AUD-081 | P1 | Discovery graph reports requested rather than effective depth. | Responses misstate the executed search boundary. |
+| MG-AUD-082 | P1 | Independent node and edge limits break graph closure. | Returned edges and nodes need not form a valid graph. |
+| MG-AUD-083 | P1 | Subgraph filters are applied after source-graph truncation. | Eligible results can disappear because of unrelated preselection. |
+| MG-AUD-084 | P0 | Discovery path lookup ignores `max_hops` and searches direct paths only. | Valid multi-hop paths are omitted despite the API contract. |
+| MG-AUD-085 | P1 | Research comparison layers use incompatible tie semantics. | The same pathways can be tied and non-tied simultaneously. |
+| MG-AUD-086 | P0 | Target-family filtering can accept a chain whose endpoint does not match. | Endpoint objective satisfaction is overstated. |
+| MG-AUD-087 | P0 | Scientific analysis reparses explicitly empty endpoint membership. | Structured-data authority differs across research services. |
+| MG-AUD-088 | P0 | Evidence readiness can be strong while every external category is missing. | Internal support is presented like external scientific readiness. |
+| MG-AUD-089 | P0 | Scientific explanations call shared-element continuity transition plausibility. | Public reasoning overstates the evidence basis. |
+| MG-AUD-090 | P2 | Equivalent discovery inputs receive inconsistent route validation. | API behavior depends on route rather than domain meaning. |
+| MG-AUD-091 | P2 | Community endpoints bypass response-contract validation. | Malformed response structures can escape serialization checks. |
+| MG-AUD-092 | P0 | Graph-job mutation and global history lack authorization and ownership. | Callers can create work and inspect global job state without isolation. |
+| MG-AUD-093 | P1 | Public validation accepts nonexistent chemical symbols. | Invalid domain inputs enter scoring and research workflows. |
+| MG-AUD-094 | P2 | Analytical endpoints accept negative or unbounded result limits. | Negative slicing has unintended semantics and large requests are unbounded. |
+
+### Canonical status updates
+
+#### MG-AUD-055 — Resolved
+
+The conflicting risk-profile seed paths were replaced by one idempotent
+canonical dataset on a documented `1–10` scale. The seed updates existing
+`(element_id, year)` rows instead of creating execution-order-dependent
+duplicates and records versioned provenance as
+`materialgraph_canonical_risk_profile_v1`.
+
+Local PostgreSQL and production Neon inventories both initially confirmed the
+mixed-scale defect: nickel used `0–1` values while the other eight profiles
+used `1–10`. The canonical seed reported `Created: 0, Updated: 9` in both
+environments. Post-seed inventories confirmed canonical nickel values
+`5, 6, 4, 7, 6`, uniform provenance, and no duplicate
 `(element_id, year)` rows.
 
-### Impact
+Status: **Resolved and production verified on 2026-07-27.**
 
-- Scientific result: **Yes, for nickel-containing materials**
-- Ranking: **Potentially, where corrected nickel evidence affects scoring**
-- API contract: **No**
-- Data migration: **Yes**
+#### MG-AUD-064 — Resolved
 
----
+Element criticality now interprets abundance in the declared beneficial
+direction by using `10 - abundance_score` internally. Recyclability retains
+the same guarded beneficial-direction conversion. Null values remain unknown,
+including profiles in which every criticality dimension is null. API element
+details continue to expose the raw stored abundance value rather than the
+derived risk contribution.
 
-## Beneficial abundance direction in criticality
+Focused criticality tests and the full regression suite passed. Production
+verification for LiFePO4 returned element criticality scores of `56` for Li,
+`38` for P, `10` for Fe, and `6` for O. Stoichiometric weighting produced the
+expected material criticality score of `18.29`, with complete evidence
+coverage and no unknown elements.
 
-Related findings: MG-AUD-064  
-Date: 2026-07-27  
-Release reference: Post-v1.9.18  
-Status: Resolved; production verified 2026-07-27
+Status: **Resolved and production verified on 2026-07-27.**
 
-### Before
+#### MG-AUD-062 — Resolved
 
-Raw abundance was averaged as though a higher value represented greater risk.
-More abundant elements could therefore increase criticality. Null abundance
-or recyclability could also cause arithmetic failure.
+Similarity tie ordering now distinguishes known criticality evidence from
+unknown evidence. Similarity score remains the primary ranking criterion; when
+similarity scores tie, candidates with known criticality deltas precede
+candidates whose criticality is unavailable. Unknown values remain null and
+are not converted into favorable numeric deltas.
 
-### After
+Focused similarity-service tests and the full regression suite passed.
+Development endpoint responses confirmed normal known-criticality ordering,
+deterministic complete-tie ordering, null-safe downstream operation, and no
+general similarity regression. The available development dataset did not
+contain an equal-similarity known-versus-unknown pair, so that exact branch is
+verified by targeted automated tests rather than direct endpoint data.
 
-Criticality internally uses `10 - abundance_score`, matching the declared
-beneficial direction, while API responses retain raw abundance values. Null
-dimensions remain excluded, and an all-null profile remains unknown.
+Status: **Resolved and test-verified on 2026-07-27; endpoint regression
+verified with controlled unknown-evidence coverage provided by automated
+fixtures.**
 
-For production LiFePO4, element criticality scores are now Li `56`, P `38`,
-Fe `10`, and O `6`. Stoichiometric weighting produces material criticality
-`18.29`, replacing the former production value `32.0`.
+#### MG-AUD-065 — Resolved
 
-### Impact
+Candidate screening and comparison now use an evidence-aware deterministic
+decision key. Candidates with known material-risk evidence precede otherwise
+comparable candidates with unknown risk, preventing missing evidence from
+receiving a favorable rank. Unknown risk remains represented as
+`material_risk_score: null`, `risk_known: false`, and a zero calculated penalty
+that means “not calculable,” not “zero risk.”
 
-- Scientific result: **Yes**
-- Ranking: **Potentially, wherever criticality contributes**
-- API contract: **No structural change; numeric values may change**
-- Data migration: **No calculation migration; related seed data updated under MG-AUD-055**
-
----
-
-## Evidence-aware similarity tie ordering
-
-Related findings: MG-AUD-062  
-Date: 2026-07-27  
-Release reference: Post-v1.9.18  
-Status: Resolved; test-verified 2026-07-27
-
-### Before
-
-Within an equal-similarity group, missing criticality evidence could receive a
-favorable tie position. Public null values were preserved, but the internal
-ordering still treated uncertainty as advantageous.
-
-### After
-
-Similarity score remains primary. Equal-similarity candidates with known
-criticality evidence now precede candidates with unknown evidence. Unknown
-criticality and delta values remain null, and complete ties remain
-deterministic.
-
-Focused tests and the full regression suite passed. Development endpoint
-responses verified normal known-criticality ordering and general regression
-behavior. Because the available development records did not include an
-equal-similarity known-versus-unknown pair, controlled automated fixtures
-provide direct verification of the corrected branch.
-
-### Impact
-
-- Scientific result: **Yes; missing criticality is no longer favorable**
-- Ranking: **Yes, for equal-similarity candidates with different evidence availability**
-- API contract: **No structural change; ordering may change**
-- Data migration: **No**
-
----
-
-## Evidence-aware candidate screening and comparison
-
-Related findings: MG-AUD-065  
-Date: 2026-07-27  
-Release reference: Post-v1.9.18  
-Status: Resolved; test-verified 2026-07-27
-
-### Before
-
-Unknown material risk produced no calculable risk penalty and could therefore
-rank ahead of known-risk evidence through the numeric screening score. Pairwise
-comparison inherited the same favorable-uncertainty behavior.
-
-### After
-
-Screening and comparison share an evidence-aware deterministic decision key.
-Known risk evidence precedes unknown risk before the remaining score and risk
-dimensions are considered. Unknown risk stays null, receives no fabricated
-penalty, and is never described as low risk. Complete-key equality remains an
-explicit, request-order-independent tie.
+Candidate comparison applies the same decision semantics. A known-evidence
+candidate wins over an otherwise comparable unknown-evidence candidate, and
+the explanation identifies the evidence distinction without claiming that
+unknown risk is lower. Exact decision-key equality remains an explicit,
+request-order-independent tie.
 
 Focused screening and comparison tests and the full regression suite passed.
-Normal development endpoints remained operational. Controlled automated
-fixtures directly verify the otherwise-equivalent known-versus-unknown branch,
-which was not present in the normal development dataset.
+Available development endpoint responses exercised normal known-risk behavior
+but did not contain a controlled otherwise-equivalent known-versus-unknown
+pair; the exact uncertainty-ordering branch is therefore verified through
+targeted automated fixtures.
 
-### Impact
+Status: **Resolved and test-verified on 2026-07-27; endpoint regression
+verified with controlled unknown-evidence coverage provided by automated
+fixtures.**
 
-- Scientific result: **Yes; missing risk evidence is no longer rewarded**
-- Ranking: **Yes; screening order and comparison winners can change**
-- API contract: **No structural change; ordering and reasons may change**
-- Data migration: **No**
+#### MG-AUD-066 — Resolved
 
----
+Scenario ranking now handles unknown aggregate material risk without comparing
+`null` to numeric risk thresholds. The response preserves
+`material_risk_score: null`, and the explanation identifies the risk as
+unknown instead of classifying it as low, moderate, or high.
 
-## Nullable risk in scenario ranking and sensitivity analysis
+Focused scenario-ranking tests and the related screening, scenario-ranking,
+and sensitivity regression tests passed. Known-risk ranking behavior remains
+unchanged.
 
-Related findings: MG-AUD-066, MG-AUD-067  
-Date: 2026-07-28  
-Release reference: Post-v1.9.18  
-Status: Resolved; test-verified 2026-07-28
+Status: **Resolved and test-verified on 2026-07-28.**
 
-### Before
+#### MG-AUD-067 — Resolved
 
-Scenario ranking compared nullable material risk directly with numeric
-thresholds, so an unknown value could raise a `TypeError`. Sensitivity analysis
-multiplied a nullable baseline risk by scenario multipliers, causing the same
-class of failure. A zero fallback would have incorrectly represented missing
-evidence as measured zero risk.
-
-### After
-
-Scenario ranking preserves `material_risk_score: null` and explains that
-aggregate risk is unknown without assigning a low, moderate, or high label.
-Sensitivity analysis preserves `baseline_material_risk_score: null`, reports
+Sensitivity analysis now handles an unknown baseline material-risk score
+without multiplying `null` by scenario multipliers. The response preserves
+`baseline_material_risk_score: null`, reports
 `sensitivity_level: "UNKNOWN"`, and returns `adjusted_score: null` and
-`score_delta: null` for risk-derived scenarios.
+`score_delta: null` for risk-derived scenario results rather than fabricating
+zero risk or zero sensitivity.
 
-Focused scenario-ranking and sensitivity-analysis tests passed. The related
-candidate-screening, scenario-ranking, and sensitivity-analysis regression
-tests also passed, while known-risk behavior remained unchanged.
+Focused sensitivity-analysis tests and the related screening,
+scenario-ranking, and sensitivity regression tests passed. Known-risk
+calculations remain unchanged. This remediation addresses nullable-risk
+correctness only; `MG-AUD-068` and `MG-AUD-069` continue to track the
+element-specific and scenario-type semantics.
 
-This change is limited to nullable-risk correctness. The existing scenario
-definitions are unchanged; element-specific scenario adjustment and distinct
-supply-risk versus geopolitical calculations remain tracked by `MG-AUD-068`
-and `MG-AUD-069`.
+Status: **Resolved and test-verified on 2026-07-28.**
 
-### Impact
+#### MG-AUD-068 — Resolved
 
-- Scientific result: **Yes; unknown risk now propagates explicitly instead of becoming a failure or fabricated zero**
-- Ranking: **No intended change for materials with known risk**
-- API contract: **No breaking structural change; unknown derived sensitivity values are nullable and use `UNKNOWN` classification**
-- Data migration: **No**
+Scenario-policy evaluation now connects the declared supply-risk element to the
+actual adjustment. A supply-risk increase affects only a candidate whose
+composition contains the named element, and the adjustment is a transparent,
+fixed-weight penalty rather than a multiplier on the entire recommendation
+score. Candidates without the named element receive no supply-risk adjustment.
+Existing avoid- and prefer-element adjustments continue to compose with the
+scenario result.
 
----
+Focused scenario-policy tests verified affected and unaffected compositions,
+penalty direction, explanatory reasons, combined policy behavior, and
+`scenario_delta` consistency. The related scenario and screening regression
+tests passed.
 
-## Element-specific scenario policy and dimension-specific sensitivity
+Status: **Resolved and test-verified on 2026-07-28.**
 
-Related findings: MG-AUD-068, MG-AUD-069  
-Date: 2026-07-28  
-Release reference: Post-v1.9.18  
-Status: Resolved; test-verified 2026-07-28
+#### MG-AUD-069 — Resolved
 
-### Before
+Sensitivity analysis now derives distinct material-level supply-risk and
+geopolitical-risk baselines from their corresponding element-level evidence.
+Each scenario adjusts only its named dimension and exposes the dimension,
+baseline component value, and adjusted component value. Equal multipliers no
+longer imply identical results unless the underlying component evidence is
+itself equal.
 
-Scenario-policy evaluation multiplied the entire recommendation score by the
-supply-risk multiplier, regardless of whether the candidate contained the
-named element. A multiplier above `1.0` could therefore reward increased risk.
+Missing evidence remains dimension-specific and nullable. A missing supply-risk
+component does not erase available geopolitical evidence, and vice versa.
+Completely unavailable evidence retains the `MG-AUD-067` contract:
+`sensitivity_level: "UNKNOWN"` with nullable derived results.
 
-Sensitivity analysis applied supply-risk and geopolitical-risk scenario names
-to identical calculations over the same aggregate material-risk score. The
-underlying dimension-specific evidence was not used.
+Focused sensitivity tests verified distinct component baselines and deltas,
+partial missing-evidence behavior, and the all-unknown contract. The related
+scenario-ranking, scenario-policy, candidate-screening, and sensitivity
+regression tests passed.
 
-### After
+Status: **Resolved and test-verified on 2026-07-28.**
 
-Supply-risk policy adjustment applies only to candidates containing the named
-element. Increased exposure produces a fixed-weight, auditable penalty;
-unaffected candidates receive no supply-risk adjustment. Existing avoid- and
-prefer-element adjustments remain independent.
+#### MG-AUD-070 — Resolved
 
-Sensitivity analysis derives separate supply-risk and geopolitical-risk
-baselines from their corresponding element-level evidence. Each scenario
-adjusts only its named dimension and reports the dimension, baseline component,
-and adjusted component. Partial missing evidence remains local to the affected
-dimension, while completely unavailable evidence retains
-`sensitivity_level: "UNKNOWN"` and nullable derived values.
+Substitution analysis now preserves source and candidate material-risk values
+as nullable evidence. Missing risk no longer becomes numeric zero or receives
+the maximum low-risk ranking contribution. Candidates with known risk evidence
+are ordered before candidates with unknown risk evidence, and material ID
+provides deterministic tie-breaking within otherwise equal results.
 
-Focused scenario-policy and sensitivity-analysis tests passed. The related
-scenario-ranking and candidate-screening regression tests also passed.
+The response now exposes source and candidate risk-known state, profile
+coverage, evidence completeness, and unknown-risk elements. Explanations for
+missing evidence state that risk is unavailable and do not describe the
+candidate as low risk or lower risk.
 
-### Impact
+Focused substitution-analysis tests verified nullable source and candidate
+risk, removal of the favorable unknown-risk contribution, evidence-aware
+ordering even when an unknown candidate has a higher raw score, deterministic
+ties, and explanation correctness. Related screening, comparison, and
+material-risk regression tests passed.
 
-- Scientific result: **Yes; scenario outputs now reflect the named element and risk dimension**
-- Ranking: **Yes; scenario scores can change because increased risk is penalized only for exposed candidates**
-- API contract: **Additive sensitivity fields; existing aggregate baseline retained**
-- Data migration: **No**
+A development endpoint check verified routing, serialization, known-risk
+ranking, explanation consistency, and deterministic equal-score ordering. The
+available database response contained only complete known-risk evidence, so
+the direct unknown-risk endpoint case remains covered by controlled automated
+tests rather than an artificial production fixture.
 
----
+Status: **Resolved and test-verified on 2026-07-28; endpoint regression-verified
+with known-risk data.**
 
-## Evidence-aware substitution risk ranking
+#### MG-AUD-074 — Resolved
 
-Related finding: MG-AUD-070  
-Date: 2026-07-28  
-Release reference: Post-v1.9.18  
-Status: Resolved; test-verified 2026-07-28; endpoint regression-verified with
-known-risk data
+Discovery-chain enumeration now treats `max_hops` as an inclusive upper bound
+rather than an exact required depth. Every valid non-zero-hop chain is retained
+when created, while only chains below the hop bound remain eligible for further
+expansion. Valid shorter paths, dead ends, and prefixes whose remaining
+continuations are cyclic or invalid are therefore no longer discarded. The
+source-only zero-hop path remains excluded, and no returned chain can exceed
+the requested bound.
 
-### Before
+Focused regressions covered coexistence of one-hop and two-hop chains,
+dead-end retention, invalid-continuation retention, zero-hop exclusion, and
+the hop ceiling. The full regression suite passed after updating the
+scientific-pathway test expectation: a newly eligible one-hop pathway can rank
+above the former two-hop result, changing that fixture's usefulness score from
+`89.75` to `93.75` without changing the scoring formula.
 
-Substitution analysis consumed the legacy numeric risk API, so missing risk
-evidence became `0.0`. The rank formula then gave that fabricated zero the
-maximum low-risk contribution and could describe an unknown-risk candidate as
-lower risk.
+Development endpoint verification with `max_hops=2` and `limit=20` returned
+five one-hop and fifteen two-hop chains. Every result satisfied
+`len(materials) = hop_count + 1` and
+`len(transitions) = hop_count`; transition endpoints matched consecutive
+materials, no source-only or cyclic chain was returned, and the maximum depth
+was two. Examples included `5 → 6` and `5 → 6 → 7`.
 
-### After
+Status: **Resolved, full-suite tested, and development endpoint-verified on
+2026-07-28.**
 
-Source and candidate risk values remain nullable. Unknown risk receives no
-low-risk contribution, known evidence is ordered before unknown evidence, and
-material ID breaks otherwise equal ties deterministically. The response now
-reports risk-known state, evidence coverage and completeness, and unknown-risk
-elements. Explanations identify unavailable evidence without calling it low
-risk.
+#### MG-AUD-075 — Resolved
 
-Focused substitution tests covered nullable evidence, score construction,
-known-before-unknown ordering, deterministic ties, metadata, and explanations.
-Related screening, comparison, and material-risk regressions passed.
+Hop-bounded weighted shortest-path search now keys its best-cost state by
+`(material_id, depth)` instead of material ID alone. Arrivals at the same
+material with different consumed hop counts therefore remain distinct. A
+cheaper deep arrival that has exhausted its hop capacity can no longer suppress
+a costlier shallower arrival that can still reach the target. A depth-aware
+stale-queue guard also prevents obsolete queued states from being expanded.
 
-The development endpoint check confirmed serialization, known-risk ranking,
-explanation consistency, and deterministic equal-score ordering. Because the
-available records all had complete risk evidence, the unknown-risk endpoint
-branch remains directly verified by controlled automated tests rather than a
-production fixture.
+Focused regression coverage reproduces the exact competing-route failure mode,
+verifies that the shallower viable state is retained, and confirms that the
+returned path respects `max_depth`. Related chain, graph-algorithm,
+element-membership, path-ranking, research-service, and full-suite regressions
+passed. No schema or route change was required.
 
-### Impact
+The decisive condition depends on two controlled arrivals at the same internal
+node with different depths and costs. It is therefore verified directly by the
+targeted automated fixture rather than claimed from an ordinary endpoint
+response whose dataset may not contain that competing-route topology.
 
-- Scientific result: **Yes; missing risk evidence is no longer represented as minimum risk**
-- Ranking: **Yes; known-evidence candidates precede unknown-evidence candidates**
-- API contract: **Additive evidence fields and nullable source/candidate risk scores**
-- Data migration: **No**
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
 
----
+#### MG-AUD-076 — Resolved
 
-## Hop-bounded chain enumeration and weighted path state
+Edge scoring now reserves part of the `0–100` scale for framework-continuity
+and elemental-exchange evidence instead of allowing transition plausibility to
+saturate the score by itself. The plausibility contribution was rescaled from
+`scientific_plausibility × 100` to `scientific_plausibility × 80`; the existing
+evidence contributions remain up to 10 points for P–O continuity, 5 points for
+oxygen continuity, and 5 points for a removed-and-introduced element exchange.
 
-Related findings: MG-AUD-074, MG-AUD-075  
-Date: 2026-07-28  
-Release reference: Post-v1.9.18  
-Status: Resolved; full-suite test-verified 2026-07-28; MG-AUD-074 development
-endpoint-verified
+This preserves the established maximum of `100` while allowing scientifically
+different edges with the same transition type to remain distinguishable. For
+example, alkali-substitution edges now score `80`, `85`, or `100` depending on
+their available continuity and exchange evidence rather than all saturating at
+`100`. The correction is confined to graph-edge intelligence; K-best and path
+ranking use their own scoring model and were not changed.
 
-### Before
+Focused regressions updated the affected score expectations and verified strict
+ordering between otherwise identical transition types with full, partial, and
+baseline evidence. The full regression suite passed.
 
-Discovery-chain enumeration returned a chain only when its length exactly
-equaled `max_hops`. Valid shorter chains, dead ends, and prefixes with no valid
-continuation were omitted.
+Status: **Resolved and full-suite test-verified on 2026-07-31.**
 
-Weighted shortest-path search stored one best cost per material. Under a hop
-bound, a cheap deep arrival could suppress a costlier shallower arrival even
-when only the shallower state retained enough hop capacity to reach the target.
+#### MG-AUD-077 — Resolved
 
-### After
+K-best adjacency construction now applies the canonical
+`DiscoveryTransitionValidator` before an edge becomes eligible for path
+enumeration. Rejected candidates do not enter the searchable adjacency, and
+each accepted adjacency record carries the validated transition metadata used
+by returned K-best paths. K-best therefore no longer reconstructs or infers a
+different transition from unvalidated candidate data.
 
-`max_hops` is now an inclusive upper bound. Every valid non-zero-hop chain is
-retained, while only chains below the bound are expanded further. The source
-alone is not returned, and the hop ceiling remains strict.
+Focused regressions verified that validator-rejected candidates cannot appear
+in K-best results and that every returned transition corresponds to an edge
+accepted by the canonical graph-building path. Graph-builder, transition,
+path-ranking, and K-best regressions passed as part of the full test suite.
 
-Weighted search stores costs per `(material_id, depth)` and applies a
-depth-aware stale-state check. Different arrivals at the same material retain
-their distinct future feasibility.
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
 
-Focused tests covered shorter and maximum-depth chains, dead ends, invalid or
-cyclic continuations, hop-ceiling enforcement, and the controlled
-deep-versus-shallow weighted-search failure mode. The full suite passed.
+#### MG-AUD-079 — Resolved
 
-A development chain request with `max_hops=2` and `limit=20` returned five
-one-hop and fifteen two-hop chains, with no result beyond two hops and with
-internally consistent material/transition counts and endpoints. The specialized
-weighted-state condition remains directly verified by its targeted fixture
-rather than by incidental endpoint topology.
+K-best material construction now resolves each non-root material from the
+actual incoming `(source_material_id, target_material_id)` adjacency record for
+that path. It no longer performs a graph-wide first-match lookup by target ID.
+When the same material is reachable through multiple incoming edges, its
+candidate metadata and explanation therefore remain aligned with the edge
+actually traversed.
 
-### Impact
+A focused multiply-reachable-material fixture verified that K-best selects
+metadata from the path-specific incoming edge rather than an earlier unrelated
+adjacency entry. The full regression suite passed.
 
-- Scientific result: **Yes; valid bounded pathways are no longer omitted**
-- Ranking: **Yes; newly retained shorter paths can rank higher, and corrected weighted search can select a previously pruned route**
-- API contract: **No structural change; result contents and ordering can change**
-- Data migration: **No**
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
 
----
+#### MG-AUD-080 — Resolved
 
-## Canonically validated and bounded K-best traversal
+K-best simple-path enumeration now enforces two independent computational
+budgets: at most `100` accepted target-reaching paths and at most `1,000`
+processed search states. These bounds apply to internal work before ranking and
+before the caller's `k` result limit, protecting both dense target-rich graphs
+and sparse or unreachable searches.
 
-Related findings: MG-AUD-077, MG-AUD-079, MG-AUD-080  
-Date: 2026-07-28  
-Release reference: Post-v1.9.18  
-Status: Resolved; full-suite test-verified 2026-07-28
+The service response now reports `search_truncated` when either internal budget
+stops enumeration. `total_path_count` means the number of valid paths actually
+evaluated during the bounded search; it does not claim an exhaustive count when
+`search_truncated` is true. `path_count` remains the number returned after
+applying `k`. K-best is not currently exposed through a public route or
+research service, so no public schema change was required.
 
-### Before
+Focused regressions verified path-budget and state-budget enforcement, bounded
+ranking work, deterministic result ordering, `k` limiting, simple-path
+behavior, and the hop ceiling. The full regression suite passed.
 
-K-best search consumed raw discovery-candidate adjacency rather than the
-canonical transition validator. It could therefore return an edge rejected by
-the canonical graph and reconstruct different transition metadata.
+Status: **Resolved and full-suite test-verified on 2026-07-28.**
 
-Material metadata was found through a graph-wide first match by target ID, so
-a multiply reachable material could receive evidence from the wrong incoming
-edge.
+#### MG-AUD-084 — Resolved
 
-Simple-path enumeration explored and ranked every reachable path before
-applying `k`. The declared internal path limit was unused, and no independent
-processed-state budget protected sparse or unreachable searches.
+Discovery path lookup now treats `max_hops` as an enforced inclusive search
+boundary rather than ignoring it and inspecting direct edges only. Graph
+construction receives the requested hop limit, and deterministic breadth-first
+search returns the shortest valid path within that limit. Path-local visited
+state prevents cycles, and traversal does not expand a path after it reaches
+the hop ceiling.
 
-### After
+Returned multi-hop paths contain the complete ordered material and transition
+sequences. A target reachable only beyond the requested limit is reported as
+not found, while direct and otherwise reachable bounded paths retain the
+existing response contract.
 
-Adjacency now admits only canonically validated transitions and carries each
-accepted transition into K-best path construction. Material metadata is
-resolved from the actual `(source, target)` edge traversed by the path.
+Focused regressions covered direct and two-hop paths, rejection of a two-hop
+target at `max_hops=1`, deterministic shortest-path selection, unreachable
+targets, cyclic graphs, material/transition counts, endpoint continuity, and
+the hop ceiling. The full regression suite passed.
 
-Enumeration accepts at most 100 target-reaching paths and processes at most
-1,000 search states before ranking. `search_truncated` reports when either
-budget stops the search. `total_path_count` records valid paths evaluated
-within the bounded search; it is not an exhaustive count when truncated.
-`path_count` remains the number returned after applying `k`.
+Development runtime inspection found no multi-hop-only source-target pair
+among the tested graph sources because every depth-two node was already
+directly reachable. Therefore, differential one-hop/two-hop behavior remains
+verified by controlled automated fixtures rather than by modifying scientific
+data to manufacture a case. A public smoke test for
+`GET /api/v1/materials/5/discovery/path?target_material_id=7&max_hops=1`
+returned a valid deterministic one-hop path with two materials, one continuous
+transition, and `hop_count: 1`.
 
-Focused tests covered invalid-edge exclusion, path-specific metadata, both
-computational budgets, bounded ranking calls, deterministic ordering, result
-limiting, simple paths, and hop limits. The full regression suite passed.
-K-best has no current public route or research-service consumer, so no endpoint
-or public-schema change was required.
+Status: **Resolved, full-suite test-verified, and development endpoint
+smoke-tested on 2026-07-31.**
 
-### Impact
+## Maintenance rule
 
-- Scientific result: **Yes; invalid transitions and wrong-edge evidence are excluded**
-- Ranking: **No formula change; very large searches rank only the explicitly bounded evaluated set**
-- Performance: **Yes; enumeration and ranking now have enforceable path and state budgets**
-- API contract: **No public change; internal service metadata adds `search_truncated` and clarifies count semantics**
-- Data migration: **No**
+For future audit work:
 
----
-
-## Edge-intelligence score differentiation
-
-Related finding: MG-AUD-076  
-Date: 2026-07-31  
-Release reference: Post-v1.9.18  
-Status: Resolved; full-suite test-verified 2026-07-31
-
-### Before
-
-Edge scoring multiplied scientific plausibility by 100 and then added
-framework-continuity and elemental-exchange bonuses before clamping the result
-to 100. High-plausibility transitions could therefore reach or exceed the
-maximum without the additional evidence, causing scientifically different
-edges to collapse to the same score.
-
-### After
-
-Scientific plausibility contributes at most 80 points. The remaining 20 points
-are reserved for the existing evidence signals: P–O continuity, oxygen
-continuity, and a removed-and-introduced element exchange. The score remains
-bounded to `0–100`, but each intended component can now affect the result.
-
-Focused regression coverage demonstrates that alkali-substitution edges with
-full, partial, and baseline evidence score `100.0`, `85.0`, and `80.0`,
-respectively. Updated edge-intelligence tests and the full regression suite
-passed. K-best and path-ranking formulas were not changed because they do not
-consume `edge_score`.
-
-### Impact
-
-- Scientific result: **Yes; edge evidence distinctions are now preserved**
-- Ranking: **Graph-edge score ordering can change; K-best/path ranking is unchanged**
-- API contract: **No structural change; numeric `edge_score` values can change**
-- Data migration: **No**
+1. Add or update the finding in this register.
+2. Keep the finding description concise and evidence-based.
+3. Store root cause, code changes, tests, production responses, scientific-impact checks, compatibility notes, and lessons learned in `MATERIALGRAPH_AUDIT_RESOLUTION.md`.
+4. Do not duplicate resolution narratives, test logs, roadmaps, architecture summaries, or investigation diaries in this register.

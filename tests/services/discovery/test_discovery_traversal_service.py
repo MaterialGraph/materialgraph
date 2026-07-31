@@ -1,5 +1,66 @@
 from app.services.discovery.traversal_service import DiscoveryTraversalService
 
+
+def _node(material_id):
+    return {
+        "material_id": material_id,
+        "mp_id": f"mp-{material_id}",
+        "pretty_formula": f"M{material_id}",
+        "formula": f"M{material_id}",
+    }
+
+
+def _edge(source_id, target_id):
+    return {
+        "source_material_id": source_id,
+        "target_material_id": target_id,
+        "transition_type": "shared_element_continuity",
+        "family": "phosphate",
+        "shared_elements": ["O", "P"],
+        "preserved_framework": ["O", "P"],
+        "removed_elements": [],
+        "introduced_elements": [],
+        "scientific_reason": (
+            f"Validated transition from {source_id} to {target_id}."
+        ),
+    }
+
+
+def _configure_path_graph(service, monkeypatch, edges):
+    material_ids = {
+        edge["source_material_id"]
+        for edge in edges
+    } | {
+        edge["target_material_id"]
+        for edge in edges
+    }
+    graph = {
+        "nodes": [_node(material_id) for material_id in sorted(material_ids)],
+        "edges": edges,
+    }
+    calls = []
+
+    def fake_build_graph(**kwargs):
+        calls.append(kwargs)
+        return graph
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        fake_build_graph,
+    )
+    monkeypatch.setattr(
+        service.path_ranking_service,
+        "rank_path",
+        lambda **kwargs: {
+            "scientific_usefulness_score": 75.0,
+            "score_breakdown": {},
+            "usefulness_reason": "Ranked test path.",
+        },
+    )
+
+    return calls
+
 def test_discovery_graph_returns_nodes_and_edges(db_session):
     service = DiscoveryTraversalService(db_session)
 
@@ -78,9 +139,174 @@ def test_discovery_path_returns_path_when_available(db_session):
         max_hops=2,
     )
 
-    assert "path_found" in result
-    assert "materials" in result
-    assert "transitions" in result
+    assert result["path_found"] is True
+    assert result["hop_count"] <= 2
+    assert len(result["materials"]) == result["hop_count"] + 1
+    assert len(result["transitions"]) == result["hop_count"]
+
+
+def test_discovery_path_returns_two_hop_path_and_forwards_limit(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    calls = _configure_path_graph(
+        service,
+        monkeypatch,
+        [_edge(5, 6), _edge(6, 7)],
+    )
+
+    result = service.get_path(
+        material_id=5,
+        target_material_id=7,
+        avoid_element="Li",
+        prefer_element="Na",
+        max_hops=2,
+    )
+
+    assert calls[0]["max_depth"] == 2
+    assert result["path_found"] is True
+    assert result["hop_count"] == 2
+    assert [
+        material["material_id"]
+        for material in result["materials"]
+    ] == [5, 6, 7]
+    assert [
+        (
+            transition["source_material_id"],
+            transition["target_material_id"],
+        )
+        for transition in result["transitions"]
+    ] == [(5, 6), (6, 7)]
+
+
+def test_discovery_path_returns_direct_path_with_one_hop_limit(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    _configure_path_graph(
+        service,
+        monkeypatch,
+        [_edge(5, 7), _edge(5, 6), _edge(6, 7)],
+    )
+
+    result = service.get_path(
+        material_id=5,
+        target_material_id=7,
+        max_hops=1,
+    )
+
+    assert result["path_found"] is True
+    assert result["hop_count"] == 1
+    assert [
+        material["material_id"]
+        for material in result["materials"]
+    ] == [5, 7]
+
+
+def test_discovery_path_rejects_target_beyond_max_hops(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    calls = _configure_path_graph(
+        service,
+        monkeypatch,
+        [_edge(5, 6), _edge(6, 7)],
+    )
+
+    result = service.get_path(
+        material_id=5,
+        target_material_id=7,
+        max_hops=1,
+    )
+
+    assert calls[0]["max_depth"] == 1
+    assert result["path_found"] is False
+    assert result["hop_count"] is None
+    assert result["materials"] == []
+    assert result["transitions"] == []
+
+
+def test_discovery_path_prefers_deterministic_shortest_path(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    _configure_path_graph(
+        service,
+        monkeypatch,
+        [
+            _edge(5, 6),
+            _edge(5, 8),
+            _edge(6, 9),
+            _edge(9, 7),
+            _edge(8, 7),
+        ],
+    )
+
+    result = service.get_path(
+        material_id=5,
+        target_material_id=7,
+        max_hops=3,
+    )
+
+    assert result["path_found"] is True
+    assert result["hop_count"] == 2
+    assert [
+        material["material_id"]
+        for material in result["materials"]
+    ] == [5, 8, 7]
+
+
+def test_discovery_path_returns_empty_for_unreachable_target(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    _configure_path_graph(
+        service,
+        monkeypatch,
+        [_edge(5, 6), _edge(6, 8)],
+    )
+
+    result = service.get_path(
+        material_id=5,
+        target_material_id=7,
+        max_hops=3,
+    )
+
+    assert result["path_found"] is False
+
+
+def test_discovery_path_avoids_cycles(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    _configure_path_graph(
+        service,
+        monkeypatch,
+        [
+            _edge(5, 6),
+            _edge(6, 5),
+            _edge(6, 7),
+        ],
+    )
+
+    result = service.get_path(
+        material_id=5,
+        target_material_id=7,
+        max_hops=3,
+    )
+
+    assert result["path_found"] is True
+    assert result["hop_count"] == 2
+    assert [
+        material["material_id"]
+        for material in result["materials"]
+    ] == [5, 6, 7]
 
 
 def test_path_reason_calibrates_element_overlap_evidence():
