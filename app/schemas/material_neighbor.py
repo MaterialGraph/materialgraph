@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 
 from app.schemas.material_common import MaterialSummary, MaterialRelationshipSummary
 

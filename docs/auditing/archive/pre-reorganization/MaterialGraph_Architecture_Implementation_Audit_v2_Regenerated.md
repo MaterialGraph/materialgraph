@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 42
-- **Not resolved:** 52
+- **Resolved:** 43
+- **Not resolved:** 51
 
 ## Correctness and Data Integrity
 
@@ -1642,6 +1642,30 @@ OpenAPI regressions verify that both operations reference
 and verify stable response invariants, including community counts, material
 counts, and consistency between top-level and nested community features. The
 focused tests, full regression suite, and Ruff checks passed.
+
+Status: **Resolved, full-suite test-verified, and lint-verified on
+2026-08-06.**
+
+#### MG-AUD-093 — Resolved
+
+Discovery element filters now distinguish recognized chemical symbols from
+the subset of elements currently represented in MaterialGraph data. A
+centralized periodic-table catalogue contains all 118 recognized element
+symbols and normalizes conventional input casing before discovery processing.
+Unknown symbols such as `Xx` are rejected with `422`, while chemically valid
+symbols absent from the current dataset, such as `Cu`, remain valid inputs.
+
+One shared FastAPI dependency applies the same semantic validation to
+`avoid_element` and `prefer_element` across candidates, chains, graph,
+subgraph, path, connected-community, and modularity-community routes. This
+closes the public validation gap without treating current dataset coverage as
+the authority for chemical legitimacy.
+
+Domain regressions verify the complete 118-symbol catalogue, canonical
+normalization, casing normalization, whitespace handling, and rejection of
+unknown symbols. API regressions verify the shared behavior across the seven
+discovery GET routes and both element-filter parameters. The focused tests,
+full regression suite, and Ruff checks passed.
 
 Status: **Resolved, full-suite test-verified, and lint-verified on
 2026-08-06.**

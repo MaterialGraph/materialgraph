@@ -2,10 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.core.performance import timed_block
 from app.services.discovery.explanation_service import DiscoveryExplanationService
-from app.services.discovery.scoring_service import (
-    SOURCE_DIVERSITY_BONUS,
-    DiscoveryScoringService,
-)
+from app.services.discovery.scoring_service import DiscoveryScoringService
 from app.services.material.family_service import MaterialFamilyService
 from app.services.material.recommendation_service import MaterialRecommendationService
 from app.services.discovery.warning_service import DiscoveryWarningService

@@ -28,6 +28,7 @@ from app.services.research.objective_exploration_service import (
     ResearchObjectiveService,
     ResearchObjectiveExplorationService,
 )
+from app.api.dependencies.element_filters import ElementFiltersDependency
 
 
 
@@ -43,8 +44,7 @@ router = APIRouter(
 )
 def get_discovery_candidates(
     material_id: int,
-    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
-    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    element_filters: ElementFiltersDependency,
     limit: int = Query(default=10, ge=1, le=50),
     include_recommendations: bool = Query(
         default=False,
@@ -64,8 +64,8 @@ def get_discovery_candidates(
 
     result = service.get_discovery_candidates(
         material_id=material_id,
-        avoid_element=avoid_element,
-        prefer_element=prefer_element,
+        avoid_element=element_filters.avoid_element,
+        prefer_element=element_filters.prefer_element,
         limit=limit,
         include_recommendations=include_recommendations,
         include_scenarios=include_scenarios,
@@ -83,8 +83,7 @@ def get_discovery_candidates(
 )
 def get_discovery_chains(
     material_id: int,
-    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
-    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    element_filters: ElementFiltersDependency,
     max_hops: int = Query(default=2, ge=1, le=3),
     limit: int = Query(default=5, ge=1, le=20),
     db: Session = Depends(get_db),
@@ -93,8 +92,8 @@ def get_discovery_chains(
 
     return service.get_discovery_chains(
         material_id=material_id,
-        avoid_element=avoid_element,
-        prefer_element=prefer_element,
+        avoid_element=element_filters.avoid_element,
+        prefer_element=element_filters.prefer_element,
         max_hops=max_hops,
         limit=limit,
     )
@@ -121,8 +120,7 @@ def generate_discovery_chains_for_objective(
 )
 def get_discovery_graph(
     material_id: int,
-    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
-    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    element_filters: ElementFiltersDependency,
     max_hops: int = Query(default=2, ge=1, le=3),
     limit: int = Query(default=50, ge=1, le=200),
     db: Session = Depends(get_db),
@@ -131,8 +129,8 @@ def get_discovery_graph(
 
     return service.get_graph(
         material_id=material_id,
-        avoid_element=avoid_element,
-        prefer_element=prefer_element,
+        avoid_element=element_filters.avoid_element,
+        prefer_element=element_filters.prefer_element,
         max_hops=max_hops,
         limit=limit,
     )
@@ -144,8 +142,7 @@ def get_discovery_graph(
 )
 def get_discovery_subgraph(
     material_id: int,
-    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
-    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    element_filters: ElementFiltersDependency,
     family: str | None = Query(default=None),
     transition_type: str | None = Query(default=None),
     min_quality_score: float | None = Query(default=None, ge=0.0, le=15.0),
@@ -158,8 +155,8 @@ def get_discovery_subgraph(
 
     return service.get_subgraph(
         material_id=material_id,
-        avoid_element=avoid_element,
-        prefer_element=prefer_element,
+        avoid_element=element_filters.avoid_element,
+        prefer_element=element_filters.prefer_element,
         family=family,
         transition_type=transition_type,
         min_quality_score=min_quality_score,
@@ -175,9 +172,8 @@ def get_discovery_subgraph(
 )
 def get_discovery_path(
     material_id: int,
+    element_filters: ElementFiltersDependency,
     target_material_id: int = Query(...),
-    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
-    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
     max_hops: int = Query(default=2, ge=1, le=3),
     db: Session = Depends(get_db),
 ):
@@ -186,8 +182,8 @@ def get_discovery_path(
     return service.get_path(
         material_id=material_id,
         target_material_id=target_material_id,
-        avoid_element=avoid_element,
-        prefer_element=prefer_element,
+        avoid_element=element_filters.avoid_element,
+        prefer_element=element_filters.prefer_element,
         max_hops=max_hops,
     )
 
@@ -198,8 +194,7 @@ def get_discovery_path(
 )
 def get_connected_discovery_communities(
     material_id: int,
-    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
-    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    element_filters: ElementFiltersDependency,
     max_depth: int = Query(default=2, ge=1, le=2),
     db: Session = Depends(get_db),
 ):
@@ -207,8 +202,8 @@ def get_connected_discovery_communities(
 
     return service.connected_components(
         start_material_id=material_id,
-        avoid_element=avoid_element,
-        prefer_element=prefer_element,
+        avoid_element=element_filters.avoid_element,
+        prefer_element=element_filters.prefer_element,
         max_depth=max_depth,
     )
 
@@ -220,8 +215,7 @@ def get_connected_discovery_communities(
 )
 def get_modularity_discovery_communities(
     material_id: int,
-    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
-    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    element_filters: ElementFiltersDependency,
     max_depth: int = Query(default=2, ge=1, le=2),
     db: Session = Depends(get_db),
 ):
@@ -229,8 +223,8 @@ def get_modularity_discovery_communities(
 
     return service.greedy_modularity_communities(
         start_material_id=material_id,
-        avoid_element=avoid_element,
-        prefer_element=prefer_element,
+        avoid_element=element_filters.avoid_element,
+        prefer_element=element_filters.prefer_element,
         max_depth=max_depth,
     )
 

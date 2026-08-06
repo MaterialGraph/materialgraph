@@ -89,8 +89,6 @@ def test_known_low_risk_receives_low_risk_quality_bonus():
 
 def test_partial_low_risk_evidence_does_not_receive_quality_bonus():
     """Partial risk evidence must not unlock a favorable risk-quality bonus."""
-    from types import SimpleNamespace
-
     from app.services.material.quality_service import MaterialQualityService
 
     service = MaterialQualityService.__new__(MaterialQualityService)

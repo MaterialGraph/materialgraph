@@ -1,7 +1,6 @@
 import pytest
 
 from app.services.material.project_service import MaterialsProjectService
-from app.services.material.composition_service import MaterialCompositionService
 
 
 class FakeComposition:
