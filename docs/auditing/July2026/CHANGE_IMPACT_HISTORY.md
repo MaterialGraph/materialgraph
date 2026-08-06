@@ -1225,3 +1225,63 @@ Ruff checks passed.
 - API contract: **Yes; former graph-job routes now return `404` and are absent from OpenAPI**
 - Internal processing: **No change to the graph-job model or service**
 - Data migration: **No**
+
+---
+
+## Discovery query-validation harmonization
+
+Related finding: MG-AUD-090  
+Date: 2026-08-06  
+Release reference: Post-v1.9.18  
+Status: Resolved; full-suite test-verified and lint-verified
+
+### Before
+
+Discovery candidates, subgraph, and community routes constrained
+`avoid_element` and `prefer_element` to one through three characters, while
+chains, graph, and path accepted unconstrained optional strings. Equivalent
+inputs therefore had route-dependent validation behavior.
+
+### After
+
+Chains, graph, and path now apply the same `min_length=1` and `max_length=3`
+query constraints. Parameterized regressions cover empty and overlong values
+for both parameters across all three corrected routes, including validation
+error location. Chemical-symbol existence remains tracked separately by
+MG-AUD-093.
+
+### Impact
+
+- Scientific result: **No direct change**
+- Ranking: **No**
+- API contract: **Yes; malformed values now consistently return `422`**
+- Data migration: **No**
+
+---
+
+## Community response-contract enforcement
+
+Related finding: MG-AUD-091  
+Date: 2026-08-06  
+Release reference: Post-v1.9.18  
+Status: Resolved; full-suite test-verified and lint-verified
+
+### Before
+
+The connected-components and greedy-modularity community endpoints returned
+structured payloads without declaring a FastAPI response model, allowing their
+responses to bypass the canonical serialization contract.
+
+### After
+
+Both endpoints now declare `DiscoveryCommunityResponse`. OpenAPI regressions
+verify the schema reference, and runtime regressions exercise both algorithms
+and verify stable count, material, and nested-feature invariants. The existing
+algorithm and ranking behavior is unchanged.
+
+### Impact
+
+- Scientific result: **No**
+- Ranking: **No**
+- API contract: **Yes; the existing community response shape is now enforced**
+- Data migration: **No**

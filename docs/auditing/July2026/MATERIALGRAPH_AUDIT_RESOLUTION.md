@@ -5175,3 +5175,149 @@ API requires a trusted identity boundary before ownership can be meaningful.
 Related Findings
 
 None.
+
+# MG-AUD-090
+
+Title
+
+Equivalent discovery inputs receive inconsistent route validation
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Discovery chains route
+- Discovery graph route
+- Discovery path route
+- Shared query-parameter contract
+- Discovery API validation regressions
+
+Root Cause
+
+The candidates, subgraph, and community routes constrained `avoid_element` and
+`prefer_element` to one through three characters, while the chains, graph, and
+path routes accepted unconstrained optional strings. Equivalent inputs could
+therefore be accepted or rejected solely according to the selected route.
+
+Resolution
+
+✓ Added `Query(default=None, min_length=1, max_length=3)` constraints for
+`avoid_element` and `prefer_element` on chains, graph, and path.
+
+✓ Preserved the existing structural validation contract on candidates,
+subgraph, and community routes.
+
+✓ Kept chemical-symbol existence validation outside this change because it
+is tracked independently by MG-AUD-093.
+
+Regression Verification
+
+✓ Parameterized API tests verify that chains, graph, and path reject empty
+and overlong values for both query parameters with `422`.
+
+✓ A focused assertion verifies that the validation error location identifies
+the affected query parameter.
+
+✓ The focused tests, full regression suite, and Ruff checks passed.
+
+API Contract
+
+Yes. Malformed values that were previously accepted by some discovery routes
+now receive a consistent `422` response.
+
+Database Migration
+
+No.
+
+Scientific Impact
+
+No scoring or ranking algorithm changed. Invalid structural inputs are rejected
+consistently before entering discovery processing.
+
+Lessons Learned
+
+Equivalent domain parameters should share one API-boundary contract across
+every route that exposes them.
+
+Related Findings
+
+- MG-AUD-093
+
+# MG-AUD-091
+
+Title
+
+Community endpoints bypass response-contract validation
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Connected discovery communities endpoint
+- Greedy-modularity discovery communities endpoint
+- `DiscoveryCommunityResponse`
+- OpenAPI response contracts
+- Community API regression tests
+
+Root Cause
+
+Both community endpoints returned structured dictionaries without declaring a
+FastAPI `response_model`. Their payloads therefore bypassed the response
+validation and serialization contract already defined by
+`DiscoveryCommunityResponse`.
+
+Resolution
+
+✓ Added `response_model=DiscoveryCommunityResponse` to the connected and
+modularity community route decorators.
+
+✓ Reused the existing common schema because both algorithms return the same
+top-level structure, community structure, nested feature structure, material
+structure, and valid empty-community response.
+
+Regression Verification
+
+✓ OpenAPI tests verify that both community operations reference
+`DiscoveryCommunityResponse` for successful responses.
+
+✓ Runtime API tests exercise both algorithms and verify the expected
+algorithm identifiers and structural invariants for counts, materials, and
+nested community features.
+
+✓ The focused tests, full regression suite, and Ruff checks passed.
+
+API Contract
+
+The documented response shape is now explicit and enforced. Structurally
+malformed service output can no longer pass through these route boundaries
+without FastAPI response validation.
+
+Database Migration
+
+No.
+
+Scientific Impact
+
+No algorithm or ranking behavior changed. The change enforces the existing
+community-response contract at serialization time.
+
+Lessons Learned
+
+Public analytical endpoints should always declare response models when a
+canonical schema already exists.
+
+Related Findings
+
+None.

@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 40
-- **Not resolved:** 54
+- **Resolved:** 42
+- **Not resolved:** 52
 
 ## Correctness and Data Integrity
 
@@ -1612,6 +1612,39 @@ checks passed.
 
 Status: **Resolved by public-surface removal, full-suite test-verified, and
 lint-verified on 2026-08-06.**
+
+#### MG-AUD-090 — Resolved
+
+Equivalent `avoid_element` and `prefer_element` query parameters now use the
+same structural length constraints across discovery candidates, chains, graph,
+subgraph, path, and community routes. Chains, graph, and path now enforce
+`min_length=1` and `max_length=3`, matching the routes that already applied
+those constraints.
+
+Parameterized API regressions verify that empty and overlong values are
+rejected with `422` for both parameters across chains, graph, and path, and
+that the validation error identifies the relevant query parameter. Chemical
+symbol existence validation remains outside this finding and is tracked by
+MG-AUD-093. The focused tests, full regression suite, and Ruff checks passed.
+
+Status: **Resolved, full-suite test-verified, and lint-verified on
+2026-08-06.**
+
+#### MG-AUD-091 — Resolved
+
+The connected-components and greedy-modularity community endpoints now declare
+`DiscoveryCommunityResponse` as their FastAPI `response_model`. Both community
+algorithms share the same validated top-level and per-community response
+contract, including the empty-community result.
+
+OpenAPI regressions verify that both operations reference
+`DiscoveryCommunityResponse`. Runtime API regressions exercise both algorithms
+and verify stable response invariants, including community counts, material
+counts, and consistency between top-level and nested community features. The
+focused tests, full regression suite, and Ruff checks passed.
+
+Status: **Resolved, full-suite test-verified, and lint-verified on
+2026-08-06.**
 
 ## Maintenance rule
 

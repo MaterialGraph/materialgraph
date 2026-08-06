@@ -11,6 +11,7 @@ from app.schemas.discovery import (
 )
 
 from app.schemas.discovery_graph import (
+    DiscoveryCommunityResponse,
     DiscoveryGraphResponse,
     DiscoveryPathResponse,
     DiscoverySubgraphResponse,
@@ -82,8 +83,8 @@ def get_discovery_candidates(
 )
 def get_discovery_chains(
     material_id: int,
-    avoid_element: str | None = None,
-    prefer_element: str | None = None,
+    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
+    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
     max_hops: int = Query(default=2, ge=1, le=3),
     limit: int = Query(default=5, ge=1, le=20),
     db: Session = Depends(get_db),
@@ -120,10 +121,10 @@ def generate_discovery_chains_for_objective(
 )
 def get_discovery_graph(
     material_id: int,
-    avoid_element: str | None = None,
-    prefer_element: str | None = None,
-    max_hops: int = Query(2, ge=1, le=3),
-    limit: int = Query(50, ge=1, le=200),
+    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
+    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    max_hops: int = Query(default=2, ge=1, le=3),
+    limit: int = Query(default=50, ge=1, le=200),
     db: Session = Depends(get_db),
 ):
     service = DiscoveryTraversalService(db)
@@ -175,9 +176,9 @@ def get_discovery_subgraph(
 def get_discovery_path(
     material_id: int,
     target_material_id: int = Query(...),
-    avoid_element: str | None = None,
-    prefer_element: str | None = None,
-    max_hops: int = Query(2, ge=1, le=3),
+    avoid_element: str | None = Query(default=None, min_length=1, max_length=3),
+    prefer_element: str | None = Query(default=None, min_length=1, max_length=3),
+    max_hops: int = Query(default=2, ge=1, le=3),
     db: Session = Depends(get_db),
 ):
     service = DiscoveryTraversalService(db)
@@ -192,6 +193,7 @@ def get_discovery_path(
 
 @router.get(
     "/{material_id}/discovery/communities/connected",
+    response_model=DiscoveryCommunityResponse,
     summary="Get connected discovery communities",
 )
 def get_connected_discovery_communities(
@@ -213,6 +215,7 @@ def get_connected_discovery_communities(
 
 @router.get(
     "/{material_id}/discovery/communities/modularity",
+    response_model=DiscoveryCommunityResponse,
     summary="Get modularity-based discovery communities",
 )
 def get_modularity_discovery_communities(
