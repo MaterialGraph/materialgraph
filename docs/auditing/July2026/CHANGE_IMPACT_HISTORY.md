@@ -1184,3 +1184,44 @@ external-evidence gaps, and supported each strong-plausibility statement with
 - Ranking: **No direct score or ordering change; downstream grouping by readiness can change**
 - API contract: **No structural change; readiness labels and explanatory text can change**
 - Data migration: **No**
+
+---
+
+## Unauthenticated graph-job public surface removal
+
+Related finding: MG-AUD-092  
+Date: 2026-08-06  
+Release reference: Post-v1.9.18  
+Status: Resolved by public-surface removal; full-suite test-verified and lint-verified
+
+### Before
+
+MaterialGraph registered graph-job create, list, and detail routes without any
+authentication or trusted request principal. Any caller could create database
+work, inspect global job history, and read job inputs, results, errors, and
+timestamps. UUID job identifiers did not provide authorization or ownership.
+
+### After
+
+The graph-job router is no longer registered with the public API. Create,
+list, and detail requests now return `404`, and generated OpenAPI contains no
+graph-job paths. The internal graph-job model and service remain available for
+trusted internal processing.
+
+This change deliberately removes the insecure public surface instead of adding
+a caller-controlled owner identifier. Reintroduction requires trusted
+authentication, immutable server-derived ownership, owner-scoped queries,
+object-level authorization, and a separate worker authorization boundary.
+
+API regressions cover all three former routes and OpenAPI exclusion. Internal
+service tests remain unchanged. The focused tests, full regression suite, and
+Ruff checks passed.
+
+### Impact
+
+- Security: **Yes; unauthenticated mutation and global-history access are removed**
+- Scientific result: **No**
+- Ranking: **No**
+- API contract: **Yes; former graph-job routes now return `404` and are absent from OpenAPI**
+- Internal processing: **No change to the graph-job model or service**
+- Data migration: **No**

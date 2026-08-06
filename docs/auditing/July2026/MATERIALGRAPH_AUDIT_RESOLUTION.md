@@ -5072,3 +5072,106 @@ named by the claim.
 Related Findings
 
 MG-AUD-088
+
+---
+
+# MG-AUD-092
+
+Title
+
+Graph-job mutation and global history lacked authorization and ownership.
+
+Severity
+
+Critical
+
+Status
+
+✅ Resolved
+
+Resolution Version
+
+Post-v1.9.18
+
+Affected Components
+
+- Public API router registration
+- Graph-job create, list, and detail endpoints
+- OpenAPI route exposure
+- Graph-job API regression tests
+
+Root Cause
+
+MaterialGraph has no authentication or trusted request principal, but the
+graph-job router was registered publicly. Any caller could create database
+work, enumerate global job history, and inspect job inputs, results, errors,
+and timestamps. UUID identifiers reduced guessability but did not provide
+authorization, and the model contained no trustworthy owner boundary.
+
+Security Impact
+
+Unauthenticated callers could create work and inspect shared job state without
+user or tenant isolation.
+
+Resolution
+
+✓ The graph-job router import and public router registration were disabled.
+
+✓ `POST /api/v1/graph-jobs`, `GET /api/v1/graph-jobs`, and
+`GET /api/v1/graph-jobs/{job_id}` are no longer publicly routable.
+
+✓ Graph-job paths are absent from the generated OpenAPI schema.
+
+✓ The internal graph-job model and service remain available for trusted
+internal processing.
+
+✓ No caller-controlled `owner_id` or other spoofable ownership mechanism was
+introduced.
+
+Regression Verification
+
+✓ API tests verify `404` for create, list, and detail requests.
+
+✓ An API test verifies that OpenAPI contains no graph-job path.
+
+✓ Existing internal `GraphJobService` tests continue to pass unchanged.
+
+✓ The focused tests, full regression suite, and Ruff checks passed.
+
+Endpoint Verification
+
+✓ Route-level regression tests confirm that the unauthenticated public surface
+is absent from the assembled FastAPI application.
+
+Security Changes
+
+The unauthenticated graph-job API is unavailable. This resolves the exposed
+mutation and global-history boundary by removing the public surface, not by
+claiming that user ownership now exists.
+
+Breaking API
+
+Yes. Previously public graph-job create, list, and detail routes now return
+`404` and are absent from OpenAPI.
+
+Database Migration
+
+No. Existing graph-job storage and internal service behavior are unchanged.
+
+Reintroduction Preconditions
+
+- Trusted authentication and a server-derived principal
+- Immutable server-derived job ownership
+- Owner-scoped list and detail queries
+- Object-level authorization for every user-facing job operation
+- A separate trusted authorization boundary for claim, complete, and fail
+  worker operations
+
+Lessons Learned
+
+Globally unique identifiers are not an authorization mechanism. A public job
+API requires a trusted identity boundary before ownership can be meaningful.
+
+Related Findings
+
+None.

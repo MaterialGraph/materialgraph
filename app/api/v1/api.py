@@ -11,7 +11,9 @@ from app.api.v1.routes.comparison import router as comparison_router
 from app.api.v1.routes.scenario_ranking import router as scenario_ranking_router
 from app.api.v1.routes.sensitivity import router as sensitivity_router
 from app.api.v1.routes.substitutions import router as substitutions_router
-from app.api.v1.routes.graph_jobs import router as graph_jobs_router
+
+#from app.api.v1.routes.graph_jobs import router as graph_jobs_router
+
 from app.api.v1.routes.material_neighbors import router as material_neighbors_router
 from app.api.v1.routes.material_families import router as material_families_router
 from app.api.v1.routes.discovery import router as discovery_router
@@ -30,7 +32,9 @@ api_router.include_router(comparison_router)
 api_router.include_router(scenario_ranking_router)
 api_router.include_router(sensitivity_router)
 api_router.include_router(substitutions_router)
-api_router.include_router(graph_jobs_router)
+
+#api_router.include_router(graph_jobs_router)
+
 api_router.include_router(material_neighbors_router)
 api_router.include_router(material_families_router)
 api_router.include_router(discovery_router)

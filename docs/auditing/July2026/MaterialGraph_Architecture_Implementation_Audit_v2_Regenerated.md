@@ -28,8 +28,8 @@ review, and scientific validation.
 ## Register summary
 
 - **Total findings:** 94
-- **Resolved:** 39
-- **Not resolved:** 55
+- **Resolved:** 40
+- **Not resolved:** 54
 
 ## Correctness and Data Integrity
 
@@ -1591,6 +1591,27 @@ pathway that narrated strong plausibility.
 
 Status: **Resolved, full-suite test-verified, lint-verified, and development
 endpoint smoke-tested on 2026-07-31.**
+
+#### MG-AUD-092 — Resolved
+
+The unauthenticated graph-job router is no longer registered with the public
+API. Callers can no longer create graph jobs, list global job history, or read
+job details through `/api/v1/graph-jobs`. The internal graph-job model and
+service remain available for trusted internal processing.
+
+This remediation removes the insecure public surface; it does not claim that
+authentication or per-user ownership has been implemented. The router must
+not be reintroduced until MaterialGraph has trusted authentication,
+server-derived immutable ownership, owner-scoped queries, object-level
+authorization, and a separate authorization boundary for worker operations.
+
+API regressions verify that create, list, and detail requests return `404` and
+that OpenAPI contains no graph-job paths. Internal graph-job service tests
+remain unchanged and pass. The focused tests, full regression suite, and Ruff
+checks passed.
+
+Status: **Resolved by public-surface removal, full-suite test-verified, and
+lint-verified on 2026-08-06.**
 
 ## Maintenance rule
 
