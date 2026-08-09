@@ -168,6 +168,82 @@ partners.
 
 ---
 
+## Conditional Scientific Compute Integration Milestone
+
+External scientific computation should be introduced only where a validated
+research workflow demonstrates that it materially improves MaterialGraph's
+ability to help researchers evaluate or validate an opportunity.
+
+MaterialGraph should not become a general-purpose scientific simulation
+platform. Its role should be to connect deterministic research intelligence
+with appropriate domain computation while preserving research context,
+provenance, uncertainty, and validation status.
+
+Potential work includes:
+
+* model-specific Physical Modeling Readiness profiles;
+* explicit prerequisite and blocking-gap reporting;
+* adapter contracts for external scientific tools and workflows;
+* targeted DFT and electronic-structure integration;
+* molecular-dynamics workflow integration where scientifically applicable;
+* thermodynamic, structural, electrochemical, or other domain-specific
+  computation where justified by validated use cases;
+* versioned computational input and result records;
+* engine, software-version, parameter, structure, configuration, and assumption
+  provenance;
+* references to computational artifacts and outputs;
+* integration of computational results into the Scientific Knowledge Layer as
+  attributed evidence;
+* researcher-visible distinction between readiness, execution, numerical
+  convergence, model validity, and agreement with experimental evidence.
+
+The preferred integration direction is:
+
+```text
+Research Opportunity
+        │
+        ▼
+Evidence / Property Context
+        │
+        ▼
+Model-Specific Readiness
+        │
+        ▼
+External or Dedicated Scientific Compute
+        │
+        ▼
+Versioned Result + Provenance
+        │
+        ▼
+Evidence / Validation Context
+        │
+        ▼
+Continued Research Cycle
+```
+
+Implementation should begin with narrowly scoped adapters around demonstrated
+research needs rather than a universal simulation abstraction.
+
+Before adopting a scientific engine, library, or open-source project:
+
+1. identify the researcher question and validation need;
+2. establish the required material, structure, property, and model inputs;
+3. define ownership between MaterialGraph and the external computation system;
+4. define reproducible input and output contracts;
+5. preserve engine, version, configuration, assumptions, and artifact
+   provenance;
+6. define failure, convergence, uncertainty, and validation semantics;
+7. evaluate licensing, security, infrastructure, and operational cost;
+8. verify that integration improves a real MaterialGraph research workflow.
+
+This milestone is conditional. Audit remediation, engineering integrity,
+reference case studies, researcher review, and scientific-validation work take
+precedence. External computation should be added because demonstrated research
+value requires it, not because integration with a scientific tool is
+technically possible.
+
+---
+
 ## Research Workflow and Knowledge Milestones
 
 - Research Validation Planning;

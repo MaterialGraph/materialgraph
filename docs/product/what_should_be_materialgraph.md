@@ -1056,6 +1056,99 @@ MaterialGraph should also distinguish:
 
 These are separate states.
 
+### External scientific tools should extend MaterialGraph rather than be duplicated
+
+MaterialGraph should treat mature scientific software, specialist open-source
+projects, institutional workflows, and domain-specific computation systems as
+potential integration boundaries rather than capabilities that must be
+reimplemented internally.
+
+Relevant external capabilities may include:
+
+* electronic-structure and DFT workflows;
+* molecular-dynamics engines and preparation tools;
+* thermodynamic and phase-equilibrium workflows;
+* structure-analysis and crystallographic tools;
+* electrochemical modeling;
+* continuum or finite-element workflows;
+* domain-specific scientific post-processing and validation tools.
+
+The existence of a useful external scientific project should not automatically
+create a MaterialGraph feature requirement. Instead, MaterialGraph should ask:
+
+1. Does the tool address a validation or modeling need produced by the
+   MaterialGraph Research Cycle?
+2. Is the capability outside the appropriate ownership boundary of
+   MaterialGraph's deterministic research-intelligence core?
+3. Can MaterialGraph determine whether the research opportunity is sufficiently
+   specified for the external workflow?
+4. Can inputs, outputs, assumptions, versions, and provenance be represented
+   explicitly?
+5. Can results return to MaterialGraph as attributed evidence without being
+   treated as automatic scientific truth?
+6. Does integration provide greater researcher value than reimplementing or
+   loosely duplicating the external capability?
+
+The preferred long-term relationship is:
+
+```text
+MaterialGraph Discovery / Research Intelligence
+        │
+        ▼
+Model-Specific Readiness Assessment
+        │
+        ▼
+External Scientific Tool / Workflow
+        │
+        ▼
+Versioned Computational Result
+        │
+        ▼
+Attributed Evidence and Validation Context
+        │
+        ▼
+Continued MaterialGraph Investigation
+```
+
+For example, MaterialGraph may identify and explain a material opportunity and
+determine that it is potentially ready for a molecular-dynamics workflow. A
+specialized molecular-simulation tool may then prepare, execute, or analyze the
+simulation. MaterialGraph's responsibility is not to reproduce that simulator,
+but to preserve the relationship between the original research objective, the
+selected material and structure, modeling prerequisites, computational inputs,
+assumptions, execution metadata, outputs, and resulting validation evidence.
+
+This creates an important architectural principle:
+
+> **MaterialGraph should own research intelligence, orchestration context,
+> provenance, and validation integration where appropriate; specialized
+> scientific engines should continue to own the domain computation they are
+> designed to perform.**
+
+External integrations should therefore be adapter-oriented and replaceable
+where practical. MaterialGraph should avoid coupling scientific meaning to one
+specific simulation engine, library, or external project unless the scientific
+workflow itself requires that dependency.
+
+Before adopting an external scientific tool or project, MaterialGraph should
+evaluate at least:
+
+* scientific applicability;
+* maturity and maintenance status;
+* reproducibility;
+* input and output contracts;
+* provenance capabilities;
+* licensing and redistribution constraints;
+* computational and infrastructure requirements;
+* failure and convergence semantics;
+* security implications of external execution;
+* whether equivalent functionality already exists within an established
+  MaterialGraph boundary.
+
+This principle allows MaterialGraph to benefit from advances across the
+computational-materials ecosystem without becoming a collection of embedded
+simulators or weakening the deterministic research-intelligence core.
+
 ------------------------------------------------------------------------
 
 ## 21. MaterialGraph Should Be Architected for Polyglot Compute Without Premature Distribution

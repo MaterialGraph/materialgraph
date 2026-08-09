@@ -1,14 +1,16 @@
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from app.models.graph_job import GraphJob, JobStatus
 from app.schemas.graph_job import GraphJobCreate
 
+
 def utc_now() -> datetime:
     return datetime.now(UTC)
+
 
 class GraphJobService:
     def __init__(self, db: Session):
@@ -64,36 +66,54 @@ class GraphJobService:
 
         return job
 
-
     def complete_job(self, job_id: uuid.UUID, result_json: dict) -> GraphJob | None:
-        job = self.get_job(job_id)
+        completed_at = utc_now()
+        stmt = (
+            update(GraphJob)
+            .where(
+                GraphJob.id == job_id,
+                GraphJob.status == JobStatus.RUNNING,
+            )
+            .values(
+                status=JobStatus.COMPLETED,
+                result_json=result_json,
+                completed_at=completed_at,
+                updated_at=completed_at,
+            )
+            .returning(GraphJob)
+            .execution_options(populate_existing=True)
+        )
 
-        if job is None:
-            return None
-
-        job.status = JobStatus.COMPLETED
-        job.result_json = result_json
-        job.completed_at = utc_now()
-        job.updated_at = utc_now()
-
+        job = self.db.scalars(stmt).one_or_none()
         self.db.commit()
-        self.db.refresh(job)
+
+        if job is not None:
+            self.db.refresh(job)
 
         return job
 
-
     def fail_job(self, job_id: uuid.UUID, error_message: str) -> GraphJob | None:
-        job = self.get_job(job_id)
+        completed_at = utc_now()
+        stmt = (
+            update(GraphJob)
+            .where(
+                GraphJob.id == job_id,
+                GraphJob.status == JobStatus.RUNNING,
+            )
+            .values(
+                status=JobStatus.FAILED,
+                error_message=error_message,
+                completed_at=completed_at,
+                updated_at=completed_at,
+            )
+            .returning(GraphJob)
+            .execution_options(populate_existing=True)
+        )
 
-        if job is None:
-            return None
-
-        job.status = JobStatus.FAILED
-        job.error_message = error_message
-        job.completed_at = utc_now()
-        job.updated_at = utc_now()
-
+        job = self.db.scalars(stmt).one_or_none()
         self.db.commit()
-        self.db.refresh(job)
+
+        if job is not None:
+            self.db.refresh(job)
 
         return job
