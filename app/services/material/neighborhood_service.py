@@ -108,7 +108,17 @@ class MaterialNeighborhoodService:
         )
 
         limited_nodes = sorted_nodes[:limit]
-        limited_edges = sorted_edges[:limit]
+        limited_node_ids = {
+            node["material_id"]
+            for node in limited_nodes
+        }
+
+        limited_edges = [
+            edge
+            for edge in sorted_edges
+            if edge["source_material_id"] in limited_node_ids
+            and edge["target_material_id"] in limited_node_ids
+        ][:limit]
 
         return {
             "material_id": root["material_id"],
