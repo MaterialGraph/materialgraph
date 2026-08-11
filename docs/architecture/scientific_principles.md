@@ -152,6 +152,13 @@ preserving provenance and reproducibility.
 Researcher feedback is valuable evidence, but it is not automatically treated
 as authoritative truth.
 
+Evidence may be public, organization-private, project-scoped, or
+researcher-scoped. Access scope does not determine scientific validity. Private
+evidence may inform authorized research contexts without silently becoming
+canonical shared knowledge. Promotion into canonical datasets, rules, models,
+or policies requires explicit review, preserved provenance, and versioned
+governance.
+
 ---
 
 ## 10. Structured Scientific Data Takes Precedence
@@ -188,7 +195,22 @@ produced it.
 
 ---
 
-## 13. Validation Status Must Be Explicit
+## 13. Global Signals Must Not Hide Local Scientific Differences
+
+Material-level, compositional, or global structural similarity must not be
+interpreted as evidence that scientifically important local environments are
+equivalent. Relevant local context may include coordination environments,
+substitution sites, defects, interfaces, surfaces, local bonding, or other
+domain-specific structures.
+
+Where local behavior materially determines the research question, missing or
+contradictory local evidence must remain explicit even when global signals are
+favourable. Global averages must not erase scientifically important local
+validation gaps.
+
+---
+
+## 14. Validation Status Must Be Explicit
 
 Implementation, testing, audit remediation, researcher review, computational
 validation, and experimental validation are different states.

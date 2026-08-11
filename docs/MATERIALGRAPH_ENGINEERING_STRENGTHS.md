@@ -33,11 +33,15 @@ Each layer owns a single responsibility.
 
 # Deterministic Scientific Reasoning
 
-Scientific computation is deterministic.
+MaterialGraph's canonical scientific reasoning is deterministic and reproducible
+from explicit inputs, source-data versions, configuration, software version,
+and ordering rules.
 
-LLMs may summarize.
+LLMs may assist with interpretation, orchestration, retrieval, or
+summarization.
 
-LLMs do not generate scientific conclusions.
+LLMs do not silently replace canonical deterministic reasoning or establish
+scientific conclusions.
 
 ---
 
@@ -115,3 +119,67 @@ independent concepts.
 Unknown information is explicitly represented rather than hidden.
 
 Missing evidence is never silently interpreted.
+
+---
+
+# Reasoning, Evidence, and Execution Separation
+
+Research orchestration, deterministic reasoning, evidence retrieval, external
+scientific computation, and researcher review are distinct responsibilities.
+
+Orchestration should compose canonical scientific capabilities rather than
+duplicate or replace their reasoning.
+
+External computation may provide validation evidence, but it does not silently
+become MaterialGraph's canonical scientific reasoning.
+
+---
+
+# Adapter-Oriented Scientific Integration
+
+Specialized scientific tools should remain responsible for the domain
+computation they are designed to perform.
+
+MaterialGraph should own the surrounding research context, modeling readiness,
+provenance, task/result integration, and validation state where appropriate.
+
+Integrations should use explicit, replaceable boundaries where practical rather
+than coupling MaterialGraph's scientific meaning to one specific simulator,
+library, or workflow engine.
+
+---
+
+# Scoped Research Knowledge
+
+Public, organization-private, project-scoped, workspace-scoped, and
+researcher-contributed evidence may coexist while preserving their provenance
+and access scope.
+
+Private or scoped evidence may enrich authorized research investigations.
+
+It must not silently modify canonical shared knowledge, datasets, rules, models,
+or scoring policies.
+
+Promotion into shared or canonical knowledge requires explicit review,
+governance, provenance preservation, and versioning.
+
+---
+
+# Scientific Resolution Awareness
+
+Material-level, compositional, or global structural signals must not be treated
+as proof that scientifically important local environments are equivalent.
+
+Relevant local context may include:
+
+- coordination environments;
+- substitution sites;
+- defects;
+- interfaces;
+- surfaces;
+- local bonding;
+- other domain-specific local structures.
+
+Where local behavior materially affects the research question, missing or
+contradictory local evidence must remain an explicit validation gap even when
+global signals are favourable.

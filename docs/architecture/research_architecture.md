@@ -181,6 +181,62 @@ Evidence must preserve provenance and must not automatically become system
 truth. Reviewed evidence may enter a later versioned dataset, rule, or scoring
 policy through an explicit governance process.
 
+### Private and Scoped Research Context
+
+Scientific evidence may exist at different access scopes, including shared or
+canonical context, organization-private context, project or workspace context,
+and researcher-scoped context. Access scope and scientific validity are separate
+dimensions.
+
+Private evidence may inform investigations for authorized researchers without
+silently becoming shared or canonical MaterialGraph knowledge. Conflicts between
+private and public evidence should remain inspectable rather than being
+automatically reconciled. Any promotion of scoped evidence into shared or
+canonical knowledge must use an explicit review and governance process while
+preserving contributor, source, version, and validation provenance.
+
+### Global and Local Scientific Context
+
+MaterialGraph should distinguish evidence that applies at different scientific
+resolutions. Material- or composition-level similarity does not establish
+equivalence of phase, structure, or scientifically important local environments.
+Future structural and validation workflows may therefore need to distinguish:
+
+- material and composition context;
+- phase and crystal-structure context;
+- coordination and substitution-site environments;
+- defects and disorder;
+- interfaces and surfaces;
+- local bonding or other domain-specific local structures.
+
+When a research question depends on local behavior, favourable global signals
+must not hide missing or contradictory local evidence. Missing local evidence
+should remain an explicit validation gap.
+
+### Future Research Orchestration Boundary
+
+A future research workflow may coordinate multiple specialized capabilities, but
+planning, deterministic reasoning, evidence retrieval, scientific execution, and
+researcher judgement should remain distinct responsibilities.
+
+```mermaid
+flowchart TD
+    A["Research question"] --> B["Research planning / orchestration"]
+    B --> C["MaterialGraph deterministic reasoning"]
+    B --> D["Evidence retrieval"]
+    B --> E["External scientific computation"]
+    C --> F["Research context"]
+    D --> F
+    E --> F
+    F --> G["Researcher review"]
+```
+
+Future orchestration should consume canonical MaterialGraph outputs rather than
+reimplement their scoring, constraints, evidence semantics, or graph reasoning.
+An AI or rule-based planner may coordinate appropriate capabilities, but it must
+not silently become the scientific authority for deterministic MaterialGraph
+reasoning or external physical computation.
+
 ---
 
 ## Current Validation Status

@@ -73,15 +73,84 @@ MaterialGraph must not claim to replace:
 
 ------------------------------------------------------------------------
 
-## 2.1. The MaterialGraph Research Cycle
+## 2.1. Mission-Level Objective
 
-MaterialGraph should not feel like a collection of scientific APIs, endpoint
-pages, or isolated analysis tools. It should feel like one continuous,
-inspectable research investigation.
+> **Build an exceptional scientific software system and create the
+> infrastructure through which domain experts can encode, inspect, and
+> use their knowledge.**
 
-> **MaterialGraph should help a researcher move from a scientific question to
-> an evidence-backed material decision through a continuous, explainable, and
-> iterative workflow.**
+This mission clarifies MaterialGraph's role. The platform should not
+attempt to replace materials scientists or convert software-generated
+signals into substitutes for domain expertise. Its purpose is to provide
+durable scientific infrastructure through which expert knowledge,
+evidence, assumptions, relationships, constraints, and research
+decisions can become more structured, inspectable, reproducible, and
+reusable.
+
+The intended knowledge workflow is:
+
+``` text
+Encode
+  │
+  ▼
+Connect
+  │
+  ▼
+Reason
+  │
+  ▼
+Inspect
+  │
+  ▼
+Compare
+  │
+  ▼
+Preserve
+  │
+  ▼
+Share
+  │
+  ▼
+Refine
+  └──────────────↺
+```
+
+Domain experts remain responsible for scientific judgement.
+MaterialGraph should provide the infrastructure that helps them express
+what is known, distinguish it from what is inferred or missing, examine
+relationships and alternatives, preserve the reasoning behind decisions,
+and continue an investigation without losing scientific context.
+
+### Mission gate for future capabilities
+
+A proposed capability should be evaluated against the following
+question:
+
+> **Does this help domain experts encode, connect, inspect, reason over,
+> preserve, share, or use scientific knowledge more effectively while
+> maintaining provenance, uncertainty, and scientific boundaries?**
+
+If the answer is unclear, the capability should not enter the core
+product merely because it is technically impressive. This gate applies
+equally to future AI assistance, literature integration, private
+evidence overlays, physical-modeling integrations, collaboration
+features, and new compute infrastructure.
+
+This mission complements the MaterialGraph Research Cycle: the mission
+defines **why MaterialGraph exists**, while the Research Cycle defines
+**how researchers experience that mission**.
+
+------------------------------------------------------------------------
+
+## 2.2. The MaterialGraph Research Cycle
+
+MaterialGraph should not feel like a collection of scientific APIs,
+endpoint pages, or isolated analysis tools. It should feel like one
+continuous, inspectable research investigation.
+
+> **MaterialGraph should help a researcher move from a scientific
+> question to an evidence-backed material decision through a continuous,
+> explainable, and iterative workflow.**
 
 The intended cycle is:
 
@@ -115,33 +184,35 @@ Refine the Objective
         └───────────────────────────────↺
 ```
 
-The loop is essential. Scientific exploration rarely ends after one ranked
-result or comparison. Researchers revise constraints, test another hypothesis,
-inspect different evidence, and continue from what they learned. MaterialGraph
-should preserve that continuity rather than forcing each query to begin as an
-unrelated task.
+The loop is essential. Scientific exploration rarely ends after one
+ranked result or comparison. Researchers revise constraints, test
+another hypothesis, inspect different evidence, and continue from what
+they learned. MaterialGraph should preserve that continuity rather than
+forcing each query to begin as an unrelated task.
 
 ### Product identity rule
 
-The platform's differentiation should come less from any single algorithm and
-more from how naturally the complete workflow supports scientific exploration.
-Algorithms, scores, graph operations, evidence views, and collaboration
-features should contribute to a coherent investigation rather than exist as a
-feature collection.
+The platform's differentiation should come less from any single
+algorithm and more from how naturally the complete workflow supports
+scientific exploration. Algorithms, scores, graph operations, evidence
+views, and collaboration features should contribute to a coherent
+investigation rather than exist as a feature collection.
 
 ### Design and roadmap gate
 
 Every proposed capability should answer at least one of these questions:
 
-1. Which stage of the Research Cycle does it improve?
-2. How does it help the researcher move to the next stage?
-3. Does it preserve the context, evidence, and decisions from earlier stages?
-4. Does it support refinement and continued exploration?
+1.  Which stage of the Research Cycle does it improve?
+2.  How does it help the researcher move to the next stage?
+3.  Does it preserve the context, evidence, and decisions from earlier
+    stages?
+4.  Does it support refinement and continued exploration?
 
-If a feature does not materially improve the Research Cycle, its priority
-should be questioned before implementation. This rule complements the
-scientific and architectural gates elsewhere in this document and helps prevent
-MaterialGraph from becoming a disconnected feature factory.
+If a feature does not materially improve the Research Cycle, its
+priority should be questioned before implementation. This rule
+complements the scientific and architectural gates elsewhere in this
+document and helps prevent MaterialGraph from becoming a disconnected
+feature factory.
 
 ------------------------------------------------------------------------
 
@@ -1058,40 +1129,41 @@ These are separate states.
 
 ### External scientific tools should extend MaterialGraph rather than be duplicated
 
-MaterialGraph should treat mature scientific software, specialist open-source
-projects, institutional workflows, and domain-specific computation systems as
-potential integration boundaries rather than capabilities that must be
-reimplemented internally.
+MaterialGraph should treat mature scientific software, specialist
+open-source projects, institutional workflows, and domain-specific
+computation systems as potential integration boundaries rather than
+capabilities that must be reimplemented internally.
 
 Relevant external capabilities may include:
 
-* electronic-structure and DFT workflows;
-* molecular-dynamics engines and preparation tools;
-* thermodynamic and phase-equilibrium workflows;
-* structure-analysis and crystallographic tools;
-* electrochemical modeling;
-* continuum or finite-element workflows;
-* domain-specific scientific post-processing and validation tools.
+-   electronic-structure and DFT workflows;
+-   molecular-dynamics engines and preparation tools;
+-   thermodynamic and phase-equilibrium workflows;
+-   structure-analysis and crystallographic tools;
+-   electrochemical modeling;
+-   continuum or finite-element workflows;
+-   domain-specific scientific post-processing and validation tools.
 
-The existence of a useful external scientific project should not automatically
-create a MaterialGraph feature requirement. Instead, MaterialGraph should ask:
+The existence of a useful external scientific project should not
+automatically create a MaterialGraph feature requirement. Instead,
+MaterialGraph should ask:
 
-1. Does the tool address a validation or modeling need produced by the
-   MaterialGraph Research Cycle?
-2. Is the capability outside the appropriate ownership boundary of
-   MaterialGraph's deterministic research-intelligence core?
-3. Can MaterialGraph determine whether the research opportunity is sufficiently
-   specified for the external workflow?
-4. Can inputs, outputs, assumptions, versions, and provenance be represented
-   explicitly?
-5. Can results return to MaterialGraph as attributed evidence without being
-   treated as automatic scientific truth?
-6. Does integration provide greater researcher value than reimplementing or
-   loosely duplicating the external capability?
+1.  Does the tool address a validation or modeling need produced by the
+    MaterialGraph Research Cycle?
+2.  Is the capability outside the appropriate ownership boundary of
+    MaterialGraph's deterministic research-intelligence core?
+3.  Can MaterialGraph determine whether the research opportunity is
+    sufficiently specified for the external workflow?
+4.  Can inputs, outputs, assumptions, versions, and provenance be
+    represented explicitly?
+5.  Can results return to MaterialGraph as attributed evidence without
+    being treated as automatic scientific truth?
+6.  Does integration provide greater researcher value than
+    reimplementing or loosely duplicating the external capability?
 
 The preferred long-term relationship is:
 
-```text
+``` text
 MaterialGraph Discovery / Research Intelligence
         │
         ▼
@@ -1110,48 +1182,155 @@ Attributed Evidence and Validation Context
 Continued MaterialGraph Investigation
 ```
 
-For example, MaterialGraph may identify and explain a material opportunity and
-determine that it is potentially ready for a molecular-dynamics workflow. A
-specialized molecular-simulation tool may then prepare, execute, or analyze the
-simulation. MaterialGraph's responsibility is not to reproduce that simulator,
-but to preserve the relationship between the original research objective, the
-selected material and structure, modeling prerequisites, computational inputs,
-assumptions, execution metadata, outputs, and resulting validation evidence.
+For example, MaterialGraph may identify and explain a material
+opportunity and determine that it is potentially ready for a
+molecular-dynamics workflow. A specialized molecular-simulation tool may
+then prepare, execute, or analyze the simulation. MaterialGraph's
+responsibility is not to reproduce that simulator, but to preserve the
+relationship between the original research objective, the selected
+material and structure, modeling prerequisites, computational inputs,
+assumptions, execution metadata, outputs, and resulting validation
+evidence.
 
 This creates an important architectural principle:
 
-> **MaterialGraph should own research intelligence, orchestration context,
-> provenance, and validation integration where appropriate; specialized
-> scientific engines should continue to own the domain computation they are
-> designed to perform.**
+> **MaterialGraph should own research intelligence, orchestration
+> context, provenance, and validation integration where appropriate;
+> specialized scientific engines should continue to own the domain
+> computation they are designed to perform.**
 
-External integrations should therefore be adapter-oriented and replaceable
-where practical. MaterialGraph should avoid coupling scientific meaning to one
-specific simulation engine, library, or external project unless the scientific
-workflow itself requires that dependency.
+External integrations should therefore be adapter-oriented and
+replaceable where practical. MaterialGraph should avoid coupling
+scientific meaning to one specific simulation engine, library, or
+external project unless the scientific workflow itself requires that
+dependency.
 
-Before adopting an external scientific tool or project, MaterialGraph should
-evaluate at least:
+Before adopting an external scientific tool or project, MaterialGraph
+should evaluate at least:
 
-* scientific applicability;
-* maturity and maintenance status;
-* reproducibility;
-* input and output contracts;
-* provenance capabilities;
-* licensing and redistribution constraints;
-* computational and infrastructure requirements;
-* failure and convergence semantics;
-* security implications of external execution;
-* whether equivalent functionality already exists within an established
-  MaterialGraph boundary.
+-   scientific applicability;
+-   maturity and maintenance status;
+-   reproducibility;
+-   input and output contracts;
+-   provenance capabilities;
+-   licensing and redistribution constraints;
+-   computational and infrastructure requirements;
+-   failure and convergence semantics;
+-   security implications of external execution;
+-   whether equivalent functionality already exists within an
+    established MaterialGraph boundary.
 
 This principle allows MaterialGraph to benefit from advances across the
-computational-materials ecosystem without becoming a collection of embedded
-simulators or weakening the deterministic research-intelligence core.
+computational-materials ecosystem without becoming a collection of
+embedded simulators or weakening the deterministic research-intelligence
+core.
 
 ------------------------------------------------------------------------
 
-## 21. MaterialGraph Should Be Architected for Polyglot Compute Without Premature Distribution
+## 21. MaterialGraph Should Separate Canonical Knowledge From Private Research Context
+
+MaterialGraph should eventually allow organizations, research groups, projects,
+and individual researchers to use private scientific knowledge alongside shared
+or canonical MaterialGraph knowledge without silently converting private
+evidence into global scientific truth.
+
+Private research context may include:
+
+- unpublished experimental measurements;
+- proprietary simulation or computational results;
+- failed, negative, or inconclusive experiments;
+- organization-specific material formulations or process conditions;
+- internal observations, annotations, and expert assessments;
+- project-specific structures, properties, relationships, or constraints.
+
+The intended separation is:
+
+``` text
+Canonical / Shared Knowledge
+        │
+        ├──────────────┐
+        │              │
+        ▼              ▼
+Public Evidence   Private Research Context
+                       │
+                       ├── organization evidence
+                       ├── project evidence
+                       ├── researcher observations
+                       ├── proprietary computation
+                       └── unpublished experiments
+        │              │
+        └───────┬──────┘
+                ▼
+       Contextual Research Intelligence
+```
+
+Every private contribution should preserve, where applicable, its provenance,
+ownership or access scope, research context, version, validation status, and
+relationship to canonical material identities. Conflicts between private and
+shared evidence should remain visible rather than being resolved by silent
+overwrite or precedence rules.
+
+> **Private evidence should be usable within the research context that owns or
+> is authorized to access it, but it should not become canonical MaterialGraph
+> knowledge merely because it influenced a result.**
+
+Promotion of private evidence into shared or canonical knowledge should require
+an explicit, governed process with appropriate attribution, review, validation,
+licensing, and permission checks.
+
+This boundary allows MaterialGraph to support industrial and institutional
+research while preserving scientific provenance, confidentiality, and the
+distinction between shared knowledge and organization-specific experience.
+
+### MaterialGraph Should Distinguish Global Material Signals From Local Scientific Environment
+
+MaterialGraph should avoid assuming that strong composition-level, bulk, or
+global structural similarity implies similarity at the scientifically decisive
+local environment.
+
+Where relevant to a validated research question, future evidence and reasoning
+should be capable of distinguishing among:
+
+- composition and bulk material properties;
+- phase and global crystal structure;
+- local coordination environments;
+- substitution or dopant sites;
+- defects and vacancies;
+- interfaces and grain boundaries;
+- surfaces and active sites;
+- local bonding or neighborhood geometry.
+
+A candidate may appear strongly aligned under global signals while differing at
+a local site that controls stability, transport, catalytic behavior, defect
+chemistry, or another target property. MaterialGraph should therefore avoid
+allowing a strong global score or similarity signal to conceal missing or
+contradictory local evidence.
+
+The intended direction is:
+
+``` text
+Material / Candidate
+        │
+        ├── Composition Context
+        ├── Phase / Structure Context
+        └── Local Scientific Environment
+                ├── coordination
+                ├── substitution site
+                ├── defect
+                ├── interface
+                ├── surface
+                └── local bonding
+```
+
+This is a scientific representation principle, not a commitment to a specific
+GNN, descriptor, loss function, or machine-learning architecture. Appropriate
+implementation may later use structural databases, deterministic descriptors,
+graph representations, external computation, learned models, or combinations
+of these approaches where validated use cases justify them.
+
+------------------------------------------------------------------------
+
+## 22. MaterialGraph Should Be Architected for Polyglot Compute Without Premature Distribution
 
 The current Python, FastAPI, and PostgreSQL foundation should remain the
 primary development environment while scientific semantics and
@@ -1232,7 +1411,7 @@ This allows later extraction without forcing premature microservices.
 
 ------------------------------------------------------------------------
 
-## 22. MaterialGraph Should Be Deployed and Validated in Controlled Stages
+## 23. MaterialGraph Should Be Deployed and Validated in Controlled Stages
 
 Professional deployment should be treated as part of research
 validation, not merely infrastructure hosting.
@@ -1391,7 +1570,7 @@ Potential future paid capabilities may include:
 
 ------------------------------------------------------------------------
 
-## 23. Current Direction After v1.9.6
+## 24. Current Direction After v1.9.6
 
 The immediate priority should not be feature accumulation.
 
@@ -1424,7 +1603,18 @@ remediation are part of good engineering.
 
 ------------------------------------------------------------------------
 
-## 24. North Star
+## 25. North Star
+
+MaterialGraph's mission-level objective remains:
+
+> **Build an exceptional scientific software system and create the
+> infrastructure through which domain experts can encode, inspect, and
+> use their knowledge.**
+
+The North Star should therefore be judged not by the number of features,
+algorithms, or generated recommendations, but by whether researchers can
+use MaterialGraph to make scientific knowledge and decision context more
+structured, inspectable, verifiable, reproducible, and reusable.
 
 MaterialGraph should help researchers answer:
 

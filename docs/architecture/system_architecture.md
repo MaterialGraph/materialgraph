@@ -128,11 +128,83 @@ readiness, and scientific-validation status must remain separate concepts.
 **Planned purpose**
 
 - store attributed literature, observations, simulations, and experiments;
+- preserve successful, unsuccessful, inconclusive, and conflicting results;
 - preserve investigation and validation history;
+- support canonical/shared, organization-private, project/workspace, and other
+  explicitly scoped research evidence;
+- preserve contributor, source, access-scope, review, disagreement, and version
+  provenance;
 - support review, disagreement, and versioned knowledge enrichment.
 
-This layer must not silently alter deterministic computation. Reviewed evidence
-may influence an explicitly versioned dataset or policy.
+Evidence scope and canonical scientific status are separate dimensions. Private
+or project-scoped evidence may inform authorized investigations without silently
+becoming shared MaterialGraph knowledge. This layer must not silently alter
+deterministic computation. Reviewed evidence may influence an explicitly
+versioned dataset or policy only through an explicit governance process.
+
+### Planned Scientific Compute Boundary
+
+MaterialGraph should integrate with specialized scientific computation without
+becoming a general-purpose simulator. Research Intelligence may identify a
+validation need and Physical Modeling Readiness may determine whether required
+inputs and assumptions are sufficiently specified. Execution should then occur
+through an adapter or scientific-task contract appropriate to the external or
+dedicated workflow.
+
+```mermaid
+flowchart TD
+    A["MaterialGraph Research Intelligence"] --> B["Physical Modeling Readiness"]
+    B --> C["Scientific task / adapter contract"]
+    C --> D["External or dedicated scientific workflow"]
+    D --> E["Versioned scientific result"]
+    E --> F["Scientific Knowledge Layer"]
+    F --> G["Researcher review and continued investigation"]
+```
+
+Potential workflows may include DFT and electronic-structure calculations,
+molecular dynamics, structural analysis, spectroscopy-oriented workflows,
+thermodynamic or electrochemical modeling, and other domain computation where a
+validated research use case requires them.
+
+Scientific task and result contracts should preserve, where applicable:
+
+- material and structure identity;
+- research objective and requested property or validation question;
+- engine, software version, and adapter version;
+- parameters, conditions, configuration, and assumptions;
+- input and output artifacts;
+- execution and convergence status;
+- uncertainty and warnings;
+- provenance and validation status.
+
+External results enter MaterialGraph as attributed computational evidence.
+Execution success or numerical convergence must not automatically be interpreted
+as physical validity or experimental agreement.
+
+### Future Research Orchestration Boundary
+
+The Research Experience Architecture may later coordinate deterministic
+MaterialGraph reasoning, evidence retrieval, Physical Modeling Readiness,
+external scientific computation, and researcher review. Planning and
+orchestration are not themselves new scientific authorities.
+
+```mermaid
+flowchart TD
+    A["Research question"] --> B["Planning / orchestration"]
+    B --> C["Canonical MaterialGraph reasoning"]
+    B --> D["Evidence retrieval"]
+    B --> E["Scientific compute boundary"]
+    C --> F["Research context"]
+    D --> F
+    E --> F
+    F --> G["Researcher review"]
+```
+
+A future AI or rule-based planner should call and compose canonical services
+rather than recreate scoring, constraints, evidence interpretation, graph
+semantics, or domain computation. This preserves the separation between research
+planning, deterministic reasoning, scientific execution, and researcher
+judgement.
 
 ---
 
@@ -258,7 +330,9 @@ validation.
 ## Planned Architecture
 
 - Research Gap Analysis and Hypothesis Exploration;
-- versioned Scientific Knowledge Layer;
+- versioned Scientific Knowledge Layer with explicit evidence scope and canonicalization governance;
+- Physical Modeling Readiness and adapter-oriented external scientific compute integration;
+- future research orchestration that composes canonical reasoning, evidence, and scientific compute without duplicating their semantics;
 - optional workload-validated document storage for research sessions,
   workspaces, AI conversations, snapshots, or heterogeneous source metadata;
 - stronger authentication, authorization, and job ownership;

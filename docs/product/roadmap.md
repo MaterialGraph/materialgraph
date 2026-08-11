@@ -251,6 +251,8 @@ technically possible.
 - Hypothesis Exploration;
 - genuine multi-objective optimization with explicit constraint semantics;
 - attributed evidence capture;
+- organization- and project-private evidence overlays with explicit provenance, access scope, and separation from canonical shared knowledge;
+- local structural and scientific-environment evidence where validated use cases require coordination-, site-, defect-, interface-, surface-, or local-bonding context;
 - review and disagreement workflows;
 - versioned Scientific Knowledge Layer.
 
