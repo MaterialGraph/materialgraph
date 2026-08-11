@@ -1,15 +1,15 @@
 # MaterialGraph Audit Register
 
 **Document role:** Sole authoritative source for current finding status and totals  
-**Last updated:** 2026-08-09
+**Last updated:** 2026-08-11
 
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 47
+- **Remediated:** 48
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 45
-- **Closed total:** 49
+- **Open:** 44
+- **Closed total:** 50
 
 ## Findings
 
@@ -77,7 +77,7 @@
 | MG-AUD-060 | Pending graph-job claiming is not concurrency-safe. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-060) | [Evidence](resolutions/2026-08.md#mg-aud-060) |
 | MG-AUD-061 | Graph-job lifecycle permits contradictory state transitions. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-061) | [Evidence](resolutions/2026-08.md#mg-aud-061) |
 | MG-AUD-062 | Missing criticality evidence receives favorable tie ordering. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-062) | [Evidence](resolutions/2026-07.md#mg-aud-062) |
-| MG-AUD-063 | Limited neighborhood responses can contain dangling edges. | P1 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-063) | — |
+| MG-AUD-063 | Limited neighborhood responses can contain dangling edges. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-063) | [Evidence](resolutions/2026-08.md#mg-aud-063) |
 | MG-AUD-064 | Higher abundance increases criticality despite the declared beneficial direction. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-064) | [Evidence](resolutions/2026-07.md#mg-aud-064) |
 | MG-AUD-065 | Unknown risk receives a favorable screening rank. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-065) | [Evidence](resolutions/2026-07.md#mg-aud-065) |
 | MG-AUD-066 | Scenario ranking cannot handle unknown material risk. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-066) | [Evidence](resolutions/2026-07.md#mg-aud-066) |
