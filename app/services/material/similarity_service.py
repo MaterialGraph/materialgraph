@@ -16,24 +16,34 @@ class MaterialSimilarityService:
         if neighbor_result["mp_id"] is None:
             return self._empty_similarity_response(material_id)
 
-        criticality_cache: dict[int, float | None] = {}
+        limited_neighbors = neighbor_result["neighbors"][:limit]
 
-        source_criticality_score = self._get_criticality_score(
-            material_id=material_id,
-            cache=criticality_cache,
+        criticality_by_material_id = (
+            self.criticality_service.get_material_criticality_bulk(
+                material_ids=[
+                    material_id,
+                    *[
+                        neighbor["material_id"]
+                        for neighbor in limited_neighbors
+                    ],
+                ]
+            )
         )
+
+        source_criticality_score = criticality_by_material_id[
+            material_id
+        ]["criticality_score"]
 
         similar_materials = []
 
-        for neighbor in neighbor_result["neighbors"][:limit]:
+        for neighbor in limited_neighbors:
             neighbor_material_id = neighbor["material_id"]
 
             similarity_score = self._calculate_similarity_score(neighbor)
 
-            neighbor_criticality_score = self._get_criticality_score(
-                material_id=neighbor_material_id,
-                cache=criticality_cache,
-            )
+            neighbor_criticality_score = criticality_by_material_id[
+                neighbor_material_id
+            ]["criticality_score"]
 
             criticality_delta = self._calculate_criticality_delta(
                 source_criticality_score=source_criticality_score,
@@ -81,17 +91,6 @@ class MaterialSimilarityService:
             "criticality_score": source_criticality_score,
             "similar_materials": similar_materials,
         }
-
-    def _get_criticality_score(
-        self,
-        material_id: int,
-        cache: dict[int, float | None],
-    ) -> float | None:
-        if material_id not in cache:
-            result = self.criticality_service.get_material_criticality(material_id)
-            cache[material_id] = result["criticality_score"]
-
-        return cache[material_id]
 
     def _empty_similarity_response(self, material_id: int) -> dict:
         return {

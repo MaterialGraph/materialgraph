@@ -1229,19 +1229,20 @@ core.
 
 ## 21. MaterialGraph Should Separate Canonical Knowledge From Private Research Context
 
-MaterialGraph should eventually allow organizations, research groups, projects,
-and individual researchers to use private scientific knowledge alongside shared
-or canonical MaterialGraph knowledge without silently converting private
-evidence into global scientific truth.
+MaterialGraph should eventually allow organizations, research groups,
+projects, and individual researchers to use private scientific knowledge
+alongside shared or canonical MaterialGraph knowledge without silently
+converting private evidence into global scientific truth.
 
 Private research context may include:
 
-- unpublished experimental measurements;
-- proprietary simulation or computational results;
-- failed, negative, or inconclusive experiments;
-- organization-specific material formulations or process conditions;
-- internal observations, annotations, and expert assessments;
-- project-specific structures, properties, relationships, or constraints.
+-   unpublished experimental measurements;
+-   proprietary simulation or computational results;
+-   failed, negative, or inconclusive experiments;
+-   organization-specific material formulations or process conditions;
+-   internal observations, annotations, and expert assessments;
+-   project-specific structures, properties, relationships, or
+    constraints.
 
 The intended separation is:
 
@@ -1264,47 +1265,48 @@ Public Evidence   Private Research Context
        Contextual Research Intelligence
 ```
 
-Every private contribution should preserve, where applicable, its provenance,
-ownership or access scope, research context, version, validation status, and
-relationship to canonical material identities. Conflicts between private and
-shared evidence should remain visible rather than being resolved by silent
-overwrite or precedence rules.
+Every private contribution should preserve, where applicable, its
+provenance, ownership or access scope, research context, version,
+validation status, and relationship to canonical material identities.
+Conflicts between private and shared evidence should remain visible
+rather than being resolved by silent overwrite or precedence rules.
 
-> **Private evidence should be usable within the research context that owns or
-> is authorized to access it, but it should not become canonical MaterialGraph
-> knowledge merely because it influenced a result.**
+> **Private evidence should be usable within the research context that
+> owns or is authorized to access it, but it should not become canonical
+> MaterialGraph knowledge merely because it influenced a result.**
 
-Promotion of private evidence into shared or canonical knowledge should require
-an explicit, governed process with appropriate attribution, review, validation,
-licensing, and permission checks.
+Promotion of private evidence into shared or canonical knowledge should
+require an explicit, governed process with appropriate attribution,
+review, validation, licensing, and permission checks.
 
-This boundary allows MaterialGraph to support industrial and institutional
-research while preserving scientific provenance, confidentiality, and the
-distinction between shared knowledge and organization-specific experience.
+This boundary allows MaterialGraph to support industrial and
+institutional research while preserving scientific provenance,
+confidentiality, and the distinction between shared knowledge and
+organization-specific experience.
 
 ### MaterialGraph Should Distinguish Global Material Signals From Local Scientific Environment
 
-MaterialGraph should avoid assuming that strong composition-level, bulk, or
-global structural similarity implies similarity at the scientifically decisive
-local environment.
+MaterialGraph should avoid assuming that strong composition-level, bulk,
+or global structural similarity implies similarity at the scientifically
+decisive local environment.
 
-Where relevant to a validated research question, future evidence and reasoning
-should be capable of distinguishing among:
+Where relevant to a validated research question, future evidence and
+reasoning should be capable of distinguishing among:
 
-- composition and bulk material properties;
-- phase and global crystal structure;
-- local coordination environments;
-- substitution or dopant sites;
-- defects and vacancies;
-- interfaces and grain boundaries;
-- surfaces and active sites;
-- local bonding or neighborhood geometry.
+-   composition and bulk material properties;
+-   phase and global crystal structure;
+-   local coordination environments;
+-   substitution or dopant sites;
+-   defects and vacancies;
+-   interfaces and grain boundaries;
+-   surfaces and active sites;
+-   local bonding or neighborhood geometry.
 
-A candidate may appear strongly aligned under global signals while differing at
-a local site that controls stability, transport, catalytic behavior, defect
-chemistry, or another target property. MaterialGraph should therefore avoid
-allowing a strong global score or similarity signal to conceal missing or
-contradictory local evidence.
+A candidate may appear strongly aligned under global signals while
+differing at a local site that controls stability, transport, catalytic
+behavior, defect chemistry, or another target property. MaterialGraph
+should therefore avoid allowing a strong global score or similarity
+signal to conceal missing or contradictory local evidence.
 
 The intended direction is:
 
@@ -1322,11 +1324,12 @@ Material / Candidate
                 └── local bonding
 ```
 
-This is a scientific representation principle, not a commitment to a specific
-GNN, descriptor, loss function, or machine-learning architecture. Appropriate
-implementation may later use structural databases, deterministic descriptors,
-graph representations, external computation, learned models, or combinations
-of these approaches where validated use cases justify them.
+This is a scientific representation principle, not a commitment to a
+specific GNN, descriptor, loss function, or machine-learning
+architecture. Appropriate implementation may later use structural
+databases, deterministic descriptors, graph representations, external
+computation, learned models, or combinations of these approaches where
+validated use cases justify them.
 
 ------------------------------------------------------------------------
 
@@ -1570,7 +1573,185 @@ Potential future paid capabilities may include:
 
 ------------------------------------------------------------------------
 
-## 24. Current Direction After v1.9.6
+## 24. MaterialGraph Should Develop Validation Priority Intelligence
+
+MaterialGraph should eventually help researchers move beyond merely
+seeing that evidence is missing toward understanding **which unresolved
+question is most important to address next for the current research
+objective**.
+
+> **Validation Priority Intelligence (VPI) should prioritize
+> decision-relevant validation needs without pretending that
+> MaterialGraph can establish scientific validity by itself.**
+
+The intended progression is:
+
+``` text
+Research Objective
+        │
+        ▼
+Candidate / Pathway / Comparison
+        │
+        ▼
+Evidence and Uncertainty Assessment
+        │
+        ▼
+Validation Priority Intelligence
+        │
+        ▼
+Which unresolved question matters most next?
+        │
+        ├── literature / attributed evidence
+        ├── structural or local-environment evidence
+        ├── external computation
+        ├── experiment
+        └── researcher review
+        │
+        ▼
+Attributed New Evidence
+        │
+        ▼
+Re-evaluate the Investigation
+        └──────────────────────────────↺
+```
+
+### VPI should prioritize gaps, not fabricate answers
+
+Validation Priority Intelligence should consume existing research
+context rather than create a parallel scientific truth system.
+
+Where appropriate, it may use:
+
+-   the research objective and explicit constraints;
+-   candidate and pathway claims;
+-   evidence coverage and provenance;
+-   known versus unknown states;
+-   contradictory or incomplete evidence;
+-   structural and local-environment gaps;
+-   criticality or application-specific context;
+-   scenario and sensitivity results;
+-   Physical Modeling Readiness;
+-   validation history.
+
+Its responsibility is to answer:
+
+1.  What claim or assumption is currently unresolved?
+2.  How important is that claim to the research objective?
+3.  Could resolving it materially change ranking, comparison, pathway
+    interpretation, or a go/no-go research decision?
+4.  What class of validation could address the gap?
+5.  Why should this validation need be considered before another one?
+
+MaterialGraph must not convert absence of evidence into a recommendation
+that the underlying scientific claim is probably true.
+
+### Priority should remain inspectable
+
+VPI should avoid presenting a single opaque score as though validation
+priority were an intrinsic physical property.
+
+A researcher-facing result may instead expose dimensions such as:
+
+``` text
+Validation need: structural preservation
+
+Objective relevance:        HIGH
+Evidence-gap severity:      HIGH
+Decision sensitivity:       HIGH
+Existing evidence coverage: LOW
+Validation readiness:       MEDIUM
+
+Priority: HIGH
+
+Reason:
+The research objective depends on structural continuity, but the current
+opportunity is supported primarily by composition/family relationships.
+Resolving this gap could materially change the candidate interpretation.
+```
+
+If numeric components are used internally, their rules, inputs,
+provenance, and uncertainty should remain inspectable.
+
+### Decision sensitivity can make validation more useful
+
+A particularly valuable future direction is to ask whether an unresolved
+assumption is capable of changing the research decision.
+
+``` text
+Assumption supported              Assumption contradicted
+        │                                  │
+        ▼                                  ▼
+Candidate order: A > B > C        Candidate order: C > B > A
+```
+
+An unresolved assumption that can reverse or materially alter the
+decision may deserve higher validation priority than one whose
+resolution leaves the decision unchanged.
+
+This should build on explicit scenario and sensitivity semantics rather
+than introduce an independent ranking engine.
+
+### VPI should recommend validation classes conservatively
+
+A validation priority may point toward a class of next action, for
+example:
+
+-   inspect attributed literature;
+-   resolve material or structure identity;
+-   obtain structural evidence;
+-   inspect a local coordination environment;
+-   run an appropriate external computational workflow;
+-   obtain an experimental measurement;
+-   request domain-expert review.
+
+MaterialGraph should not recommend a specific scientific method unless
+the method's applicability and prerequisites are sufficiently
+represented.
+
+Physical Modeling Readiness should remain responsible for whether a
+proposed modeling route is sufficiently specified. External scientific
+engines should remain responsible for their domain computation.
+
+### Researcher authority remains central
+
+VPI is decision support, not autonomous scientific authority.
+
+The researcher should be able to inspect why a validation need was
+prioritized, disagree with or override the priority, choose another
+validation route, record why a different action was taken, and preserve
+the resulting evidence and decision history.
+
+> **The purpose of VPI is not to tell researchers what is scientifically
+> true. It is to help them decide what is most valuable to establish
+> next.**
+
+### Implementation gate
+
+Validation Priority Intelligence should be designed before it is
+scheduled for implementation.
+
+Before roadmap promotion, MaterialGraph should establish:
+
+-   representative researcher use cases;
+-   explicit ownership boundaries;
+-   deterministic and inspectable priority semantics;
+-   interaction with evidence intelligence and scenario/sensitivity
+    analysis;
+-   treatment of unknown, contradictory, and private evidence;
+-   validation-route semantics;
+-   representative cases where priority can be checked by domain
+    experts;
+-   safeguards against implying scientific validity from workflow
+    completion.
+
+The first useful version should remain narrow. It may prioritize known
+evidence gaps using existing MaterialGraph intelligence before any
+autonomous data acquisition, active learning, experiment control, or
+agentic orchestration is considered.
+
+------------------------------------------------------------------------
+
+## 25. Current Direction After v1.9.6
 
 The immediate priority should not be feature accumulation.
 
@@ -1603,7 +1784,7 @@ remediation are part of good engineering.
 
 ------------------------------------------------------------------------
 
-## 25. North Star
+## 26. North Star
 
 MaterialGraph's mission-level objective remains:
 

@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 
 from app.services.material.similarity_service import MaterialSimilarityService
@@ -122,3 +124,109 @@ def test_similarity_ranking_is_deterministic_for_complete_tie(
     )
 
     assert [item["material_id"] for item in ranked] == [10, 20]
+
+
+def _neighbor(
+    material_id: int,
+    criticality_test_score: int = 1,
+) -> dict:
+    return {
+        "material_id": material_id,
+        "mp_id": f"mp-{material_id}",
+        "pretty_formula": f"M{material_id}",
+        "formula": f"M{material_id}",
+        "material_type": "test",
+        "is_stable": True,
+        "energy_above_hull": 0.0,
+        "shared_element_count": criticality_test_score,
+        "shared_application_count": 0,
+        "relationship_types": ["SHARED_ELEMENT"],
+    }
+
+
+def _neighbor_response(neighbors: list[dict]) -> dict:
+    return {
+        "material_id": 1,
+        "mp_id": "mp-1",
+        "pretty_formula": "M1",
+        "formula": "M1",
+        "material_type": "test",
+        "is_stable": True,
+        "energy_above_hull": 0.0,
+        "neighbors": neighbors,
+    }
+
+
+def test_similarity_bulk_loads_criticality_once() -> None:
+    service = MaterialSimilarityService.__new__(
+        MaterialSimilarityService
+    )
+    service.neighbor_service = Mock()
+    service.criticality_service = Mock()
+
+    service.neighbor_service.get_neighbors.return_value = (
+        _neighbor_response(
+            [
+                _neighbor(2, 3),
+                _neighbor(3, 2),
+                _neighbor(4, 1),
+            ]
+        )
+    )
+    service.criticality_service.get_material_criticality_bulk.return_value = {
+        1: {"criticality_score": 30.0},
+        2: {"criticality_score": 20.0},
+        3: {"criticality_score": None},
+    }
+
+    result = service.get_similar_materials(
+        material_id=1,
+        limit=2,
+    )
+
+    service.criticality_service.get_material_criticality_bulk.assert_called_once_with(
+        material_ids=[1, 2, 3]
+    )
+    service.criticality_service.get_material_criticality.assert_not_called()
+
+    assert result["criticality_score"] == 30.0
+    assert [
+        item["material_id"]
+        for item in result["similar_materials"]
+    ] == [2, 3]
+
+    candidate_by_id = {
+        item["material_id"]: item
+        for item in result["similar_materials"]
+    }
+
+    assert candidate_by_id[2]["criticality_score"] == 20.0
+    assert candidate_by_id[2]["criticality_delta"] == -10.0
+    assert (
+        candidate_by_id[2]["criticality_direction"]
+        == "LOWER_CRITICALITY"
+    )
+
+    assert candidate_by_id[3]["criticality_score"] is None
+    assert candidate_by_id[3]["criticality_delta"] is None
+    assert candidate_by_id[3]["criticality_direction"] == "UNKNOWN"
+
+
+def test_missing_source_skips_bulk_criticality_lookup() -> None:
+    service = MaterialSimilarityService.__new__(
+        MaterialSimilarityService
+    )
+    service.neighbor_service = Mock()
+    service.criticality_service = Mock()
+
+    service.neighbor_service.get_neighbors.return_value = {
+        "material_id": 999,
+        "mp_id": None,
+        "neighbors": [],
+    }
+
+    result = service.get_similar_materials(material_id=999)
+
+    assert result == service._empty_similarity_response(999)
+    service.criticality_service.get_material_criticality_bulk.assert_not_called()
+    service.criticality_service.get_material_criticality.assert_not_called()

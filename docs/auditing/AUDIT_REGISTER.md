@@ -1,15 +1,15 @@
 # MaterialGraph Audit Register
 
 **Document role:** Sole authoritative source for current finding status and totals  
-**Last updated:** 2026-08-11
+**Last updated:** 2026-08-13
 
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 48
+- **Remediated:** 49
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 44
-- **Closed total:** 50
+- **Open:** 43
+- **Closed total:** 51
 
 ## Findings
 
@@ -85,7 +85,7 @@
 | MG-AUD-068 | Supply-risk scenario adjustment is disconnected from the named element. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-068) | [Evidence](resolutions/2026-07.md#mg-aud-068) |
 | MG-AUD-069 | Supply-risk and geopolitical sensitivity scenarios compute identically. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-069) | [Evidence](resolutions/2026-07.md#mg-aud-069) |
 | MG-AUD-070 | Unknown risk is maximally favorable in substitution ranking. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-070) | [Evidence](resolutions/2026-07.md#mg-aud-070) |
-| MG-AUD-071 | Similarity performs per-candidate criticality query amplification. | P2 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-071) | — |
+| MG-AUD-071 | Similarity performs per-candidate criticality query amplification. | P2 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-071) | [Evidence](resolutions/2026-08.md#mg-aud-071) |
 | MG-AUD-072 | Neighborhood response limits do not bound traversal work. | P2 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-072) | — |
 | MG-AUD-073 | Substitution performs per-candidate element and risk queries. | P2 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-073) | — |
 | MG-AUD-074 | Discovery-chain `max_hops` behaves as an exact required depth. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-074) | [Evidence](resolutions/2026-07.md#mg-aud-074) |

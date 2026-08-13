@@ -386,7 +386,410 @@ reasoning.
 
 ------------------------------------------------------------------------
 
-# 7. Cross-Project Lessons
+# 7. Agents, Loops, and Dependency-Graph Workflow Design
+
+## Source
+
+Mahax --- *Agents, Loops, Graphs. Everything You Need to Know in One
+Place.*
+
+## Why We Examined It
+
+The article describes agentic work through tool-using agents, iterative
+loops, and dependency graphs. It is not materials-science guidance, but
+several workflow-engineering ideas are relevant to MaterialGraph's
+future Research Cycle, Scientific Compute boundary, and possible
+orchestration layer.
+
+## Relevant Observations
+
+Four engineering patterns are particularly useful:
+
+1.  **Explicit task contracts.** Bounded nodes with defined input/output
+    shapes are easier to compose and validate than unconstrained
+    free-text handoffs.
+2.  **Dependency rather than sequence.** Workflow edges should represent
+    genuine data dependencies. Independent tasks may be executed
+    independently or in parallel.
+3.  **Bounded iterative loops.** Iteration needs an explicit check,
+    retained state about prior attempts, and a hard stop condition.
+4.  **Separation of production and checking.** Generating an output
+    should not itself establish that output's validity.
+
+## Potential MaterialGraph Insight
+
+### Scientific Task and Result Contracts
+
+Future scientific integrations should prefer explicit contracts around
+specialized computations.
+
+``` text
+ScientificTask
+    |
+    +-- material / structure identity
+    +-- research objective or validation question
+    +-- method
+    +-- parameters and conditions
+    +-- assumptions
+    +-- provenance requirements
+    +-- expected result schema
+```
+
+``` text
+ScientificResult
+    |
+    +-- task identity
+    +-- engine and version
+    +-- inputs / parameters
+    +-- execution or convergence state
+    +-- outputs and artifacts
+    +-- uncertainty where available
+    +-- provenance
+    +-- validation status
+```
+
+These contracts can allow MaterialGraph to integrate external scientific
+capabilities without coupling canonical research semantics to one
+particular tool.
+
+### Dependency-Aware Research Workflows
+
+Future Research Cycle orchestration should model genuine dependencies
+rather than forcing every research activity into one linear sequence.
+
+``` text
+                    Research Objective
+                           |
+                           v
+                    Candidate Selection
+                           |
+             +-------------+-------------+
+             |             |             |
+             v             v             v
+       Literature      Criticality    Structural
+        Evidence        Evidence       Evidence
+             |             |             |
+             +-------------+-------------+
+                           |
+                           v
+                    Readiness Check
+                           |
+                           v
+                 Scientific Validation
+                           |
+                           v
+                    Researcher Review
+```
+
+Where branches are genuinely independent, parallel execution may improve
+responsiveness without changing scientific semantics.
+
+### Bounded Validation Loops
+
+MaterialGraph may eventually support iterative workflows such as:
+
+``` text
+Objective
+   |
+   v
+Discover
+   |
+   v
+Evaluate Evidence
+   |
+   v
+Identify Validation Gap
+   |
+   v
+Validate
+   |
+   v
+Record New Evidence
+   |
+   v
+Re-evaluate / Refine
+```
+
+Automated checks must remain limited to things the system can actually
+establish, such as schema validity, hard-constraint satisfaction,
+deterministic consistency, evidence/provenance completeness,
+execution/convergence state, and explicit stopping/resource limits.
+
+A self-checking workflow must not equate successful workflow completion
+with scientific correctness.
+
+### Generation, Verification, and Scientific Validation
+
+MaterialGraph should continue distinguishing:
+
+``` text
+Generation / Exploration
+          !=
+Deterministic Verification
+          !=
+Evidence Evaluation
+          !=
+Physical / Experimental Validation
+          !=
+Researcher Judgment
+```
+
+The verifier does not have to be another AI agent. Depending on the
+claim, verification may use deterministic rules, tests, database
+constraints, independent scientific methods, external simulation,
+experimental evidence, or researcher review.
+
+## Relationship to Existing Architecture
+
+This reinforces existing MaterialGraph directions rather than creating a
+new architectural layer:
+
+-   Research Cycle orchestration;
+-   separation of planning, reasoning, evidence, and execution;
+-   adapter-oriented Scientific Compute integration;
+-   explicit task/result boundaries;
+-   deterministic canonical reasoning;
+-   researcher authority over scientific interpretation and validation.
+
+## What MaterialGraph Should Not Infer From It
+
+The usefulness of agent graphs for workflow orchestration does **not**
+imply that MaterialGraph should become a multi-agent scientific
+reasoning system.
+
+This article does not justify replacing canonical deterministic
+reasoning with LLM agents, creating an agent for every service, allowing
+an AI checker to declare scientific validity, autonomous unbounded
+research loops, or adding orchestration complexity before the underlying
+researcher workflow is reliable.
+
+## Current Decision
+
+**ARCHITECTURAL INSIGHT ACCEPTED --- NO AGENT IMPLEMENTATION
+COMMITMENT**
+
+The durable lessons are explicit contracts, dependency-aware workflow
+design, bounded iteration, and separation of generation from
+verification/validation.
+
+No roadmap milestone or agent implementation is created by this
+observation.
+
+## Promotion Criteria
+
+Consider additional canonical documentation or implementation only if:
+
+-   real Research Cycle workflows demonstrate repeated orchestration
+    needs;
+-   task boundaries and dependencies are stable enough to formalize;
+-   parallel execution can preserve deterministic semantics;
+-   automated checks have objective pass/fail meaning;
+-   stopping/resource limits can be enforced;
+-   researcher evaluation shows automation improves the workflow rather
+    than obscuring scientific reasoning.
+
+------------------------------------------------------------------------
+
+# 8. ORNL Self-Driving Science and Adaptive Evidence Acquisition
+
+## Source
+
+Oak Ridge National Laboratory --- *AI powers self-driving science*.
+
+## Why We Examined It
+
+ORNL described a materials-characterization workflow in which incoming
+experimental measurements were analyzed during the experiment and used
+to guide what should be measured next.
+
+The important MaterialGraph question is not whether MaterialGraph should
+control scientific instruments. It is whether research intelligence can
+become more useful by identifying which unresolved evidence would be
+most valuable to obtain next.
+
+## Relevant Observations
+
+The workflow illustrates an adaptive research pattern:
+
+``` text
+Current Evidence
+        |
+        v
+Identify Uncertainty / Information Need
+        |
+        v
+Choose Next Measurement
+        |
+        v
+Acquire New Evidence
+        |
+        v
+Analyze Result
+        |
+        v
+Update Research State
+        |
+        +--------------------------> repeat where justified
+```
+
+For MaterialGraph, the durable lesson is broader than autonomous
+experimentation: **missing evidence can potentially be prioritized
+according to its value to the current research decision rather than
+merely displayed as missing.**
+
+## Potential MaterialGraph Insight
+
+This observation contributed to the proposed canonical capability
+**Validation Priority Intelligence (VPI)**.
+
+VPI asks:
+
+> **Given this research objective and current evidence state, what
+> unresolved question is most important to establish next, and why?**
+
+``` text
+Research Objective
+        |
+        v
+Candidate / Pathway / Comparison
+        |
+        v
+Evidence + Unknowns + Contradictions
+        |
+        v
+Validation Priority Intelligence
+        |
+        +-- literature / evidence review
+        +-- structural or local evidence
+        +-- external computation
+        +-- experiment
+        +-- researcher review
+        |
+        v
+Attributed New Evidence
+        |
+        v
+Re-evaluate / Refine
+```
+
+The initial value does not depend on autonomous laboratories.
+MaterialGraph could first help researchers prioritize validation needs
+using evidence gaps, objective relevance, decision sensitivity,
+readiness, and existing provenance.
+
+### From Evidence Coverage to Decision-Relevant Validation
+
+A mature evidence system should be able to distinguish:
+
+``` text
+"What evidence is missing?"
+            |
+            v
+"What missing evidence matters to this objective?"
+            |
+            v
+"Could resolving it change the research decision?"
+            |
+            v
+"What validation class could address it?"
+```
+
+This creates a bridge among Evidence Intelligence, scenario/sensitivity
+analysis, Physical Modeling Readiness, external scientific compute, and
+future experimental evidence.
+
+### Validation Requests Should Preserve Research Context
+
+``` text
+ResearchObjective
+        |
+        v
+EvidenceGap
+        |
+        v
+ValidationPriority
+        |
+        v
+ValidationRequest
+        |
+        v
+Computation / Experiment / Review
+        |
+        v
+EvidenceArtifact
+        |
+        v
+InvestigationRevision
+```
+
+Where implemented, this relationship should preserve material/structure
+identity, objective context, requested claim, method or route,
+conditions, provenance, result status, uncertainty, and researcher
+interpretation.
+
+## Relationship to Existing Architecture
+
+This insight connects existing or proposed capabilities rather than
+replacing them:
+
+-   Research Objectives;
+-   Evidence Intelligence;
+-   unknown and contradiction handling;
+-   scenario and sensitivity semantics;
+-   structural/local-environment evidence;
+-   Physical Modeling Readiness;
+-   Scientific Task / Result contracts;
+-   external scientific-compute adapters;
+-   investigation history and provenance.
+
+VPI should reuse those layers rather than become another independent
+ranking or evidence system.
+
+## What MaterialGraph Should Not Infer From It
+
+The ORNL example does **not** establish that MaterialGraph currently
+needs:
+
+-   autonomous laboratory control;
+-   direct instrument integration;
+-   active learning;
+-   autonomous experiment selection;
+-   an LLM or agent deciding scientific truth;
+-   automated publication of experimental results into canonical
+    knowledge.
+
+Those are separate capabilities requiring their own scientific, safety,
+infrastructure, governance, and researcher-validation justification.
+
+## Current Decision
+
+**DURABLE INSIGHT PROMOTED TO CANONICAL DIRECTION AS VALIDATION PRIORITY
+INTELLIGENCE --- NO AUTONOMOUS EXPERIMENT IMPLEMENTATION COMMITMENT**
+
+The promoted principle is that MaterialGraph should eventually help a
+researcher identify the most decision-relevant validation need, not
+merely list missing evidence.
+
+## Promotion / Implementation Criteria
+
+Before VPI becomes a roadmap implementation milestone:
+
+-   representative researcher workflows should demonstrate the need;
+-   validation-priority semantics should be deterministic and
+    inspectable;
+-   priority must remain distinct from scientific validity;
+-   evidence gaps, contradictions, and unknown states must remain
+    honest;
+-   decision sensitivity should avoid manufactured precision;
+-   validation classes and readiness boundaries should be explicit;
+-   domain experts should be able to evaluate representative priority
+    outputs;
+-   autonomous acquisition or instrument control should remain outside
+    scope unless separately justified.
+
+------------------------------------------------------------------------
+
+# 9. Cross-Project Lessons
 
 ## Public Scientific Data Is a Foundation, Not the Entire Research Context
 
@@ -418,6 +821,36 @@ remain different states.
 MaterialGraph should continue distinguishing internal support, evidence
 coverage, validation readiness, and scientific validation status.
 
+## Explicit Contracts Enable Safe Composition
+
+Future integrations and orchestration should prefer bounded
+responsibilities with explicit input/output contracts. This improves
+provenance, validation, replaceability, and composition without blurring
+scientific ownership.
+
+## Workflow Edges Should Represent Real Dependencies
+
+Research workflows should distinguish genuine data dependencies from
+arbitrary sequence. Independent work may be parallelized only when
+scientific semantics and shared-state assumptions remain safe.
+
+## Iteration Requires Objective Checks and Hard Limits
+
+Automated loops are appropriate only where the system has a meaningful
+check and an explicit stopping condition. Scientific validity must not
+be inferred merely because a workflow reached its own completion
+criterion.
+
+## Missing Evidence Can Become a Validation-Planning Input
+
+Evidence coverage should not stop at reporting what is absent. Where the
+scientific semantics are sufficiently understood, MaterialGraph may help
+distinguish which unresolved evidence is most decision-relevant and
+which validation class could address it.
+
+Validation priority, validation execution, and scientific validity
+remain separate concepts.
+
 ## Researcher Authority Remains Central
 
 Even as scientific systems become more automated, researchers should
@@ -426,7 +859,7 @@ decisions.
 
 ------------------------------------------------------------------------
 
-# 8. Ideas Deliberately Not Promoted
+# 10. Ideas Deliberately Not Promoted
 
 The following ideas have been encountered but currently do not
 constitute MaterialGraph requirements:
@@ -446,7 +879,7 @@ not sufficient justification for implementation.
 
 ------------------------------------------------------------------------
 
-# 9. Future Exploration Questions
+# 11. Future Exploration Questions
 
 For each external project or idea, ask:
 
