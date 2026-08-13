@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from app.services.material.neighborhood_service import (
     MaterialNeighborhoodService,
@@ -138,3 +138,74 @@ def test_counts_match_returned_collections() -> None:
 
     assert result["node_count"] == len(result["nodes"])
     assert result["edge_count"] == len(result["edges"])
+
+
+def test_limit_bounds_neighbor_expansion() -> None:
+    service = _service()
+
+    result = service.get_neighborhood(
+        material_id=1,
+        depth=2,
+        limit=2,
+    )
+
+    assert {
+        node["material_id"]
+        for node in result["nodes"]
+    } == {1, 2}
+
+    assert service.neighbor_service.get_neighbors.call_args_list == [
+        call(1),
+        call(2),
+    ]
+
+
+def test_limit_one_does_not_expand_descendants() -> None:
+    service = _service()
+
+    result = service.get_neighborhood(
+        material_id=1,
+        depth=2,
+        limit=1,
+    )
+
+    assert [node["material_id"] for node in result["nodes"]] == [1]
+    assert service.neighbor_service.get_neighbors.call_count == 1
+    service.neighbor_service.get_neighbors.assert_called_once_with(1)
+
+
+def test_bounded_traversal_is_deterministic() -> None:
+    first_service = _service()
+    second_service = _service()
+
+    first = first_service.get_neighborhood(
+        material_id=1,
+        depth=2,
+        limit=3,
+    )
+    second = second_service.get_neighborhood(
+        material_id=1,
+        depth=2,
+        limit=3,
+    )
+
+    assert first["nodes"] == second["nodes"]
+    assert first["edges"] == second["edges"]
+
+
+def test_depth_remains_maximum_expansion_depth() -> None:
+    service = _service()
+
+    result = service.get_neighborhood(
+        material_id=1,
+        depth=1,
+        limit=10,
+    )
+
+    assert {
+        node["material_id"]
+        for node in result["nodes"]
+    } == {1, 2, 3}
+
+    assert service.neighbor_service.get_neighbors.call_count == 1
+    service.neighbor_service.get_neighbors.assert_called_once_with(1)

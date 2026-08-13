@@ -63,18 +63,10 @@ class MaterialNeighborhoodService:
                 neighbor_id = neighbor["material_id"]
                 next_depth = current_depth + 1
 
-                edges.append(
-                    {
-                        "source_material_id": current_id,
-                        "target_material_id": neighbor_id,
-                        "relationship_types": neighbor["relationship_types"],
-                        "shared_element_count": neighbor["shared_element_count"],
-                        "shared_application_count": neighbor["shared_application_count"],
-                        "edge_score": neighbor["neighbor_score"],
-                    }
-                )
-
                 if neighbor_id not in nodes:
+                    if len(nodes) >= limit:
+                        continue
+
                     nodes[neighbor_id] = {
                         "material_id": neighbor_id,
                         "mp_id": neighbor["mp_id"],
@@ -86,11 +78,25 @@ class MaterialNeighborhoodService:
                         "depth": next_depth,
                         "best_score": neighbor["neighbor_score"],
                     }
+
                 else:
                     nodes[neighbor_id]["best_score"] = max(
                         nodes[neighbor_id]["best_score"],
                         neighbor["neighbor_score"],
                     )
+
+                edges.append(
+                    {
+                        "source_material_id": current_id,
+                        "target_material_id": neighbor_id,
+                        "relationship_types": neighbor["relationship_types"],
+                        "shared_element_count": neighbor["shared_element_count"],
+                        "shared_application_count": neighbor[
+                            "shared_application_count"
+                        ],
+                        "edge_score": neighbor["neighbor_score"],
+                    }
+                )
 
                 if neighbor_id not in visited:
                     visited.add(neighbor_id)
