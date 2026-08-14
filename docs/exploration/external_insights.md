@@ -789,7 +789,136 @@ Before VPI becomes a roadmap implementation milestone:
 
 ------------------------------------------------------------------------
 
-# 9. Cross-Project Lessons
+# 9. Matlantis PFP v9 and High-Fidelity Atomistic Simulation
+
+## Source
+
+Matlantis Corporation --- *Matlantis Upgrades Core Technology Behind Its
+Universal Atomistic Simulator with PFP v9* (July 16, 2026).
+
+## Why We Examined It
+
+PFP v9 demonstrates the rapid evolution of specialist atomistic
+simulation systems and makes several questions concrete for
+MaterialGraph's future validation workflow: validation-route selection,
+computational provenance, evidence comparability, and the boundary
+between MaterialGraph and specialist scientific engines.
+
+## Relevant Observations
+
+Matlantis reports that PFP v9.0.0 officially releases its r²SCAN
+calculation mode across the same 96-element coverage as PBE, including
+lanthanides and actinides. It expands support for surface reactions and
+adsorption structures, coordination complexes, and molecular crystals.
+
+Matlantis also reports improved agreement with experimental data for
+crystal and surface stability, melting point, and water viscosity.
+r²SCAN becomes the default calculation mode when a method is not
+explicitly selected, while PBE remains available.
+
+The durable MaterialGraph lesson is not that one calculation mode should
+be preferred universally. It is that **method choice, model/version
+identity, and calculation context materially affect the scientific
+meaning of a result.**
+
+## Potential MaterialGraph Insight
+
+### Validation Route Selection Is Distinct From Validation Priority
+
+VPI answers **what unresolved question matters most to the current
+research decision**. A separate responsibility should answer **what
+class of evidence could appropriately address that question**.
+
+``` text
+Research Objective
+        |
+        v
+Validation Priority Intelligence
+        |
+        v
+Validation Route Selection
+        |
+        +-- literature / attributed evidence
+        +-- structural characterization
+        +-- electronic-structure workflow
+        +-- atomistic simulation
+        +-- thermodynamic workflow
+        +-- experiment
+        +-- domain-expert review
+        |
+        v
+Route-Specific Readiness
+```
+
+The availability of a fast or broadly capable simulator must not itself
+make that simulator the scientifically appropriate route.
+
+### Method and Model Version Are Scientific Provenance
+
+A computational result should preserve enough identity to explain how it
+was produced: material/structure identity, property definition, method
+family, calculation mode, model/potential/functional, engine/version,
+model version, parameters/conditions, convergence,
+uncertainty/applicability, provenance, and validation status.
+
+### Computational Evidence Comparability
+
+MaterialGraph should not silently treat two computational values as
+equivalent evidence merely because they share the same property label.
+Relevant differences may include method, model/version, structure
+representation, property definition/units, conditions, parameterization,
+convergence, uncertainty, and applicability. Where required metadata is
+absent, comparability should remain unknown rather than assumed.
+
+### Local and Non-Bulk Scientific Context Is Reinforced
+
+The emphasis on surfaces, adsorption systems, coordination complexes,
+and molecular crystals reinforces an existing conclusion:
+composition-level or bulk/global signals are not sufficient for every
+materials-science question.
+
+## Relationship to Existing Architecture
+
+This reinforces VPI, validation-route semantics, model-specific Physical
+Modeling Readiness, Scientific Task/Result contracts, external
+Scientific Compute adapters, local scientific-environment intelligence,
+evidence provenance, and validation-state separation.
+
+## What MaterialGraph Should Not Infer From It
+
+The release does **not** establish that MaterialGraph should implement
+its own universal atomistic simulator, adopt r²SCAN universally, treat
+ML interatomic potentials as replacements for all modeling approaches,
+integrate Matlantis specifically, automatically compare outputs from
+different methods/versions, or equate improved benchmark agreement with
+universal scientific validity.
+
+## Current Decision
+
+**ARCHITECTURAL INSIGHT ACCEPTED --- NO MATLANTIS INTEGRATION
+COMMITMENT**
+
+Three durable lessons are accepted:
+
+1.  validation-route selection should be explicit and distinct from
+    validation priority;
+2.  method/model/version identity is part of scientific provenance;
+3.  computational evidence comparability must be assessed rather than
+    assumed.
+
+## Promotion / Implementation Criteria
+
+Before implementation milestones are created, representative
+computational workflows should be examined; property/method identity
+semantics should be defined; comparability rules should be conservative
+and domain-appropriate; missing metadata must preserve an unknown state;
+domain experts should review representative cases; and no
+vendor-specific adapter should be prioritized without a demonstrated
+researcher workflow or integration need.
+
+------------------------------------------------------------------------
+
+# 10. Cross-Project Lessons
 
 ## Public Scientific Data Is a Foundation, Not the Entire Research Context
 
@@ -810,6 +939,24 @@ Scaling should not mean only adding material nodes. Scientific richness
 may include structures/phases, properties/conditions, local
 environments, evidence, literature, simulations, experiments,
 disagreements, validation history, and private/scoped research context.
+
+## Computational Method Identity Is Part of Scientific Provenance
+
+A computational value is inseparable from the method, model/version,
+structure, conditions, assumptions, and property definition that
+produced it.
+
+## Computational Evidence Comparability Must Be Established, Not Assumed
+
+Results sharing a property label are not automatically comparable.
+Missing scientific metadata should preserve unknown comparability rather
+than silently imply compatibility.
+
+## Validation Priority and Validation Route Are Different Questions
+
+VPI should prioritize the unresolved gap; validation-route logic should
+identify suitable evidence classes; route-specific readiness should
+determine whether a proposed computation is sufficiently specified.
 
 ## External Computation Should Return Evidence, Not Automatic Truth
 
@@ -859,7 +1006,7 @@ decisions.
 
 ------------------------------------------------------------------------
 
-# 10. Ideas Deliberately Not Promoted
+# 11. Ideas Deliberately Not Promoted
 
 The following ideas have been encountered but currently do not
 constitute MaterialGraph requirements:
@@ -879,7 +1026,7 @@ not sufficient justification for implementation.
 
 ------------------------------------------------------------------------
 
-# 11. Future Exploration Questions
+# 12. Future Exploration Questions
 
 For each external project or idea, ask:
 

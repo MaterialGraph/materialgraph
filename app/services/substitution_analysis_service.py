@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 
 from app.core.logging import logger
-from app.models.element import Element
+
 from app.models.material import Material
-from app.models.material_element import MaterialElement
+
+
 from app.schemas.substitution import (
     SubstituteCandidate,
     SubstitutionRequest,
@@ -30,16 +31,36 @@ class SubstitutionAnalysisService:
         if source is None:
             return None
 
-        source_elements = self._get_element_symbols(source.id)
-        source_risk_signal = self.material_risk_service.get_material_risk_signal(
-            source.id
+        candidate_materials = (
+            self.db.query(Material)
+            .filter(Material.id != source.id)
+            .all()
+        )
+
+        material_ids = [
+            source.id,
+            *[material.id for material in candidate_materials],
+        ]
+
+        risk_signals = (
+            self.material_risk_service.get_material_risk_signals_bulk(
+                material_ids
+            )
+        )
+
+        source_risk_signal = risk_signals[source.id]
+        source_elements = self._element_symbols_from_risk_signal(
+            source_risk_signal
         )
         source_risk = self._known_risk_score(source_risk_signal)
 
         candidates = []
 
-        for material in self.db.query(Material).filter(Material.id != source.id).all():
-            candidate_elements = self._get_element_symbols(material.id)
+        for material in candidate_materials:
+            risk_signal = risk_signals[material.id]
+            candidate_elements = self._element_symbols_from_risk_signal(
+                risk_signal
+            )
 
             if not candidate_elements:
                 continue
@@ -52,9 +73,6 @@ class SubstitutionAnalysisService:
             if similarity == 0:
                 continue
 
-            risk_signal = self.material_risk_service.get_material_risk_signal(
-                material.id
-            )
             candidate_risk = self._known_risk_score(risk_signal)
 
             # Unknown risk contributes no evidence-derived benefit. In
@@ -165,16 +183,15 @@ class SubstitutionAnalysisService:
             return None
 
         return risk_signal.get("risk_score")
-
-    def _get_element_symbols(self, material_id: int) -> set[str]:
-        rows = (
-            self.db.query(Element.symbol)
-            .join(MaterialElement, Element.id == MaterialElement.element_id)
-            .filter(MaterialElement.material_id == material_id)
-            .all()
-        )
-
-        return {row[0] for row in rows}
+    
+    def _element_symbols_from_risk_signal(
+        self,
+        risk_signal: dict,
+    ) -> set[str]:
+        return {
+            *risk_signal.get("known_risk_elements", []),
+            *risk_signal.get("unknown_risk_elements", []),
+        }
 
     def _jaccard_similarity(
         self,

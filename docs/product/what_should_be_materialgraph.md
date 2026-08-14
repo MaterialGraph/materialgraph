@@ -1104,18 +1104,51 @@ MaterialGraph Evidence Context
 Every imported simulation result should preserve, where available:
 
 -   engine and version;
+-   method family and calculation mode;
+-   model, potential, functional, or equivalent scientific-method
+    identity;
+-   model/version identity where distinct from the execution engine;
 -   input configuration;
 -   material identity;
 -   structure version;
+-   property definition and units;
 -   parameter set;
+-   relevant calculation conditions;
 -   assumptions;
 -   convergence state;
 -   execution time;
 -   output artifact references;
+-   uncertainty or applicability information where available;
 -   validation status.
 
 > **A computed result should become attributed evidence context, not
 > automatic scientific truth.**
+
+### Computational evidence comparability must be explicit
+
+Method and version metadata are scientific provenance, not merely
+software metadata. Results referring to the same nominal property should
+not automatically be treated as equivalent or directly comparable when
+method, model/version, structure representation, property definition,
+conditions, parameterization, convergence, uncertainty, or applicability
+differ.
+
+Where sufficient metadata exists, MaterialGraph may eventually classify
+comparability conservatively:
+
+``` text
+DIRECTLY_COMPARABLE
+COMPARABLE_WITH_QUALIFICATIONS
+NOT_DIRECTLY_COMPARABLE
+COMPARABILITY_UNKNOWN
+```
+
+The exact vocabulary should be designed only after representative
+scientific workflows are studied. Missing scientific metadata must not
+be silently interpreted as compatibility.
+
+> **Computational evidence should be compared or combined only when the
+> scientific basis for that comparison is itself inspectable.**
 
 MaterialGraph should also distinguish:
 
@@ -1708,9 +1741,39 @@ MaterialGraph should not recommend a specific scientific method unless
 the method's applicability and prerequisites are sufficiently
 represented.
 
-Physical Modeling Readiness should remain responsible for whether a
-proposed modeling route is sufficiently specified. External scientific
-engines should remain responsible for their domain computation.
+MaterialGraph should distinguish the responsibilities involved in moving
+from a validation need to computational evidence:
+
+``` text
+Validation Priority Intelligence
+        │
+        ▼
+Validation Route Selection
+        │
+        ▼
+Model-Specific Physical Modeling Readiness
+        │
+        ▼
+External Scientific Compute
+        │
+        ▼
+Computational Evidence Comparability
+        │
+        ▼
+MaterialGraph Evidence Context
+```
+
+VPI asks **what unresolved question matters most**. Validation Route
+Selection asks **what class of evidence could address it**. Physical
+Modeling Readiness asks **whether the prerequisites for that route are
+sufficiently represented**. External engines remain responsible for
+domain computation. Evidence comparability asks whether returned results
+can legitimately be compared or combined.
+
+MaterialGraph should not recommend a specific method merely because an
+engine supports it. Method selection must remain constrained by the
+scientific question, applicability, prerequisites, and available
+evidence.
 
 ### Researcher authority remains central
 
