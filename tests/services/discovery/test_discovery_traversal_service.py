@@ -433,3 +433,259 @@ def test_missing_material_reports_effective_max_hops(
     assert result["graph_goal"]["effective_max_hops"] == 1
     assert result["nodes"] == []
     assert result["edges"] == []
+
+
+def test_graph_limit_preserves_edge_node_closure(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+
+    graph = {
+        "nodes": [
+            _node(5),
+            _node(6),
+            _node(7),
+        ],
+        # The first edge targets node 7, which is excluded by limit=2.
+        "edges": [
+            _edge(5, 7),
+            _edge(5, 6),
+        ],
+        "adjacency": {
+            5: [6, 7],
+        },
+    }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        lambda **kwargs: graph,
+    )
+
+    result = service.get_graph(
+        material_id=5,
+        max_hops=2,
+        limit=2,
+    )
+
+    returned_node_ids = {
+        node["material_id"]
+        for node in result["nodes"]
+    }
+
+    assert returned_node_ids == {5, 6}
+    assert [
+        (
+            edge["source_material_id"],
+            edge["target_material_id"],
+        )
+        for edge in result["edges"]
+    ] == [(5, 6)]
+
+    assert all(
+        edge["source_material_id"] in returned_node_ids
+        and edge["target_material_id"] in returned_node_ids
+        for edge in result["edges"]
+    )
+
+
+def test_graph_limit_one_returns_root_without_edges(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+
+    graph = {
+        "nodes": [
+            _node(5),
+            _node(6),
+        ],
+        "edges": [
+            _edge(5, 6),
+        ],
+        "adjacency": {
+            5: [6],
+        },
+    }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        lambda **kwargs: graph,
+    )
+
+    result = service.get_graph(
+        material_id=5,
+        max_hops=2,
+        limit=1,
+    )
+
+    assert [
+        node["material_id"]
+        for node in result["nodes"]
+    ] == [5]
+    assert result["edges"] == []
+    assert result["graph_goal"]["max_hops"] == 2
+    assert result["graph_goal"]["effective_max_hops"] == 1
+
+
+def test_subgraph_inherits_closed_limited_graph(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+
+    graph = {
+        "nodes": [
+            _node(5),
+            _node(6),
+            _node(7),
+        ],
+        "edges": [
+            _edge(5, 7),
+            _edge(5, 6),
+        ],
+        "adjacency": {
+            5: [6, 7],
+        },
+    }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        lambda **kwargs: graph,
+    )
+
+    result = service.get_subgraph(
+        material_id=5,
+        family="phosphate",
+        max_hops=2,
+        limit=2,
+    )
+
+    returned_node_ids = {
+        node["material_id"]
+        for node in result["nodes"]
+    }
+
+    assert returned_node_ids == {5, 6}
+    assert all(
+        edge["source_material_id"] in returned_node_ids
+        and edge["target_material_id"] in returned_node_ids
+        for edge in result["edges"]
+    )
+    assert result["subgraph_metadata"]["node_count"] == 2
+    assert result["subgraph_metadata"]["edge_count"] == 1
+
+
+def test_subgraph_filters_before_applying_result_limit(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+
+    nonmatching_edge = {
+        **_edge(5, 6),
+        "family": "oxide",
+    }
+    matching_edge = {
+        **_edge(5, 7),
+        "family": "phosphate",
+    }
+
+    graph = {
+        "nodes": [
+            _node(5),
+            _node(6),
+            _node(7),
+        ],
+        "edges": [
+            nonmatching_edge,
+            matching_edge,
+        ],
+        "adjacency": {
+            5: [6, 7],
+        },
+    }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        lambda **kwargs: graph,
+    )
+
+    result = service.get_subgraph(
+        material_id=5,
+        family="phosphate",
+        max_hops=2,
+        limit=2,
+    )
+
+    returned_node_ids = {
+        node["material_id"]
+        for node in result["nodes"]
+    }
+
+    assert returned_node_ids == {5, 7}
+    assert [
+        (
+            edge["source_material_id"],
+            edge["target_material_id"],
+        )
+        for edge in result["edges"]
+    ] == [(5, 7)]
+
+    assert result["subgraph_metadata"]["node_count"] == 2
+    assert result["subgraph_metadata"]["edge_count"] == 1
+
+    assert all(
+        edge["source_material_id"] in returned_node_ids
+        and edge["target_material_id"] in returned_node_ids
+        for edge in result["edges"]
+    )
+
+    assert result["graph_goal"]["max_hops"] == 2
+    assert result["graph_goal"]["effective_max_hops"] == 1
+
+
+def test_subgraph_metadata_describes_limited_response(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+
+    graph = {
+        "nodes": [
+            _node(5),
+            _node(6),
+            _node(7),
+        ],
+        "edges": [
+            _edge(5, 6),
+            _edge(5, 7),
+        ],
+        "adjacency": {
+            5: [6, 7],
+        },
+    }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        lambda **kwargs: graph,
+    )
+
+    result = service.get_subgraph(
+        material_id=5,
+        family="phosphate",
+        max_hops=2,
+        limit=2,
+    )
+
+    assert result["subgraph_metadata"]["node_count"] == len(
+        result["nodes"]
+    )
+    assert result["subgraph_metadata"]["edge_count"] == len(
+        result["edges"]
+    )

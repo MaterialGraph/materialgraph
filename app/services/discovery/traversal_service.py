@@ -25,11 +25,38 @@ class DiscoveryTraversalService:
         max_hops: int = DEFAULT_MAX_HOPS,
         limit: int = DEFAULT_LIMIT,
     ) -> dict:
+        result = self._build_graph_response(
+            material_id=material_id,
+            avoid_element=avoid_element,
+            prefer_element=prefer_element,
+            max_hops=max_hops,
+            limit=limit,
+        )
+
+        limited_nodes, limited_edges = self._limit_graph(
+            nodes=result["nodes"],
+            edges=result["edges"],
+            limit=limit,
+        )
+
+        result["nodes"] = limited_nodes
+        result["edges"] = limited_edges
+
+        return result
+
+
+    def _build_graph_response(
+        self,
+        material_id: int,
+        avoid_element: str | None,
+        prefer_element: str | None,
+        max_hops: int,
+        limit: int,
+    ) -> dict:
         effective_max_hops = (
             self.graph_builder.get_effective_max_depth(max_hops)
         )
-        
-        
+
         base_material = self.db.get(Material, material_id)
 
         if base_material is None:
@@ -48,11 +75,14 @@ class DiscoveryTraversalService:
             prefer_element=prefer_element,
             max_depth=effective_max_hops,
         )
-            
+
         return {
             "material_id": base_material.id,
             "mp_id": base_material.mp_id,
-            "base_formula": base_material.pretty_formula or base_material.formula,
+            "base_formula": (
+                base_material.pretty_formula
+                or base_material.formula
+            ),
             "graph_goal": {
                 "avoid_element": avoid_element,
                 "prefer_element": prefer_element,
@@ -60,9 +90,10 @@ class DiscoveryTraversalService:
                 "effective_max_hops": effective_max_hops,
                 "limit": limit,
             },
-            "nodes": graph["nodes"][:limit],
-            "edges": graph["edges"][:limit],
+            "nodes": graph["nodes"],
+            "edges": graph["edges"],
         }
+
 
     def get_subgraph(
         self,
@@ -76,7 +107,7 @@ class DiscoveryTraversalService:
         max_hops: int = DEFAULT_MAX_HOPS,
         limit: int = DEFAULT_LIMIT,
     ) -> dict:
-        result = self.get_graph(
+        result = self._build_graph_response(
             material_id=material_id,
             avoid_element=avoid_element,
             prefer_element=prefer_element,
@@ -112,6 +143,12 @@ class DiscoveryTraversalService:
             )
         ]
 
+        nodes, edges = self._limit_graph(
+            nodes=nodes,
+            edges=edges,
+            limit=limit,
+        )
+
         result["subgraph_filter"] = {
             "family": family,
             "transition_type": transition_type,
@@ -126,8 +163,8 @@ class DiscoveryTraversalService:
             edges=edges,
         )
 
-        result["nodes"] = nodes[:limit]
-        result["edges"] = edges[:limit]
+        result["nodes"] = nodes
+        result["edges"] = edges
 
         return result
 
@@ -444,3 +481,28 @@ class DiscoveryTraversalService:
             "score_breakdown": None,
             "usefulness_reason": None,
         }
+
+
+    def _limit_graph(
+        self,
+        nodes: list[dict],
+        edges: list[dict],
+        limit: int,
+    ) -> tuple[list[dict], list[dict]]:
+        limited_nodes = nodes[:limit]
+
+        limited_node_ids = {
+            node["material_id"]
+            for node in limited_nodes
+        }
+
+        limited_edges = [
+            edge
+            for edge in edges
+            if (
+                edge["source_material_id"] in limited_node_ids
+                and edge["target_material_id"] in limited_node_ids
+            )
+        ][:limit]
+
+        return limited_nodes, limited_edges
