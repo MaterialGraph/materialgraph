@@ -138,8 +138,6 @@ class DiscoveryGraphBuilder:
                             elements=elements_map.get(target_id, []),
                         )
 
-                        nodes_by_id[target_id] = target_node
-
                         transition = self._build_transition(
                             from_material=source_node,
                             to_candidate=target_node,
@@ -150,6 +148,8 @@ class DiscoveryGraphBuilder:
 
                         if transition is None:
                             continue
+
+                        nodes_by_id[target_id] = target_node
 
                         edge = self._build_edge(
                             source_material_id=material_id,

@@ -918,7 +918,268 @@ researcher workflow or integration need.
 
 ------------------------------------------------------------------------
 
-# 10. Cross-Project Lessons
+# 10. AI-for-Materials Ecosystem and Vertical Product Positioning
+
+## Source
+
+Dmitry Starodubtsev / Matterloop --- LinkedIn ecosystem map, *AI for
+Materials* (August 2026).
+
+This entry records the strategic pattern observed in the post rather
+than treating its company list, funding totals, valuations, or category
+boundaries as an authoritative industry census. Selected examples were
+independently checked against company, government, or research sources
+where practical.
+
+## Why We Examined It
+
+The post groups active materials-technology organizations across
+foundation models and discovery engines, autonomous laboratories,
+simulation and engineering, battery and energy materials, and
+catalysts/chemistry.
+
+This is directly relevant to MaterialGraph because it helps clarify
+where the project should compete, where it should integrate, and how a
+broad research architecture may need a narrower initial product/use-case
+expression.
+
+## Relevant Observations
+
+The materials-computing ecosystem is becoming increasingly specialized.
+
+Different organizations are concentrating on capabilities such as:
+
+-   foundation models and learned interatomic potentials;
+-   generative materials discovery;
+-   specialist atomistic or engineering simulation;
+-   autonomous laboratories and experiment orchestration;
+-   battery/electrolyte discovery;
+-   superconductors;
+-   catalysts and chemistry;
+-   application-specific materials development.
+
+Several independently checked examples reinforce the broader pattern.
+Quantum Formatics describes an AI-accelerated superconductor-discovery
+platform focused on manufacturable, scalable superconductors, and an
+NSF-supported project combines AI models, first-principles simulation,
+synthesis, and experimental characterization. South 8 Technologies, by
+contrast, is commercializing its LiGas battery-electrolyte platform for
+concrete aerospace, defense, and manufacturing applications.
+
+The durable observation is therefore not the exact number of companies
+or the funding figure assigned to each one. It is that **specialist
+scientific capabilities and application-specific materials products are
+becoming a substantial part of the surrounding ecosystem.**
+
+## Potential MaterialGraph Insight
+
+### MaterialGraph Should Define Its Layer, Not Compete With Every Layer
+
+MaterialGraph should not attempt to win by reproducing every capability
+in the materials-AI stack.
+
+A useful ecosystem view is:
+
+``` text
+Researcher / R&D Objective
+          |
+          v
+MaterialGraph Research Intelligence
+          |
+          +-- knowledge and relationships
+          +-- deterministic reasoning
+          +-- alternatives and pathways
+          +-- evidence and provenance
+          +-- uncertainty / unknowns
+          +-- validation priority
+          +-- validation-route context
+          |
+          v
+Specialist Scientific Capabilities
+          |
+          +-- foundation / learned models
+          +-- DFT / atomistic simulation
+          +-- engineering simulation
+          +-- literature / data systems
+          +-- experimental workflows
+          +-- autonomous laboratories
+          |
+          v
+Attributed New Evidence
+          |
+          v
+MaterialGraph Re-evaluation
+```
+
+The increasing strength of specialist systems makes the adapter-oriented
+MaterialGraph boundary more important, not less important.
+
+MaterialGraph's defensible role should remain centered on **inspectable
+materials research intelligence**: connecting objectives, structured
+knowledge, explicit reasoning, evidence, uncertainty, alternatives, and
+validation planning.
+
+### Horizontal Architecture Does Not Require Horizontal Go-to-Market
+
+A general research-intelligence architecture can initially prove itself
+through a narrow, high-value workflow.
+
+The ecosystem post's emphasis on application-specific value suggests an
+important product distinction:
+
+``` text
+Architecture
+    |
+    +-- reusable materials research intelligence infrastructure
+
+Initial Product Proof
+    |
+    +-- narrow researcher problem
+    +-- explicit scientific objective
+    +-- measurable decision value
+    +-- inspectable evidence and reasoning
+```
+
+MaterialGraph should therefore avoid relying on a generic message such
+as:
+
+> "AI for materials."
+
+A stronger initial demonstration may be framed around a concrete
+researcher decision, for example:
+
+> **Identify lower-criticality alternatives to a target material while
+> preserving important scientific characteristics, explain why each
+> alternative deserves investigation, expose the supporting evidence and
+> uncertainty, and identify what should be validated next.**
+
+This is an example of product positioning, not a commitment that
+criticality or battery materials must become MaterialGraph's permanent
+commercial vertical.
+
+### Outcome Language Can Be More Useful Than Technology Language
+
+Researchers and R&D organizations ultimately need decisions and
+outcomes, not an inventory of algorithms.
+
+MaterialGraph's public/product language should increasingly connect
+technical capabilities to questions such as:
+
+-   What alternative deserves investigation?
+-   Why was it selected?
+-   What trade-offs does it introduce?
+-   What evidence supports the recommendation?
+-   What remains unknown?
+-   Could an unresolved assumption change the decision?
+-   What should be validated next?
+-   Which external scientific capability could address that validation
+    need?
+
+This does not mean hiding the deterministic graph, evidence, provenance,
+or scientific architecture. It means explaining those capabilities
+through the research decisions they support.
+
+### Capital-Intensive Scientific Capabilities Should Usually Remain External
+
+The surrounding ecosystem includes organizations investing heavily in
+model training, simulation infrastructure, laboratories, synthesis, and
+manufacturing.
+
+MaterialGraph should be cautious about competing directly on:
+
+-   universal foundation-model training;
+-   autonomous laboratory infrastructure;
+-   universal atomistic simulation;
+-   large-scale candidate generation purely for scale;
+-   experimental hardware;
+-   GPU or laboratory capacity as a primary moat.
+
+Where mature specialist capabilities exist, MaterialGraph may create
+more value by making their use research-context-aware, inspectable,
+provenance-preserving, and connected to an investigation.
+
+## Relationship to Existing Architecture
+
+This observation reinforces rather than replaces several existing
+directions:
+
+-   MaterialGraph as inspectable materials research intelligence
+    infrastructure;
+-   deterministic canonical reasoning;
+-   Evidence Intelligence;
+-   Validation Priority Intelligence;
+-   Validation Route Selection;
+-   model-specific Physical Modeling Readiness;
+-   Scientific Task / Result contracts;
+-   adapter-oriented external Scientific Compute;
+-   computational evidence comparability;
+-   researcher authority over scientific interpretation.
+
+It also adds an important product distinction:
+
+> **MaterialGraph may remain horizontal at the infrastructure level
+> while proving value vertically through specific researcher
+> workflows.**
+
+## What MaterialGraph Should Not Infer From It
+
+This ecosystem map does **not** establish that:
+
+-   every company or funding figure in the post is independently
+    verified;
+-   the post is a complete or authoritative market census;
+-   MaterialGraph has no competitors in research intelligence;
+-   MaterialGraph has discovered an uncontested market category;
+-   vertical positioning guarantees adoption or commercial success;
+-   MaterialGraph should immediately become a battery-only product;
+-   MaterialGraph should add foundation models, autonomous labs, or
+    simulation engines merely because well-funded organizations are
+    building them;
+-   large funding rounds establish scientific superiority.
+
+The post should be treated as a useful market observation whose
+individual company, funding, revenue, and valuation claims require
+source-level verification before use in formal competitive analysis.
+
+## Current Decision
+
+**STRATEGIC / PRODUCT INSIGHT ACCEPTED --- NO NEW IMPLEMENTATION
+COMMITMENT**
+
+The following durable lessons are accepted for continued evaluation:
+
+1.  MaterialGraph should define its research-intelligence layer clearly
+    rather than compete indiscriminately across the entire materials-AI
+    stack.
+2.  Specialist models, simulation systems, and experimental platforms
+    can become external capabilities that MaterialGraph contextualizes
+    rather than duplicates.
+3.  A horizontal architecture can be introduced through a narrow,
+    outcome-oriented researcher workflow.
+4.  Product communication should emphasize the research decision and
+    evidence problem solved rather than generic "AI for materials"
+    positioning.
+
+## Promotion Criteria
+
+Consider promotion into canonical product/strategy documentation when:
+
+-   representative researcher conversations confirm a high-value initial
+    workflow;
+-   the selected workflow can be demonstrated with scientifically
+    credible data and evidence;
+-   the workflow exercises MaterialGraph's actual differentiators rather
+    than generic AI capability;
+-   competitor and adjacent-system analysis confirms the boundary
+    remains useful;
+-   outcome-oriented positioning can be stated without overstating
+    scientific validation or commercial readiness.
+
+No implementation milestone is created by this observation.
+
+------------------------------------------------------------------------
+
+# 11. Cross-Project Lessons
 
 ## Public Scientific Data Is a Foundation, Not the Entire Research Context
 
@@ -998,6 +1259,28 @@ which validation class could address it.
 Validation priority, validation execution, and scientific validity
 remain separate concepts.
 
+## Horizontal Architecture Can Be Proven Through Vertical Workflows
+
+MaterialGraph can preserve a reusable research-intelligence architecture
+while initially demonstrating value through a narrow, outcome-oriented
+materials workflow. Product focus and architectural generality do not
+need to be the same thing.
+
+## Differentiate by Research Decisions, Not Generic AI Claims
+
+As foundation models, simulators, autonomous laboratories, and vertical
+materials products become more capable, MaterialGraph should make its
+differentiation explicit: inspectable objectives, reasoning, evidence,
+uncertainty, alternatives, and validation planning.
+
+## Specialist Capability Growth Strengthens the Integration Boundary
+
+A richer external ecosystem increases the value of explicit task/result,
+provenance, readiness, and evidence-comparability boundaries.
+MaterialGraph should preferentially compose mature specialist
+capabilities where that is scientifically and product-wise justified
+rather than duplicate them.
+
 ## Researcher Authority Remains Central
 
 Even as scientific systems become more automated, researchers should
@@ -1006,7 +1289,7 @@ decisions.
 
 ------------------------------------------------------------------------
 
-# 11. Ideas Deliberately Not Promoted
+# 12. Ideas Deliberately Not Promoted
 
 The following ideas have been encountered but currently do not
 constitute MaterialGraph requirements:
@@ -1026,7 +1309,7 @@ not sufficient justification for implementation.
 
 ------------------------------------------------------------------------
 
-# 12. Future Exploration Questions
+# 13. Future Exploration Questions
 
 For each external project or idea, ask:
 

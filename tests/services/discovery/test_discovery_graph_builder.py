@@ -136,3 +136,70 @@ def test_build_adjacency_excludes_invalid_transitions(
 
     assert [item["material_id"] for item in adjacency[5]] == [6]
     assert adjacency[5][0]["validated_transition"]["reason"] == "validated"
+
+
+def test_build_graph_excludes_nodes_for_invalid_transitions(
+    db_session,
+    monkeypatch,
+):
+    builder = DiscoveryGraphBuilder(db_session)
+
+    monkeypatch.setattr(
+        builder,
+        "_get_candidates",
+        lambda **kwargs: [
+            {
+                "material_id": 6,
+                "mp_id": "mp-valid",
+                "pretty_formula": "NaFePO4",
+                "formula": "NaFePO4",
+            },
+            {
+                "material_id": 7,
+                "mp_id": "mp-invalid",
+                "pretty_formula": "CoO",
+                "formula": "CoO",
+            },
+        ],
+    )
+    monkeypatch.setattr(
+        builder,
+        "_build_transition",
+        lambda **kwargs: (
+            {
+                "transition_type": "alkali_substitution",
+                "reason": "validated",
+            }
+            if kwargs["to_candidate"]["material_id"] == 6
+            else None
+        ),
+    )
+
+    result = builder.build_graph(
+        start_material_id=5,
+        avoid_element="Li",
+        prefer_element="Na",
+        max_depth=1,
+    )
+
+    returned_node_ids = {
+        node["material_id"]
+        for node in result["nodes"]
+    }
+    connected_node_ids = {
+        endpoint
+        for edge in result["edges"]
+        for endpoint in (
+            edge["source_material_id"],
+            edge["target_material_id"],
+        )
+    }
+
+    assert returned_node_ids == {5, 6}
+    assert 7 not in returned_node_ids
+    assert [edge["target_material_id"] for edge in result["edges"]] == [6]
+    assert result["adjacency"] == {5: [6]}
+    assert all(
+        node_id == 5 or node_id in connected_node_ids
+        for node_id in returned_node_ids
+    )
