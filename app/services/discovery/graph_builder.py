@@ -34,6 +34,24 @@ class DiscoveryGraphBuilder:
         self._relationship_cache: dict[tuple[int, int], list[str]] = {}
         self._quality_cache: dict[int, dict] = {}
 
+
+    @classmethod
+    def get_effective_max_depth(
+        cls,
+        requested_depth: int,
+        *,
+        analytics_mode: bool = False,
+    ) -> int:
+        allowed_depth = (
+            cls.MAX_ANALYTICS_DEPTH
+            if analytics_mode
+            else cls.MAX_ALLOWED_DEPTH
+        )
+
+        return min(requested_depth, allowed_depth)
+
+
+
     def build_graph(
         self,
         start_material_id: int,
@@ -46,13 +64,10 @@ class DiscoveryGraphBuilder:
             f"DiscoveryGraphBuilder.total start_material_id={start_material_id}",
             always_log=True,
         ):
-            allowed_depth = (
-                self.MAX_ANALYTICS_DEPTH
-                if analytics_mode
-                else self.MAX_ALLOWED_DEPTH
+            max_depth = self.get_effective_max_depth(
+                max_depth,
+                analytics_mode=analytics_mode,
             )
-
-            max_depth = min(max_depth, allowed_depth)
 
             base_material = self.db.get(Material, start_material_id)
 

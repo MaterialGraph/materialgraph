@@ -5,6 +5,7 @@ class DiscoveryGraphGoal(BaseModel):
     avoid_element: str | None = None
     prefer_element: str | None = None
     max_hops: int
+    effective_max_hops: int
     limit: int | None = None
 
 

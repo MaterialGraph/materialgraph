@@ -25,6 +25,11 @@ class DiscoveryTraversalService:
         max_hops: int = DEFAULT_MAX_HOPS,
         limit: int = DEFAULT_LIMIT,
     ) -> dict:
+        effective_max_hops = (
+            self.graph_builder.get_effective_max_depth(max_hops)
+        )
+        
+        
         base_material = self.db.get(Material, material_id)
 
         if base_material is None:
@@ -33,6 +38,7 @@ class DiscoveryTraversalService:
                 avoid_element=avoid_element,
                 prefer_element=prefer_element,
                 max_hops=max_hops,
+                effective_max_hops=effective_max_hops,
                 limit=limit,
             )
 
@@ -40,7 +46,7 @@ class DiscoveryTraversalService:
             start_material_id=material_id,
             avoid_element=avoid_element,
             prefer_element=prefer_element,
-            max_depth=max_hops,
+            max_depth=effective_max_hops,
         )
             
         return {
@@ -51,6 +57,7 @@ class DiscoveryTraversalService:
                 "avoid_element": avoid_element,
                 "prefer_element": prefer_element,
                 "max_hops": max_hops,
+                "effective_max_hops": effective_max_hops,
                 "limit": limit,
             },
             "nodes": graph["nodes"][:limit],
@@ -380,6 +387,7 @@ class DiscoveryTraversalService:
         avoid_element: str | None,
         prefer_element: str | None,
         max_hops: int,
+        effective_max_hops: int,
         limit: int,
     ) -> dict:
         return {
@@ -390,6 +398,7 @@ class DiscoveryTraversalService:
                 "avoid_element": avoid_element,
                 "prefer_element": prefer_element,
                 "max_hops": max_hops,
+                "effective_max_hops": effective_max_hops,
                 "limit": limit,
             },
             "nodes": [],

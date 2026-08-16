@@ -350,3 +350,86 @@ def test_path_reason_calibrates_oxide_evidence():
     assert "shared elemental overlap across Fe-O" in reason
     assert "structural preservation is not validated" in reason
     assert "while preserving Fe-O chemistry" not in reason
+
+
+def test_graph_reports_requested_and_effective_max_hops(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    calls = []
+
+    def fake_build_graph(**kwargs):
+        calls.append(kwargs)
+
+        return {
+            "nodes": [],
+            "edges": [],
+            "adjacency": {},
+        }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        fake_build_graph,
+    )
+
+    result = service.get_graph(
+        material_id=5,
+        max_hops=3,
+        limit=50,
+    )
+
+    assert result["graph_goal"]["max_hops"] == 3
+    assert result["graph_goal"]["effective_max_hops"] == 1
+    assert calls[0]["max_depth"] == 1
+
+
+def test_graph_preserves_requested_depth_within_builder_limit(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryTraversalService(db_session)
+    calls = []
+
+    def fake_build_graph(**kwargs):
+        calls.append(kwargs)
+
+        return {
+            "nodes": [],
+            "edges": [],
+            "adjacency": {},
+        }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        fake_build_graph,
+    )
+
+    result = service.get_graph(
+        material_id=5,
+        max_hops=1,
+        limit=50,
+    )
+
+    assert result["graph_goal"]["max_hops"] == 1
+    assert result["graph_goal"]["effective_max_hops"] == 1
+    assert calls[0]["max_depth"] == 1
+
+
+def test_missing_material_reports_effective_max_hops(
+    db_session,
+):
+    service = DiscoveryTraversalService(db_session)
+
+    result = service.get_graph(
+        material_id=999999,
+        max_hops=3,
+        limit=50,
+    )
+
+    assert result["graph_goal"]["max_hops"] == 3
+    assert result["graph_goal"]["effective_max_hops"] == 1
+    assert result["nodes"] == []
+    assert result["edges"] == []
