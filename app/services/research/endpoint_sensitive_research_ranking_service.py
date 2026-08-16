@@ -1,3 +1,8 @@
+from app.services.research.scientific_score_semantics import (
+    normalize_scientific_usefulness_score,
+)
+
+
 class EndpointSensitiveResearchRankingService:
     """Analyze same-score pathway groups using endpoint-specific evidence.
 
@@ -10,6 +15,22 @@ class EndpointSensitiveResearchRankingService:
         "strong": 3,
         "moderate": 2,
         "limited": 1,
+    }
+    ORDERING_DIMENSIONS = [
+        "endpoint_quality_score",
+        "endpoint_stability_score",
+        "endpoint_energy_above_hull_band",
+        "endpoint_criticality_band",
+        "endpoint_risk_band",
+        "evidence_readiness",
+    ]
+    GROUPING_POLICY = {
+        "endpoint_quality_score": "two_decimal_producer_precision",
+        "endpoint_stability_score": "two_decimal_producer_precision",
+        "endpoint_energy_above_hull": "quality_policy_threshold_bands",
+        "endpoint_criticality_score": "quality_policy_threshold_bands",
+        "endpoint_risk_score": "quality_policy_threshold_bands",
+        "evidence_readiness": "categorical_readiness",
     }
 
     def rank_opportunities(self, opportunities: list[dict]) -> dict:
@@ -36,6 +57,9 @@ class EndpointSensitiveResearchRankingService:
 
         return {
             "ranking_basis": "endpoint_specific_existing_evidence",
+            "ordering_policy": "lexicographic",
+            "ordering_dimensions": list(self.ORDERING_DIMENSIONS),
+            "evidence_grouping_policy": dict(self.GROUPING_POLICY),
             "score_preserved": True,
             "original_score_field": "scientific_usefulness_score",
             "endpoint_sensitive_score_added": False,
@@ -55,7 +79,9 @@ class EndpointSensitiveResearchRankingService:
         groups: dict[float, list[dict]] = {}
 
         for opportunity in opportunities:
-            score = round(opportunity.get("scientific_usefulness_score", 0.0), 2)
+            score = normalize_scientific_usefulness_score(
+                opportunity.get("scientific_usefulness_score")
+            )
             groups.setdefault(score, []).append(opportunity)
 
         return groups
@@ -115,14 +141,8 @@ class EndpointSensitiveResearchRankingService:
                 "Pathways share the same scientific usefulness score, but endpoint-specific "
                 "existing evidence differs enough to support deterministic within-tie grouping."
             ),
-            "ordering_dimensions": [
-                "endpoint_quality_score",
-                "endpoint_stability_score",
-                "endpoint_energy_above_hull",
-                "endpoint_criticality_score",
-                "endpoint_risk_score",
-                "evidence_readiness",
-            ],
+            "ordering_policy": "lexicographic",
+            "ordering_dimensions": list(self.ORDERING_DIMENSIONS),
             "endpoint_priority_groups": endpoint_priority_groups,
         }
 
@@ -186,11 +206,14 @@ class EndpointSensitiveResearchRankingService:
             evidence = record["endpoint_evidence"]
             sort_key = self._endpoint_evidence_sort_key(evidence)
             equality_key = self._endpoint_evidence_equality_key(evidence)
+            grouping_evidence = self._endpoint_evidence_grouping_view(
+                evidence
+            )
 
             if equality_key not in groups_by_key:
                 groups_by_key[equality_key] = {
                     "sort_key": sort_key,
-                    "evidence": evidence,
+                    "evidence": grouping_evidence,
                     "records": [],
                 }
 
@@ -199,24 +222,85 @@ class EndpointSensitiveResearchRankingService:
         return list(groups_by_key.values())
 
     def _endpoint_evidence_equality_key(self, evidence: dict) -> tuple:
-        return (
-            evidence.get("endpoint_quality_score"),
-            evidence.get("endpoint_stability_score"),
-            evidence.get("endpoint_energy_above_hull"),
-            evidence.get("endpoint_criticality_score"),
-            evidence.get("endpoint_risk_score"),
-            evidence.get("evidence_readiness"),
+        grouping_evidence = self._endpoint_evidence_grouping_view(evidence)
+        return tuple(
+            grouping_evidence.get(dimension)
+            for dimension in self.ORDERING_DIMENSIONS
         )
 
     def _endpoint_evidence_sort_key(self, evidence: dict) -> tuple:
+        grouping_evidence = self._endpoint_evidence_grouping_view(evidence)
         return (
-            self._value_or_floor(evidence.get("endpoint_quality_score")),
-            self._value_or_floor(evidence.get("endpoint_stability_score")),
-            self._lower_is_better(evidence.get("endpoint_energy_above_hull")),
-            self._lower_is_better(evidence.get("endpoint_criticality_score")),
-            self._lower_is_better(evidence.get("endpoint_risk_score")),
-            self.EVIDENCE_READINESS_ORDER.get(evidence.get("evidence_readiness"), 0),
+            self._value_or_floor(
+                grouping_evidence.get("endpoint_quality_score")
+            ),
+            self._value_or_floor(
+                grouping_evidence.get("endpoint_stability_score")
+            ),
+            grouping_evidence.get("endpoint_energy_above_hull_band_rank", 0),
+            grouping_evidence.get("endpoint_criticality_band_rank", 0),
+            grouping_evidence.get("endpoint_risk_band_rank", 0),
+            self.EVIDENCE_READINESS_ORDER.get(
+                grouping_evidence.get("evidence_readiness"),
+                0,
+            ),
         )
+
+    def _endpoint_evidence_grouping_view(self, evidence: dict) -> dict:
+        energy_band, energy_rank = self._lower_value_band(
+            evidence.get("endpoint_energy_above_hull"),
+            thresholds=(0.01, 0.05, 0.1),
+        )
+        criticality_band, criticality_rank = self._lower_value_band(
+            evidence.get("endpoint_criticality_score"),
+            thresholds=(30.0, 60.0),
+        )
+        risk_band, risk_rank = self._lower_value_band(
+            evidence.get("endpoint_risk_score"),
+            thresholds=(3.0, 6.0),
+        )
+
+        return {
+            "endpoint_quality_score": self._two_decimal_value(
+                evidence.get("endpoint_quality_score")
+            ),
+            "endpoint_stability_score": self._two_decimal_value(
+                evidence.get("endpoint_stability_score")
+            ),
+            "endpoint_energy_above_hull_band": energy_band,
+            "endpoint_energy_above_hull_band_rank": energy_rank,
+            "endpoint_criticality_band": criticality_band,
+            "endpoint_criticality_band_rank": criticality_rank,
+            "endpoint_risk_band": risk_band,
+            "endpoint_risk_band_rank": risk_rank,
+            "evidence_readiness": evidence.get("evidence_readiness"),
+        }
+
+    def _two_decimal_value(
+        self,
+        value: float | int | None,
+    ) -> float | None:
+        if value is None:
+            return None
+        return round(float(value), 2)
+
+    def _lower_value_band(
+        self,
+        value: float | int | None,
+        *,
+        thresholds: tuple[float, ...],
+    ) -> tuple[str, int]:
+        if value is None:
+            return "unknown", 0
+
+        numeric_value = float(value)
+        band_count = len(thresholds) + 1
+
+        for index, threshold in enumerate(thresholds):
+            if numeric_value <= threshold:
+                return f"at_most_{threshold:g}", band_count - index
+
+        return f"above_{thresholds[-1]:g}", 1
 
     def _value_or_floor(self, value: float | int | None) -> float:
         if value is None:
@@ -233,21 +317,21 @@ class EndpointSensitiveResearchRankingService:
 
         quality_score = evidence.get("endpoint_quality_score")
         stability_score = evidence.get("endpoint_stability_score")
-        energy_above_hull = evidence.get("endpoint_energy_above_hull")
-        criticality_score = evidence.get("endpoint_criticality_score")
-        risk_score = evidence.get("endpoint_risk_score")
+        energy_band = evidence.get("endpoint_energy_above_hull_band")
+        criticality_band = evidence.get("endpoint_criticality_band")
+        risk_band = evidence.get("endpoint_risk_band")
         evidence_readiness = evidence.get("evidence_readiness")
 
         if quality_score is not None:
             reasons.append(f"endpoint quality score {quality_score}")
         if stability_score is not None:
             reasons.append(f"endpoint stability score {stability_score}")
-        if energy_above_hull is not None:
-            reasons.append(f"endpoint energy above hull {energy_above_hull}")
-        if criticality_score is not None:
-            reasons.append(f"endpoint criticality score {criticality_score}")
-        if risk_score is not None:
-            reasons.append(f"endpoint risk score {risk_score}")
+        if energy_band is not None:
+            reasons.append(f"endpoint energy-above-hull band {energy_band}")
+        if criticality_band is not None:
+            reasons.append(f"endpoint criticality band {criticality_band}")
+        if risk_band is not None:
+            reasons.append(f"endpoint risk band {risk_band}")
         if evidence_readiness:
             reasons.append(f"evidence readiness {evidence_readiness}")
 
@@ -259,6 +343,9 @@ class EndpointSensitiveResearchRankingService:
     def _empty_result(self) -> dict:
         return {
             "ranking_basis": "endpoint_specific_existing_evidence",
+            "ordering_policy": "lexicographic",
+            "ordering_dimensions": list(self.ORDERING_DIMENSIONS),
+            "evidence_grouping_policy": dict(self.GROUPING_POLICY),
             "score_preserved": True,
             "original_score_field": "scientific_usefulness_score",
             "endpoint_sensitive_score_added": False,

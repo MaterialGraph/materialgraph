@@ -1,3 +1,8 @@
+from app.services.research.scientific_score_semantics import (
+    normalize_scientific_usefulness_score,
+)
+
+
 class ComparativeResearchIntelligenceService:
     EVIDENCE_READINESS_ORDER = {
         "strong": 3,
@@ -48,9 +53,8 @@ class ComparativeResearchIntelligenceService:
         opportunities: list[dict],
     ) -> dict:
         top_score = max(
-            opportunity.get(
-                "scientific_usefulness_score",
-                0.0,
+            normalize_scientific_usefulness_score(
+                opportunity.get("scientific_usefulness_score")
             )
             for opportunity in opportunities
         )
@@ -58,9 +62,8 @@ class ComparativeResearchIntelligenceService:
         top_group = [
             opportunity
             for opportunity in opportunities
-            if opportunity.get(
-                "scientific_usefulness_score",
-                0.0,
+            if normalize_scientific_usefulness_score(
+                opportunity.get("scientific_usefulness_score")
             )
             == top_score
         ]
@@ -192,23 +195,55 @@ class ComparativeResearchIntelligenceService:
             for opportunity in opportunities
         ]
 
-        highest = max(
-            readiness_by_pathway,
-            key=lambda item: (
-                self.EVIDENCE_READINESS_ORDER.get(
+        highest_readiness_value = max(
+            self.EVIDENCE_READINESS_ORDER.get(
+                item["evidence_readiness"],
+                0,
+            )
+            for item in readiness_by_pathway
+        )
+        highest_readiness_pathways = sorted(
+            [
+                item
+                for item in readiness_by_pathway
+                if self.EVIDENCE_READINESS_ORDER.get(
                     item["evidence_readiness"],
                     0,
-                ),
-                -self._rank_sort_value(item.get("rank")),
+                )
+                == highest_readiness_value
+            ],
+            key=lambda item: (
+                self._rank_sort_value(item.get("rank")),
+                item.get("position") or 10**9,
+                item.get("pathway_id") or "",
             ),
+        )
+        highest = (
+            highest_readiness_pathways[0]
+            if len(highest_readiness_pathways) == 1
+            else None
         )
 
         return {
             "pathways": readiness_by_pathway,
-            "highest_readiness_pathway_id": highest.get("pathway_id"),
-            "highest_readiness_pathway_position": highest.get("position"),
-            "highest_readiness_pathway_rank": highest.get("rank"),
-            "highest_readiness": highest.get("evidence_readiness"),
+            "highest_readiness_status": (
+                "unique"
+                if highest is not None
+                else "tie"
+            ),
+            "highest_readiness_pathways": highest_readiness_pathways,
+            "highest_readiness_pathway_id": (
+                highest.get("pathway_id") if highest else None
+            ),
+            "highest_readiness_pathway_position": (
+                highest.get("position") if highest else None
+            ),
+            "highest_readiness_pathway_rank": (
+                highest.get("rank") if highest else None
+            ),
+            "highest_readiness": highest_readiness_pathways[0][
+                "evidence_readiness"
+            ],
         }
 
     def _comparative_assumptions(
@@ -246,6 +281,10 @@ class ComparativeResearchIntelligenceService:
             "comparative_research_gaps": [],
             "comparative_evidence_readiness": {
                 "pathways": [],
+                "highest_readiness_status": "unavailable",
+                "highest_readiness_pathways": [],
+                "highest_readiness_pathway_id": None,
+                "highest_readiness_pathway_position": None,
                 "highest_readiness_pathway_rank": None,
                 "highest_readiness": None,
             },
@@ -282,7 +321,9 @@ class ComparativeResearchIntelligenceService:
     ) -> list[dict]:
         ranked = sorted(
             opportunities,
-            key=lambda item: item.get("scientific_usefulness_score", 0.0),
+            key=lambda item: normalize_scientific_usefulness_score(
+                item.get("scientific_usefulness_score")
+            ),
             reverse=True,
         )
 
@@ -304,8 +345,12 @@ class ComparativeResearchIntelligenceService:
         higher: dict,
         lower: dict,
     ) -> dict:
-        higher_score = higher.get("scientific_usefulness_score", 0.0)
-        lower_score = lower.get("scientific_usefulness_score", 0.0)
+        higher_score = normalize_scientific_usefulness_score(
+            higher.get("scientific_usefulness_score")
+        )
+        lower_score = normalize_scientific_usefulness_score(
+            lower.get("scientific_usefulness_score")
+        )
         score_difference = round(higher_score - lower_score, 2)
 
         return {

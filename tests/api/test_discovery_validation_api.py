@@ -43,6 +43,30 @@ def test_discovery_graph_reports_avoid_element_validation_location(client):
     )
 
 
+@pytest.mark.parametrize(
+    "route",
+    [
+        "/api/v1/materials/5/discovery/graph",
+        "/api/v1/materials/5/discovery/subgraph",
+    ],
+)
+@pytest.mark.parametrize("invalid_limit", [-1, 0, 201])
+def test_discovery_analytical_routes_reject_invalid_limits(
+    client,
+    route,
+    invalid_limit,
+):
+    response = client.get(route, params={"limit": invalid_limit})
+
+    assert response.status_code == 422
+
+    errors = response.json()["detail"]
+    assert any(
+        error["loc"] == ["query", "limit"]
+        for error in errors
+    )
+
+
 
 @pytest.mark.parametrize(
     ("endpoint", "expected_algorithm"),

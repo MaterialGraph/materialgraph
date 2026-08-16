@@ -89,3 +89,80 @@ def test_endpoint_sensitive_ranking_never_changes_scientific_usefulness_score():
     after_scores = [item["scientific_usefulness_score"] for item in opportunities]
 
     assert after_scores == before_scores
+
+
+def test_endpoint_ranking_uses_canonical_two_decimal_tie_semantics():
+    service = EndpointSensitiveResearchRankingService()
+    first = _opportunity(1, 7, "Na3Fe3(PO4)4")
+    second = _opportunity(1, 8, "Na9Fe3P8O29")
+    first["scientific_usefulness_score"] = 94.951
+    second["scientific_usefulness_score"] = 94.949
+
+    result = service.rank_opportunities([first, second])
+
+    assert len(result["groups"]) == 1
+    assert result["groups"][0]["scientific_usefulness_score"] == 94.95
+    assert result["groups"][0]["tie_preserved"] is True
+    assert result["ordering_policy"] == "lexicographic"
+    assert result["ordering_dimensions"] == [
+        "endpoint_quality_score",
+        "endpoint_stability_score",
+        "endpoint_energy_above_hull_band",
+        "endpoint_criticality_band",
+        "endpoint_risk_band",
+        "evidence_readiness",
+    ]
+    assert first["scientific_usefulness_score"] == 94.951
+    assert second["scientific_usefulness_score"] == 94.949
+
+
+def test_endpoint_ranking_keeps_different_two_decimal_scores_separate():
+    service = EndpointSensitiveResearchRankingService()
+    first = _opportunity(1, 7, "Na3Fe3(PO4)4")
+    second = _opportunity(2, 8, "Na9Fe3P8O29")
+    first["scientific_usefulness_score"] = 94.956
+    second["scientific_usefulness_score"] = 94.949
+
+    result = service.rank_opportunities([first, second])
+
+    assert [
+        group["scientific_usefulness_score"]
+        for group in result["groups"]
+    ] == [94.96, 94.95]
+    assert all(
+        group["differentiation_status"] == "single_pathway"
+        for group in result["groups"]
+    )
+
+
+def test_endpoint_evidence_grouping_uses_existing_quality_policy_bands():
+    service = EndpointSensitiveResearchRankingService()
+    first = _opportunity(1, 7, "Na3Fe3(PO4)4", risk_score=1.1)
+    second = _opportunity(1, 8, "Na9Fe3P8O29", risk_score=2.9)
+    first_quality = first["scientific_facts"]["material_quality"][0]
+    second_quality = second["scientific_facts"]["material_quality"][0]
+    first_quality["energy_above_hull"] = 0.02
+    second_quality["energy_above_hull"] = 0.04
+    first_quality["criticality_score"] = 31.1
+    second_quality["criticality_score"] = 59.9
+
+    result = service.rank_opportunities([first, second])
+
+    group = result["groups"][0]
+    assert group["differentiation_status"] == "tie_preserved"
+    assert group["tie_preserved"] is True
+    assert first_quality["energy_above_hull"] == 0.02
+    assert second_quality["energy_above_hull"] == 0.04
+
+
+def test_endpoint_evidence_grouping_separates_meaningful_policy_bands():
+    service = EndpointSensitiveResearchRankingService()
+    first = _opportunity(1, 7, "Na3Fe3(PO4)4", risk_score=2.9)
+    second = _opportunity(1, 8, "Na9Fe3P8O29", risk_score=3.1)
+
+    result = service.rank_opportunities([first, second])
+
+    group = result["groups"][0]
+    assert group["differentiation_status"] == "endpoint_differentiated"
+    assert group["ordering_policy"] == "lexicographic"
+    assert len(group["endpoint_priority_groups"]) == 2

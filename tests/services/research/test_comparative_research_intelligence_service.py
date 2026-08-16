@@ -200,6 +200,44 @@ def test_compare_opportunities_identifies_tied_top_pathways():
     }
 
 
+def test_top_ranking_uses_canonical_two_decimal_tie_semantics():
+    service = ComparativeResearchIntelligenceService()
+    opportunities = [
+        _opportunity(rank=1, score=94.951),
+        _opportunity(rank=1, score=94.949),
+    ]
+
+    result = service.compare_opportunities(opportunities)
+
+    assert result["top_ranking_status"] == "tie"
+    assert result["top_score"] == 94.95
+    assert len(result["top_ranked_pathways"]) == 2
+    assert result["pairwise_comparisons"][0]["comparison_type"] == "tie"
+    assert [
+        item["scientific_usefulness_score"]
+        for item in opportunities
+    ] == [94.951, 94.949]
+
+
+def test_top_ranking_keeps_different_two_decimal_scores_distinct():
+    service = ComparativeResearchIntelligenceService()
+
+    result = service.compare_opportunities(
+        [
+            _opportunity(rank=1, score=94.956),
+            _opportunity(rank=2, score=94.949),
+        ]
+    )
+
+    assert result["top_ranking_status"] == "unique"
+    assert result["top_score"] == 94.96
+    assert len(result["top_ranked_pathways"]) == 1
+    assert (
+        result["pairwise_comparisons"][0]["comparison_type"]
+        == "score_difference"
+    )
+
+
 def test_compare_opportunities_identifies_unique_top_pathway():
     service = ComparativeResearchIntelligenceService()
 
@@ -338,10 +376,12 @@ def test_compare_opportunities_identifies_highest_evidence_readiness():
     assert evidence["highest_readiness_pathway_position"] == 2
     assert evidence["highest_readiness_pathway_id"] == "pathway:test-2"
     assert evidence["highest_readiness"] == "strong"
+    assert evidence["highest_readiness_status"] == "unique"
+    assert len(evidence["highest_readiness_pathways"]) == 1
     assert len(evidence["pathways"]) == 3
 
 
-def test_compare_opportunities_is_deterministic_for_equal_evidence_readiness():
+def test_compare_opportunities_preserves_equal_evidence_readiness_tie():
     service = ComparativeResearchIntelligenceService()
 
     result = service.compare_opportunities(
@@ -353,7 +393,13 @@ def test_compare_opportunities_is_deterministic_for_equal_evidence_readiness():
 
     evidence = result["comparative_evidence_readiness"]
 
-    assert evidence["highest_readiness_pathway_rank"] == 1
+    assert evidence["highest_readiness_status"] == "tie"
+    assert evidence["highest_readiness_pathway_rank"] is None
+    assert evidence["highest_readiness_pathway_id"] is None
+    assert [
+        pathway["rank"]
+        for pathway in evidence["highest_readiness_pathways"]
+    ] == [1, 2]
 
 
 def test_compare_opportunities_does_not_recompute_or_mutate_opportunities():
