@@ -4,6 +4,10 @@ from app.models.element import Element
 from app.models.element_risk_profile import ElementRiskProfile
 from app.models.material import Material
 from app.models.material_element import MaterialElement
+from app.services.material.risk_evidence_policy import (
+    RISK_EVIDENCE_DIMENSIONS,
+    evidence_dimension_summary,
+)
 from app.services.material.risk_service import MaterialRiskService
 
 
@@ -61,6 +65,34 @@ def test_element_risk_remains_calculable_from_one_available_dimension():
     assert service._calculate_element_risk(Profile()) == 1.5
 
 
+def test_partial_profile_is_calculable_but_not_complete():
+    class Profile:
+        supply_risk_score = 1.5
+        geopolitical_risk_score = None
+        toxicity_score = None
+
+    summary = evidence_dimension_summary(
+        Profile(),
+        RISK_EVIDENCE_DIMENSIONS,
+    )
+
+    assert summary == {
+        "available": 1,
+        "expected": 3,
+        "coverage": 0.3333,
+        "complete": False,
+    }
+
+
+def test_legacy_numeric_risk_apis_preserve_unknown_as_none(db_session):
+    service = MaterialRiskService(db_session)
+
+    assert service.get_material_risk_score(999999) is None
+    assert service.get_material_risk_scores_bulk([999999]) == {
+        999999: None
+    }
+
+
 def test_unknown_risk_signal_is_explicit():
     service = MaterialRiskService.__new__(MaterialRiskService)
 
@@ -77,6 +109,9 @@ def test_unknown_risk_signal_is_explicit():
     assert signal["total_element_count"] == 2
     assert signal["unknown_risk_elements"] == ["Li", "O"]
     assert signal["risk_evidence_complete"] is False
+    assert signal["risk_complete_profile_coverage"] == 0.0
+    assert signal["risk_dimension_coverage"] == 0.0
+    assert signal["evidence_basis"] == "latest_element_risk_profile"
 
 
 def test_material_risk_signal_characterizes_partial_element_coverage(db_session):
@@ -138,6 +173,8 @@ def test_material_risk_signal_characterizes_partial_element_coverage(db_session)
     assert signal["known_risk_elements"] == [symbols[0]]
     assert signal["unknown_risk_elements"] == sorted(symbols[1:])
     assert signal["risk_evidence_complete"] is False
+    assert signal["risk_complete_profile_coverage"] == 0.25
+    assert signal["risk_dimension_coverage"] == 0.25
 
 
 def test_material_risk_signal_scalar_and_bulk_match_for_partial_coverage(db_session):
@@ -187,4 +224,7 @@ def test_material_risk_signal_scalar_and_bulk_match_for_partial_coverage(db_sess
 
     assert scalar == bulk
     assert scalar["risk_profile_coverage"] == 0.5
+    assert scalar["risk_complete_profile_coverage"] == 0.0
+    assert scalar["risk_dimension_coverage"] == 0.1667
+    assert scalar["partial_risk_profile_elements"] == [symbols[0]]
     assert scalar["risk_evidence_complete"] is False

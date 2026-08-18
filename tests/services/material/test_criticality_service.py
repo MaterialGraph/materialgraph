@@ -224,7 +224,7 @@ def test_material_with_no_known_criticality_returns_none():
     assert result["unknown_criticality_elements"] == ["A", "B"]
 
 
-def test_fully_known_criticality_evidence_is_complete():
+def test_score_eligible_partial_profiles_are_not_evidence_complete():
     service = MaterialCriticalityService.__new__(
         MaterialCriticalityService
     )
@@ -265,16 +265,49 @@ def test_fully_known_criticality_evidence_is_complete():
         },
     )
 
-    # A: (10 - 4) × 10 = 60
-    # B: (10 - 8) × 10 = 20
-    # (60 × 0.25) + (20 × 0.75) = 30
+    # A: (10 - 4) Ã— 10 = 60
+    # B: (10 - 8) Ã— 10 = 20
+    # (60 Ã— 0.25) + (20 Ã— 0.75) = 30
     assert result["criticality_score"] == 30.0
     assert result["criticality_known"] is True
 
     assert result["criticality_profile_coverage"] == 1.0
     assert result["criticality_fraction_coverage"] == 1.0
-    assert result["criticality_evidence_complete"] is True
+    assert result["criticality_complete_profile_coverage"] == 0.0
+    assert result["criticality_dimension_coverage"] == 0.2
+    assert result["criticality_evidence_complete"] is False
+    assert result["partial_criticality_profile_elements"] == ["A", "B"]
     assert result["unknown_criticality_elements"] == []
+
+
+def test_complete_criticality_profiles_are_evidence_complete():
+    service = MaterialCriticalityService.__new__(
+        MaterialCriticalityService
+    )
+    material = _material(formula="A")
+    element = _element(1, "A")
+    profile = _risk_profile(
+        element_id=element.id,
+        abundance_score=4.0,
+        supply_risk_score=5.0,
+        toxicity_score=2.0,
+        recyclability_score=8.0,
+        geopolitical_risk_score=3.0,
+    )
+
+    result = service._build_criticality_response(
+        material=material,
+        material_element_rows=[
+            (_material_element(material.id, element.id, 1.0), element)
+        ],
+        risk_profiles_by_element_id={element.id: profile},
+    )
+
+    assert result["criticality_profile_coverage"] == 1.0
+    assert result["criticality_complete_profile_coverage"] == 1.0
+    assert result["criticality_dimension_coverage"] == 1.0
+    assert result["criticality_evidence_complete"] is True
+    assert result["elements"][0]["criticality_profile_complete"] is True
 
 
 def test_material_criticality_returns_score(db_session):

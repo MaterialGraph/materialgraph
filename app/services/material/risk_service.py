@@ -5,6 +5,13 @@ from app.models.element_risk_profile import ElementRiskProfile
 from app.models.material import Material
 from app.models.material_element import MaterialElement
 from app.schemas.material_risk import ElementRiskSummary, MaterialRiskRead
+from app.services.material.risk_evidence_policy import (
+    EVIDENCE_BASIS,
+    RISK_AGGREGATION_METHOD,
+    RISK_EVIDENCE_DIMENSIONS,
+    SHARED_EVIDENCE_DIMENSIONS,
+    evidence_dimension_summary,
+)
 
 
 class MaterialRiskService:
@@ -36,6 +43,8 @@ class MaterialRiskService:
         profiles_by_element_id = self._get_latest_profiles(element_ids)
 
         element_risks: list[ElementRiskSummary] = []
+        available_dimension_count = 0
+        complete_profile_count = 0
 
         for element in element_rows:
             profile = profiles_by_element_id.get(element.id)
@@ -44,9 +53,16 @@ class MaterialRiskService:
                 continue
 
             risk_score = self._calculate_element_risk(profile)
+            dimension_summary = evidence_dimension_summary(
+                profile,
+                RISK_EVIDENCE_DIMENSIONS,
+            )
 
             if risk_score is None:
                 continue
+
+            available_dimension_count += dimension_summary["available"]
+            complete_profile_count += int(dimension_summary["complete"])
 
             element_risks.append(
                 ElementRiskSummary(
@@ -55,6 +71,16 @@ class MaterialRiskService:
                     supply_risk_score=profile.supply_risk_score,
                     geopolitical_risk_score=profile.geopolitical_risk_score,
                     toxicity_score=profile.toxicity_score,
+                    available_risk_dimension_count=(
+                        dimension_summary["available"]
+                    ),
+                    expected_risk_dimension_count=(
+                        dimension_summary["expected"]
+                    ),
+                    risk_dimension_coverage=(
+                        dimension_summary["coverage"]
+                    ),
+                    risk_profile_complete=dimension_summary["complete"],
                 )
             )
 
@@ -63,19 +89,46 @@ class MaterialRiskService:
                 item.risk_score for item in element_risks
             ) / len(element_risks)
         else:
-            # Backward-compatible API behavior.
-            #
-            # The public MaterialRiskRead schema currently exposes a numeric
-            # material_risk_score. Keep this response stable for existing
-            # consumers, but do not use this value as proof of low risk in
-            # quality scoring. Quality scoring uses get_material_risk_signal().
-            material_risk_score = 0.0
+            material_risk_score = None
+
+        total_element_count = len(element_rows)
+        known_count = len(element_risks)
+        expected_dimension_count = (
+            total_element_count * len(RISK_EVIDENCE_DIMENSIONS)
+        )
 
         return MaterialRiskRead(
             material_id=material.id,
             formula=material.formula,
             pretty_formula=material.pretty_formula,
-            material_risk_score=round(material_risk_score, 3),
+            material_risk_score=(
+                round(material_risk_score, 3)
+                if material_risk_score is not None
+                else None
+            ),
+            evidence_basis=EVIDENCE_BASIS,
+            shared_evidence_dimensions=list(SHARED_EVIDENCE_DIMENSIONS),
+            risk_evidence_dimensions=list(RISK_EVIDENCE_DIMENSIONS),
+            aggregation_method=RISK_AGGREGATION_METHOD,
+            risk_profile_coverage=(
+                round(known_count / total_element_count, 4)
+                if total_element_count
+                else 0.0
+            ),
+            risk_complete_profile_coverage=(
+                round(complete_profile_count / total_element_count, 4)
+                if total_element_count
+                else 0.0
+            ),
+            risk_dimension_coverage=(
+                round(available_dimension_count / expected_dimension_count, 4)
+                if expected_dimension_count
+                else 0.0
+            ),
+            risk_evidence_complete=(
+                total_element_count > 0
+                and complete_profile_count == total_element_count
+            ),
             element_risks=element_risks,
         )
 
@@ -133,9 +186,17 @@ class MaterialRiskService:
             element_risk_scores = []
             known_element_symbols = []
             unknown_element_symbols = []
+            partial_profile_symbols = []
+            complete_profile_count = 0
+            available_dimension_count = 0
 
             for element in elements:
                 profile = profiles_by_element_id.get(element.id)
+                dimension_summary = evidence_dimension_summary(
+                    profile,
+                    RISK_EVIDENCE_DIMENSIONS,
+                )
+                available_dimension_count += dimension_summary["available"]
 
                 if profile is None:
                     unknown_element_symbols.append(element.symbol)
@@ -149,6 +210,10 @@ class MaterialRiskService:
 
                 element_risk_scores.append(risk_score)
                 known_element_symbols.append(element.symbol)
+                if dimension_summary["complete"]:
+                    complete_profile_count += 1
+                else:
+                    partial_profile_symbols.append(element.symbol)
 
             if not element_risk_scores:
                 risk_signals[material_id] = self._unknown_risk_signal(
@@ -164,6 +229,9 @@ class MaterialRiskService:
                 if total_element_count
                 else 0.0
             )
+            expected_dimension_count = (
+                total_element_count * len(RISK_EVIDENCE_DIMENSIONS)
+            )
 
             risk_signals[material_id] = {
                 "material_id": material_id,
@@ -173,11 +241,36 @@ class MaterialRiskService:
                 ),
                 "risk_known": True,
                 "risk_profile_coverage": coverage,
+                "risk_complete_profile_coverage": round(
+                    complete_profile_count / total_element_count,
+                    4,
+                ),
+                "risk_dimension_coverage": round(
+                    available_dimension_count / expected_dimension_count,
+                    4,
+                ),
                 "known_risk_element_count": known_count,
                 "total_element_count": total_element_count,
                 "known_risk_elements": sorted(known_element_symbols),
                 "unknown_risk_elements": sorted(unknown_element_symbols),
-                "risk_evidence_complete": coverage == 1.0,
+                "partial_risk_profile_elements": sorted(
+                    partial_profile_symbols
+                ),
+                "complete_risk_profile_element_count": (
+                    complete_profile_count
+                ),
+                "partial_risk_profile_element_count": len(
+                    partial_profile_symbols
+                ),
+                "risk_evidence_complete": (
+                    complete_profile_count == total_element_count
+                ),
+                "evidence_basis": EVIDENCE_BASIS,
+                "shared_evidence_dimensions": list(
+                    SHARED_EVIDENCE_DIMENSIONS
+                ),
+                "risk_evidence_dimensions": list(RISK_EVIDENCE_DIMENSIONS),
+                "aggregation_method": RISK_AGGREGATION_METHOD,
             }
 
         return risk_signals
@@ -185,20 +278,11 @@ class MaterialRiskService:
     def get_material_risk_scores_bulk(
         self,
         material_ids: list[int],
-    ) -> dict[int, float]:
+    ) -> dict[int, float | None]:
         risk_signals = self.get_material_risk_signals_bulk(material_ids)
 
-        # Backward-compatible numeric score API.
-        #
-        # Unknown risk remains 0.0 here only for legacy callers. New ranking and
-        # quality logic should use get_material_risk_signals_bulk() so unknown
-        # risk is not interpreted as low risk.
         return {
-            material_id: (
-                signal["risk_score"]
-                if signal.get("risk_score") is not None
-                else 0.0
-            )
+            material_id: signal["risk_score"]
             for material_id, signal in risk_signals.items()
         }
 
@@ -258,15 +342,10 @@ class MaterialRiskService:
     def get_material_risk_score(
         self,
         material_id: int,
-    ) -> float:
+    ) -> float | None:
         signal = self.get_material_risk_signal(material_id)
 
-        # Backward-compatible numeric score API.
-        return (
-            signal["risk_score"]
-            if signal.get("risk_score") is not None
-            else 0.0
-        )
+        return signal["risk_score"]
 
     def _unknown_risk_signal(
         self,
@@ -279,9 +358,18 @@ class MaterialRiskService:
             "risk_score": None,
             "risk_known": False,
             "risk_profile_coverage": 0.0,
+            "risk_complete_profile_coverage": 0.0,
+            "risk_dimension_coverage": 0.0,
             "known_risk_element_count": 0,
             "total_element_count": total_element_count,
             "known_risk_elements": [],
             "unknown_risk_elements": sorted(unknown_element_symbols or []),
+            "partial_risk_profile_elements": [],
+            "complete_risk_profile_element_count": 0,
+            "partial_risk_profile_element_count": 0,
             "risk_evidence_complete": False,
+            "evidence_basis": EVIDENCE_BASIS,
+            "shared_evidence_dimensions": list(SHARED_EVIDENCE_DIMENSIONS),
+            "risk_evidence_dimensions": list(RISK_EVIDENCE_DIMENSIONS),
+            "aggregation_method": RISK_AGGREGATION_METHOD,
         }

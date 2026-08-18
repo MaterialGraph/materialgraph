@@ -1,15 +1,15 @@
 # MaterialGraph Audit Register
 
 **Document role:** Sole authoritative source for current finding status and totals  
-**Last updated:** 2026-08-13
+**Last updated:** 2026-08-18
 
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 49
+- **Remediated:** 65
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 43
-- **Closed total:** 51
+- **Open:** 27
+- **Closed total:** 67
 
 ## Findings
 
@@ -35,11 +35,11 @@
 | MG-AUD-018 | Family Relationships Are Composition Heuristics | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-018) | — |
 | MG-AUD-019 | Family Taxonomy Includes Mg as Alkali | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-019) | — |
 | MG-AUD-020 | Alkali Substitution Does Not Prove Mechanism | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-020) | — |
-| MG-AUD-021 | Risk and Criticality Share Upstream Evidence | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-021) | — |
-| MG-AUD-022 | Risk and Criticality Aggregate Differently | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-022) | — |
-| MG-AUD-023 | Partial Criticality Profiles Look Complete | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-023) | — |
-| MG-AUD-024 | Risk Completeness Measures Element Coverage Only | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-024) | — |
-| MG-AUD-025 | Legacy Numeric Risk APIs Retain Unknown → 0.0 | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-025) | — |
+| MG-AUD-021 | Risk and Criticality Share Upstream Evidence | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-021) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
+| MG-AUD-022 | Risk and Criticality Aggregate Differently | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-022) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
+| MG-AUD-023 | Partial Criticality Profiles Look Complete | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-023) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
+| MG-AUD-024 | Risk Completeness Measures Element Coverage Only | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-024) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
+| MG-AUD-025 | Legacy Numeric Risk APIs Retain Unknown → 0.0 | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-025) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
 | MG-AUD-026 | Material Quality Scale Is Intentionally 0--15 | P1 | Accepted behavior | [Details](findings/MG-AUD-026-050.md#mg-aud-026) | — |
 | MG-AUD-027 | Stability and Energy Are Imported Separately but Reused | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-027) | — |
 | MG-AUD-028 | Internal Deterministic Support Can Look Like Scientific Evidence | P1 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-028) | — |
@@ -55,9 +55,9 @@
 | MG-AUD-038 | Path Efficiency Is Hop-Count Based | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-038) | — |
 | MG-AUD-039 | Path Material Quality Is Averaged Across the Path | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-039) | — |
 | MG-AUD-040 | Exploration Attribution Can Use Future Transitions | P1 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-040) | — |
-| MG-AUD-041 | Endpoint Ranking Uses Implicit Lexicographic Policy | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-041) | — |
-| MG-AUD-042 | Exact Numeric Differences Can Split Evidence Groups | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-042) | — |
-| MG-AUD-043 | Comparative Summaries Are Not Uniformly Tie-Aware | P1 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-043) | — |
+| MG-AUD-041 | Endpoint Ranking Uses Implicit Lexicographic Policy | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-041) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
+| MG-AUD-042 | Exact Numeric Differences Can Split Evidence Groups | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-042) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
+| MG-AUD-043 | Comparative Summaries Are Not Uniformly Tie-Aware | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-043) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
 | MG-AUD-044 | Comparison Conflates Filtered and Unavailable Candidates | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-044) | — |
 | MG-AUD-045 | API Contracts Are Under-Typed or Semantically Broader Than Implementation | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-045) | — |
 | MG-AUD-046 | Family Discovery Performs Global Scans | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-046) | — |
@@ -86,20 +86,20 @@
 | MG-AUD-069 | Supply-risk and geopolitical sensitivity scenarios compute identically. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-069) | [Evidence](resolutions/2026-07.md#mg-aud-069) |
 | MG-AUD-070 | Unknown risk is maximally favorable in substitution ranking. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-070) | [Evidence](resolutions/2026-07.md#mg-aud-070) |
 | MG-AUD-071 | Similarity performs per-candidate criticality query amplification. | P2 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-071) | [Evidence](resolutions/2026-08.md#mg-aud-071) |
-| MG-AUD-072 | Neighborhood response limits do not bound traversal work. | P2 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-072) | — |
-| MG-AUD-073 | Substitution performs per-candidate element and risk queries. | P2 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-073) | — |
+| MG-AUD-072 | Neighborhood response limits do not bound traversal work. | P2 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-072) | [Evidence](resolutions/2026-08.md#mg-aud-072) |
+| MG-AUD-073 | Substitution performs per-candidate element and risk queries. | P2 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-073) | [Evidence](resolutions/2026-08.md#mg-aud-073) |
 | MG-AUD-074 | Discovery-chain `max_hops` behaves as an exact required depth. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-074) | [Evidence](resolutions/2026-07.md#mg-aud-074) |
 | MG-AUD-075 | Hop-bounded weighted search prunes valid shallower states. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-075) | [Evidence](resolutions/2026-07.md#mg-aud-075) |
 | MG-AUD-076 | Edge-score saturation erases framework and plausibility distinctions. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-076) | [Evidence](resolutions/2026-07.md#mg-aud-076) |
 | MG-AUD-077 | K-best paths bypass canonical transition validation. | P0 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-077) | [Evidence](resolutions/2026-07.md#mg-aud-077) |
-| MG-AUD-078 | Rejected transition candidates remain as disconnected graph nodes. | P1 | Open | [Details](findings/MG-AUD-076-094.md#mg-aud-078) | — |
+| MG-AUD-078 | Rejected transition candidates remain as disconnected graph nodes. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-078) | [Evidence](resolutions/2026-08.md#mg-aud-078) |
 | MG-AUD-079 | K-best material metadata can come from the wrong incoming edge. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-079) | [Evidence](resolutions/2026-07.md#mg-aud-079) |
 | MG-AUD-080 | K-best enumerates every simple path before applying `k`. | P0 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-080) | [Evidence](resolutions/2026-07.md#mg-aud-080) |
-| MG-AUD-081 | Discovery graph reports requested rather than effective depth. | P1 | Open | [Details](findings/MG-AUD-076-094.md#mg-aud-081) | — |
-| MG-AUD-082 | Independent node and edge limits break graph closure. | P1 | Open | [Details](findings/MG-AUD-076-094.md#mg-aud-082) | — |
-| MG-AUD-083 | Subgraph filters are applied after source-graph truncation. | P1 | Open | [Details](findings/MG-AUD-076-094.md#mg-aud-083) | — |
+| MG-AUD-081 | Discovery graph reports requested rather than effective depth. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-081) | [Evidence](resolutions/2026-08.md#mg-aud-081) |
+| MG-AUD-082 | Independent node and edge limits break graph closure. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-082) | [Evidence](resolutions/2026-08.md#mg-aud-082) |
+| MG-AUD-083 | Subgraph filters are applied after source-graph truncation. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-083) | [Evidence](resolutions/2026-08.md#mg-aud-083) |
 | MG-AUD-084 | Discovery path lookup ignores `max_hops` and searches direct paths only. | P0 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-084) | [Evidence](resolutions/2026-07.md#mg-aud-084) |
-| MG-AUD-085 | Research comparison layers use incompatible tie semantics. | P1 | Open | [Details](findings/MG-AUD-076-094.md#mg-aud-085) | — |
+| MG-AUD-085 | Research comparison layers use incompatible tie semantics. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-085) | [Evidence](resolutions/2026-08.md#mg-aud-085) |
 | MG-AUD-086 | Target-family filtering can accept a chain whose endpoint does not match. | P0 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-086) | [Evidence](resolutions/2026-07.md#mg-aud-086) |
 | MG-AUD-087 | Scientific analysis reparses explicitly empty endpoint membership. | P0 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-087) | [Evidence](resolutions/2026-07.md#mg-aud-087) |
 | MG-AUD-088 | Evidence readiness can be strong while every external category is missing. | P0 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-088) | [Evidence](resolutions/2026-07.md#mg-aud-088) |
@@ -108,4 +108,4 @@
 | MG-AUD-091 | Community endpoints bypass response-contract validation. | P2 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-091) | [Evidence](resolutions/2026-07.md#mg-aud-091) |
 | MG-AUD-092 | Graph-job mutation and global history lack authorization and ownership. | P0 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-092) | [Evidence](resolutions/2026-07.md#mg-aud-092) |
 | MG-AUD-093 | Public validation accepts nonexistent chemical symbols. | P1 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-093) | [Evidence](resolutions/2026-08.md#mg-aud-093) |
-| MG-AUD-094 | Analytical endpoints accept negative or unbounded result limits. | P2 | Open | [Details](findings/MG-AUD-076-094.md#mg-aud-094) | — |
+| MG-AUD-094 | Analytical endpoints accept negative or unbounded result limits. | P2 | Remediated | [Details](findings/MG-AUD-076-094.md#mg-aud-094) | [Evidence](resolutions/2026-08.md#mg-aud-094) |

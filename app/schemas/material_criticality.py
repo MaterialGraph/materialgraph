@@ -17,6 +17,10 @@ class MaterialCriticalityElement(BaseModel):
 
     criticality_known: bool
     element_criticality_score: float | None
+    available_criticality_dimension_count: int
+    expected_criticality_dimension_count: int
+    criticality_dimension_coverage: float
+    criticality_profile_complete: bool
 
 
 class MaterialCriticalityResponse(BaseModel):
@@ -29,12 +33,20 @@ class MaterialCriticalityResponse(BaseModel):
 
     criticality_score: float | None
     criticality_known: bool
+    evidence_basis: str
+    shared_evidence_dimensions: list[str]
+    criticality_evidence_dimensions: list[str]
+    aggregation_method: str
 
     criticality_profile_coverage: float
     criticality_fraction_coverage: float
+    criticality_complete_profile_coverage: float
+    criticality_dimension_coverage: float
 
     known_criticality_element_count: int
     unknown_criticality_element_count: int
+    complete_criticality_profile_element_count: int
+    partial_criticality_profile_element_count: int
     total_element_count: int
 
     known_criticality_fraction: float
@@ -42,5 +54,6 @@ class MaterialCriticalityResponse(BaseModel):
 
     criticality_evidence_complete: bool
     unknown_criticality_elements: list[str]
+    partial_criticality_profile_elements: list[str]
 
     elements: list[MaterialCriticalityElement]

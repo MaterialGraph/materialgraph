@@ -5,6 +5,13 @@ from app.models.element import Element
 from app.models.element_risk_profile import ElementRiskProfile
 from app.models.material import Material
 from app.models.material_element import MaterialElement
+from app.services.material.risk_evidence_policy import (
+    CRITICALITY_AGGREGATION_METHOD,
+    CRITICALITY_EVIDENCE_DIMENSIONS,
+    EVIDENCE_BASIS,
+    SHARED_EVIDENCE_DIMENSIONS,
+    evidence_dimension_summary,
+)
 
 
 class MaterialCriticalityService:
@@ -129,6 +136,9 @@ class MaterialCriticalityService:
 
         known_criticality_element_count = 0
         unknown_criticality_elements: list[str] = []
+        partial_criticality_profile_elements: list[str] = []
+        complete_criticality_profile_element_count = 0
+        available_dimension_count = 0
 
         for material_element, element in material_element_rows:
             risk_profile = risk_profiles_by_element_id.get(element.id)
@@ -138,6 +148,11 @@ class MaterialCriticalityService:
                 if risk_profile is not None
                 else None
             )
+            dimension_summary = evidence_dimension_summary(
+                risk_profile,
+                CRITICALITY_EVIDENCE_DIMENSIONS,
+            )
+            available_dimension_count += dimension_summary["available"]
 
             criticality_known = element_criticality_score is not None
             risk_year = risk_profile.year if risk_profile is not None else None
@@ -151,6 +166,12 @@ class MaterialCriticalityService:
                 weighted_scores.append(
                     element_criticality_score * fraction
                 )
+                if dimension_summary["complete"]:
+                    complete_criticality_profile_element_count += 1
+                else:
+                    partial_criticality_profile_elements.append(
+                        element.symbol
+                    )
             else:
                 unknown_criticality_elements.append(element.symbol)
 
@@ -192,12 +213,30 @@ class MaterialCriticalityService:
                         if element_criticality_score is not None
                         else None
                     ),
+                    "available_criticality_dimension_count": (
+                        dimension_summary["available"]
+                    ),
+                    "expected_criticality_dimension_count": (
+                        dimension_summary["expected"]
+                    ),
+                    "criticality_dimension_coverage": (
+                        dimension_summary["coverage"]
+                    ),
+                    "criticality_profile_complete": (
+                        dimension_summary["complete"]
+                    ),
                 }
             )
 
         total_element_count = len(material_element_rows)
         unknown_criticality_element_count = (
             total_element_count - known_criticality_element_count
+        )
+        partial_criticality_profile_element_count = len(
+            partial_criticality_profile_elements
+        )
+        expected_dimension_count = (
+            total_element_count * len(CRITICALITY_EVIDENCE_DIMENSIONS)
         )
 
         criticality_score = self._calculate_material_criticality_score(
@@ -241,6 +280,14 @@ class MaterialCriticalityService:
             "formula": material.formula,
             "criticality_score": criticality_score,
             "criticality_known": criticality_known,
+            "evidence_basis": EVIDENCE_BASIS,
+            "shared_evidence_dimensions": list(
+                SHARED_EVIDENCE_DIMENSIONS
+            ),
+            "criticality_evidence_dimensions": list(
+                CRITICALITY_EVIDENCE_DIMENSIONS
+            ),
+            "aggregation_method": CRITICALITY_AGGREGATION_METHOD,
             "criticality_profile_coverage": round(
                 criticality_profile_coverage,
                 4,
@@ -249,11 +296,34 @@ class MaterialCriticalityService:
                 criticality_fraction_coverage,
                 4,
             ),
+            "criticality_complete_profile_coverage": (
+                round(
+                    complete_criticality_profile_element_count
+                    / total_element_count,
+                    4,
+                )
+                if total_element_count
+                else 0.0
+            ),
+            "criticality_dimension_coverage": (
+                round(
+                    available_dimension_count / expected_dimension_count,
+                    4,
+                )
+                if expected_dimension_count
+                else 0.0
+            ),
             "known_criticality_element_count": (
                 known_criticality_element_count
             ),
             "unknown_criticality_element_count": (
                 unknown_criticality_element_count
+            ),
+            "complete_criticality_profile_element_count": (
+                complete_criticality_profile_element_count
+            ),
+            "partial_criticality_profile_element_count": (
+                partial_criticality_profile_element_count
             ),
             "total_element_count": total_element_count,
             "known_criticality_fraction": round(
@@ -266,10 +336,14 @@ class MaterialCriticalityService:
             ),
             "criticality_evidence_complete": (
                 total_element_count > 0
-                and unknown_criticality_element_count == 0
+                and complete_criticality_profile_element_count
+                == total_element_count
             ),
             "unknown_criticality_elements": sorted(
                 unknown_criticality_elements
+            ),
+            "partial_criticality_profile_elements": sorted(
+                partial_criticality_profile_elements
             ),
             "elements": element_details,
         }
@@ -317,15 +391,28 @@ class MaterialCriticalityService:
             "formula": None,
             "criticality_score": None,
             "criticality_known": False,
+            "evidence_basis": EVIDENCE_BASIS,
+            "shared_evidence_dimensions": list(
+                SHARED_EVIDENCE_DIMENSIONS
+            ),
+            "criticality_evidence_dimensions": list(
+                CRITICALITY_EVIDENCE_DIMENSIONS
+            ),
+            "aggregation_method": CRITICALITY_AGGREGATION_METHOD,
             "criticality_profile_coverage": 0.0,
             "criticality_fraction_coverage": 0.0,
+            "criticality_complete_profile_coverage": 0.0,
+            "criticality_dimension_coverage": 0.0,
             "known_criticality_element_count": 0,
             "unknown_criticality_element_count": 0,
+            "complete_criticality_profile_element_count": 0,
+            "partial_criticality_profile_element_count": 0,
             "total_element_count": 0,
             "known_criticality_fraction": 0.0,
             "unknown_criticality_fraction": 0.0,
             "criticality_evidence_complete": False,
             "unknown_criticality_elements": [],
+            "partial_criticality_profile_elements": [],
             "elements": [],
         }
 
