@@ -6,10 +6,10 @@
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 65
+- **Remediated:** 67
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 27
-- **Closed total:** 67
+- **Open:** 25
+- **Closed total:** 69
 
 ## Findings
 
@@ -42,8 +42,8 @@
 | MG-AUD-025 | Legacy Numeric Risk APIs Retain Unknown → 0.0 | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-025) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
 | MG-AUD-026 | Material Quality Scale Is Intentionally 0--15 | P1 | Accepted behavior | [Details](findings/MG-AUD-026-050.md#mg-aud-026) | — |
 | MG-AUD-027 | Stability and Energy Are Imported Separately but Reused | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-027) | — |
-| MG-AUD-028 | Internal Deterministic Support Can Look Like Scientific Evidence | P1 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-028) | — |
-| MG-AUD-029 | Risk Coverage Is Not Fully Propagated to Endpoint Evidence | P1 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-029) | — |
+| MG-AUD-028 | Internal Deterministic Support Can Look Like Scientific Evidence | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-028) | [Evidence](resolutions/2026-08.md#mg-aud-028-029) |
+| MG-AUD-029 | Risk Coverage Is Not Fully Propagated to Endpoint Evidence | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-029) | [Evidence](resolutions/2026-08.md#mg-aud-028-029) |
 | MG-AUD-030 | Bounded Search Shapes the Opportunity Set | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-030) | — |
 | MG-AUD-031 | Family Ordering Can Affect Bounded Discovery | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-031) | — |
 | MG-AUD-032 | Equal-Key Family Ordering Lacks a Final Tie-Breaker | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-032) | — |

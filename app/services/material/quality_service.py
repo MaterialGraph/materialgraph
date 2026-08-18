@@ -143,10 +143,36 @@ class MaterialQualityService:
             "risk_score": risk_score,
             "risk_known": risk_known,
             "risk_profile_coverage": risk_signal.get("risk_profile_coverage", 0.0),
+            "risk_complete_profile_coverage": risk_signal.get(
+                "risk_complete_profile_coverage",
+                0.0,
+            ),
+            "risk_dimension_coverage": risk_signal.get(
+                "risk_dimension_coverage",
+                0.0,
+            ),
             "known_risk_element_count": risk_signal.get("known_risk_element_count", 0),
+            "complete_risk_profile_element_count": risk_signal.get(
+                "complete_risk_profile_element_count",
+                0,
+            ),
+            "partial_risk_profile_element_count": risk_signal.get(
+                "partial_risk_profile_element_count",
+                0,
+            ),
             "total_element_count": risk_signal.get("total_element_count", 0),
             "risk_evidence_complete": risk_signal.get("risk_evidence_complete", False),
             "unknown_risk_elements": risk_signal.get("unknown_risk_elements", []),
+            "partial_risk_profile_elements": risk_signal.get(
+                "partial_risk_profile_elements",
+                [],
+            ),
+            "risk_evidence_basis": risk_signal.get("evidence_basis"),
+            "risk_evidence_dimensions": risk_signal.get(
+                "risk_evidence_dimensions",
+                [],
+            ),
+            "risk_aggregation_method": risk_signal.get("aggregation_method"),
             "quality_score": quality_score,
         }
 
@@ -233,9 +259,17 @@ class MaterialQualityService:
             "risk_score": None,
             "risk_known": False,
             "risk_profile_coverage": 0.0,
+            "risk_complete_profile_coverage": 0.0,
+            "risk_dimension_coverage": 0.0,
             "known_risk_element_count": 0,
+            "complete_risk_profile_element_count": 0,
+            "partial_risk_profile_element_count": 0,
             "total_element_count": 0,
             "risk_evidence_complete": False,
             "unknown_risk_elements": [],
+            "partial_risk_profile_elements": [],
+            "risk_evidence_basis": None,
+            "risk_evidence_dimensions": [],
+            "risk_aggregation_method": None,
             "quality_score": 0.0,
         }

@@ -30,6 +30,9 @@ class EndpointSensitiveResearchRankingService:
         "endpoint_energy_above_hull": "quality_policy_threshold_bands",
         "endpoint_criticality_score": "quality_policy_threshold_bands",
         "endpoint_risk_score": "quality_policy_threshold_bands",
+        "endpoint_risk_score_eligibility": (
+            "requires_known_complete_risk_evidence"
+        ),
         "evidence_readiness": "categorical_readiness",
     }
 
@@ -160,6 +163,37 @@ class EndpointSensitiveResearchRankingService:
                 "endpoint_energy_above_hull": endpoint_quality.get("energy_above_hull"),
                 "endpoint_criticality_score": endpoint_quality.get("criticality_score"),
                 "endpoint_risk_score": endpoint_quality.get("risk_score"),
+                "endpoint_risk_known": endpoint_quality.get(
+                    "risk_known",
+                    False,
+                ),
+                "endpoint_risk_profile_coverage": endpoint_quality.get(
+                    "risk_profile_coverage",
+                    0.0,
+                ),
+                "endpoint_risk_complete_profile_coverage": (
+                    endpoint_quality.get(
+                        "risk_complete_profile_coverage",
+                        0.0,
+                    )
+                ),
+                "endpoint_risk_dimension_coverage": endpoint_quality.get(
+                    "risk_dimension_coverage",
+                    0.0,
+                ),
+                "endpoint_risk_evidence_complete": endpoint_quality.get(
+                    "risk_evidence_complete",
+                    False,
+                ),
+                "endpoint_partial_risk_profile_elements": list(
+                    endpoint_quality.get(
+                        "partial_risk_profile_elements",
+                        [],
+                    )
+                ),
+                "endpoint_unknown_risk_elements": list(
+                    endpoint_quality.get("unknown_risk_elements", [])
+                ),
                 "evidence_readiness": evidence_readiness,
             },
             "requires_validation": True,
@@ -255,8 +289,18 @@ class EndpointSensitiveResearchRankingService:
             evidence.get("endpoint_criticality_score"),
             thresholds=(30.0, 60.0),
         )
+        risk_score_eligible = (
+            evidence.get("endpoint_risk_known", False)
+            and evidence.get("endpoint_risk_evidence_complete", False)
+            and evidence.get("endpoint_risk_score") is not None
+        )
+        eligible_risk_score = (
+            evidence.get("endpoint_risk_score")
+            if risk_score_eligible
+            else None
+        )
         risk_band, risk_rank = self._lower_value_band(
-            evidence.get("endpoint_risk_score"),
+            eligible_risk_score,
             thresholds=(3.0, 6.0),
         )
 
@@ -273,6 +317,27 @@ class EndpointSensitiveResearchRankingService:
             "endpoint_criticality_band_rank": criticality_rank,
             "endpoint_risk_band": risk_band,
             "endpoint_risk_band_rank": risk_rank,
+            "endpoint_risk_score_eligible": risk_score_eligible,
+            "endpoint_risk_known": evidence.get(
+                "endpoint_risk_known",
+                False,
+            ),
+            "endpoint_risk_profile_coverage": evidence.get(
+                "endpoint_risk_profile_coverage",
+                0.0,
+            ),
+            "endpoint_risk_complete_profile_coverage": evidence.get(
+                "endpoint_risk_complete_profile_coverage",
+                0.0,
+            ),
+            "endpoint_risk_dimension_coverage": evidence.get(
+                "endpoint_risk_dimension_coverage",
+                0.0,
+            ),
+            "endpoint_risk_evidence_complete": evidence.get(
+                "endpoint_risk_evidence_complete",
+                False,
+            ),
             "evidence_readiness": evidence.get("evidence_readiness"),
         }
 
@@ -320,6 +385,14 @@ class EndpointSensitiveResearchRankingService:
         energy_band = evidence.get("endpoint_energy_above_hull_band")
         criticality_band = evidence.get("endpoint_criticality_band")
         risk_band = evidence.get("endpoint_risk_band")
+        risk_score_eligible = evidence.get(
+            "endpoint_risk_score_eligible",
+            False,
+        )
+        risk_dimension_coverage = evidence.get(
+            "endpoint_risk_dimension_coverage",
+            0.0,
+        )
         evidence_readiness = evidence.get("evidence_readiness")
 
         if quality_score is not None:
@@ -330,8 +403,14 @@ class EndpointSensitiveResearchRankingService:
             reasons.append(f"endpoint energy-above-hull band {energy_band}")
         if criticality_band is not None:
             reasons.append(f"endpoint criticality band {criticality_band}")
-        if risk_band is not None:
+        if risk_score_eligible:
             reasons.append(f"endpoint risk band {risk_band}")
+        else:
+            reasons.append(
+                "endpoint risk band unavailable because complete risk "
+                f"evidence is absent (dimension coverage "
+                f"{risk_dimension_coverage})"
+            )
         if evidence_readiness:
             reasons.append(f"evidence readiness {evidence_readiness}")
 

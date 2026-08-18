@@ -47,6 +47,13 @@ def test_research_evidence_summary_contains_required_sections():
     assert "weak_assumptions" in evidence
     assert "validation_priorities" in evidence
     assert "evidence_readiness" in evidence
+    assert evidence["support_basis"] == "internal_deterministic_signals"
+    assert evidence["external_evidence_integrated"] is False
+    assert evidence["external_evidence_status"] == "not_integrated"
+    assert evidence["evidence_readiness_scope"] == (
+        "internal_research_prioritization_only"
+    )
+    assert "not scientific validation" in evidence["decision_boundary"]
 
 
 def test_supporting_signals_are_attributed():
@@ -60,6 +67,11 @@ def test_supporting_signals_are_attributed():
     assert "source_service" in signal
     assert "derived_from" in signal
     assert "confidence" in signal
+    assert signal["evidence_origin"] == "internal_deterministic"
+    assert signal["scientific_validation_status"] == "unvalidated"
+    assert signal["confidence_scope"] == (
+        "deterministic_rule_match_not_external_validation"
+    )
 
 
 def test_missing_evidence_is_explainable():
@@ -72,6 +84,8 @@ def test_missing_evidence_is_explainable():
     assert "statement" in missing
     assert "reason" in missing
     assert "researcher_action" in missing
+    assert missing["evidence_origin"] == "external"
+    assert missing["availability_status"] == "not_integrated"
 
     assert any(
         "Experimental synthesis evidence" in item["statement"]
@@ -128,6 +142,29 @@ def test_external_evidence_gaps_cap_strong_internal_support_at_moderate():
     assert len(evidence["supporting_signals"]) >= 5
     assert evidence["missing_evidence"]
     assert evidence["evidence_readiness"] == "moderate"
+    assert evidence["evidence_readiness_scope"] == (
+        "internal_research_prioritization_only"
+    )
+
+
+def test_high_confidence_is_scoped_to_internal_rule_support():
+    service = ResearchEvidenceIntelligenceService()
+
+    evidence = service.build_evidence_summary(_sample_opportunity())
+    high_confidence_signals = [
+        signal
+        for signal in evidence["supporting_signals"]
+        if signal["confidence"] == "high"
+    ]
+
+    assert high_confidence_signals
+    assert all(
+        signal["evidence_origin"] == "internal_deterministic"
+        and signal["scientific_validation_status"] == "unvalidated"
+        and signal["confidence_scope"]
+        == "deterministic_rule_match_not_external_validation"
+        for signal in high_confidence_signals
+    )
 
 
 def test_weak_internal_support_remains_limited():

@@ -55,12 +55,21 @@ class SupportingSignal(BaseModel):
     source_service: str
     derived_from: str
     confidence: str
+    evidence_origin: Literal["internal_deterministic"] = (
+        "internal_deterministic"
+    )
+    scientific_validation_status: Literal["unvalidated"] = "unvalidated"
+    confidence_scope: str = (
+        "deterministic_rule_match_not_external_validation"
+    )
 
 
 class MissingEvidence(BaseModel):
     statement: str
     reason: str
     researcher_action: str
+    evidence_origin: Literal["external"] = "external"
+    availability_status: Literal["not_integrated"] = "not_integrated"
 
 
 class WeakAssumption(BaseModel):
@@ -80,7 +89,19 @@ class EvidenceSummary(BaseModel):
     missing_evidence: list[MissingEvidence]
     weak_assumptions: list[WeakAssumption]
     validation_priorities: list[ValidationPriority]
+    support_basis: Literal["internal_deterministic_signals"] = (
+        "internal_deterministic_signals"
+    )
+    external_evidence_integrated: bool = False
+    external_evidence_status: Literal["not_integrated"] = "not_integrated"
+    evidence_readiness_scope: Literal[
+        "internal_research_prioritization_only"
+    ] = "internal_research_prioritization_only"
     evidence_readiness: str
+    decision_boundary: str = (
+        "Evidence readiness describes deterministic internal support for "
+        "research prioritization, not external scientific validation."
+    )
 
 class ScientificPathway(BaseModel):
     hop_count: int

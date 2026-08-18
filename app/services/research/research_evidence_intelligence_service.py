@@ -18,10 +18,22 @@ class ResearchEvidenceIntelligenceService:
             "missing_evidence": missing_evidence,
             "weak_assumptions": weak_assumptions,
             "validation_priorities": validation_priorities,
+            "support_basis": "internal_deterministic_signals",
+            "external_evidence_integrated": False,
+            "external_evidence_status": "not_integrated",
+            "evidence_readiness_scope": (
+                "internal_research_prioritization_only"
+            ),
             "evidence_readiness": self._evidence_readiness(
                 supporting_signals=supporting_signals,
                 weak_assumptions=weak_assumptions,
                 missing_evidence=missing_evidence,
+            ),
+            "decision_boundary": (
+                "Evidence readiness describes deterministic internal support "
+                "for research prioritization. It is not scientific "
+                "validation and does not include literature, experimental, "
+                "DFT, electrochemical-performance, or manufacturing evidence."
             ),
         }
 
@@ -92,10 +104,17 @@ class ResearchEvidenceIntelligenceService:
                 "confidence": "high",
             })
 
+        for signal in signals:
+            signal["evidence_origin"] = "internal_deterministic"
+            signal["scientific_validation_status"] = "unvalidated"
+            signal["confidence_scope"] = (
+                "deterministic_rule_match_not_external_validation"
+            )
+
         return signals
 
     def _missing_evidence(self) -> list[dict]:
-        return [
+        missing = [
             {
                 "statement": "Experimental synthesis evidence is unavailable.",
                 "reason": "MaterialGraph does not ingest experimental synthesis datasets.",
@@ -122,6 +141,12 @@ class ResearchEvidenceIntelligenceService:
                 "researcher_action": "Review synthesis route, precursor availability, processing conditions, and scalability.",
             },
         ]
+
+        for item in missing:
+            item["evidence_origin"] = "external"
+            item["availability_status"] = "not_integrated"
+
+        return missing
 
     def _weak_assumptions(self, opportunity: dict) -> list[dict]:
         weak = []
