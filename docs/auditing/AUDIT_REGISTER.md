@@ -6,10 +6,10 @@
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 67
+- **Remediated:** 70
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 25
-- **Closed total:** 69
+- **Open:** 22
+- **Closed total:** 72
 
 ## Findings
 
@@ -70,9 +70,9 @@
 | MG-AUD-053 | Discovery Base-Score Selection and Deterministic Tie Ordering | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-053) | [Evidence](resolutions/2026-07.md#mg-aud-053) |
 | MG-AUD-054 | Discovery Explanation Clauses Can Lack a Separator | P3 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-054) | — |
 | MG-AUD-055 | Conflicting risk-profile seed scales produce execution-order-dependent data. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-055) | [Evidence](resolutions/2026-07.md#mg-aud-055) |
-| MG-AUD-056 | Standard dependency installation selects a different repository checkout. | P1 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-056) | — |
-| MG-AUD-057 | Setup documentation configures an API-key name the importer does not read. | P1 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-057) | — |
-| MG-AUD-058 | Project version is defined by incompatible authorities. | P2 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-058) | — |
+| MG-AUD-056 | Standard dependency installation selects a different repository checkout. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-056) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |
+| MG-AUD-057 | Setup documentation configures an API-key name the importer does not read. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-057) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |
+| MG-AUD-058 | Project version is defined by incompatible authorities. | P2 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-058) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |
 | MG-AUD-059 | Duplicate element normalization is not honored during persistence. | P1 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-059) | — |
 | MG-AUD-060 | Pending graph-job claiming is not concurrency-safe. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-060) | [Evidence](resolutions/2026-08.md#mg-aud-060) |
 | MG-AUD-061 | Graph-job lifecycle permits contradictory state transitions. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-061) | [Evidence](resolutions/2026-08.md#mg-aud-061) |

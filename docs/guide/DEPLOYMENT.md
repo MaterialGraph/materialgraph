@@ -131,7 +131,7 @@ Clone repository:
 
 cd /opt/materialgraph
 
-git clone https://github.com/jithinmathws/materialgraph.git
+git clone https://github.com/MaterialGraph/materialgraph.git
 
 Enter project:
 
@@ -150,6 +150,10 @@ Install dependencies:
 pip install --upgrade pip
 
 pip install -e .
+
+The editable install uses the current checkout and exposes its canonical
+`pyproject.toml` package version to the running API. Do not install a second
+VCS checkout of MaterialGraph through `requirements.txt`.
 
 ---
 

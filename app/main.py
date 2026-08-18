@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from app.api.v1.api import api_router
 from app.core.config import settings
 from app.core.logging import logger
+from app.version import PROJECT_VERSION
 
 
 @asynccontextmanager
@@ -19,7 +20,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.project_name,
-    version="1.0.0",
+    version=PROJECT_VERSION,
     description="Graph-based material intelligence platform",
     lifespan=lifespan,
 )
@@ -32,5 +33,6 @@ async def health_check():
     return {
         "status": "ok",
         "service": settings.project_name,
+        "version": PROJECT_VERSION,
         "environment": settings.environment,
     }

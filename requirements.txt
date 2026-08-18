@@ -35,7 +35,6 @@ loguru==0.7.3
 lxml==6.1.1
 Mako==1.3.12
 MarkupSafe==3.0.3
--e git+https://github.com/jithinmathws/materialgraph.git@ba0cc025465dec9353dbc1fc59ea787f095d4ade#egg=materialgraph
 matplotlib==3.10.9
 monty==2026.5.18
 more-itertools==11.1.0

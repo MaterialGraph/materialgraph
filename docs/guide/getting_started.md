@@ -14,7 +14,7 @@ Before running MaterialGraph, ensure the following are installed:
 ### Clone Repository
 
 ```bash
-git clone https://github.com/<your-username>/materialgraph.git
+git clone https://github.com/MaterialGraph/materialgraph.git
 cd materialgraph
 ```
 
@@ -46,6 +46,7 @@ source .venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
+pip install --no-deps -e .
 ```
 
 ---
@@ -57,7 +58,7 @@ Create a `.env` file:
 ```env
 DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost/materialgraph
 
-MP_API_KEY=your_materials_project_api_key
+MATERIALS_PROJECT_API_KEY=your_materials_project_api_key
 ```
 
 ---

@@ -16,7 +16,7 @@ BATTERY_CHEMICAL_SYSTEMS = [
 def main() -> None:
     if not settings.materials_project_api_key:
         raise ValueError(
-            "materials_project_api_key is not configured"
+            "MATERIALS_PROJECT_API_KEY is not configured"
         )
 
     mp_service = MaterialsProjectService(
