@@ -18,11 +18,18 @@ class ResearchObjectiveCandidate(BaseModel):
     warnings: list[str]
 
 
+class ResearchObjectiveConstraintPolicy(BaseModel):
+    avoid_elements: Literal["soft_penalty", "hard_rejection"]
+    prefer_elements: Literal["soft_bonus"] = "soft_bonus"
+    hard_rejection_scope: Literal["none", "all_non_root_chain_materials"]
+
+
 class ResearchObjectiveExplorationResponse(BaseModel):
     material_id: int
     base_formula: str | None = None
     objective: ResearchObjective
     mode: str
+    constraint_policy: ResearchObjectiveConstraintPolicy
     ranked_candidates: list[ResearchObjectiveCandidate]
     chains: list[DiscoveryChain]
     warnings: list[str]

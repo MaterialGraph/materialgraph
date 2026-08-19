@@ -33,7 +33,6 @@ class MaterialImportService:
 
             self._link_elements(
                 material_id=material.id,
-                elements=candidate.elements,
                 fractions=fractions,
             )
 
@@ -75,17 +74,16 @@ class MaterialImportService:
     def _link_elements(
         self,
         material_id: int,
-        elements: list[str],
         fractions: dict[str, float],
     ) -> None:
-        for symbol in elements:
+        for symbol, fraction in sorted(fractions.items()):
             element = self._get_or_create_element(symbol)
 
             self.db.add(
                 MaterialElement(
                     material_id=material_id,
                     element_id=element.id,
-                    fraction=fractions[symbol],
+                    fraction=fraction,
                 )
             )
 

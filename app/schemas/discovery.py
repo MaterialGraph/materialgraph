@@ -1,9 +1,16 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
 class DiscoveryGoal(BaseModel):
     avoid_element: str | None = None
     prefer_element: str | None = None
+
+
+class DiscoveryConstraintPolicy(BaseModel):
+    avoid_element: Literal["soft_penalty"] = "soft_penalty"
+    prefer_element: Literal["soft_bonus"] = "soft_bonus"
 
 
 class SubstitutionPath(BaseModel):
@@ -36,6 +43,7 @@ class DiscoveryCandidatesResponse(BaseModel):
     mp_id: str | None = None
     base_formula: str | None = None
     discovery_goal: DiscoveryGoal
+    constraint_policy: DiscoveryConstraintPolicy
     discovery_warnings: list[str] = []
     candidates: list[DiscoveryCandidate]
 

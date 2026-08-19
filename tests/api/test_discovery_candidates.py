@@ -13,6 +13,10 @@ def test_get_discovery_candidates_returns_200(client):
     assert data["base_formula"] == "LiFePO4"
     assert data["discovery_goal"]["avoid_element"] == "Li"
     assert data["discovery_goal"]["prefer_element"] == "Na"
+    assert data["constraint_policy"] == {
+        "avoid_element": "soft_penalty",
+        "prefer_element": "soft_bonus",
+    }
     assert "candidates" in data
     assert isinstance(data["candidates"], list)
 
@@ -129,6 +133,19 @@ def test_discovery_candidates_penalize_avoided_element(client):
 
         assert "contains_avoided_element" in candidate["discovery_path"]
         assert "penalized" in candidate["explanation"]
+
+
+def test_discovery_candidates_disclose_avoided_element_as_soft_constraint(client):
+    response = client.get(
+        "/api/v1/materials/5/discovery/candidates"
+        "?avoid_element=Li&prefer_element=Na&limit=10"
+    )
+
+    assert response.status_code == 200
+    assert response.json()["constraint_policy"] == {
+        "avoid_element": "soft_penalty",
+        "prefer_element": "soft_bonus",
+    }
 
 def test_discovery_candidate_score_breakdown_exists(client):
     response = client.get(

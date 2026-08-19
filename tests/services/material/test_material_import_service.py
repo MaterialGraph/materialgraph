@@ -142,6 +142,65 @@ def test_import_materials_creates_material_element_links(db_session):
     assert sum(fractions_by_symbol.values()) == pytest.approx(1.0)
 
 
+def test_import_materials_persists_normalized_membership_once(db_session):
+    service = MaterialImportService(db_session)
+    candidate = make_candidate(
+        formula="LiO",
+        pretty_formula="LiO",
+        elements=[" Li ", "Li", " O "],
+        composition_fractions={
+            " Li ": 1.0,
+            " O ": 1.0,
+        },
+    )
+
+    imported_count = service.import_materials([candidate])
+
+    material = (
+        db_session.query(Material)
+        .filter(Material.mp_id == candidate.mp_id)
+        .one()
+    )
+    links = (
+        db_session.query(MaterialElement, Element)
+        .join(Element, MaterialElement.element_id == Element.id)
+        .filter(MaterialElement.material_id == material.id)
+        .order_by(Element.symbol)
+        .all()
+    )
+
+    assert imported_count == 1
+    assert [element.symbol for _, element in links] == ["Li", "O"]
+    assert [link.fraction for link, _ in links] == pytest.approx([0.5, 0.5])
+
+
+def test_import_materials_deduplicates_legacy_membership(db_session):
+    service = MaterialImportService(db_session)
+    candidate = make_candidate(
+        formula="LiO",
+        pretty_formula="LiO",
+        elements=["Li", "Li", "O"],
+        composition_fractions={},
+    )
+
+    imported_count = service.import_materials([candidate])
+
+    material = (
+        db_session.query(Material)
+        .filter(Material.mp_id == candidate.mp_id)
+        .one()
+    )
+    links = (
+        db_session.query(MaterialElement)
+        .filter(MaterialElement.material_id == material.id)
+        .all()
+    )
+
+    assert imported_count == 1
+    assert len(links) == 2
+    assert all(link.fraction == 1.0 for link in links)
+
+
 def test_import_materials_preserves_legacy_fraction_fallback(db_session):
     service = MaterialImportService(db_session)
 

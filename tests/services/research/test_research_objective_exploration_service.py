@@ -20,6 +20,29 @@ class _ObjectiveServiceStub:
         }
 
 
+def _chain(*, material_id: int, formula: str, score: float = 0.0) -> dict:
+    return {
+        "hop_count": 1,
+        "materials": [
+            {
+                "material_id": 5,
+                "formula": "LiFePO4",
+                "pretty_formula": "LiFePO4",
+            },
+            {
+                "material_id": material_id,
+                "formula": formula,
+                "pretty_formula": formula,
+            },
+        ],
+        "transitions": [],
+        "chain_reason": "Stub chain.",
+        "scientific_usefulness_score": score,
+        "score_breakdown": {},
+        "usefulness_reason": "Stub ranking.",
+    }
+
+
 def test_research_objective_exploration_returns_ranked_candidates(db_session):
     service = ResearchObjectiveExplorationService(db_session)
 
@@ -219,3 +242,66 @@ def test_exploration_awards_family_bonus_from_candidate_composition(
     )
 
     assert score == 60.0
+
+
+def test_strict_exploration_rejects_avoided_element_candidates(db_session):
+    service = ResearchObjectiveExplorationService(db_session)
+    service.objective_service = _ObjectiveServiceStub(
+        chains=[
+            _chain(material_id=201, formula="LiCoO2", score=500.0),
+            _chain(material_id=202, formula="NaFePO4", score=10.0),
+        ]
+    )
+    request = ResearchObjectiveExplorationRequest(
+        objective=ResearchObjective(
+            avoid_elements=["Li"],
+            prefer_elements=["Na"],
+            preserve_elements=[],
+            target_family=None,
+            max_hops=1,
+            limit=5,
+        ),
+        mode="strict",
+        limit=5,
+    )
+
+    result = service.explore(material_id=5, request=request)
+
+    assert [item["material_id"] for item in result["ranked_candidates"]] == [202]
+    assert [chain["materials"][-1]["material_id"] for chain in result["chains"]] == [
+        202
+    ]
+    assert result["constraint_policy"] == {
+        "avoid_elements": "hard_rejection",
+        "prefer_elements": "soft_bonus",
+        "hard_rejection_scope": "all_non_root_chain_materials",
+    }
+
+
+def test_balanced_exploration_retains_avoided_element_with_penalty(db_session):
+    service = ResearchObjectiveExplorationService(db_session)
+    service.objective_service = _ObjectiveServiceStub(
+        chains=[_chain(material_id=203, formula="LiCoO2", score=500.0)]
+    )
+    request = ResearchObjectiveExplorationRequest(
+        objective=ResearchObjective(
+            avoid_elements=["Li"],
+            prefer_elements=[],
+            preserve_elements=[],
+            target_family=None,
+            max_hops=1,
+            limit=5,
+        ),
+        mode="balanced",
+        limit=5,
+    )
+
+    result = service.explore(material_id=5, request=request)
+
+    assert [item["material_id"] for item in result["ranked_candidates"]] == [203]
+    assert result["ranked_candidates"][0]["score"] == 25.0
+    assert result["constraint_policy"] == {
+        "avoid_elements": "soft_penalty",
+        "prefer_elements": "soft_bonus",
+        "hard_rejection_scope": "none",
+    }

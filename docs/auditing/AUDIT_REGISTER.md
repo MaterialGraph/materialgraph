@@ -1,15 +1,15 @@
 # MaterialGraph Audit Register
 
 **Document role:** Sole authoritative source for current finding status and totals  
-**Last updated:** 2026-08-18
+**Last updated:** 2026-08-19
 
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 70
+- **Remediated:** 73
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 22
-- **Closed total:** 72
+- **Open:** 19
+- **Closed total:** 75
 
 ## Findings
 
@@ -30,8 +30,8 @@
 | MG-AUD-013 | Framework Scoring Inherits Overlap Semantics | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-013) | [Evidence](resolutions/2026-07.md#mg-aud-013) |
 | MG-AUD-014 | Preservation Can Be Satisfied by Union Across Transitions | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-014) | [Evidence](resolutions/2026-07.md#mg-aud-014) |
 | MG-AUD-015 | Objective Alignment Uses Path-Wide Events | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-015) | [Evidence](resolutions/2026-07.md#mg-aud-015) |
-| MG-AUD-016 | Avoid/Prefer Constraints Are Soft in Candidate Scoring | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-016) | — |
-| MG-AUD-017 | Strict Exploration Does Not Guarantee Hard Rejection | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-017) | — |
+| MG-AUD-016 | Avoid/Prefer Constraints Are Soft in Candidate Scoring | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-016) | [Evidence](resolutions/2026-08.md#mg-aud-016-017) |
+| MG-AUD-017 | Strict Exploration Does Not Guarantee Hard Rejection | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-017) | [Evidence](resolutions/2026-08.md#mg-aud-016-017) |
 | MG-AUD-018 | Family Relationships Are Composition Heuristics | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-018) | — |
 | MG-AUD-019 | Family Taxonomy Includes Mg as Alkali | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-019) | — |
 | MG-AUD-020 | Alkali Substitution Does Not Prove Mechanism | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-020) | — |
@@ -73,7 +73,7 @@
 | MG-AUD-056 | Standard dependency installation selects a different repository checkout. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-056) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |
 | MG-AUD-057 | Setup documentation configures an API-key name the importer does not read. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-057) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |
 | MG-AUD-058 | Project version is defined by incompatible authorities. | P2 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-058) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |
-| MG-AUD-059 | Duplicate element normalization is not honored during persistence. | P1 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-059) | — |
+| MG-AUD-059 | Duplicate element normalization is not honored during persistence. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-059) | [Evidence](resolutions/2026-08.md#mg-aud-059) |
 | MG-AUD-060 | Pending graph-job claiming is not concurrency-safe. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-060) | [Evidence](resolutions/2026-08.md#mg-aud-060) |
 | MG-AUD-061 | Graph-job lifecycle permits contradictory state transitions. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-061) | [Evidence](resolutions/2026-08.md#mg-aud-061) |
 | MG-AUD-062 | Missing criticality evidence receives favorable tie ordering. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-062) | [Evidence](resolutions/2026-07.md#mg-aud-062) |

@@ -137,3 +137,20 @@ def test_resolve_import_fractions_deduplicates_membership():
             "O": 0.5,
         }
     )
+
+
+def test_resolve_import_fractions_deduplicates_normalized_membership():
+    result = MaterialCompositionService.resolve_import_fractions(
+        elements=[" Li ", "Li", " O "],
+        composition_fractions={
+            " Li ": 1.0,
+            " O ": 1.0,
+        },
+    )
+
+    assert result == pytest.approx(
+        {
+            "Li": 0.5,
+            "O": 0.5,
+        }
+    )

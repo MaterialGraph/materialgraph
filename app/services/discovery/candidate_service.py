@@ -137,6 +137,10 @@ class DiscoveryCandidateService:
                     "avoid_element": avoid_element,
                     "prefer_element": prefer_element,
                 },
+                "constraint_policy": {
+                    "avoid_element": "soft_penalty",
+                    "prefer_element": "soft_bonus",
+                },
                 "discovery_warnings": discovery_warnings,
                 "candidates": candidates,
             }
@@ -480,6 +484,10 @@ class DiscoveryCandidateService:
             "discovery_goal": {
                 "avoid_element": avoid_element,
                 "prefer_element": prefer_element,
+            },
+            "constraint_policy": {
+                "avoid_element": "soft_penalty",
+                "prefer_element": "soft_bonus",
             },
             "discovery_warnings": [
                 "Material was not found, so discovery candidates could not be generated."

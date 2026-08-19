@@ -16,8 +16,13 @@ class ResearchObjectiveExplorationService:
         )
 
         chains = chain_result.get("chains", [])
-        candidates = self._rank_candidates_from_chains(
+        eligible_chains = self._apply_mode_constraints(
             chains=chains,
+            objective=request.objective,
+            mode=request.mode,
+        )
+        candidates = self._rank_candidates_from_chains(
+            chains=eligible_chains,
             objective=request.objective,
             mode=request.mode,
         )
@@ -27,10 +32,63 @@ class ResearchObjectiveExplorationService:
             "base_formula": chain_result.get("base_formula"),
             "objective": request.objective,
             "mode": request.mode,
+            "constraint_policy": self._build_constraint_policy(request.mode),
             "ranked_candidates": candidates[: request.limit],
-            "chains": chains[: request.limit],
+            "chains": eligible_chains[: request.limit],
             "warnings": self._build_global_warnings(request.mode),
             "explanation": self._build_explanation(request.mode),
+        }
+
+    def _apply_mode_constraints(
+        self,
+        chains: list[dict],
+        objective,
+        mode: str,
+    ) -> list[dict]:
+        if mode != "strict" or not objective.avoid_elements:
+            return chains
+
+        return [
+            chain
+            for chain in chains
+            if self._chain_satisfies_strict_avoidance(
+                chain=chain,
+                avoid_elements=objective.avoid_elements,
+            )
+        ]
+
+    def _chain_satisfies_strict_avoidance(
+        self,
+        chain: dict,
+        avoid_elements: list[str],
+    ) -> bool:
+        materials = chain.get("materials", [])
+
+        return all(
+            not self._material_contains_any_element(material, avoid_elements)
+            for material in materials[1:]
+        )
+
+    def _material_contains_any_element(
+        self,
+        material: dict,
+        elements: list[str],
+    ) -> bool:
+        formula = material.get("formula") or material.get("pretty_formula") or ""
+        return any(contains_element(formula, element) for element in elements)
+
+    def _build_constraint_policy(self, mode: str) -> dict[str, str]:
+        if mode == "strict":
+            return {
+                "avoid_elements": "hard_rejection",
+                "prefer_elements": "soft_bonus",
+                "hard_rejection_scope": "all_non_root_chain_materials",
+            }
+
+        return {
+            "avoid_elements": "soft_penalty",
+            "prefer_elements": "soft_bonus",
+            "hard_rejection_scope": "none",
         }
 
     def _rank_candidates_from_chains(self, chains, objective, mode: str) -> list[dict]:
@@ -155,8 +213,6 @@ class ResearchObjectiveExplorationService:
         for element in objective.avoid_elements:
             if contains_element(formula, element):
                 message = f"Candidate still contains avoided element {element}."
-                if mode == "strict":
-                    message += " Strict mode should treat this as a hard rejection."
                 warnings.append(message)
 
         return warnings
