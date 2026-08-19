@@ -16,3 +16,4 @@ logs/
 temp.txt
 materialgraph-key.pem
 temp/
+env
