@@ -15,6 +15,7 @@ class ResearchObjectiveService:
         self,
         material_id: int,
         objective,
+        include_ranked_pool: bool = False,
     ) -> dict:
         result = self.chain_service.get_discovery_chains(
             material_id=material_id,
@@ -22,6 +23,7 @@ class ResearchObjectiveService:
             prefer_elements=objective.prefer_elements,
             max_hops=objective.max_hops,
             limit=objective.limit,
+            include_search_pool=True,
         )
 
         filtered_chains = self._filter_chains(
@@ -33,12 +35,26 @@ class ResearchObjectiveService:
             chains=filtered_chains,
             objective=objective,
         )
+        chains = (
+            ranked_chains
+            if include_ranked_pool
+            else ranked_chains[: objective.limit]
+        )
+        search_metadata = {
+            **result["search_metadata"],
+            "returned_chain_count": len(chains),
+            "result_truncated": (
+                not include_ranked_pool
+                and len(ranked_chains) > objective.limit
+            ),
+        }
 
         return {
             "material_id": result["material_id"],
             "base_formula": result["base_formula"],
             "objective": objective,
-            "chains": ranked_chains,
+            "search_metadata": search_metadata,
+            "chains": chains,
         }
 
     def _filter_chains(

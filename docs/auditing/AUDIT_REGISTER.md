@@ -6,10 +6,10 @@
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 76
+- **Remediated:** 79
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 16
-- **Closed total:** 78
+- **Open:** 13
+- **Closed total:** 81
 
 ## Findings
 
@@ -44,9 +44,9 @@
 | MG-AUD-027 | Stability and Energy Are Imported Separately but Reused | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-027) | — |
 | MG-AUD-028 | Internal Deterministic Support Can Look Like Scientific Evidence | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-028) | [Evidence](resolutions/2026-08.md#mg-aud-028-029) |
 | MG-AUD-029 | Risk Coverage Is Not Fully Propagated to Endpoint Evidence | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-029) | [Evidence](resolutions/2026-08.md#mg-aud-028-029) |
-| MG-AUD-030 | Bounded Search Shapes the Opportunity Set | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-030) | — |
-| MG-AUD-031 | Family Ordering Can Affect Bounded Discovery | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-031) | — |
-| MG-AUD-032 | Equal-Key Family Ordering Lacks a Final Tie-Breaker | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-032) | — |
+| MG-AUD-030 | Bounded Search Shapes the Opportunity Set | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-030) | [Evidence](resolutions/2026-08.md#mg-aud-030-032) |
+| MG-AUD-031 | Family Ordering Can Affect Bounded Discovery | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-031) | [Evidence](resolutions/2026-08.md#mg-aud-030-032) |
+| MG-AUD-032 | Equal-Key Family Ordering Lacks a Final Tie-Breaker | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-032) | [Evidence](resolutions/2026-08.md#mg-aud-030-032) |
 | MG-AUD-033 | Recommendation Pipeline Contains Irreversible Preselection | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-033) | — |
 | MG-AUD-034 | Recommendation Defaults to Lower Criticality | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-034) | — |
 | MG-AUD-035 | Similarity and Recommendation Use Different Criticality Policies | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-035) | — |

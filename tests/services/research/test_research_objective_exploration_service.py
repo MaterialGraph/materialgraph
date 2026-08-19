@@ -11,11 +11,28 @@ class _ObjectiveServiceStub:
     def __init__(self, chains: list[dict]):
         self.chains = chains
 
-    def generate_chains_for_objective(self, material_id: int, objective) -> dict:
+    def generate_chains_for_objective(
+        self,
+        material_id: int,
+        objective,
+        include_ranked_pool: bool = False,
+    ) -> dict:
         return {
             "material_id": material_id,
             "base_formula": "LiFePO4",
             "objective": objective,
+            "search_metadata": {
+                "search_policy": "bounded_breadth_first",
+                "requested_result_limit": objective.limit,
+                "expansion_limit_per_material": 6,
+                "search_state_budget": 200,
+                "expanded_state_count": len(self.chains),
+                "generated_chain_count": len(self.chains),
+                "returned_chain_count": len(self.chains),
+                "search_truncated": False,
+                "result_truncated": False,
+                "scientific_completeness_guaranteed": False,
+            },
             "chains": self.chains,
         }
 
@@ -70,6 +87,7 @@ def test_research_objective_exploration_returns_ranked_candidates(db_session):
     assert "chains" in result
     assert "warnings" in result
     assert "explanation" in result
+    assert "search_metadata" in result
 
 
 def test_multi_element_exploration_candidate_scoring_uses_all_preferred_elements(

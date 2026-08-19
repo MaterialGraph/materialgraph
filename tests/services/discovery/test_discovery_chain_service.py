@@ -37,6 +37,10 @@ def test_discovery_chains_returns_valid_response(db_session):
     assert result["base_formula"] is not None
     assert "chains" in result
     assert isinstance(result["chains"], list)
+    assert result["search_metadata"]["requested_result_limit"] == 5
+    assert not result["search_metadata"][
+        "scientific_completeness_guaranteed"
+    ]
 
 
 def test_discovery_chains_respects_max_hops(db_session):
@@ -116,6 +120,7 @@ def test_discovery_chains_missing_material_returns_empty_response(db_session):
     assert result["mp_id"] is None
     assert result["base_formula"] is None
     assert result["chains"] == []
+    assert result["search_metadata"]["expanded_state_count"] == 0
 
 
 def test_build_chains_treats_max_hops_as_upper_bound(
@@ -145,7 +150,7 @@ def test_build_chains_treats_max_hops_as_upper_bound(
         ),
     )
 
-    chains = service._build_chains(
+    chains, metadata = service._build_chains(
         base_material=SimpleNamespace(
             id=1,
             mp_id="mp-1",
@@ -156,7 +161,6 @@ def test_build_chains_treats_max_hops_as_upper_bound(
         avoid_elements=frozenset(),
         prefer_elements=frozenset(),
         max_hops=2,
-        limit=10,
     )
 
     assert [chain["hop_count"] for chain in chains] == [1, 2]
@@ -164,6 +168,7 @@ def test_build_chains_treats_max_hops_as_upper_bound(
         [material["material_id"] for material in chain["materials"]]
         for chain in chains
     ] == [[1, 2], [1, 2, 3]]
+    assert metadata["expanded_state_count"] == 2
 
 
 def test_build_chains_retains_dead_end_prefix(
@@ -190,7 +195,7 @@ def test_build_chains_retains_dead_end_prefix(
         ),
     )
 
-    chains = service._build_chains(
+    chains, _ = service._build_chains(
         base_material=SimpleNamespace(
             id=1,
             mp_id="mp-1",
@@ -201,7 +206,6 @@ def test_build_chains_retains_dead_end_prefix(
         avoid_elements=frozenset(),
         prefer_elements=frozenset(),
         max_hops=3,
-        limit=10,
     )
 
     assert len(chains) == 1
@@ -236,7 +240,7 @@ def test_build_chains_retains_prefix_with_only_invalid_continuation(
         build_transition,
     )
 
-    chains = service._build_chains(
+    chains, _ = service._build_chains(
         base_material=SimpleNamespace(
             id=1,
             mp_id="mp-1",
@@ -247,9 +251,93 @@ def test_build_chains_retains_prefix_with_only_invalid_continuation(
         avoid_elements=frozenset(),
         prefer_elements=frozenset(),
         max_hops=3,
-        limit=10,
     )
 
     assert len(chains) == 1
     assert chains[0]["hop_count"] == 1
     assert all(chain["hop_count"] <= 3 for chain in chains)
+
+
+def test_response_limit_does_not_terminate_internal_search(
+    db_session,
+    monkeypatch,
+):
+    from app.services.discovery.chain_service import DiscoveryChainService
+
+    service = DiscoveryChainService(db_session)
+    candidates = {
+        1: [_candidate(2), _candidate(3)],
+        2: [_candidate(4)],
+        3: [],
+        4: [],
+    }
+
+    monkeypatch.setattr(
+        service,
+        "_get_next_candidates",
+        lambda material_id, **_: candidates[material_id],
+    )
+    monkeypatch.setattr(
+        service,
+        "_build_transition",
+        lambda from_material, to_candidate, **_: _transition(
+            from_material,
+            to_candidate,
+        ),
+    )
+
+    pool, metadata = service._build_chains(
+        base_material=SimpleNamespace(
+            id=1,
+            mp_id="mp-1",
+            pretty_formula="M1",
+            formula="M1",
+        ),
+        elements_map={},
+        avoid_elements=frozenset(),
+        prefer_elements=frozenset(),
+        max_hops=2,
+    )
+
+    paths = [
+        [material["material_id"] for material in chain["materials"]]
+        for chain in pool
+    ]
+    assert [1, 2, 4] in paths
+    assert metadata["generated_chain_count"] == 3
+
+
+def test_search_state_budget_reports_truncation(db_session, monkeypatch):
+    from app.services.discovery.chain_service import DiscoveryChainService
+
+    service = DiscoveryChainService(db_session)
+    monkeypatch.setattr(service, "SEARCH_STATE_BUDGET", 1)
+    monkeypatch.setattr(
+        service,
+        "_get_next_candidates",
+        lambda material_id, **_: [_candidate(material_id + 1)],
+    )
+    monkeypatch.setattr(
+        service,
+        "_build_transition",
+        lambda from_material, to_candidate, **_: _transition(
+            from_material,
+            to_candidate,
+        ),
+    )
+
+    _, metadata = service._build_chains(
+        base_material=SimpleNamespace(
+            id=1,
+            mp_id="mp-1",
+            pretty_formula="M1",
+            formula="M1",
+        ),
+        elements_map={},
+        avoid_elements=frozenset(),
+        prefer_elements=frozenset(),
+        max_hops=3,
+    )
+
+    assert metadata["expanded_state_count"] == 1
+    assert metadata["search_truncated"] is True

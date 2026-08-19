@@ -86,11 +86,7 @@ class MaterialFamilyService:
             )
 
         related_materials.sort(
-            key=lambda item: (
-                len(item["relationships"]),
-                len(item["shared_elements"]),
-            ),
-            reverse=True,
+            key=self._related_material_sort_key
         )
 
         return {
@@ -100,6 +96,13 @@ class MaterialFamilyService:
             "formula": base_material.formula,
             "related_materials": related_materials,
         }
+
+    @staticmethod
+    def _related_material_sort_key(item: dict) -> tuple[int, int]:
+        return (
+            -len(item["shared_elements"]),
+            item["material_id"],
+        )
 
     def _empty_family_response(self, material_id: int) -> dict:
         return {

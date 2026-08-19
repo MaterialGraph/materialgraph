@@ -11,12 +11,21 @@ def test_get_discovery_chains(client):
     assert data["material_id"] == 5
     assert "base_formula" in data
     assert "discovery_goal" in data
+    assert "search_metadata" in data
     assert "chains" in data
 
     assert data["discovery_goal"]["avoid_element"] == "Li"
     assert data["discovery_goal"]["prefer_element"] == "Na"
     assert data["discovery_goal"]["max_hops"] == 2
     assert data["discovery_goal"]["limit"] == 5
+    assert data["search_metadata"]["requested_result_limit"] == 5
+    assert data["search_metadata"]["search_state_budget"] == 200
+    assert data["search_metadata"][
+        "scientific_completeness_guaranteed"
+    ] is False
+    assert data["search_metadata"]["returned_chain_count"] == len(
+        data["chains"]
+    )
 
     for chain in data["chains"]:
         assert "materials" in chain

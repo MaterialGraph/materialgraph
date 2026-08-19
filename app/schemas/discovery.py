@@ -94,11 +94,25 @@ class DiscoveryChain(BaseModel):
     usefulness_reason: str | None = None
 
 
+class DiscoverySearchMetadata(BaseModel):
+    search_policy: Literal["bounded_breadth_first"] = "bounded_breadth_first"
+    requested_result_limit: int
+    expansion_limit_per_material: int
+    search_state_budget: int
+    expanded_state_count: int
+    generated_chain_count: int
+    returned_chain_count: int
+    search_truncated: bool
+    result_truncated: bool
+    scientific_completeness_guaranteed: Literal[False] = False
+
+
 class DiscoveryChainsResponse(BaseModel):
     material_id: int
     mp_id: str | None = None
     base_formula: str | None = None
     discovery_goal: DiscoveryChainGoal
+    search_metadata: DiscoverySearchMetadata
     chains: list[DiscoveryChain]
 
 class ResearchObjective(BaseModel):
@@ -120,4 +134,5 @@ class ResearchObjectiveChainResponse(BaseModel):
     material_id: int
     base_formula: str | None = None
     objective: ResearchObjective
+    search_metadata: DiscoverySearchMetadata
     chains: list[DiscoveryChain]

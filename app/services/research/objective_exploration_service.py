@@ -13,6 +13,7 @@ class ResearchObjectiveExplorationService:
         chain_result = self.objective_service.generate_chains_for_objective(
             material_id=material_id,
             objective=request.objective,
+            include_ranked_pool=True,
         )
 
         chains = chain_result.get("chains", [])
@@ -26,6 +27,12 @@ class ResearchObjectiveExplorationService:
             objective=request.objective,
             mode=request.mode,
         )
+        chains = eligible_chains[: request.limit]
+        search_metadata = {
+            **chain_result["search_metadata"],
+            "returned_chain_count": len(chains),
+            "result_truncated": len(eligible_chains) > request.limit,
+        }
 
         return {
             "material_id": material_id,
@@ -33,8 +40,9 @@ class ResearchObjectiveExplorationService:
             "objective": request.objective,
             "mode": request.mode,
             "constraint_policy": self._build_constraint_policy(request.mode),
+            "search_metadata": search_metadata,
             "ranked_candidates": candidates[: request.limit],
-            "chains": eligible_chains[: request.limit],
+            "chains": chains,
             "warnings": self._build_global_warnings(request.mode),
             "explanation": self._build_explanation(request.mode),
         }

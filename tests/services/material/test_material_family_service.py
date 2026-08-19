@@ -103,3 +103,39 @@ def test_alkali_reason_is_a_composition_hypothesis(db_session):
 
     assert "composition-level alkali-substitution hypothesis" in reason
     assert "substitution mechanism is not validated" in reason
+
+
+def test_family_order_ignores_correlated_relationship_label_count(db_session):
+    from app.services.material.family_service import MaterialFamilyService
+
+    service = MaterialFamilyService(db_session)
+    candidates = [
+        {
+            "material_id": 8,
+            "shared_elements": ["O", "P"],
+            "relationships": ["oxide_related", "phosphate_related"],
+        },
+        {
+            "material_id": 7,
+            "shared_elements": ["Fe", "O", "P"],
+            "relationships": ["shared_chemistry"],
+        },
+    ]
+
+    candidates.sort(key=service._related_material_sort_key)
+
+    assert [candidate["material_id"] for candidate in candidates] == [7, 8]
+
+
+def test_family_order_uses_material_id_as_final_tie_breaker(db_session):
+    from app.services.material.family_service import MaterialFamilyService
+
+    service = MaterialFamilyService(db_session)
+    candidates = [
+        {"material_id": 9, "shared_elements": ["O", "P"]},
+        {"material_id": 4, "shared_elements": ["O", "P"]},
+    ]
+
+    candidates.sort(key=service._related_material_sort_key)
+
+    assert [candidate["material_id"] for candidate in candidates] == [4, 9]

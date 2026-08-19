@@ -49,6 +49,18 @@ class _CapturingChainService:
         return {
             "material_id": kwargs["material_id"],
             "base_formula": "LiFePO4",
+            "search_metadata": {
+                "search_policy": "bounded_breadth_first",
+                "requested_result_limit": kwargs["limit"],
+                "expansion_limit_per_material": 6,
+                "search_state_budget": 200,
+                "expanded_state_count": 1,
+                "generated_chain_count": 1,
+                "returned_chain_count": 1,
+                "search_truncated": False,
+                "result_truncated": False,
+                "scientific_completeness_guaranteed": False,
+            },
             "chains": [_sample_chain()],
         }
 
@@ -189,6 +201,50 @@ def test_multi_element_objective_passes_complete_sets_to_chain_generation(
     assert set(call["prefer_elements"]) == {"Na", "K"}
     assert "avoid_element" not in call
     assert "prefer_element" not in call
+    assert call["include_search_pool"] is True
+
+
+def test_objective_filters_before_applying_result_limit(db_session):
+    service = ResearchObjectiveService(db_session)
+    chain_service = _CapturingChainService()
+    ranking_service = _CapturingPathRankingService()
+    first = _sample_chain()
+    first["materials"][-1] = {
+        "material_id": 6,
+        "formula": "NaFeO2",
+        "pretty_formula": "NaFeO2",
+    }
+    second = _sample_chain()
+    chain_service.get_discovery_chains = lambda **kwargs: {
+        "material_id": kwargs["material_id"],
+        "base_formula": "LiFePO4",
+        "search_metadata": {
+            "search_policy": "bounded_breadth_first",
+            "requested_result_limit": kwargs["limit"],
+            "expansion_limit_per_material": 6,
+            "search_state_budget": 200,
+            "expanded_state_count": 2,
+            "generated_chain_count": 2,
+            "returned_chain_count": 2,
+            "search_truncated": False,
+            "result_truncated": True,
+            "scientific_completeness_guaranteed": False,
+        },
+        "chains": [first, second],
+    }
+    service.chain_service = chain_service
+    service.path_ranking_service = ranking_service
+    objective = ResearchObjective(
+        preserve_elements=[],
+        target_family="phosphate",
+        max_hops=2,
+        limit=1,
+    )
+
+    result = service.generate_chains_for_objective(5, objective)
+
+    assert len(result["chains"]) == 1
+    assert result["chains"][0]["materials"][-1]["material_id"] == 7
 
 
 def test_multi_element_objective_passes_complete_sets_to_path_ranking(

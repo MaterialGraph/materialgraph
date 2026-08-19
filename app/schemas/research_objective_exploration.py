@@ -1,7 +1,11 @@
 from pydantic import BaseModel, Field
 from typing import Any, Literal
 
-from app.schemas.discovery import DiscoveryChain, ResearchObjective
+from app.schemas.discovery import (
+    DiscoveryChain,
+    DiscoverySearchMetadata,
+    ResearchObjective,
+)
 
 
 class ResearchObjectiveExplorationRequest(BaseModel):
@@ -30,6 +34,7 @@ class ResearchObjectiveExplorationResponse(BaseModel):
     objective: ResearchObjective
     mode: str
     constraint_policy: ResearchObjectiveConstraintPolicy
+    search_metadata: DiscoverySearchMetadata
     ranked_candidates: list[ResearchObjectiveCandidate]
     chains: list[DiscoveryChain]
     warnings: list[str]

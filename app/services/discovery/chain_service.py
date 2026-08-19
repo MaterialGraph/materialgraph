@@ -19,6 +19,7 @@ class DiscoveryChainService:
     MAX_ALLOWED_HOPS = 3
     DEFAULT_LIMIT = 5
     EXPANSION_LIMIT = 6
+    SEARCH_STATE_BUDGET = 200
 
     def __init__(self, db: Session):
         self.db = db
@@ -41,6 +42,7 @@ class DiscoveryChainService:
         limit: int = DEFAULT_LIMIT,
         avoid_elements: Collection[str] | None = None,
         prefer_elements: Collection[str] | None = None,
+        include_search_pool: bool = False,
     ) -> dict:
         max_hops = min(max_hops, self.MAX_ALLOWED_HOPS)
 
@@ -65,14 +67,20 @@ class DiscoveryChainService:
             )
 
         elements_map = self._get_material_elements_map()
-        chains = self._build_chains(
+        chain_pool, search_metadata = self._build_chains(
             base_material=base_material,
             elements_map=elements_map,
             avoid_elements=normalized_avoid_elements,
             prefer_elements=normalized_prefer_elements,
             max_hops=max_hops,
-            limit=limit,
         )
+        chains = chain_pool if include_search_pool else chain_pool[:limit]
+        search_metadata = {
+            **search_metadata,
+            "requested_result_limit": limit,
+            "returned_chain_count": len(chains),
+            "result_truncated": len(chain_pool) > limit,
+        }
 
         return {
             "material_id": base_material.id,
@@ -87,6 +95,7 @@ class DiscoveryChainService:
                 "max_hops": max_hops,
                 "limit": limit,
             },
+            "search_metadata": search_metadata,
             "chains": chains,
         }
 
@@ -97,8 +106,7 @@ class DiscoveryChainService:
         avoid_elements: frozenset[str],
         prefer_elements: frozenset[str],
         max_hops: int,
-        limit: int,
-    ) -> list[dict]:
+    ) -> tuple[list[dict], dict]:
         queue = deque()
 
         base_node = self._material_to_node(base_material)
@@ -111,8 +119,11 @@ class DiscoveryChainService:
 
         completed_chains = []
 
-        while queue and len(completed_chains) < limit:
+        expanded_state_count = 0
+
+        while queue and expanded_state_count < self.SEARCH_STATE_BUDGET:
             current_chain = queue.popleft()
+            expanded_state_count += 1
             current_material = current_chain["materials"][-1]
             current_hops = len(current_chain["transitions"])
 
@@ -179,13 +190,21 @@ class DiscoveryChainService:
                     self._finalize_chain(next_chain)
                 )
 
-                if len(completed_chains) >= limit:
-                    break
-
                 if len(next_chain["transitions"]) < max_hops:
                     queue.append(next_chain)
 
-        return completed_chains[:limit]
+        return completed_chains, {
+            "search_policy": "bounded_breadth_first",
+            "requested_result_limit": 0,
+            "expansion_limit_per_material": self.EXPANSION_LIMIT,
+            "search_state_budget": self.SEARCH_STATE_BUDGET,
+            "expanded_state_count": expanded_state_count,
+            "generated_chain_count": len(completed_chains),
+            "returned_chain_count": 0,
+            "search_truncated": bool(queue),
+            "result_truncated": False,
+            "scientific_completeness_guaranteed": False,
+        }
 
     def _get_next_candidates(
         self,
@@ -427,6 +446,18 @@ class DiscoveryChainService:
                 "prefer_element": prefer_element,
                 "max_hops": max_hops,
                 "limit": limit,
+            },
+            "search_metadata": {
+                "search_policy": "bounded_breadth_first",
+                "requested_result_limit": limit,
+                "expansion_limit_per_material": self.EXPANSION_LIMIT,
+                "search_state_budget": self.SEARCH_STATE_BUDGET,
+                "expanded_state_count": 0,
+                "generated_chain_count": 0,
+                "returned_chain_count": 0,
+                "search_truncated": False,
+                "result_truncated": False,
+                "scientific_completeness_guaranteed": False,
             },
             "chains": [],
         }
