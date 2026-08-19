@@ -16,6 +16,8 @@ def test_edge_intelligence_scores_alkali_substitution():
 
     assert result["scientific_plausibility"] == 1.0
     assert result["edge_score"] == 100.0
+    assert result["plausibility_basis"] == "internal_composition_heuristic"
+    assert result["substitution_mechanism_validated"] is False
     assert "scientific_reason" in result
 
 

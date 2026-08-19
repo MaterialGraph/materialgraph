@@ -105,6 +105,8 @@ class DiscoveryTransitionValidator:
             "preserved_framework": preserved_framework,
             "preservation_basis": "element_overlap",
             "structural_preservation_validated": False,
+            "relationship_basis": "composition_heuristic",
+            "substitution_mechanism_validated": False,
             "removed_elements": removed_elements,
             "introduced_elements": introduced_elements,
         }
@@ -209,7 +211,14 @@ class DiscoveryTransitionValidator:
 
         if transition_type == "family_expansion" and family:
             parts.append(
-                f"expanding within the {family} material family"
+                f"matching the composition-heuristic {family} grouping; "
+                "structural family membership is not validated"
+            )
+
+        if transition_type == "alkali_substitution":
+            parts.append(
+                "the alkali-substitution label is a composition-level "
+                "hypothesis; a substitution mechanism is not validated"
             )
 
         introduced_preferred = sorted(

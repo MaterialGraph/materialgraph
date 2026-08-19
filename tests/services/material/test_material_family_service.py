@@ -78,3 +78,28 @@ def test_phosphate_reason_matches_asymmetric_classification_evidence(
         in reason
     )
     assert "structural framework similarity is not validated" in reason
+
+
+def test_magnesium_is_not_classified_as_an_alkali_substitution(db_session):
+    from app.services.material.family_service import MaterialFamilyService
+
+    service = MaterialFamilyService(db_session)
+
+    assert service._has_alkali_substitution({"Li", "O"}, {"Mg", "O"}) is False
+
+
+def test_alkali_reason_is_a_composition_hypothesis(db_session):
+    from app.services.material.family_service import MaterialFamilyService
+
+    service = MaterialFamilyService(db_session)
+    reason = service._build_relationship_reason(
+        base_formula="LiFePO4",
+        candidate_formula="NaFePO4",
+        relationships=["alkali_substitution"],
+        shared_elements=["Fe", "O", "P"],
+        base_elements=["Li", "Fe", "P", "O"],
+        candidate_elements=["Na", "Fe", "P", "O"],
+    )
+
+    assert "composition-level alkali-substitution hypothesis" in reason
+    assert "substitution mechanism is not validated" in reason

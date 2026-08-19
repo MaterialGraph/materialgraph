@@ -25,6 +25,8 @@ class DiscoveryEdgeIntelligenceService:
 
         return {
             "scientific_plausibility": scientific_plausibility,
+            "plausibility_basis": "internal_composition_heuristic",
+            "substitution_mechanism_validated": False,
             "edge_score": edge_score,
             "scientific_reason": scientific_reason,
         }

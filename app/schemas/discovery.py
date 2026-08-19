@@ -23,6 +23,10 @@ class SubstitutionPath(BaseModel):
     preserved_framework: list[str]
     preservation_basis: str = "element_overlap"
     structural_preservation_validated: bool = False
+    relationship_basis: Literal["composition_heuristic"] = (
+        "composition_heuristic"
+    )
+    substitution_mechanism_validated: bool = False
     reason: str
 
 
@@ -71,6 +75,10 @@ class DiscoveryChainTransition(BaseModel):
     preserved_framework: list[str]
     preservation_basis: str = "element_overlap"
     structural_preservation_validated: bool = False
+    relationship_basis: Literal["composition_heuristic"] = (
+        "composition_heuristic"
+    )
+    substitution_mechanism_validated: bool = False
     removed_elements: list[str]
     introduced_elements: list[str]
 

@@ -1,0 +1,1 @@
+ALKALI_METALS = frozenset({"Li", "Na", "K", "Rb", "Cs", "Fr"})

@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -32,6 +34,10 @@ class DiscoveryGraphEdge(BaseModel):
     introduced_elements: list[str] = Field(default_factory=list)
     scientific_reason: str
     scientific_plausibility: float
+    plausibility_basis: Literal["internal_composition_heuristic"] = (
+        "internal_composition_heuristic"
+    )
+    substitution_mechanism_validated: bool = False
     edge_score: float
 
 

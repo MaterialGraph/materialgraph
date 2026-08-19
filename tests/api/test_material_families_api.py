@@ -22,6 +22,8 @@ def test_get_material_families(client):
         assert "formula" in item
         assert "relationships" in item
         assert "shared_elements" in item
+        assert item["relationship_basis"] == "composition_heuristic"
+        assert item["structural_family_validated"] is False
         assert "relationship_reason" in item
 
         assert isinstance(item["relationships"], list)

@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -8,6 +10,8 @@ class RelatedMaterialFamily(BaseModel):
     formula: str
     relationships: list[str]
     shared_elements: list[str]
+    relationship_basis: Literal["composition_heuristic"]
+    structural_family_validated: bool = False
     relationship_reason: str
 
 

@@ -6,10 +6,10 @@
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 73
+- **Remediated:** 76
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 19
-- **Closed total:** 75
+- **Open:** 16
+- **Closed total:** 78
 
 ## Findings
 
@@ -32,9 +32,9 @@
 | MG-AUD-015 | Objective Alignment Uses Path-Wide Events | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-015) | [Evidence](resolutions/2026-07.md#mg-aud-015) |
 | MG-AUD-016 | Avoid/Prefer Constraints Are Soft in Candidate Scoring | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-016) | [Evidence](resolutions/2026-08.md#mg-aud-016-017) |
 | MG-AUD-017 | Strict Exploration Does Not Guarantee Hard Rejection | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-017) | [Evidence](resolutions/2026-08.md#mg-aud-016-017) |
-| MG-AUD-018 | Family Relationships Are Composition Heuristics | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-018) | — |
-| MG-AUD-019 | Family Taxonomy Includes Mg as Alkali | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-019) | — |
-| MG-AUD-020 | Alkali Substitution Does Not Prove Mechanism | P1 | Open | [Details](findings/MG-AUD-001-025.md#mg-aud-020) | — |
+| MG-AUD-018 | Family Relationships Are Composition Heuristics | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-018) | [Evidence](resolutions/2026-08.md#mg-aud-018-020) |
+| MG-AUD-019 | Family Taxonomy Includes Mg as Alkali | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-019) | [Evidence](resolutions/2026-08.md#mg-aud-018-020) |
+| MG-AUD-020 | Alkali Substitution Does Not Prove Mechanism | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-020) | [Evidence](resolutions/2026-08.md#mg-aud-018-020) |
 | MG-AUD-021 | Risk and Criticality Share Upstream Evidence | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-021) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
 | MG-AUD-022 | Risk and Criticality Aggregate Differently | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-022) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |
 | MG-AUD-023 | Partial Criticality Profiles Look Complete | P1 | Remediated | [Details](findings/MG-AUD-001-025.md#mg-aud-023) | [Evidence](resolutions/2026-08.md#mg-aud-021-025) |

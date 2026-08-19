@@ -1,4 +1,7 @@
-ALKALI_ELEMENTS = {"Li", "Na", "K", "Mg"}
+from app.domain.element_groups import ALKALI_METALS
+
+
+ALKALI_ELEMENTS = ALKALI_METALS
 TRANSITION_METALS = {"Fe", "Mn", "Co", "Ni", "Ti", "V", "Cr"}
 
 
@@ -38,6 +41,8 @@ class DiscoverySubstitutionPathService:
                 "preserved_framework": preserved_framework,
                 "preservation_basis": "element_overlap",
                 "structural_preservation_validated": False,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": False,
                 "reason": self._build_alkali_reason(
                     base_formula=base_formula,
                     candidate_formula=candidate_formula,
@@ -69,6 +74,8 @@ class DiscoverySubstitutionPathService:
                 "preserved_framework": preserved_framework,
                 "preservation_basis": "element_overlap",
                 "structural_preservation_validated": False,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": False,
                 "reason": self._build_transition_metal_reason(
                     base_formula=base_formula,
                     candidate_formula=candidate_formula,
@@ -90,6 +97,8 @@ class DiscoverySubstitutionPathService:
                 "preserved_framework": preserved_framework,
                 "preservation_basis": "element_overlap",
                 "structural_preservation_validated": False,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": False,
                 "reason": (
                     f"{candidate_formula} shares {', '.join(shared_elements)} elements "
                     f"with {base_formula}; structural framework preservation is not "
@@ -128,22 +137,28 @@ class DiscoverySubstitutionPathService:
 
         if replaced_alkali and introduced_alkali:
             return (
-                f"{candidate_formula} is reachable from {base_formula} by replacing "
+                f"{candidate_formula} is a composition-level substitution candidate "
+                f"relative to {base_formula}, replacing "
                 f"{', '.join(replaced_alkali)} with {', '.join(introduced_alkali)} "
-                f"while sharing {', '.join(shared_elements)} elements; structural preservation is not validated."
+                f"in the element-set comparison while sharing "
+                f"{', '.join(shared_elements)} elements; neither a substitution "
+                "mechanism nor structural preservation is validated."
             )
 
         if introduced_alkali:
             return (
-                f"{candidate_formula} introduces {', '.join(introduced_alkali)} "
+                f"{candidate_formula} is a composition-level candidate introducing "
+                f"{', '.join(introduced_alkali)} "
                 f"while sharing {', '.join(shared_elements)} elements with "
-                f"{base_formula}."
+                f"{base_formula}; a substitution mechanism is not validated."
             )
 
         return (
-            f"{candidate_formula} follows an alkali-substitution relationship with "
+            f"{candidate_formula} has a composition-heuristic alkali-substitution "
+            "relationship with "
             f"{base_formula} while sharing "
-            f"{', '.join(shared_elements)} elements; structural preservation is not validated."
+            f"{', '.join(shared_elements)} elements; neither a substitution mechanism "
+            "nor structural preservation is validated."
         )
 
     def _build_transition_metal_reason(

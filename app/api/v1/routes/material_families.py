@@ -18,9 +18,10 @@ router = APIRouter(
     response_model=MaterialFamiliesResponse,
     summary="Get material families",
     description=(
-        "Returns related materials connected by family-style relationships such as "
-        "shared chemistry, alkali substitution, transition-metal similarity, "
-        "phosphate-related elemental chemistry, and oxide chemistry."
+        "Returns composition-heuristic related-material candidates based on shared "
+        "chemistry, alkali-substitution hypotheses, transition-metal similarity, "
+        "phosphate-related elemental chemistry, and oxide chemistry. These labels "
+        "do not validate structural family membership or substitution mechanisms."
     ),
 )
 def get_material_families(

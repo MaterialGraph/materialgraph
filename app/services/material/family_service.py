@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from sqlalchemy.orm import Session
 
+from app.domain.element_groups import ALKALI_METALS
 from app.models.element import Element
 from app.models.material import Material
 from app.models.material_element import MaterialElement
@@ -11,7 +12,7 @@ class MaterialFamilyService:
     MIN_SHARED_ELEMENTS = 3
     TEST_MP_PREFIX = "mp-test"
 
-    ALKALI_ELEMENTS = {"Li", "Na", "K", "Mg"}
+    ALKALI_ELEMENTS = ALKALI_METALS
     TRANSITION_METALS = {"Fe", "Mn", "Co", "Ni", "Ti", "V", "Cr"}
     STRONG_RELATIONSHIPS = {
         "shared_chemistry",
@@ -71,6 +72,8 @@ class MaterialFamilyService:
                     "formula": candidate.formula,
                     "relationships": relationships,
                     "shared_elements": shared_elements,
+                    "relationship_basis": "composition_heuristic",
+                    "structural_family_validated": False,
                     "relationship_reason": self._build_relationship_reason(
                         base_formula=base_material.formula,
                         candidate_formula=candidate.formula,
@@ -207,8 +210,9 @@ class MaterialFamilyService:
             candidate_alkali = sorted(candidate_set & self.ALKALI_ELEMENTS)
 
             reasons.append(
-                "alkali substitution from "
-                f"{', '.join(base_alkali)} to {', '.join(candidate_alkali)}"
+                "composition-level alkali-substitution hypothesis from "
+                f"{', '.join(base_alkali)} to {', '.join(candidate_alkali)}; "
+                "a substitution mechanism is not validated"
             )
 
         if "transition_metal_related" in relationships:
@@ -239,7 +243,11 @@ class MaterialFamilyService:
             )
 
         return (
-            f"{candidate_formula}: " + "; ".join(reasons)
+            f"{candidate_formula}: composition-heuristic relationship; "
+            + "; ".join(reasons)
             if reasons
-            else f"{candidate_formula}: related material candidate"
+            else (
+                f"{candidate_formula}: composition-heuristic related material "
+                "candidate; structural family membership is not validated"
+            )
         )

@@ -66,6 +66,8 @@ def test_discovery_graph_edges_include_edge_intelligence(db_session):
 
     assert "scientific_plausibility" in edge
     assert "edge_score" in edge
+    assert edge["plausibility_basis"] == "internal_composition_heuristic"
+    assert edge["substitution_mechanism_validated"] is False
     assert isinstance(edge["scientific_plausibility"], float)
     assert isinstance(edge["edge_score"], float)
 
