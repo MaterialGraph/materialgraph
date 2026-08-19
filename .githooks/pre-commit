@@ -1,0 +1,17 @@
+#!/bin/sh
+
+echo "Running Gitleaks on staged changes..."
+
+MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "$(pwd):/repo" \
+  ghcr.io/gitleaks/gitleaks:v8.18.4 \
+  protect --source /repo --staged --redact --verbose
+
+status=$?
+
+if [ $status -ne 0 ]; then
+  echo "Commit blocked: Gitleaks detected a potential secret or the scan failed."
+  exit $status
+fi
+
+echo "Gitleaks passed."
