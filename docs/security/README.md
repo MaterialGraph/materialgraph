@@ -1,8 +1,8 @@
 # MaterialGraph Security
 
-**Status:** Initial security planning
+**Status:** Security foundation established; formal Stage 1 review pending
 **Project stage:** Deterministic scientific prototype
-**Last updated:** 2026-07-20
+**Last updated:** 2026-08-19
 
 ## Purpose
 
@@ -75,6 +75,46 @@ MaterialGraph security work will follow these principles:
 8. Uploaded documents, external data, and LLM outputs must be treated as untrusted.
 9. Services and users should receive only the permissions they require.
 10. Security will be introduced incrementally rather than through one large rewrite.
+
+## Current Security Foundation
+
+Although the formal Stage 1 security review is intentionally deferred until the current architecture audit remediation reaches its transition point, a small security foundation has already been established where immediate operational risk required action.
+
+Current safeguards include:
+
+* production secrets stored outside source control
+* `.env` and environment-file exclusions through `.gitignore`
+* Gitleaks scanning of repository history in GitHub Actions
+* local Gitleaks pre-commit scanning through the repository `.githooks` hook
+* documented developer setup for enabling repository-local Git hooks
+* documented production credential-handling and credential-rotation procedures
+* separation of local-development and production environment configuration
+
+These safeguards do not constitute completion of the Stage 1 security review. They establish baseline protections while architecture audit remediation continues.
+
+The formal security review will still inspect the complete Stage 1 scope before security findings are confirmed and prioritized.
+
+## Security Foundation History
+
+### 2026-08-19 — Repository Secret-Handling Hardening
+
+An accidentally tracked environment file exposed a production database credential in repository history.
+
+Immediate remediation included:
+
+* rotation of the affected production database credential
+* update and verification of production database connectivity
+* removal of the environment file from source control
+* removal of the file from Git history
+* force-update of the sanitized remote history
+* introduction of Gitleaks repository scanning in GitHub Actions
+* introduction of local Gitleaks pre-commit scanning
+* expansion of developer and deployment documentation for secret handling and credential rotation
+* production deployment verification after remediation
+
+This event predates the formal Stage 1 security review and is recorded here as security-foundation history rather than assigned an `MG-SEC-*` finding ID.
+
+The affected areas will still be independently inspected during Stage 1.
 
 ## Initial Security Workstream
 
@@ -172,8 +212,14 @@ The two workstreams may proceed in parallel, but security changes must not silen
 
 ## Next Step
 
-After the current architecture audit remediation reaches the agreed transition point, the first security task will be to inspect the deployed prototype and create an initial set of verified security findings.
+The current architecture audit remediation remains the active engineering workstream.
 
-Until then, this document serves as the baseline for the MaterialGraph security workstream.
+Once that remediation reaches the agreed transition point, MaterialGraph will begin the formal Stage 1 security review defined in this document. The review will inspect the deployed prototype systematically before creating the initial set of verified `MG-SEC-*` findings.
+
+The security foundation already implemented—particularly secret scanning, environment isolation, and credential-handling procedures—will be treated as existing safeguards during that review rather than as evidence that the corresponding security areas are fully resolved.
+
+After inspection, confirmed findings will be recorded using the `MG-SEC-*` series, prioritized by risk, remediated methodically, and closed only after verification.
+
+Until that transition, security work should remain limited to maintaining the established safeguards and addressing any immediate security issue that cannot reasonably be deferred.
 
 Security documentation will evolve alongside MaterialGraph. As major capabilities such as authentication, organization workspaces, document ingestion, AI integration, and subscription management are introduced, dedicated security documentation and implementation guidance will be added for those features. This approach keeps the documentation aligned with the actual system architecture and avoids documenting designs that have not yet been implemented.
