@@ -7,6 +7,7 @@ Before running MaterialGraph, ensure the following are installed:
 * Python 3.11+
 * PostgreSQL 15+
 * Git
+* Docker (required for the local Gitleaks pre-commit hook)
 * Materials Project API Key
 
 ---
@@ -51,6 +52,44 @@ pip install --no-deps -e .
 
 ---
 
+### Configure Secret Scanning
+
+MaterialGraph uses Gitleaks as a defense-in-depth control against accidental credential commits.
+
+The repository includes a version-controlled pre-commit hook in:
+
+```text
+.githooks/pre-commit
+```
+
+After cloning the repository, enable the project hooks:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Verify:
+
+```bash
+git config --get core.hooksPath
+```
+
+Expected:
+
+```text
+.githooks
+```
+
+The pre-commit hook scans staged changes with Gitleaks before Git creates a commit. A detected potential secret, or a failed scan, blocks the commit.
+
+The hook currently runs Gitleaks through Docker, so Docker must be available when committing from a development environment.
+
+Secret scanning also runs independently in GitHub Actions on pushes and pull requests. The CI scan provides a second layer of protection and does not replace the local pre-commit check.
+
+Do not bypass a secret-scanning failure merely to complete a commit. Determine whether the finding is a real credential or a false positive before changing the scanner configuration.
+
+---
+
 ### Configure Environment Variables
 
 Create a `.env` file:
@@ -60,6 +99,19 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost/materialgraph
 
 MATERIALS_PROJECT_API_KEY=your_materials_project_api_key
 ```
+
+The `.env` file is local configuration and must never be committed.
+
+Use `.env.example` to document required variable names without storing credentials. Never place production passwords, API keys, access tokens, or connection strings containing real credentials in tracked files.
+
+Before committing environment-related changes, verify:
+
+```bash
+git status --short
+git ls-files -- .env
+```
+
+`.env` must not appear as a tracked file.
 
 ---
 

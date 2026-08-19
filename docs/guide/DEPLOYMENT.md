@@ -95,9 +95,26 @@ LOG_LEVEL=INFO
 
 Important:
 
-* Do not commit .env files.
+* Do not commit `.env` files or other files containing credentials.
 * Production secrets are managed directly on EC2.
 * Local development and production use separate environment files.
+* `.env.example` may contain variable names and safe placeholders only.
+* Never store a production database password, API key, token, or complete credential-bearing connection string in a tracked repository file.
+* Repository pushes and pull requests are scanned for secrets by Gitleaks in GitHub Actions.
+* Development environments should enable the repository's `.githooks` pre-commit hook as documented in `getting_started.md`.
+
+## Credential Rotation
+
+If a production credential is exposed or suspected to be exposed:
+
+1. Rotate or revoke the credential at the provider first.
+2. Update `/opt/materialgraph/.env` with the replacement credential.
+3. Restart the MaterialGraph service.
+4. Verify service health before performing repository cleanup.
+5. Remove the exposed credential from tracked files and Git history where necessary.
+6. Verify secret scanning passes after remediation.
+
+Deleting a credential from the current working tree does not remove it from existing Git history. A leaked credential must be treated as compromised even if the repository is subsequently cleaned.
 
 ---
 
