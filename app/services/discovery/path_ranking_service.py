@@ -1,4 +1,5 @@
 from collections.abc import Collection
+from math import sqrt
 
 from sqlalchemy.orm import Session
 
@@ -217,12 +218,41 @@ class DiscoveryPathRankingService:
             return 0.0
 
         if hop_count == 1:
-            return self.EFFICIENCY_WEIGHT
+            hop_efficiency = self.EFFICIENCY_WEIGHT
+        elif hop_count == 2:
+            hop_efficiency = self.EFFICIENCY_WEIGHT * 0.75
+        else:
+            hop_efficiency = self.EFFICIENCY_WEIGHT * 0.5
 
-        if hop_count == 2:
-            return round(self.EFFICIENCY_WEIGHT * 0.75, 2)
+        # Hop count remains the base cost, but equal-hop paths should not
+        # receive identical efficiency credit when one path reverses an
+        # earlier substitution. Count a transition as productive only when
+        # it does not undo an element event already observed on the path.
+        introduced_so_far: set[str] = set()
+        removed_so_far: set[str] = set()
+        productive_transition_count = 0
 
-        return round(self.EFFICIENCY_WEIGHT * 0.5, 2)
+        for transition in transitions:
+            introduced = set(
+                transition.get("introduced_elements", [])
+            )
+            removed = set(
+                transition.get("removed_elements", [])
+            )
+            reverses_prior_event = bool(
+                (removed & introduced_so_far)
+                or (introduced & removed_so_far)
+            )
+
+            if not reverses_prior_event:
+                productive_transition_count += 1
+
+            introduced_so_far.update(introduced)
+            removed_so_far.update(removed)
+
+        productive_ratio = productive_transition_count / hop_count
+
+        return round(hop_efficiency * productive_ratio, 2)
 
     def _build_usefulness_reason(
         self,
@@ -424,17 +454,28 @@ class DiscoveryPathRankingService:
         )
 
         material_scores = [
-            quality.get("quality_score", 0.0)
-            for quality in quality_by_id.values()
+            quality_by_id[material_id].get("quality_score", 0.0)
+            for material_id in material_ids
+            if material_id in quality_by_id
         ]
 
         if not material_scores:
             return 0.0
 
-        return round(
-            sum(material_scores) / len(material_scores),
-            2,
-        )
+        endpoint_id = material_ids[-1]
+        endpoint_quality = quality_by_id.get(endpoint_id)
+
+        if endpoint_quality is None:
+            return 0.0
+
+        endpoint_score = endpoint_quality.get("quality_score", 0.0)
+        bottleneck_score = min(material_scores)
+
+        # Geometric composition keeps endpoint quality visible while also
+        # making a weak intermediate an explicit path bottleneck. Unlike a
+        # whole-path mean, shared starting materials cannot dilute endpoint
+        # differences merely because a path contains more nodes.
+        return round(sqrt(endpoint_score * bottleneck_score), 2)
 
 
     @staticmethod

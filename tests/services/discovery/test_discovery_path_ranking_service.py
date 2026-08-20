@@ -17,6 +17,18 @@ def _transition(
     }
 
 
+class FakeMaterialQualityService:
+    def __init__(self, scores):
+        self.scores = scores
+
+    def get_material_quality_bulk(self, material_ids):
+        return {
+            material_id: {"quality_score": self.scores[material_id]}
+            for material_id in material_ids
+            if material_id in self.scores
+        }
+
+
 def test_rank_path_scores_full_alkali_substitution_path():
     service = DiscoveryPathRankingService()
 
@@ -346,3 +358,84 @@ def test_structured_endpoint_elements_take_precedence_over_formula():
     )
 
     assert result["score_breakdown"]["objective_alignment"] == 0.0
+
+
+def test_equal_hop_path_with_reversal_receives_lower_efficiency():
+    service = DiscoveryPathRankingService()
+    direct_progress = [
+        _transition(["Li"], ["Na"]),
+        _transition(["Co"], ["Mn"]),
+    ]
+    reversed_progress = [
+        _transition(["Li"], ["Na"]),
+        _transition(["Na"], ["Li"]),
+    ]
+
+    productive_score = service._score_path_efficiency(direct_progress)
+    reversal_score = service._score_path_efficiency(reversed_progress)
+
+    assert productive_score == 7.5
+    assert reversal_score == 3.75
+
+
+def test_material_quality_preserves_endpoint_difference_with_shared_base():
+    service = DiscoveryPathRankingService()
+    materials = [
+        {"material_id": 1},
+        {"material_id": 2},
+    ]
+
+    service.material_quality_service = FakeMaterialQualityService(
+        {1: 9.0, 2: 15.0}
+    )
+    high_endpoint_score = service._score_material_quality(materials)
+
+    service.material_quality_service = FakeMaterialQualityService(
+        {1: 9.0, 2: 12.0}
+    )
+    lower_endpoint_score = service._score_material_quality(materials)
+
+    assert high_endpoint_score == 11.62
+    assert lower_endpoint_score == 10.39
+    assert high_endpoint_score > lower_endpoint_score
+
+
+def test_material_quality_retains_weak_intermediate_as_bottleneck():
+    service = DiscoveryPathRankingService()
+    service.material_quality_service = FakeMaterialQualityService(
+        {1: 15.0, 2: 3.0, 3: 15.0}
+    )
+
+    score = service._score_material_quality(
+        [
+            {"material_id": 1},
+            {"material_id": 2},
+            {"material_id": 3},
+        ]
+    )
+
+    assert score == 6.71
+
+
+def test_remediated_components_preserve_total_score_arithmetic():
+    service = DiscoveryPathRankingService()
+    service.material_quality_service = FakeMaterialQualityService(
+        {1: 9.0, 2: 15.0}
+    )
+
+    result = service.rank_path(
+        materials=[
+            {"material_id": 1, "formula": "LiFePO4"},
+            {"material_id": 2, "formula": "NaFePO4"},
+        ],
+        transitions=[_transition(["Li"], ["Na"])],
+        avoid_element="Li",
+        prefer_element="Na",
+    )
+
+    assert result["score_breakdown"]["path_efficiency"] == 10.0
+    assert result["score_breakdown"]["material_quality"] == 11.62
+    assert result["scientific_usefulness_score"] == round(
+        sum(result["score_breakdown"].values()),
+        2,
+    )
