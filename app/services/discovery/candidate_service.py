@@ -240,7 +240,7 @@ class DiscoveryCandidateService:
         recommendation_result = self.recommendation_service.get_recommendations(
             material_id=material_id,
             limit=recommendation_limit,
-            prefer_lower_criticality=True,
+            prefer_lower_criticality=False,
         )
 
         if recommendation_result["mp_id"] is None:
@@ -304,6 +304,7 @@ class DiscoveryCandidateService:
             avoid_element=avoid_element,
             prefer_element=prefer_element,
             limit=recommendation_limit,
+            prefer_lower_criticality=False,
         )
 
         if scenario_result["mp_id"] is None:

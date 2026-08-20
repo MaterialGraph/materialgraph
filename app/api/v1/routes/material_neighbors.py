@@ -137,7 +137,7 @@ def get_material_recommendations(
         description="Maximum number of recommendations to return.",
     ),
     prefer_lower_criticality: bool = Query(
-        default=True,
+        default=False,
         description="Whether to prioritize materials with lower criticality.",
     ),
     db: Session = Depends(get_db),
@@ -196,6 +196,13 @@ def get_material_scenario_recommendations(
         le=50,
         description="Maximum number of scenario recommendations to return.",
     ),
+    prefer_lower_criticality: bool = Query(
+        default=False,
+        description=(
+            "Whether to apply lower-criticality preference before "
+            "scenario scoring."
+        ),
+    ),
     db: Session = Depends(get_db),
 ) -> MaterialScenarioRecommendationResponse:
     if not is_valid_element_symbol(element):
@@ -225,6 +232,7 @@ def get_material_scenario_recommendations(
         avoid_element=avoid_element,
         prefer_element=prefer_element,
         limit=limit,
+        prefer_lower_criticality=prefer_lower_criticality,
     )
 
     ensure_material_found(result)

@@ -6,10 +6,10 @@
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 83
+- **Remediated:** 86
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 9
-- **Closed total:** 85
+- **Open:** 6
+- **Closed total:** 88
 
 ## Findings
 
@@ -47,9 +47,9 @@
 | MG-AUD-030 | Bounded Search Shapes the Opportunity Set | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-030) | [Evidence](resolutions/2026-08.md#mg-aud-030-032) |
 | MG-AUD-031 | Family Ordering Can Affect Bounded Discovery | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-031) | [Evidence](resolutions/2026-08.md#mg-aud-030-032) |
 | MG-AUD-032 | Equal-Key Family Ordering Lacks a Final Tie-Breaker | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-032) | [Evidence](resolutions/2026-08.md#mg-aud-030-032) |
-| MG-AUD-033 | Recommendation Pipeline Contains Irreversible Preselection | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-033) | — |
-| MG-AUD-034 | Recommendation Defaults to Lower Criticality | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-034) | — |
-| MG-AUD-035 | Similarity and Recommendation Use Different Criticality Policies | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-035) | — |
+| MG-AUD-033 | Recommendation Pipeline Contains Irreversible Preselection | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-033) | [Evidence](resolutions/2026-08.md#mg-aud-033-035) |
+| MG-AUD-034 | Recommendation Defaults to Lower Criticality | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-034) | [Evidence](resolutions/2026-08.md#mg-aud-033-035) |
+| MG-AUD-035 | Similarity and Recommendation Use Different Criticality Policies | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-035) | [Evidence](resolutions/2026-08.md#mg-aud-033-035) |
 | MG-AUD-036 | Criticality Direction Uses Risk Terminology | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-036) | [Evidence](resolutions/2026-07.md#mg-aud-036) |
 | MG-AUD-037 | Recommendation Reasons Mix Contributors and Context | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-037) | [Evidence](resolutions/2026-07.md#mg-aud-037) |
 | MG-AUD-038 | Path Efficiency Is Hop-Count Based | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-038) | — |

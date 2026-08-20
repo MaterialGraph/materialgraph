@@ -1,6 +1,5 @@
 FAMILY_BONUS = 40.0
 SUBSTITUTION_BONUS = 35.0
-LOWER_CRITICALITY_BONUS = 30.0
 STABILITY_BONUS = 20.0
 PREFERRED_ELEMENT_BONUS = 25.0
 AVOIDED_ELEMENT_REMOVED_BONUS = 25.0
@@ -44,11 +43,6 @@ class DiscoveryScoringService:
         score_breakdown = {
             "recommendation_score": candidate["recommendation_score"],
         }
-
-        if candidate["criticality_direction"] == "LOWER_CRITICALITY":
-            score += LOWER_CRITICALITY_BONUS
-            paths.append("lower_criticality")
-            score_breakdown["lower_criticality_bonus"] = LOWER_CRITICALITY_BONUS
 
         if candidate["is_stable"]:
             score += STABILITY_BONUS

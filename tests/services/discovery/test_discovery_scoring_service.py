@@ -99,7 +99,7 @@ def test_set_source_diversity_bonus_replaces_existing_bonus():
     }
 
 
-def test_lower_criticality_direction_applies_existing_bonus():
+def test_lower_criticality_is_not_applied_twice_in_discovery_scoring():
     service = DiscoveryScoringService()
 
     score, paths, breakdown = service.score_recommendation_candidate(
@@ -111,15 +111,13 @@ def test_lower_criticality_direction_applies_existing_bonus():
         }
     )
 
-    assert score == 130.0
+    assert score == 100.0
     assert paths == [
         "recommendation_engine",
         "similar_material",
-        "lower_criticality",
     ]
     assert breakdown == {
         "recommendation_score": 100.0,
-        "lower_criticality_bonus": 30.0,
     }
 
 

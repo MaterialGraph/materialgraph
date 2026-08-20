@@ -177,6 +177,7 @@ def test_similarity_bulk_loads_criticality_once() -> None:
         1: {"criticality_score": 30.0},
         2: {"criticality_score": 20.0},
         3: {"criticality_score": None},
+        4: {"criticality_score": 40.0},
     }
 
     result = service.get_similar_materials(
@@ -185,7 +186,7 @@ def test_similarity_bulk_loads_criticality_once() -> None:
     )
 
     service.criticality_service.get_material_criticality_bulk.assert_called_once_with(
-        material_ids=[1, 2, 3]
+        material_ids=[1, 2, 3, 4]
     )
     service.criticality_service.get_material_criticality.assert_not_called()
 
@@ -210,6 +211,35 @@ def test_similarity_bulk_loads_criticality_once() -> None:
     assert candidate_by_id[3]["criticality_score"] is None
     assert candidate_by_id[3]["criticality_delta"] is None
     assert candidate_by_id[3]["criticality_direction"] == "UNKNOWN"
+    assert result["candidate_pool_count"] == 3
+    assert result["returned_count"] == 2
+    assert result["ranking_policy"]["candidate_pool"] == (
+        "all_structured_neighbors_before_limit"
+    )
+
+
+def test_similarity_scores_complete_neighbor_pool_before_limit() -> None:
+    service = MaterialSimilarityService.__new__(MaterialSimilarityService)
+    service.neighbor_service = Mock()
+    service.criticality_service = Mock()
+
+    service.neighbor_service.get_neighbors.return_value = _neighbor_response(
+        [_neighbor(2, 1), _neighbor(3, 3)]
+    )
+    service.criticality_service.get_material_criticality_bulk.return_value = {
+        1: {"criticality_score": 30.0},
+        2: {"criticality_score": 30.0},
+        3: {"criticality_score": 30.0},
+    }
+
+    result = service.get_similar_materials(material_id=1, limit=1)
+
+    assert result["candidate_pool_count"] == 2
+    assert result["returned_count"] == 1
+    assert result["similar_materials"][0]["material_id"] == 3
+    service.criticality_service.get_material_criticality_bulk.assert_called_once_with(
+        material_ids=[1, 2, 3]
+    )
 
 
 def test_missing_source_skips_bulk_criticality_lookup() -> None:

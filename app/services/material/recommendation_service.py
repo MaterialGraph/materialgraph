@@ -6,7 +6,7 @@ from app.services.scenario_policy import (
     ScenarioPolicyEvaluator,
 )
 
-DEFAULT_RECOMMENDATION_POOL_SIZE = 50
+CRITICALITY_DELTA_MULTIPLIER = 2.0
 
 
 class MaterialRecommendationService:
@@ -17,16 +17,19 @@ class MaterialRecommendationService:
     def get_recommendations(
         self,
         material_id: int,
-        limit: int = 10,
-        prefer_lower_criticality: bool = True,
+        limit: int | None = 10,
+        prefer_lower_criticality: bool = False,
     ) -> dict:
         similarity_result = self.similarity_service.get_similar_materials(
             material_id=material_id,
-            limit=DEFAULT_RECOMMENDATION_POOL_SIZE,
+            limit=None,
         )
 
         if similarity_result["mp_id"] is None:
-            return self._empty_recommendation_response(material_id)
+            return self._empty_recommendation_response(
+                material_id,
+                prefer_lower_criticality,
+            )
 
         recommendations = []
 
@@ -62,8 +65,16 @@ class MaterialRecommendationService:
             )
 
         recommendations.sort(
-            key=lambda item: item["recommendation_score"],
-            reverse=True,
+            key=lambda item: (
+                -item["recommendation_score"],
+                item["material_id"],
+            ),
+        )
+
+        returned_recommendations = (
+            recommendations[:limit]
+            if limit is not None
+            else recommendations
         )
 
         return {
@@ -72,7 +83,12 @@ class MaterialRecommendationService:
             "pretty_formula": similarity_result["pretty_formula"],
             "formula": similarity_result["formula"],
             "criticality_score": similarity_result["criticality_score"],
-            "recommendations": recommendations[:limit],
+            "ranking_policy": self._ranking_policy(
+                prefer_lower_criticality
+            ),
+            "candidate_pool_count": len(recommendations),
+            "returned_count": len(returned_recommendations),
+            "recommendations": returned_recommendations,
         }
 
     def get_scenario_recommendations(
@@ -83,11 +99,12 @@ class MaterialRecommendationService:
         avoid_element: str | None = None,
         prefer_element: str | None = None,
         limit: int = 10,
+        prefer_lower_criticality: bool = False,
     ) -> dict:
         base_result = self.get_recommendations(
             material_id=material_id,
-            limit=DEFAULT_RECOMMENDATION_POOL_SIZE,
-            prefer_lower_criticality=True,
+            limit=None,
+            prefer_lower_criticality=prefer_lower_criticality,
         )
 
         if base_result["mp_id"] is None:
@@ -98,6 +115,7 @@ class MaterialRecommendationService:
                 avoid_element=avoid_element,
                 prefer_element=prefer_element,
                 limit=limit,
+                prefer_lower_criticality=prefer_lower_criticality,
             )
 
         policy = ScenarioPolicy(
@@ -127,8 +145,10 @@ class MaterialRecommendationService:
             )
 
         scenario_recommendations.sort(
-            key=lambda item: item["scenario_score"],
-            reverse=True,
+            key=lambda item: (
+                -item["scenario_score"],
+                item["material_id"],
+            ),
         )
 
         return {
@@ -137,6 +157,9 @@ class MaterialRecommendationService:
             "pretty_formula": base_result["pretty_formula"],
             "formula": base_result["formula"],
             "criticality_score": base_result["criticality_score"],
+            "ranking_policy": base_result["ranking_policy"],
+            "candidate_pool_count": len(scenario_recommendations),
+            "returned_count": len(scenario_recommendations[:limit]),
             "scenario": self._build_scenario_payload(
                 element=element,
                 supply_risk_multiplier=supply_risk_multiplier,
@@ -158,9 +181,9 @@ class MaterialRecommendationService:
 
         if prefer_lower_criticality and criticality_delta is not None:
             if criticality_delta < 0:
-                score += abs(criticality_delta) * 2
+                score += abs(criticality_delta) * CRITICALITY_DELTA_MULTIPLIER
             elif criticality_delta > 0:
-                score -= criticality_delta * 2
+                score -= criticality_delta * CRITICALITY_DELTA_MULTIPLIER
 
         if candidate["is_stable"]:
             score += 10
@@ -238,13 +261,22 @@ class MaterialRecommendationService:
 
         return "; ".join(reasons)
 
-    def _empty_recommendation_response(self, material_id: int) -> dict:
+    def _empty_recommendation_response(
+        self,
+        material_id: int,
+        prefer_lower_criticality: bool = False,
+    ) -> dict:
         return {
             "material_id": material_id,
             "mp_id": None,
             "pretty_formula": None,
             "formula": None,
             "criticality_score": None,
+            "ranking_policy": self._ranking_policy(
+                prefer_lower_criticality
+            ),
+            "candidate_pool_count": 0,
+            "returned_count": 0,
             "recommendations": [],
         }
 
@@ -256,9 +288,16 @@ class MaterialRecommendationService:
         avoid_element: str | None,
         prefer_element: str | None,
         limit: int,
+        prefer_lower_criticality: bool,
     ) -> dict:
         return {
-            **self._empty_recommendation_response(material_id),
+            **self._empty_recommendation_response(
+                material_id,
+                prefer_lower_criticality,
+            ),
+            "ranking_policy": self._ranking_policy(
+                prefer_lower_criticality
+            ),
             "scenario": self._build_scenario_payload(
                 element=element,
                 supply_risk_multiplier=supply_risk_multiplier,
@@ -282,4 +321,19 @@ class MaterialRecommendationService:
             "avoid_element": avoid_element,
             "prefer_element": prefer_element,
             "limit": limit,
+        }
+
+    def _ranking_policy(
+        self,
+        prefer_lower_criticality: bool,
+    ) -> dict:
+        return {
+            "prefer_lower_criticality": prefer_lower_criticality,
+            "criticality_delta_multiplier": (
+                CRITICALITY_DELTA_MULTIPLIER
+                if prefer_lower_criticality
+                else 0.0
+            ),
+            "candidate_pool": "all_similar_materials_before_limit",
+            "final_tie_breaker": "material_id_asc",
         }

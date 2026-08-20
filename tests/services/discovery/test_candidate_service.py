@@ -494,3 +494,35 @@ def test_candidate_discovery_reuses_family_composition_map():
     assert service.family_service.calls == [5]
     assert captured_maps == [{5: ["Fe", "Li", "O", "P"]}]
     assert result["material_id"] == 5
+
+
+def test_discovery_requests_neutral_recommendation_policy():
+    class FakeRecommendationService:
+        def __init__(self):
+            self.kwargs = None
+
+        def get_recommendations(self, **kwargs):
+            self.kwargs = kwargs
+            return {
+                "material_id": kwargs["material_id"],
+                "mp_id": "mp-5",
+                "recommendations": [],
+            }
+
+    service = DiscoveryCandidateService.__new__(DiscoveryCandidateService)
+    service.recommendation_service = FakeRecommendationService()
+
+    service._add_recommendation_candidates(
+        candidates_by_id={},
+        material_id=5,
+        limit=5,
+        avoid_element=None,
+        prefer_element=None,
+        elements_map={},
+    )
+
+    assert service.recommendation_service.kwargs == {
+        "material_id": 5,
+        "limit": 15,
+        "prefer_lower_criticality": False,
+    }

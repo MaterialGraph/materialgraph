@@ -16,6 +16,10 @@ def test_get_material_scenario_recommendations(client):
     assert "criticality_score" in data
     assert "scenario" in data
     assert "recommendations" in data
+    assert data["ranking_policy"]["prefer_lower_criticality"] is False
+    assert data["ranking_policy"]["criticality_delta_multiplier"] == 0.0
+    assert data["candidate_pool_count"] >= data["returned_count"]
+    assert data["returned_count"] == len(data["recommendations"])
 
     assert data["scenario"]["element"] == "Li"
     assert data["scenario"]["supply_risk_multiplier"] == 1.5
@@ -83,3 +87,15 @@ def test_get_material_scenario_recommendations_requires_element(client):
     )
 
     assert response.status_code == 422
+
+
+def test_scenario_recommendations_can_opt_in_to_lower_criticality(client):
+    response = client.get(
+        "/api/v1/materials/5/recommendations/scenario"
+        "?element=Li&limit=5&prefer_lower_criticality=true"
+    )
+
+    assert response.status_code == 200
+    policy = response.json()["ranking_policy"]
+    assert policy["prefer_lower_criticality"] is True
+    assert policy["criticality_delta_multiplier"] == 2.0

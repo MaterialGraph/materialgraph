@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict
 
 from app.schemas.material_common import (
@@ -15,9 +17,19 @@ class MaterialRecommendationRead(MaterialRiskSummary, MaterialRelationshipSummar
     recommendation_reason: str
 
 
+class MaterialRecommendationRankingPolicy(BaseModel):
+    prefer_lower_criticality: bool
+    criticality_delta_multiplier: float
+    candidate_pool: Literal["all_similar_materials_before_limit"]
+    final_tie_breaker: Literal["material_id_asc"]
+
+
 class MaterialRecommendationResponse(MaterialRiskSummary):
     model_config = ConfigDict(from_attributes=True)
 
+    ranking_policy: MaterialRecommendationRankingPolicy
+    candidate_pool_count: int
+    returned_count: int
     recommendations: list[MaterialRecommendationRead]
 
 
@@ -39,4 +51,7 @@ class MaterialScenarioRecommendationResponse(MaterialRiskSummary):
     model_config = ConfigDict(from_attributes=True)
 
     scenario: MaterialRecommendationScenario
+    ranking_policy: MaterialRecommendationRankingPolicy
+    candidate_pool_count: int
+    returned_count: int
     recommendations: list[MaterialScenarioRead]

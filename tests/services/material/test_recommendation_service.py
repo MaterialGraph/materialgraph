@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 
 from app.services.material.recommendation_service import (
@@ -24,6 +26,39 @@ def build_candidate(
         "shared_application_count": 0,
         "is_stable": False,
         "energy_above_hull": None,
+    }
+
+
+def build_full_candidate(
+    material_id: int,
+    *,
+    similarity_score: float,
+    criticality_delta: float | None,
+) -> dict:
+    direction = "UNKNOWN"
+    if criticality_delta is not None:
+        if criticality_delta < 0:
+            direction = "LOWER_CRITICALITY"
+        elif criticality_delta > 0:
+            direction = "HIGHER_CRITICALITY"
+        else:
+            direction = "SAME_CRITICALITY"
+
+    return {
+        "material_id": material_id,
+        "mp_id": f"mp-{material_id}",
+        "pretty_formula": f"M{material_id}",
+        "formula": f"M{material_id}",
+        "material_type": "test",
+        "is_stable": False,
+        "energy_above_hull": None,
+        "similarity_score": similarity_score,
+        "criticality_score": None,
+        "criticality_delta": criticality_delta,
+        "criticality_direction": direction,
+        "shared_element_count": 1,
+        "shared_application_count": 0,
+        "relationship_types": ["SHARED_ELEMENT"],
     }
 
 
@@ -186,3 +221,80 @@ def test_recommendation_reason_labels_similarity_basis(
     )
 
     assert "similarity basis: shares 3 element(s), shares 1 application(s)" in reason
+
+
+def test_recommendations_use_complete_similarity_pool_before_limit():
+    service = MaterialRecommendationService.__new__(
+        MaterialRecommendationService
+    )
+    service.similarity_service = Mock()
+    service.similarity_service.get_similar_materials.return_value = {
+        "material_id": 1,
+        "mp_id": "mp-1",
+        "pretty_formula": "M1",
+        "formula": "M1",
+        "criticality_score": 30.0,
+        "similar_materials": [
+            build_full_candidate(
+                2,
+                similarity_score=100.0,
+                criticality_delta=10.0,
+            ),
+            build_full_candidate(
+                3,
+                similarity_score=90.0,
+                criticality_delta=-20.0,
+            ),
+        ],
+    }
+
+    result = service.get_recommendations(
+        material_id=1,
+        limit=1,
+        prefer_lower_criticality=True,
+    )
+
+    service.similarity_service.get_similar_materials.assert_called_once_with(
+        material_id=1,
+        limit=None,
+    )
+    assert result["candidate_pool_count"] == 2
+    assert result["returned_count"] == 1
+    assert result["recommendations"][0]["material_id"] == 3
+    assert result["ranking_policy"]["prefer_lower_criticality"] is True
+
+
+def test_recommendations_are_neutral_by_default():
+    service = MaterialRecommendationService.__new__(
+        MaterialRecommendationService
+    )
+    service.similarity_service = Mock()
+    service.similarity_service.get_similar_materials.return_value = {
+        "material_id": 1,
+        "mp_id": "mp-1",
+        "pretty_formula": "M1",
+        "formula": "M1",
+        "criticality_score": 30.0,
+        "similar_materials": [
+            build_full_candidate(
+                2,
+                similarity_score=100.0,
+                criticality_delta=10.0,
+            ),
+            build_full_candidate(
+                3,
+                similarity_score=90.0,
+                criticality_delta=-20.0,
+            ),
+        ],
+    }
+
+    result = service.get_recommendations(material_id=1, limit=1)
+
+    assert result["recommendations"][0]["material_id"] == 2
+    assert result["ranking_policy"] == {
+        "prefer_lower_criticality": False,
+        "criticality_delta_multiplier": 0.0,
+        "candidate_pool": "all_similar_materials_before_limit",
+        "final_tie_breaker": "material_id_asc",
+    }

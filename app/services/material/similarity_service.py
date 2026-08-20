@@ -10,13 +10,17 @@ class MaterialSimilarityService:
         self.neighbor_service = MaterialNeighborService(db)
         self.criticality_service = MaterialCriticalityService(db)
 
-    def get_similar_materials(self, material_id: int, limit: int = 10) -> dict:
+    def get_similar_materials(
+        self,
+        material_id: int,
+        limit: int | None = 10,
+    ) -> dict:
         neighbor_result = self.neighbor_service.get_neighbors(material_id)
 
         if neighbor_result["mp_id"] is None:
             return self._empty_similarity_response(material_id)
 
-        limited_neighbors = neighbor_result["neighbors"][:limit]
+        neighbors = neighbor_result["neighbors"]
 
         criticality_by_material_id = (
             self.criticality_service.get_material_criticality_bulk(
@@ -24,7 +28,7 @@ class MaterialSimilarityService:
                     material_id,
                     *[
                         neighbor["material_id"]
-                        for neighbor in limited_neighbors
+                        for neighbor in neighbors
                     ],
                 ]
             )
@@ -36,7 +40,7 @@ class MaterialSimilarityService:
 
         similar_materials = []
 
-        for neighbor in limited_neighbors:
+        for neighbor in neighbors:
             neighbor_material_id = neighbor["material_id"]
 
             similarity_score = self._calculate_similarity_score(neighbor)
@@ -80,6 +84,12 @@ class MaterialSimilarityService:
             reverse=True,
         )
 
+        returned_materials = (
+            similar_materials[:limit]
+            if limit is not None
+            else similar_materials
+        )
+
         return {
             "material_id": neighbor_result["material_id"],
             "mp_id": neighbor_result["mp_id"],
@@ -89,7 +99,10 @@ class MaterialSimilarityService:
             "is_stable": neighbor_result["is_stable"],
             "energy_above_hull": neighbor_result["energy_above_hull"],
             "criticality_score": source_criticality_score,
-            "similar_materials": similar_materials,
+            "ranking_policy": self._ranking_policy(),
+            "candidate_pool_count": len(similar_materials),
+            "returned_count": len(returned_materials),
+            "similar_materials": returned_materials,
         }
 
     def _empty_similarity_response(self, material_id: int) -> dict:
@@ -102,7 +115,20 @@ class MaterialSimilarityService:
             "is_stable": None,
             "energy_above_hull": None,
             "criticality_score": None,
+            "ranking_policy": self._ranking_policy(),
+            "candidate_pool_count": 0,
+            "returned_count": 0,
             "similar_materials": [],
+        }
+
+    def _ranking_policy(self) -> dict:
+        return {
+            "primary": "similarity_score_desc",
+            "criticality_tie_breaker": (
+                "known_then_smallest_absolute_delta"
+            ),
+            "final_tie_breaker": "material_id_asc",
+            "candidate_pool": "all_structured_neighbors_before_limit",
         }
 
     
