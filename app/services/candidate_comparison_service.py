@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from app.schemas.comparison import (
     CandidateComparisonRequest,
     CandidateComparisonResult,
+    CandidateComparisonUnavailable,
+    CandidateComparisonUnavailableCandidate,
 )
 from app.schemas.screening import (
     CandidateScreeningRequest,
@@ -21,7 +23,7 @@ class CandidateComparisonService:
     def compare_candidates(
         self,
         request: CandidateComparisonRequest,
-    ) -> CandidateComparisonResult | None:
+    ) -> CandidateComparisonResult | CandidateComparisonUnavailable:
         screening_request = CandidateScreeningRequest(
             scarce_elements=request.scarce_elements,
             avoid_elements=request.avoid_elements,
@@ -29,15 +31,32 @@ class CandidateComparisonService:
             max_energy_above_hull=request.max_energy_above_hull,
         )
 
-        screened_candidates = (
-            self.screening_service.screen_candidates(
-                screening_request
-            )
+        evaluations = self.screening_service.evaluate_candidate_ids(
+            request=screening_request,
+            material_ids=[
+                request.material_a_id,
+                request.material_b_id,
+            ],
         )
+        unavailable_candidates = [
+            CandidateComparisonUnavailableCandidate(
+                material_id=evaluation.material_id,
+                disposition=evaluation.disposition,
+                reason=evaluation.reason,
+            )
+            for evaluation in evaluations
+            if evaluation.disposition != "eligible"
+        ]
+
+        if unavailable_candidates:
+            return CandidateComparisonUnavailable(
+                unavailable_candidates=unavailable_candidates,
+            )
 
         candidate_by_id = {
-            candidate.material_id: candidate
-            for candidate in screened_candidates
+            evaluation.material_id: evaluation.result
+            for evaluation in evaluations
+            if evaluation.result is not None
         }
 
         material_a = candidate_by_id.get(
@@ -48,7 +67,27 @@ class CandidateComparisonService:
         )
 
         if material_a is None or material_b is None:
-            return None
+            missing_ids = [
+                material_id
+                for material_id, material in (
+                    (request.material_a_id, material_a),
+                    (request.material_b_id, material_b),
+                )
+                if material is None
+            ]
+            return CandidateComparisonUnavailable(
+                unavailable_candidates=[
+                    CandidateComparisonUnavailableCandidate(
+                        material_id=material_id,
+                        disposition="unavailable",
+                        reason=(
+                            "Material could not be evaluated by the "
+                            "screening service."
+                        ),
+                    )
+                    for material_id in missing_ids
+                ]
+            )
 
         score_difference = round(
             abs(material_a.score - material_b.score),

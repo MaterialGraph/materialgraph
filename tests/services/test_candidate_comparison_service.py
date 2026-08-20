@@ -1,5 +1,8 @@
 from app.schemas.comparison import CandidateComparisonRequest
-from app.schemas.screening import CandidateScreeningResult
+from app.schemas.screening import (
+    CandidateScreeningEvaluation,
+    CandidateScreeningResult,
+)
 from app.services.candidate_comparison_service import (
     CandidateComparisonService,
 )
@@ -15,11 +18,32 @@ class FakeScreeningService:
     ) -> None:
         self.candidates = candidates
 
-    def screen_candidates(
+    def evaluate_candidate_ids(
         self,
         request,
-    ) -> list[CandidateScreeningResult]:
-        return self.candidates
+        material_ids,
+    ) -> list[CandidateScreeningEvaluation]:
+        candidate_by_id = {
+            candidate.material_id: candidate
+            for candidate in self.candidates
+        }
+        return [
+            CandidateScreeningEvaluation(
+                material_id=material_id,
+                disposition=(
+                    "eligible"
+                    if material_id in candidate_by_id
+                    else "material_not_found"
+                ),
+                reason=(
+                    "Material satisfies the selected constraints."
+                    if material_id in candidate_by_id
+                    else "Material does not exist."
+                ),
+                result=candidate_by_id.get(material_id),
+            )
+            for material_id in material_ids
+        ]
 
     def _decision_key(
         self,
@@ -97,7 +121,7 @@ def test_compare_candidates_returns_winner(db_session):
     assert result.reasons
 
 
-def test_compare_candidates_returns_none_for_missing_material(
+def test_compare_candidates_identifies_missing_material(
     db_session,
 ):
     service = CandidateComparisonService(db_session)
@@ -111,7 +135,57 @@ def test_compare_candidates_returns_none_for_missing_material(
         )
     )
 
-    assert result is None
+    assert result.comparison_type == "unavailable"
+    assert len(result.unavailable_candidates) == 1
+    unavailable = result.unavailable_candidates[0]
+    assert unavailable.material_id == 999999
+    assert unavailable.disposition == "material_not_found"
+
+
+def test_compare_candidates_identifies_filtered_material():
+    service = CandidateComparisonService.__new__(
+        CandidateComparisonService
+    )
+    eligible = _candidate(
+        material_id=1,
+        formula="Eligible",
+        score=70.0,
+    )
+
+    class FilteredScreeningService(FakeScreeningService):
+        def evaluate_candidate_ids(self, request, material_ids):
+            return [
+                CandidateScreeningEvaluation(
+                    material_id=1,
+                    disposition="eligible",
+                    reason="Material satisfies the selected constraints.",
+                    result=eligible,
+                ),
+                CandidateScreeningEvaluation(
+                    material_id=2,
+                    disposition="filtered_unstable",
+                    reason=(
+                        "Material was excluded because stable material "
+                        "was required."
+                    ),
+                ),
+            ]
+
+    service.screening_service = FilteredScreeningService([eligible])
+
+    result = service.compare_candidates(
+        CandidateComparisonRequest(
+            material_a_id=1,
+            material_b_id=2,
+        )
+    )
+
+    assert result.comparison_type == "unavailable"
+    assert result.unavailable_candidates[0].material_id == 2
+    assert (
+        result.unavailable_candidates[0].disposition
+        == "filtered_unstable"
+    )
 
 
 def test_compare_candidates_returns_explicit_tie():

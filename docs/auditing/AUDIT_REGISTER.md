@@ -6,10 +6,10 @@
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 88
+- **Remediated:** 89
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 4
-- **Closed total:** 90
+- **Open:** 3
+- **Closed total:** 91
 
 ## Findings
 
@@ -58,7 +58,7 @@
 | MG-AUD-041 | Endpoint Ranking Uses Implicit Lexicographic Policy | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-041) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
 | MG-AUD-042 | Exact Numeric Differences Can Split Evidence Groups | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-042) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
 | MG-AUD-043 | Comparative Summaries Are Not Uniformly Tie-Aware | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-043) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
-| MG-AUD-044 | Comparison Conflates Filtered and Unavailable Candidates | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-044) | — |
+| MG-AUD-044 | Comparison Conflates Filtered and Unavailable Candidates | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-044) | [Evidence](resolutions/2026-08.md#mg-aud-044) |
 | MG-AUD-045 | API Contracts Are Under-Typed or Semantically Broader Than Implementation | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-045) | — |
 | MG-AUD-046 | Family Discovery Performs Global Scans | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-046) | [Evidence](resolutions/2026-08.md#mg-aud-046-048) |
 | MG-AUD-047 | Candidate Screening Has N+1 Access Patterns | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-047) | [Evidence](resolutions/2026-08.md#mg-aud-046-048) |

@@ -4,7 +4,11 @@ from app.core.logging import logger
 from app.models.element import Element
 from app.models.material import Material
 from app.models.material_element import MaterialElement
-from app.schemas.screening import CandidateScreeningRequest, CandidateScreeningResult
+from app.schemas.screening import (
+    CandidateScreeningEvaluation,
+    CandidateScreeningRequest,
+    CandidateScreeningResult,
+)
 from app.services.material.risk_service import MaterialRiskService
 
 
@@ -31,9 +35,120 @@ class CandidateScreeningService:
     ) -> list[CandidateScreeningResult]:
         materials = self.db.query(Material).all()
 
+        results = self._screen_materials(
+            materials=materials,
+            request=request,
+        )
+
+        logger.info(
+            "Screened {} candidate materials with scarce_elements={} "
+            "avoid_elements={}",
+            len(results),
+            request.scarce_elements,
+            request.avoid_elements,
+        )
+
+        return results
+
+    def evaluate_candidate_ids(
+        self,
+        request: CandidateScreeningRequest,
+        material_ids: list[int],
+    ) -> list[CandidateScreeningEvaluation]:
+        requested_ids = list(dict.fromkeys(material_ids))
+
+        if not requested_ids:
+            return []
+
+        materials = (
+            self.db.query(Material)
+            .filter(Material.id.in_(requested_ids))
+            .all()
+        )
+        material_by_id = {
+            material.id: material
+            for material in materials
+        }
+        eligible_materials = [
+            material
+            for material in materials
+            if self._filter_disposition(material, request) is None
+        ]
+        screened_by_id = {
+            result.material_id: result
+            for result in self._screen_materials(
+                materials=eligible_materials,
+                request=request,
+            )
+        }
+        evaluations = []
+
+        for material_id in requested_ids:
+            material = material_by_id.get(material_id)
+
+            if material is None:
+                evaluations.append(
+                    CandidateScreeningEvaluation(
+                        material_id=material_id,
+                        disposition="material_not_found",
+                        reason="Material does not exist.",
+                    )
+                )
+                continue
+
+            filtered = self._filter_disposition(material, request)
+
+            if filtered is not None:
+                disposition, reason = filtered
+                evaluations.append(
+                    CandidateScreeningEvaluation(
+                        material_id=material_id,
+                        disposition=disposition,
+                        reason=reason,
+                    )
+                )
+                continue
+
+            result = screened_by_id.get(material_id)
+
+            if result is None:
+                evaluations.append(
+                    CandidateScreeningEvaluation(
+                        material_id=material_id,
+                        disposition="unavailable",
+                        reason=(
+                            "Material could not be evaluated by the "
+                            "screening service."
+                        ),
+                    )
+                )
+                continue
+
+            evaluations.append(
+                CandidateScreeningEvaluation(
+                    material_id=material_id,
+                    disposition="eligible",
+                    reason="Material satisfies the selected constraints.",
+                    result=result,
+                )
+            )
+
+        return evaluations
+
+    def _screen_materials(
+        self,
+        *,
+        materials: list[Material],
+        request: CandidateScreeningRequest,
+    ) -> list[CandidateScreeningResult]:
+        eligible_materials = [
+            material
+            for material in materials
+            if self._filter_disposition(material, request) is None
+        ]
         material_ids = [
             material.id
-            for material in materials
+            for material in eligible_materials
         ]
 
         risk_signals_by_id = (
@@ -50,19 +165,8 @@ class CandidateScreeningService:
         scarce_elements = set(request.scarce_elements)
         avoid_elements = set(request.avoid_elements)
 
-        for material in materials:
+        for material in eligible_materials:
             element_symbols = elements_by_material_id.get(material.id, set())
-
-            if request.require_stable and not material.is_stable:
-                continue
-
-            if (
-                request.max_energy_above_hull is not None
-                and material.energy_above_hull is not None
-                and material.energy_above_hull
-                > request.max_energy_above_hull
-            ):
-                continue
 
             score, reasons = self._score_material(
                 material=material,
@@ -151,15 +255,31 @@ class CandidateScreeningService:
             reverse=True,
         )
 
-        logger.info(
-            "Screened {} candidate materials with scarce_elements={} "
-            "avoid_elements={}",
-            len(ranked_results),
-            request.scarce_elements,
-            request.avoid_elements,
-        )
-
         return ranked_results
+
+    @staticmethod
+    def _filter_disposition(
+        material: Material,
+        request: CandidateScreeningRequest,
+    ) -> tuple[str, str] | None:
+        if request.require_stable and not material.is_stable:
+            return (
+                "filtered_unstable",
+                "Material was excluded because stable material was required.",
+            )
+
+        if (
+            request.max_energy_above_hull is not None
+            and material.energy_above_hull is not None
+            and material.energy_above_hull
+            > request.max_energy_above_hull
+        ):
+            return (
+                "filtered_energy_above_hull",
+                "Material energy above hull exceeds the selected maximum.",
+            )
+
+        return None
 
     def _get_material_element_symbols_bulk(
         self,

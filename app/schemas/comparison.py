@@ -37,3 +37,19 @@ class CandidateComparisonResult(BaseModel):
 
     score_difference: float
     reasons: list[str]
+
+
+class CandidateComparisonUnavailableCandidate(BaseModel):
+    material_id: int
+    disposition: Literal[
+        "material_not_found",
+        "filtered_unstable",
+        "filtered_energy_above_hull",
+        "unavailable",
+    ]
+    reason: str
+
+
+class CandidateComparisonUnavailable(BaseModel):
+    comparison_type: Literal["unavailable"] = "unavailable"
+    unavailable_candidates: list[CandidateComparisonUnavailableCandidate]

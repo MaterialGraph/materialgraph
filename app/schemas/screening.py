@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -28,3 +30,16 @@ class CandidateScreeningResult(BaseModel):
     contains_scarce_elements: bool
     contains_avoided_elements: bool
     reasons: list[str]
+
+
+class CandidateScreeningEvaluation(BaseModel):
+    material_id: int
+    disposition: Literal[
+        "eligible",
+        "material_not_found",
+        "filtered_unstable",
+        "filtered_energy_above_hull",
+        "unavailable",
+    ]
+    reason: str
+    result: CandidateScreeningResult | None = None

@@ -2,7 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.schemas.comparison import CandidateComparisonRequest, CandidateComparisonResult
+from app.schemas.comparison import (
+    CandidateComparisonRequest,
+    CandidateComparisonResult,
+    CandidateComparisonUnavailable,
+)
 from app.services.candidate_comparison_service import CandidateComparisonService
 
 router = APIRouter(prefix="/comparison", tags=["Comparison"])
@@ -24,10 +28,15 @@ def compare_materials(
     service = CandidateComparisonService(db)
     result = service.compare_candidates(request)
 
-    if result is None:
+    if isinstance(result, CandidateComparisonUnavailable):
+        has_missing_material = any(
+            candidate.disposition == "material_not_found"
+            for candidate in result.unavailable_candidates
+        )
+        status_code = 404 if has_missing_material else 422
         raise HTTPException(
-            status_code=404,
-            detail="One or both materials were not found under the selected constraints",
+            status_code=status_code,
+            detail=result.model_dump(),
         )
 
     return result
