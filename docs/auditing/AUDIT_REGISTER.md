@@ -1,15 +1,15 @@
 # MaterialGraph Audit Register
 
 **Document role:** Sole authoritative source for current finding status and totals  
-**Last updated:** 2026-08-19
+**Last updated:** 2026-08-20
 
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 79
+- **Remediated:** 80
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 13
-- **Closed total:** 81
+- **Open:** 12
+- **Closed total:** 82
 
 ## Findings
 
@@ -54,7 +54,7 @@
 | MG-AUD-037 | Recommendation Reasons Mix Contributors and Context | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-037) | [Evidence](resolutions/2026-07.md#mg-aud-037) |
 | MG-AUD-038 | Path Efficiency Is Hop-Count Based | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-038) | — |
 | MG-AUD-039 | Path Material Quality Is Averaged Across the Path | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-039) | — |
-| MG-AUD-040 | Exploration Attribution Can Use Future Transitions | P1 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-040) | — |
+| MG-AUD-040 | Exploration Attribution Can Use Future Transitions | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-040) | [Evidence](resolutions/2026-08.md#mg-aud-040) |
 | MG-AUD-041 | Endpoint Ranking Uses Implicit Lexicographic Policy | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-041) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
 | MG-AUD-042 | Exact Numeric Differences Can Split Evidence Groups | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-042) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
 | MG-AUD-043 | Comparative Summaries Are Not Uniformly Tie-Aware | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-043) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |

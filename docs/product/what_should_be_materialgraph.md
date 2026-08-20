@@ -216,6 +216,147 @@ feature factory.
 
 ------------------------------------------------------------------------
 
+## 2.3. MaterialGraph Should Separate Scientific Knowledge From Research Perspective
+
+Different researchers may investigate the same material, relationships, and
+evidence while pursuing fundamentally different research objectives.
+
+For example, researchers starting from the same material may prioritize
+different concerns:
+
+- supply criticality or resource availability;
+- structural or chemical continuity;
+- performance-related properties;
+- sustainability;
+- application suitability;
+- validation readiness;
+- cost or other research constraints.
+
+These differences should not require separate representations of the underlying
+scientific knowledge, nor should MaterialGraph imply that one universal ranking
+or definition of a "good" candidate is scientifically correct.
+
+The intended separation is:
+
+``` text
+Shared Scientific Knowledge
+        │
+        ├── materials
+        ├── identities
+        ├── relationships
+        ├── properties
+        ├── evidence
+        ├── provenance
+        └── uncertainty
+        │
+        ▼
+Explicit Research Objective
+        │
+        ├── constraints
+        ├── preferences
+        ├── preservation requirements
+        ├── target context
+        └── exploration bounds
+        │
+        ▼
+Objective-Sensitive Reasoning
+        │
+        ▼
+Contextual Candidates / Pathways / Comparisons
+        │
+        ▼
+Inspect Evidence, Trade-offs, and Uncertainty
+```
+
+The underlying material facts, relationships, provenance, evidence, and
+uncertainty should remain independently inspectable. The research objective
+should determine which constraints, preferences, pathways, trade-offs, and
+validation needs matter for the current investigation.
+
+This creates an important principle:
+
+> **Different research objectives may produce different rankings, pathways,
+> or priorities from the same underlying scientific knowledge without creating
+> a contradiction. The methodology should remain consistent and inspectable
+> even when the research perspective changes.**
+
+MaterialGraph should therefore avoid encoding a candidate as universally
+"good", "bad", "best", or "preferred" when that judgement depends on the
+research objective.
+
+For example, a candidate that is attractive under a supply-risk objective may
+be less attractive under a structural-continuity or performance-oriented
+objective. MaterialGraph should preserve the reason for that difference rather
+than collapsing the perspectives into one global judgement.
+
+### Objective-dependent results must remain reproducible
+
+Researcher-specific perspective must not weaken determinism.
+
+Given the same:
+
+- underlying knowledge and evidence versions;
+- research objective;
+- configuration;
+- software version;
+- ordering rules;
+
+MaterialGraph should produce the same objective-sensitive result and
+explanation.
+
+Changing the objective may legitimately change the result. Changing the
+researcher without changing the explicit objective should not.
+
+### Research objectives should remain separate from canonical knowledge
+
+A researcher's preferences or constraints should not silently mutate canonical
+material facts or graph relationships.
+
+The preferred conceptual boundary is:
+
+``` text
+Canonical / Shared Knowledge
+        +
+Explicit Research Context
+        =
+Contextual Research Intelligence
+```
+
+This separation is important for saved investigations, comparison,
+collaboration, future private research contexts, and scientific reproducibility.
+MaterialGraph should be able to preserve not only **what result was produced**
+but also **from which research perspective it was produced**.
+
+### Design and architecture consequence
+
+Future objective modeling, ranking, comparison, validation-priority
+intelligence, saved investigations, and researcher-facing interfaces should
+preserve this distinction explicitly.
+
+When evaluating a new capability, MaterialGraph should ask:
+
+1. Is this information an underlying scientific fact, relationship, evidence
+   item, or uncertainty state?
+2. Is it part of the researcher's current objective or perspective?
+3. Does it change the shared knowledge, or only how that knowledge is explored
+   and evaluated?
+4. Can another researcher apply a different objective to the same knowledge
+   without corrupting or overwriting the first investigation?
+5. Can the system explain why the two objectives produced different results?
+
+The goal is not to make every research perspective equivalent. Some objectives
+may be unsupported, internally inconsistent, scientifically inappropriate, or
+blocked by missing evidence. MaterialGraph should expose those limitations
+rather than force an answer.
+
+The governing idea is:
+
+> **Shared knowledge should remain objective-independent where scientifically
+> appropriate; exploration and decision support should be objective-sensitive,
+> explicit, reproducible, and inspectable.**
+
+-------------------------------------------------------------------------------
+
 ## 3. The System Should Work as One Intelligence Pipeline
 
 The reviewed implementation shows a meaningful layered flow:

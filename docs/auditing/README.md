@@ -7,10 +7,10 @@ This directory is the canonical navigation point for MaterialGraph audit work.
 | Metric | Count |
 |---|---:|
 | Total findings | 94 |
-| Remediated | 79 |
+| Remediated | 80 |
 | Accepted behavior / no defect confirmed | 2 |
-| Open | 13 |
-| Closed total | 81 |
+| Open | 12 |
+| Closed total | 82 |
 
 See [AUDIT_REGISTER.md](AUDIT_REGISTER.md) for the authoritative status of every finding.
 

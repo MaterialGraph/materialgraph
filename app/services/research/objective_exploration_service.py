@@ -106,8 +106,12 @@ class ResearchObjectiveExplorationService:
             materials = chain.get("materials", [])
             transitions = chain.get("transitions", [])
 
-            for material in materials[1:]:
+            for material_index, material in enumerate(
+                materials[1:],
+                start=1,
+            ):
                 material_id = material["material_id"]
+                attribution_transitions = transitions[:material_index]
 
                 if material_id not in candidate_map:
                     candidate_map[material_id] = {
@@ -121,7 +125,7 @@ class ResearchObjectiveExplorationService:
                 candidate = candidate_map[material_id]
                 score = self._score_material(
                     material=material,
-                    transitions=transitions,
+                    transitions=attribution_transitions,
                     objective=objective,
                     mode=mode,
                 )
@@ -131,7 +135,7 @@ class ResearchObjectiveExplorationService:
                 candidate["reasons"].extend(
                     self._build_reasons(
                         material=material,
-                        transitions=transitions,
+                        transitions=attribution_transitions,
                         objective=objective,
                     )
                 )

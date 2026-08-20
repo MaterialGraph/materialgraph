@@ -262,6 +262,64 @@ def test_exploration_awards_family_bonus_from_candidate_composition(
     assert score == 60.0
 
 
+def test_candidate_attribution_excludes_future_transitions(db_session):
+    service = ResearchObjectiveExplorationService(db_session)
+    objective = ResearchObjective(
+        avoid_elements=[],
+        prefer_elements=[],
+        preserve_elements=[],
+        target_family=None,
+        max_hops=2,
+        limit=5,
+    )
+    chain = {
+        "materials": [
+            {"material_id": 1, "formula": "A"},
+            {"material_id": 2, "formula": "B"},
+            {"material_id": 3, "formula": "C"},
+        ],
+        "transitions": [
+            {
+                "transition_type": "shared_chemistry",
+                "shared_elements": [],
+            },
+            {
+                "transition_type": "alkali_substitution",
+                "shared_elements": [],
+            },
+        ],
+    }
+
+    candidates = service._rank_candidates_from_chains(
+        chains=[chain],
+        objective=objective,
+        mode="balanced",
+    )
+    candidates_by_id = {
+        candidate["material_id"]: candidate
+        for candidate in candidates
+    }
+
+    intermediate = candidates_by_id[2]
+    endpoint = candidates_by_id[3]
+
+    assert intermediate["score"] == 50.0
+    assert (
+        "Connected through shared_chemistry pathway."
+        in intermediate["reasons"]
+    )
+    assert (
+        "Connected through alkali_substitution pathway."
+        not in intermediate["reasons"]
+    )
+    assert endpoint["score"] == 60.0
+    assert "Connected through shared_chemistry pathway." in endpoint["reasons"]
+    assert (
+        "Connected through alkali_substitution pathway."
+        in endpoint["reasons"]
+    )
+
+
 def test_strict_exploration_rejects_avoided_element_candidates(db_session):
     service = ResearchObjectiveExplorationService(db_session)
     service.objective_service = _ObjectiveServiceStub(
