@@ -139,3 +139,26 @@ def test_family_order_uses_material_id_as_final_tie_breaker(db_session):
     candidates.sort(key=service._related_material_sort_key)
 
     assert [candidate["material_id"] for candidate in candidates] == [4, 9]
+
+
+def test_family_lookup_scopes_composition_loading_to_overlap_candidates(
+    db_session,
+):
+    from app.services.material.family_service import MaterialFamilyService
+
+    service = MaterialFamilyService(db_session)
+    original_loader = service._get_material_elements_map
+    requested_scopes = []
+
+    def recording_loader(material_ids):
+        requested_scopes.append(list(material_ids))
+        return original_loader(material_ids)
+
+    service._get_material_elements_map = recording_loader
+
+    result, elements_map = service.get_material_families_with_elements(5)
+
+    assert requested_scopes
+    assert requested_scopes[0][0] == 5
+    assert set(elements_map) <= set(requested_scopes[0])
+    assert result["material_id"] == 5

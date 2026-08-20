@@ -89,7 +89,9 @@ def test_known_risk_applies_numeric_penalty():
             )
         }
     )
-    service._get_material_element_symbols = lambda material_id: {"A"}
+    service._get_material_element_symbols_bulk = lambda material_ids: {
+        1: {"A"}
+    }
 
     result = service.screen_candidates(
         CandidateScreeningRequest(
@@ -117,7 +119,9 @@ def test_unknown_risk_is_not_reported_as_low_numeric_risk():
             )
         }
     )
-    service._get_material_element_symbols = lambda material_id: {"A"}
+    service._get_material_element_symbols_bulk = lambda material_ids: {
+        1: {"A"}
+    }
 
     result = service.screen_candidates(
         CandidateScreeningRequest(
@@ -168,9 +172,10 @@ def test_unknown_risk_does_not_gain_a_false_low_risk_explanation():
             ),
         }
     )
-    service._get_material_element_symbols = (
-        lambda material_id: {"A"} if material_id == 1 else {"B"}
-    )
+    service._get_material_element_symbols_bulk = lambda material_ids: {
+        1: {"A"},
+        2: {"B"},
+    }
 
     results = service.screen_candidates(
         CandidateScreeningRequest(
@@ -218,10 +223,46 @@ def test_screening_uses_material_id_for_deterministic_final_order():
             ),
         }
     )
-    service._get_material_element_symbols = lambda material_id: {"A"}
+    service._get_material_element_symbols_bulk = lambda material_ids: {
+        1: {"B"},
+        2: {"A"},
+    }
 
     results = service.screen_candidates(
         CandidateScreeningRequest(require_stable=True)
     )
 
     assert [result.material_id for result in results] == [1, 2]
+
+
+def test_screening_bulk_loads_elements_and_risk_once():
+    materials = [
+        _material(1, formula="A"),
+        _material(2, formula="B"),
+    ]
+    service = CandidateScreeningService(FakeDB(materials))
+
+    element_calls = []
+    risk_calls = []
+
+    service._get_material_element_symbols_bulk = lambda material_ids: (
+        element_calls.append(list(material_ids)) or {1: {"A"}, 2: {"B"}}
+    )
+    service.material_risk_service.get_material_risk_signals_bulk = (
+        lambda material_ids: risk_calls.append(list(material_ids))
+        or {
+            material_id: _risk_signal(
+                material_id,
+                risk_score=1.0,
+                risk_known=True,
+                coverage=1.0,
+                complete=True,
+            )
+            for material_id in material_ids
+        }
+    )
+
+    service.screen_candidates(CandidateScreeningRequest(require_stable=True))
+
+    assert element_calls == [[1, 2]]
+    assert risk_calls == [[1, 2]]

@@ -41,6 +41,9 @@ class CandidateScreeningService:
                 material_ids
             )
         )
+        elements_by_material_id = self._get_material_element_symbols_bulk(
+            material_ids
+        )
 
         results = []
 
@@ -48,7 +51,7 @@ class CandidateScreeningService:
         avoid_elements = set(request.avoid_elements)
 
         for material in materials:
-            element_symbols = self._get_material_element_symbols(material.id)
+            element_symbols = elements_by_material_id.get(material.id, set())
 
             if request.require_stable and not material.is_stable:
                 continue
@@ -158,15 +161,25 @@ class CandidateScreeningService:
 
         return ranked_results
 
-    def _get_material_element_symbols(self, material_id: int) -> set[str]:
+    def _get_material_element_symbols_bulk(
+        self,
+        material_ids: list[int],
+    ) -> dict[int, set[str]]:
+        if not material_ids:
+            return {}
+
         rows = (
-            self.db.query(Element.symbol)
+            self.db.query(MaterialElement.material_id, Element.symbol)
             .join(MaterialElement, Element.id == MaterialElement.element_id)
-            .filter(MaterialElement.material_id == material_id)
+            .filter(MaterialElement.material_id.in_(material_ids))
             .all()
         )
 
-        return {row[0] for row in rows}
+        elements_by_material_id: dict[int, set[str]] = {}
+        for material_id, symbol in rows:
+            elements_by_material_id.setdefault(material_id, set()).add(symbol)
+
+        return elements_by_material_id
 
     def _unknown_risk_signal(
         self,

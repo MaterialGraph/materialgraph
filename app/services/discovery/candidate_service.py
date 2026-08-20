@@ -1,17 +1,18 @@
 from sqlalchemy.orm import Session
 
 from app.core.performance import timed_block
-from app.services.discovery.explanation_service import DiscoveryExplanationService
-from app.services.discovery.scoring_service import DiscoveryScoringService
-from app.services.material.family_service import MaterialFamilyService
-from app.services.material.recommendation_service import MaterialRecommendationService
-from app.services.discovery.warning_service import DiscoveryWarningService
 from app.models.element import Element
 from app.models.material_element import MaterialElement
-from app.utils.chemical_formula import extract_elements
+from app.services.discovery.explanation_service import DiscoveryExplanationService
+from app.services.discovery.scoring_service import DiscoveryScoringService
 from app.services.discovery.substitution_path_service import (
     DiscoverySubstitutionPathService,
 )
+from app.services.discovery.warning_service import DiscoveryWarningService
+from app.services.material.family_service import MaterialFamilyService
+from app.services.material.recommendation_service import MaterialRecommendationService
+from app.utils.chemical_formula import extract_elements
+
 
 class DiscoveryCandidateService:
     def __init__(self, db: Session):
@@ -22,7 +23,6 @@ class DiscoveryCandidateService:
         self.scoring_service = DiscoveryScoringService()
         self.explanation_service = DiscoveryExplanationService()
         self.warning_service = DiscoveryWarningService()
-        self._elements_map_cache: dict[int, list[str]] | None = None
 
     def get_discovery_candidates(
         self,
@@ -40,8 +40,9 @@ class DiscoveryCandidateService:
             with timed_block(
                 f"DiscoveryCandidateService.family_lookup material_id={material_id}"
             ):
-                family_result = self.family_service.get_material_families(
-                    material_id
+                family_result, elements_map = (
+                    self.family_service
+                    .get_material_families_with_elements(material_id)
                 )
 
             if family_result["mp_id"] is None:
@@ -50,11 +51,6 @@ class DiscoveryCandidateService:
                     avoid_element,
                     prefer_element,
                 )
-
-            with timed_block(
-                f"DiscoveryCandidateService.elements_map material_id={material_id}"
-            ):
-                elements_map = self._get_material_elements_map()
 
             candidates_by_id: dict[int, dict] = {}
 
@@ -145,9 +141,18 @@ class DiscoveryCandidateService:
                 "candidates": candidates,
             }
 
-    def _get_material_elements_map(self) -> dict[int, list[str]]:
-        if self._elements_map_cache is not None:
-            return self._elements_map_cache
+    def _extend_material_elements_map(
+        self,
+        material_ids: list[int],
+        elements_map: dict[int, list[str]],
+    ) -> None:
+        missing_ids = [
+            material_id
+            for material_id in dict.fromkeys(material_ids)
+            if material_id not in elements_map
+        ]
+        if not missing_ids:
+            return
 
         rows = (
             self.db.query(
@@ -155,20 +160,19 @@ class DiscoveryCandidateService:
                 Element.symbol,
             )
             .join(Element, MaterialElement.element_id == Element.id)
+            .filter(MaterialElement.material_id.in_(missing_ids))
             .all()
         )
 
-        elements_map: dict[int, set[str]] = {}
+        loaded_elements: dict[int, set[str]] = {}
 
         for material_id, symbol in rows:
-            elements_map.setdefault(material_id, set()).add(symbol)
+            loaded_elements.setdefault(material_id, set()).add(symbol)
 
-        self._elements_map_cache = {
-            material_id: sorted(symbols)
-            for material_id, symbols in elements_map.items()
-        }
-
-        return self._elements_map_cache
+        for material_id in missing_ids:
+            elements_map[material_id] = sorted(
+                loaded_elements.get(material_id, set())
+            )
 
     def _add_family_candidates(
         self,
@@ -242,6 +246,14 @@ class DiscoveryCandidateService:
         if recommendation_result["mp_id"] is None:
             return
 
+        self._extend_material_elements_map(
+            [
+                item["material_id"]
+                for item in recommendation_result["recommendations"]
+            ],
+            elements_map,
+        )
+
         for candidate in recommendation_result["recommendations"]:
             score, paths, score_breakdown = (
                 self.scoring_service.score_recommendation_candidate(candidate)
@@ -296,6 +308,14 @@ class DiscoveryCandidateService:
 
         if scenario_result["mp_id"] is None:
             return
+
+        self._extend_material_elements_map(
+            [
+                item["material_id"]
+                for item in scenario_result["recommendations"]
+            ],
+            elements_map,
+        )
 
         for candidate in scenario_result["recommendations"]:
             score, paths, score_breakdown = (

@@ -451,3 +451,46 @@ def test_repeated_existing_source_does_not_increase_diversity_bonus():
     }
     assert candidate["_source_types"] == {"family", "recommendation"}
     _assert_score_matches_breakdown(candidate)
+
+
+def test_candidate_discovery_reuses_family_composition_map():
+    class FakeFamilyService:
+        def __init__(self):
+            self.calls = []
+
+        def get_material_families_with_elements(self, material_id):
+            self.calls.append(material_id)
+            return (
+                {
+                    "material_id": material_id,
+                    "mp_id": "mp-5",
+                    "pretty_formula": "LiFePO4",
+                    "formula": "LiFePO4",
+                    "related_materials": [],
+                },
+                {material_id: ["Fe", "Li", "O", "P"]},
+            )
+
+    class FakeWarningService:
+        def build_warnings(self, **kwargs):
+            return []
+
+    service = DiscoveryCandidateService.__new__(DiscoveryCandidateService)
+    service.family_service = FakeFamilyService()
+    service.warning_service = FakeWarningService()
+
+    captured_maps = []
+    service._add_family_candidates = lambda **kwargs: captured_maps.append(
+        kwargs["elements_map"]
+    )
+
+    result = service.get_discovery_candidates(
+        material_id=5,
+        include_recommendations=False,
+        include_scenarios=False,
+        include_substitution_paths=False,
+    )
+
+    assert service.family_service.calls == [5]
+    assert captured_maps == [{5: ["Fe", "Li", "O", "P"]}]
+    assert result["material_id"] == 5

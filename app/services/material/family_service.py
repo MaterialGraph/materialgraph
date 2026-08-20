@@ -28,6 +28,13 @@ class MaterialFamilyService:
         self,
         material_id: int,
     ) -> dict:
+        result, _ = self.get_material_families_with_elements(material_id)
+        return result
+
+    def get_material_families_with_elements(
+        self,
+        material_id: int,
+    ) -> tuple[dict, dict[int, list[str]]]:
         base_material = (
             self.db.query(Material)
             .filter(Material.id == material_id)
@@ -35,17 +42,42 @@ class MaterialFamilyService:
         )
 
         if base_material is None:
-            return self._empty_family_response(material_id)
+            return self._empty_family_response(material_id), {}
 
-        elements_map = self._get_material_elements_map()
-        base_elements = elements_map.get(material_id, [])
-
-        candidates = (
-            self.db.query(Material)
-            .filter(Material.id != material_id)
-            .filter(~Material.mp_id.like(f"{self.TEST_MP_PREFIX}%"))
+        base_element_rows = (
+            self.db.query(
+                MaterialElement.element_id,
+                Element.symbol,
+            )
+            .join(Element, MaterialElement.element_id == Element.id)
+            .filter(MaterialElement.material_id == material_id)
             .all()
         )
+        base_element_ids = [row[0] for row in base_element_rows]
+
+        candidate_id_rows = []
+        if base_element_ids:
+            candidate_id_rows = (
+                self.db.query(MaterialElement.material_id)
+                .filter(MaterialElement.element_id.in_(base_element_ids))
+                .filter(MaterialElement.material_id != material_id)
+                .distinct()
+                .all()
+            )
+
+        candidate_ids = [row[0] for row in candidate_id_rows]
+        scoped_material_ids = [material_id, *candidate_ids]
+        elements_map = self._get_material_elements_map(scoped_material_ids)
+        base_elements = elements_map.get(material_id, [])
+
+        candidates = []
+        if candidate_ids:
+            candidates = (
+                self.db.query(Material)
+                .filter(Material.id.in_(candidate_ids))
+                .filter(~Material.mp_id.like(f"{self.TEST_MP_PREFIX}%"))
+                .all()
+            )
 
         related_materials = []
 
@@ -89,13 +121,14 @@ class MaterialFamilyService:
             key=self._related_material_sort_key
         )
 
-        return {
+        result = {
             "material_id": base_material.id,
             "mp_id": base_material.mp_id,
             "pretty_formula": base_material.pretty_formula,
             "formula": base_material.formula,
             "related_materials": related_materials,
         }
+        return result, elements_map
 
     @staticmethod
     def _related_material_sort_key(item: dict) -> tuple[int, int]:
@@ -113,7 +146,13 @@ class MaterialFamilyService:
             "related_materials": [],
         }
 
-    def _get_material_elements_map(self) -> dict[int, list[str]]:
+    def _get_material_elements_map(
+        self,
+        material_ids: list[int],
+    ) -> dict[int, list[str]]:
+        if not material_ids:
+            return {}
+
         rows = (
             self.db.query(
                 MaterialElement.material_id,
@@ -123,6 +162,7 @@ class MaterialFamilyService:
                 Element,
                 MaterialElement.element_id == Element.id,
             )
+            .filter(MaterialElement.material_id.in_(material_ids))
             .all()
         )
 
