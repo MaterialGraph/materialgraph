@@ -1,4 +1,6 @@
 class DiscoveryExplanationService:
+    _CLAUSE_TERMINATORS = (".", "!", "?", ";", ":")
+
     def build_explanation(
         self,
         formula: str,
@@ -39,4 +41,11 @@ class DiscoveryExplanationService:
             "for structure, synthesis feasibility, and application performance."
         )
 
-        return " ".join(reasons)
+        return " ".join(self._normalize_clause(reason) for reason in reasons)
+
+    @classmethod
+    def _normalize_clause(cls, reason: str) -> str:
+        clause = reason.strip()
+        if clause.endswith(cls._CLAUSE_TERMINATORS):
+            return clause
+        return f"{clause}."

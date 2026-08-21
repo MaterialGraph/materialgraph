@@ -6,10 +6,10 @@
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 91
+- **Remediated:** 92
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 1
-- **Closed total:** 93
+- **Open:** 0
+- **Closed total:** 94
 
 ## Findings
 
@@ -68,7 +68,7 @@
 | MG-AUD-051 | Comparative Research Outputs Used Ranking as Pathway Identity | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-051) | [Evidence](resolutions/2026-07.md#mg-aud-051) |
 | MG-AUD-052 | Scenario Explanation Sign and Label Can Contradict the Score Contribution | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-052) | [Evidence](resolutions/2026-07.md#mg-aud-052) |
 | MG-AUD-053 | Discovery Base-Score Selection and Deterministic Tie Ordering | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-053) | [Evidence](resolutions/2026-07.md#mg-aud-053) |
-| MG-AUD-054 | Discovery Explanation Clauses Can Lack a Separator | P3 | Open | [Details](findings/MG-AUD-051-075.md#mg-aud-054) | — |
+| MG-AUD-054 | Discovery Explanation Clauses Can Lack a Separator | P3 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-054) | [Evidence](resolutions/2026-08.md#mg-aud-054) |
 | MG-AUD-055 | Conflicting risk-profile seed scales produce execution-order-dependent data. | P0 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-055) | [Evidence](resolutions/2026-07.md#mg-aud-055) |
 | MG-AUD-056 | Standard dependency installation selects a different repository checkout. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-056) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |
 | MG-AUD-057 | Setup documentation configures an API-key name the importer does not read. | P1 | Remediated | [Details](findings/MG-AUD-051-075.md#mg-aud-057) | [Evidence](resolutions/2026-08.md#mg-aud-056-058) |

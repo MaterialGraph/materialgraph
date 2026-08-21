@@ -51,6 +51,24 @@ def _assert_score_matches_breakdown(candidate: dict) -> None:
     )
 
 
+def test_explanation_adds_separator_between_unpunctuated_clauses():
+    service = DiscoveryExplanationService()
+
+    explanation = service.build_explanation(
+        formula="NaFePO4",
+        paths=[],
+        explanation_parts=[
+            "oxide structure similarity is not validated",
+            "similarity score 110.0",
+        ],
+        avoid_element=None,
+        prefer_element=None,
+    )
+
+    assert "not validated. similarity score 110.0." in explanation
+    assert "not validated similarity score" not in explanation
+
+
 def test_initial_candidate_score_matches_breakdown():
     service = _build_service()
     candidates_by_id: dict[int, dict] = {}
