@@ -9,7 +9,33 @@ from app.schemas.material_common import (
 )
 
 
-class SimilarMaterialRead(MaterialRiskSummary, MaterialRelationshipSummary):
+class StabilityEvidenceSummary(BaseModel):
+    stability_band: Literal[
+        "stable",
+        "near_stable",
+        "metastable",
+        "unstable",
+        "unknown",
+    ]
+    stability_evidence_basis: Literal[
+        "energy_above_hull",
+        "imported_is_stable_fallback",
+        "unavailable",
+    ]
+    stability_evidence_complete: bool
+    stability_source_consistency: Literal[
+        "consistent",
+        "inconsistent",
+        "not_comparable",
+    ]
+    stability_score_contribution: float
+
+
+class SimilarMaterialRead(
+    StabilityEvidenceSummary,
+    MaterialRiskSummary,
+    MaterialRelationshipSummary,
+):
     similarity_score: float
     reason_summary: str
     criticality_delta: float | None
@@ -23,6 +49,7 @@ class SimilarityRankingPolicy(BaseModel):
     ]
     final_tie_breaker: Literal["material_id_asc"]
     candidate_pool: Literal["all_structured_neighbors_before_limit"]
+    stability_policy: Literal["single_energy_primary_signal"]
 
 
 class MaterialSimilarityResponse(MaterialRiskSummary):

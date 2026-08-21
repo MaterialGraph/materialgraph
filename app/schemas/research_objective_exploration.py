@@ -75,6 +75,25 @@ class ConfidenceExplanation(BaseModel):
 class MaterialQualityEvidence(BaseModel):
     material_id: int
     stability_score: float = 0.0
+    stability_band: Literal[
+        "stable",
+        "near_stable",
+        "metastable",
+        "unstable",
+        "unknown",
+    ] = "unknown"
+    stability_evidence_basis: Literal[
+        "energy_above_hull",
+        "imported_is_stable_fallback",
+        "unavailable",
+    ] = "unavailable"
+    stability_evidence_complete: bool = False
+    stability_source_consistency: Literal[
+        "consistent",
+        "inconsistent",
+        "not_comparable",
+    ] = "not_comparable"
+    stability_quality_contribution: float = 0.0
     energy_above_hull: float | None = None
     criticality_score: float | None = None
     risk_score: float | None = None

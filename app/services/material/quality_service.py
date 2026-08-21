@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from app.models.material import Material
 from app.services.material.criticality_service import MaterialCriticalityService
 from app.services.material.risk_service import MaterialRiskService
+from app.services.material.stability_evidence_policy import (
+    StabilityEvidencePolicy,
+)
 
 
 class MaterialQualityService:
@@ -121,7 +124,7 @@ class MaterialQualityService:
         risk_known = risk_signal.get("risk_known", False)
         risk_evidence_complete = risk_signal.get("risk_evidence_complete", False)
 
-        stability_score = self._calculate_stability_score(
+        stability_evidence = StabilityEvidencePolicy.assess(
             is_stable=material.is_stable,
             energy_above_hull=material.energy_above_hull,
         )
@@ -137,7 +140,20 @@ class MaterialQualityService:
 
         return {
             "material_id": material.id,
-            "stability_score": stability_score,
+            "stability_score": stability_evidence.stability_score,
+            "stability_band": stability_evidence.band,
+            "stability_evidence_basis": stability_evidence.evidence_basis,
+            "stability_evidence_complete": (
+                stability_evidence.evidence_complete
+            ),
+            "stability_source_consistency": (
+                stability_evidence.source_consistency
+            ),
+            "stability_quality_contribution": round(
+                self.QUALITY_SCORE_MAX
+                * stability_evidence.quality_score_fraction,
+                2,
+            ),
             "energy_above_hull": material.energy_above_hull,
             "criticality_score": criticality_score,
             "risk_score": risk_score,
@@ -181,20 +197,10 @@ class MaterialQualityService:
         is_stable: bool,
         energy_above_hull: float | None,
     ) -> float:
-        score = 0.0
-
-        if is_stable:
-            score += 50.0
-
-        if energy_above_hull is not None:
-            if energy_above_hull <= 0.01:
-                score += 50.0
-            elif energy_above_hull <= 0.05:
-                score += 35.0
-            elif energy_above_hull <= 0.1:
-                score += 20.0
-
-        return round(min(score, 100.0), 2)
+        return StabilityEvidencePolicy.assess(
+            is_stable=is_stable,
+            energy_above_hull=energy_above_hull,
+        ).stability_score
 
     def _calculate_quality_score(
         self,
@@ -205,18 +211,14 @@ class MaterialQualityService:
         risk_known: bool,
         risk_evidence_complete: bool,
     ) -> float:
-        score = 0.0
-
-        if is_stable:
-            score += self.QUALITY_SCORE_MAX * 0.35
-
-        if energy_above_hull is not None:
-            if energy_above_hull <= 0.01:
-                score += self.QUALITY_SCORE_MAX * 0.35
-            elif energy_above_hull <= 0.05:
-                score += self.QUALITY_SCORE_MAX * 0.25
-            elif energy_above_hull <= 0.1:
-                score += self.QUALITY_SCORE_MAX * 0.15
+        stability_evidence = StabilityEvidencePolicy.assess(
+            is_stable=is_stable,
+            energy_above_hull=energy_above_hull,
+        )
+        score = (
+            self.QUALITY_SCORE_MAX
+            * stability_evidence.quality_score_fraction
+        )
 
         score += self._calculate_risk_quality_score(
             criticality_score=criticality_score,
@@ -254,6 +256,11 @@ class MaterialQualityService:
         return {
             "material_id": material_id,
             "stability_score": 0.0,
+            "stability_band": "unknown",
+            "stability_evidence_basis": "unavailable",
+            "stability_evidence_complete": False,
+            "stability_source_consistency": "not_comparable",
+            "stability_quality_contribution": 0.0,
             "energy_above_hull": None,
             "criticality_score": None,
             "risk_score": None,

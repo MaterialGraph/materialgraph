@@ -5,6 +5,7 @@ from app.schemas.research_objective_exploration import (
     ConfidenceExplanation,
     EndpointSensitiveRanking,
     EvidenceSummary,
+    MaterialQualityEvidence,
     PathwayComparison,
     ScientificPathway,
     ScientificPathwayAnalysisResponse,
@@ -103,3 +104,20 @@ def test_analysis_openapi_schema_uses_concrete_nested_models():
     assert schema["$defs"]["EvidenceSummary"]["properties"][
         "evidence_readiness"
     ]["enum"] == ["strong", "moderate", "limited"]
+
+
+def test_material_quality_contract_exposes_stability_evidence_policy():
+    quality = MaterialQualityEvidence.model_validate(
+        {
+            "material_id": 5,
+            "stability_score": 100.0,
+            "stability_band": "stable",
+            "stability_evidence_basis": "energy_above_hull",
+            "stability_evidence_complete": True,
+            "stability_source_consistency": "consistent",
+            "stability_quality_contribution": 10.5,
+        }
+    )
+
+    assert quality.stability_evidence_basis == "energy_above_hull"
+    assert quality.stability_quality_contribution == 10.5

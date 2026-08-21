@@ -18,6 +18,9 @@ def test_get_material_scenario_recommendations(client):
     assert "recommendations" in data
     assert data["ranking_policy"]["prefer_lower_criticality"] is False
     assert data["ranking_policy"]["criticality_delta_multiplier"] == 0.0
+    assert data["ranking_policy"]["stability_policy"] == (
+        "inherited_from_similarity_not_reapplied"
+    )
     assert data["candidate_pool_count"] >= data["returned_count"]
     assert data["returned_count"] == len(data["recommendations"])
 
@@ -39,6 +42,11 @@ def test_get_material_scenario_recommendations(client):
         assert "similarity_score" in item
         assert "criticality_score" in item
         assert "recommendation_score" in item
+        assert "stability_band" in item
+        assert "stability_evidence_basis" in item
+        assert "stability_evidence_complete" in item
+        assert "stability_source_consistency" in item
+        assert "stability_score_contribution" in item
         assert "scenario_score" in item
         assert "scenario_delta" in item
         assert "scenario_reason" in item

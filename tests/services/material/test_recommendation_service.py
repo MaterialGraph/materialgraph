@@ -175,7 +175,7 @@ def test_recommendation_reason_labels_non_scoring_criticality_as_context(
     assert "lower criticality by 12.0" not in reason.split("context:")[0]
 
 
-def test_recommendation_reason_includes_low_energy_score_contribution(
+def test_recommendation_does_not_reapply_similarity_stability_contribution(
     service,
 ):
     candidate = build_candidate(
@@ -183,6 +183,7 @@ def test_recommendation_reason_includes_low_energy_score_contribution(
         criticality_delta=None,
     )
     candidate["energy_above_hull"] = 0.01
+    candidate["stability_score_contribution"] = 20.0
 
     recommendation_score = service._calculate_recommendation_score(
         candidate=candidate,
@@ -195,8 +196,26 @@ def test_recommendation_reason_includes_low_energy_score_contribution(
         prefer_lower_criticality=False,
     )
 
-    assert recommendation_score == 105.0
-    assert "low energy above hull" in reason
+    assert recommendation_score == 100.0
+    assert "stability contribution already included" in reason
+    assert "low energy above hull" not in reason
+
+
+def test_recommendation_does_not_reapply_stable_flag_bonus(service):
+    candidate = build_candidate(
+        criticality_direction="UNKNOWN",
+        criticality_delta=None,
+    )
+    candidate["is_stable"] = True
+    candidate["energy_above_hull"] = 0.0
+    candidate["stability_score_contribution"] = 20.0
+
+    score = service._calculate_recommendation_score(
+        candidate=candidate,
+        prefer_lower_criticality=False,
+    )
+
+    assert score == 100.0
 
 
 def test_recommendation_reason_labels_similarity_basis(
@@ -297,4 +316,5 @@ def test_recommendations_are_neutral_by_default():
         "criticality_delta_multiplier": 0.0,
         "candidate_pool": "all_similar_materials_before_limit",
         "final_tie_breaker": "material_id_asc",
+        "stability_policy": "inherited_from_similarity_not_reapplied",
     }

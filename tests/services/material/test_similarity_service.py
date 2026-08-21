@@ -216,6 +216,9 @@ def test_similarity_bulk_loads_criticality_once() -> None:
     assert result["ranking_policy"]["candidate_pool"] == (
         "all_structured_neighbors_before_limit"
     )
+    assert result["ranking_policy"]["stability_policy"] == (
+        "single_energy_primary_signal"
+    )
 
 
 def test_similarity_scores_complete_neighbor_pool_before_limit() -> None:
@@ -260,3 +263,43 @@ def test_missing_source_skips_bulk_criticality_lookup() -> None:
     assert result == service._empty_similarity_response(999)
     service.criticality_service.get_material_criticality_bulk.assert_not_called()
     service.criticality_service.get_material_criticality.assert_not_called()
+
+
+def test_similarity_uses_one_combined_stability_contribution(service):
+    neighbor = _neighbor(2, 0)
+
+    score = service._calculate_similarity_score(neighbor)
+
+    assert score == 20.0
+
+
+def test_similarity_uses_energy_as_primary_stability_evidence(service):
+    neighbor = _neighbor(2, 0)
+    neighbor["is_stable"] = True
+    neighbor["energy_above_hull"] = 0.2
+
+    score = service._calculate_similarity_score(neighbor)
+
+    assert score == 0.0
+
+
+def test_similarity_response_discloses_stability_evidence_basis():
+    service = MaterialSimilarityService.__new__(MaterialSimilarityService)
+    service.neighbor_service = Mock()
+    service.criticality_service = Mock()
+    service.neighbor_service.get_neighbors.return_value = _neighbor_response(
+        [_neighbor(2, 1)]
+    )
+    service.criticality_service.get_material_criticality_bulk.return_value = {
+        1: {"criticality_score": 30.0},
+        2: {"criticality_score": 30.0},
+    }
+
+    result = service.get_similar_materials(1)
+    candidate = result["similar_materials"][0]
+
+    assert candidate["stability_band"] == "stable"
+    assert candidate["stability_evidence_basis"] == "energy_above_hull"
+    assert candidate["stability_evidence_complete"] is True
+    assert candidate["stability_source_consistency"] == "consistent"
+    assert candidate["stability_score_contribution"] == 20.0

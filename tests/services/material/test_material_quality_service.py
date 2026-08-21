@@ -10,6 +10,11 @@ def test_material_quality_service_returns_quality_metadata(db_session):
 
     assert result["material_id"] == 5
     assert "stability_score" in result
+    assert "stability_band" in result
+    assert "stability_evidence_basis" in result
+    assert "stability_evidence_complete" in result
+    assert "stability_source_consistency" in result
+    assert "stability_quality_contribution" in result
     assert "energy_above_hull" in result
     assert "criticality_score" in result
     assert "risk_score" in result
@@ -44,6 +49,11 @@ def test_material_quality_service_returns_empty_quality_for_missing_material(db_
     assert result == {
         "material_id": 999999,
         "stability_score": 0.0,
+        "stability_band": "unknown",
+        "stability_evidence_basis": "unavailable",
+        "stability_evidence_complete": False,
+        "stability_source_consistency": "not_comparable",
+        "stability_quality_contribution": 0.0,
         "energy_above_hull": None,
         "criticality_score": None,
         "risk_score": None,
@@ -159,3 +169,39 @@ def test_partial_low_risk_evidence_does_not_receive_quality_bonus():
     # Corrected MG-AUD-008 behavior:
     # partial evidence does not qualify for a favorable risk bonus.
     assert result["quality_score"] == 11.7
+
+
+def test_quality_does_not_double_count_inconsistent_stability_fields():
+    from app.services.material.quality_service import MaterialQualityService
+
+    service = MaterialQualityService.__new__(MaterialQualityService)
+    service.QUALITY_SCORE_MAX = 15.0
+
+    score = service._calculate_quality_score(
+        is_stable=True,
+        energy_above_hull=0.2,
+        criticality_score=None,
+        risk_score=None,
+        risk_known=False,
+        risk_evidence_complete=False,
+    )
+
+    assert score == 0.0
+
+
+def test_quality_uses_stable_flag_only_when_energy_is_missing():
+    from app.services.material.quality_service import MaterialQualityService
+
+    service = MaterialQualityService.__new__(MaterialQualityService)
+    service.QUALITY_SCORE_MAX = 15.0
+
+    score = service._calculate_quality_score(
+        is_stable=True,
+        energy_above_hull=None,
+        criticality_score=None,
+        risk_score=None,
+        risk_known=False,
+        risk_evidence_complete=False,
+    )
+
+    assert score == 5.25

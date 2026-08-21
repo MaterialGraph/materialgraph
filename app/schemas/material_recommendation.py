@@ -7,9 +7,14 @@ from app.schemas.material_common import (
     MaterialRelationshipSummary,
     MaterialRiskSummary,
 )
+from app.schemas.material_similarity import StabilityEvidenceSummary
 
 
-class MaterialRecommendationRead(MaterialRiskSummary, MaterialRelationshipSummary):
+class MaterialRecommendationRead(
+    StabilityEvidenceSummary,
+    MaterialRiskSummary,
+    MaterialRelationshipSummary,
+):
     similarity_score: float
     criticality_delta: float | None
     criticality_direction: CriticalityDirection
@@ -22,6 +27,9 @@ class MaterialRecommendationRankingPolicy(BaseModel):
     criticality_delta_multiplier: float
     candidate_pool: Literal["all_similar_materials_before_limit"]
     final_tie_breaker: Literal["material_id_asc"]
+    stability_policy: Literal[
+        "inherited_from_similarity_not_reapplied"
+    ]
 
 
 class MaterialRecommendationResponse(MaterialRiskSummary):

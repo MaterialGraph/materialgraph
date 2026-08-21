@@ -48,6 +48,26 @@ class MaterialRecommendationService:
                     "material_type": candidate["material_type"],
                     "is_stable": candidate["is_stable"],
                     "energy_above_hull": candidate["energy_above_hull"],
+                    "stability_band": candidate.get(
+                        "stability_band",
+                        "unknown",
+                    ),
+                    "stability_evidence_basis": candidate.get(
+                        "stability_evidence_basis",
+                        "unavailable",
+                    ),
+                    "stability_evidence_complete": candidate.get(
+                        "stability_evidence_complete",
+                        False,
+                    ),
+                    "stability_source_consistency": candidate.get(
+                        "stability_source_consistency",
+                        "not_comparable",
+                    ),
+                    "stability_score_contribution": candidate.get(
+                        "stability_score_contribution",
+                        0.0,
+                    ),
                     "similarity_score": candidate["similarity_score"],
                     "criticality_score": candidate["criticality_score"],
                     "criticality_delta": candidate["criticality_delta"],
@@ -185,14 +205,6 @@ class MaterialRecommendationService:
             elif criticality_delta > 0:
                 score -= criticality_delta * CRITICALITY_DELTA_MULTIPLIER
 
-        if candidate["is_stable"]:
-            score += 10
-
-        energy_above_hull = candidate["energy_above_hull"]
-
-        if energy_above_hull is not None and energy_above_hull <= 0.01:
-            score += 5
-
         return round(score, 2)
 
     def _build_recommendation_reason(
@@ -245,14 +257,18 @@ class MaterialRecommendationService:
                 f"similarity basis: {', '.join(similarity_basis)}"
             )
 
-        if candidate["is_stable"]:
-            reasons.append("stable material")
+        stability_contribution = candidate.get(
+            "stability_score_contribution",
+            0.0,
+        )
+        if stability_contribution > 0:
+            reasons.append(
+                "stability contribution already included in similarity "
+                f"score: {stability_contribution}"
+            )
 
-        if (
-            candidate["energy_above_hull"] is not None
-            and candidate["energy_above_hull"] <= 0.01
-        ):
-            reasons.append("low energy above hull")
+        if candidate.get("stability_source_consistency") == "inconsistent":
+            reasons.append("context: imported stability sources are inconsistent")
 
         reasons.append(f"recommendation score {recommendation_score}")
 
@@ -336,4 +352,7 @@ class MaterialRecommendationService:
             ),
             "candidate_pool": "all_similar_materials_before_limit",
             "final_tie_breaker": "material_id_asc",
+            "stability_policy": (
+                "inherited_from_similarity_not_reapplied"
+            ),
         }

@@ -2,6 +2,10 @@ from sqlalchemy.orm import Session
 
 from app.services.material.criticality_service import MaterialCriticalityService
 from app.services.material.neighbor_service import MaterialNeighborService
+from app.services.material.stability_evidence_policy import (
+    StabilityEvidence,
+    StabilityEvidencePolicy,
+)
 
 
 class MaterialSimilarityService:
@@ -42,8 +46,15 @@ class MaterialSimilarityService:
 
         for neighbor in neighbors:
             neighbor_material_id = neighbor["material_id"]
+            stability_evidence = StabilityEvidencePolicy.assess(
+                is_stable=neighbor["is_stable"],
+                energy_above_hull=neighbor["energy_above_hull"],
+            )
 
-            similarity_score = self._calculate_similarity_score(neighbor)
+            similarity_score = self._calculate_similarity_score(
+                neighbor,
+                stability_evidence=stability_evidence,
+            )
 
             neighbor_criticality_score = criticality_by_material_id[
                 neighbor_material_id
@@ -63,6 +74,19 @@ class MaterialSimilarityService:
                     "material_type": neighbor["material_type"],
                     "is_stable": neighbor["is_stable"],
                     "energy_above_hull": neighbor["energy_above_hull"],
+                    "stability_band": stability_evidence.band,
+                    "stability_evidence_basis": (
+                        stability_evidence.evidence_basis
+                    ),
+                    "stability_evidence_complete": (
+                        stability_evidence.evidence_complete
+                    ),
+                    "stability_source_consistency": (
+                        stability_evidence.source_consistency
+                    ),
+                    "stability_score_contribution": (
+                        stability_evidence.similarity_score_contribution
+                    ),
                     "shared_element_count": neighbor["shared_element_count"],
                     "shared_application_count": neighbor["shared_application_count"],
                     "relationship_types": neighbor["relationship_types"],
@@ -129,6 +153,7 @@ class MaterialSimilarityService:
             ),
             "final_tie_breaker": "material_id_asc",
             "candidate_pool": "all_structured_neighbors_before_limit",
+            "stability_policy": "single_energy_primary_signal",
         }
 
     
@@ -172,22 +197,24 @@ class MaterialSimilarityService:
 
         return "SAME_CRITICALITY"
 
-    def _calculate_similarity_score(self, neighbor: dict) -> float:
+    def _calculate_similarity_score(
+        self,
+        neighbor: dict,
+        *,
+        stability_evidence: StabilityEvidence | None = None,
+    ) -> float:
         score = 0.0
 
         score += neighbor["shared_element_count"] * 20
         score += neighbor["shared_application_count"] * 30
 
-        if neighbor["is_stable"]:
-            score += 10
+        if stability_evidence is None:
+            stability_evidence = StabilityEvidencePolicy.assess(
+                is_stable=neighbor["is_stable"],
+                energy_above_hull=neighbor["energy_above_hull"],
+            )
 
-        energy_above_hull = neighbor["energy_above_hull"]
-
-        if energy_above_hull is not None:
-            if energy_above_hull <= 0.01:
-                score += 10
-            elif energy_above_hull <= 0.05:
-                score += 5
+        score += stability_evidence.similarity_score_contribution
 
         return round(score, 2)
 
@@ -206,11 +233,14 @@ class MaterialSimilarityService:
                 f"shares {neighbor['shared_application_count']} application(s)"
             )
 
-        if neighbor["is_stable"]:
-            reasons.append("is stable")
+        stability_evidence = StabilityEvidencePolicy.assess(
+            is_stable=neighbor["is_stable"],
+            energy_above_hull=neighbor["energy_above_hull"],
+        )
+        reasons.append(stability_evidence.reason)
 
-        if neighbor["energy_above_hull"] is not None:
-            reasons.append(f"energy above hull: {neighbor['energy_above_hull']}")
+        if stability_evidence.source_consistency == "inconsistent":
+            reasons.append("imported stability sources are inconsistent")
 
         if criticality_delta is not None:
             if criticality_delta < 0:
