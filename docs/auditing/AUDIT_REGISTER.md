@@ -1,15 +1,15 @@
 # MaterialGraph Audit Register
 
 **Document role:** Sole authoritative source for current finding status and totals  
-**Last updated:** 2026-08-20
+**Last updated:** 2026-08-21
 
 ## Summary
 
 - **Total findings:** 94
-- **Remediated:** 89
+- **Remediated:** 90
 - **Accepted behavior / no defect confirmed:** 2
-- **Open:** 3
-- **Closed total:** 91
+- **Open:** 2
+- **Closed total:** 92
 
 ## Findings
 
@@ -59,7 +59,7 @@
 | MG-AUD-042 | Exact Numeric Differences Can Split Evidence Groups | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-042) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
 | MG-AUD-043 | Comparative Summaries Are Not Uniformly Tie-Aware | P1 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-043) | [Evidence](resolutions/2026-08.md#mg-aud-041-043) |
 | MG-AUD-044 | Comparison Conflates Filtered and Unavailable Candidates | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-044) | [Evidence](resolutions/2026-08.md#mg-aud-044) |
-| MG-AUD-045 | API Contracts Are Under-Typed or Semantically Broader Than Implementation | P2 | Open | [Details](findings/MG-AUD-026-050.md#mg-aud-045) | — |
+| MG-AUD-045 | API Contracts Are Under-Typed or Semantically Broader Than Implementation | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-045) | [Evidence](resolutions/2026-08.md#mg-aud-045) |
 | MG-AUD-046 | Family Discovery Performs Global Scans | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-046) | [Evidence](resolutions/2026-08.md#mg-aud-046-048) |
 | MG-AUD-047 | Candidate Screening Has N+1 Access Patterns | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-047) | [Evidence](resolutions/2026-08.md#mg-aud-046-048) |
 | MG-AUD-048 | Candidate Service Duplicates Global Element-Map Loading | P2 | Remediated | [Details](findings/MG-AUD-026-050.md#mg-aud-048) | [Evidence](resolutions/2026-08.md#mg-aud-046-048) |

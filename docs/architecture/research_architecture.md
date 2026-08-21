@@ -55,6 +55,81 @@ investigations, but it must not silently become canonical truth.
 
 ---
 
+## Research Workflow Compatibility
+
+The MaterialGraph Research Cycle is a researcher-facing framework, not a claim
+that all materials research follows one identical sequence. MaterialGraph should
+fit established scientific practice before attempting to change it, and should
+enhance that practice only where researcher evidence or validated use cases show
+that the enhancement is useful.
+
+The architecture should preserve the following relationship:
+
+```mermaid
+flowchart TD
+    A["Established research question and scientific context"] --> B["MaterialGraph objective and structured context"]
+    B --> C["Deterministic exploration and comparison"]
+    C --> D["Researcher interpretation"]
+    D --> E["Literature / structural analysis / domain computation / experiment"]
+    E --> F["Attributed evidence and findings"]
+    F --> G["Saved investigation and refined objective"]
+    G --> B
+```
+
+MaterialGraph may structure and connect steps that researchers already perform,
+but it must not silently redefine a scientific method, validation requirement,
+or domain-specific decision rule. Established scientific tools and methods should
+remain responsible for the computations or experimental procedures they are
+designed to perform. MaterialGraph should preserve the surrounding research
+context, objective, provenance, assumptions, evidence state, and resulting
+decisions.
+
+### Common framework and domain-specific workflows
+
+The architecture should support a stable common research framework together with
+domain-specific extensions. Shared concepts may include:
+
+- research objective and constraints;
+- material, structure, property, and evidence context;
+- deterministic exploration and candidate generation;
+- comparison and trade-off inspection;
+- provenance and uncertainty;
+- validation need and validation status;
+- researcher interpretation and decision history;
+- iteration and versioned investigation state.
+
+Domain-specific workflows may add requirements for, for example, crystal
+structure, electrochemical conditions, defects, interfaces, synthesis routes,
+thermodynamic state, force fields, calculation settings, laboratory procedures,
+or application-specific acceptance criteria.
+
+A domain extension must not weaken canonical MaterialGraph semantics. It should
+state which shared services it reuses, which domain-specific evidence or methods
+it requires, which external system owns scientific execution, and how results
+return as attributed evidence.
+
+### Workflow validation requirement
+
+The current Research Cycle should remain revisable until it has been tested
+against representative research practice. Workflow validation should include:
+
+1. documented case studies representing different materials-science questions;
+2. observation or structured interviews with relevant researchers where
+   available;
+3. comparison between current researcher steps and proposed MaterialGraph
+   interactions;
+4. identification of steps that MaterialGraph should support, integrate, or
+   leave to established tools;
+5. explicit recording of workflow mismatches, missing states, and confusing
+   terminology;
+6. revision of frontend and research orchestration when evidence justifies it.
+
+A workflow mismatch should be treated as a product or architecture finding. The
+researcher should not be expected to change a scientifically appropriate method
+simply to satisfy the application's page flow.
+
+---
+
 ## Research Objective
 
 A research objective expresses the intended exploration, for example:

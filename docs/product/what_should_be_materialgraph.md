@@ -357,6 +357,149 @@ The governing idea is:
 
 -------------------------------------------------------------------------------
 
+## 2.4. MaterialGraph Should Enhance Established Scientific Research Practice, Not Replace It
+
+MaterialGraph should be designed around how materials researchers actually
+formulate questions, inspect prior knowledge, generate hypotheses, apply
+computational or experimental methods, compare evidence, interpret findings,
+and iterate. The platform should not require researchers to abandon
+scientifically established workflows merely to conform to the software.
+
+Where an existing research practice is scientifically sound, MaterialGraph
+should support, structure, connect, and preserve it. Where real researcher
+friction or missing infrastructure is demonstrated, MaterialGraph may enhance
+the workflow, but the enhancement must preserve scientific meaning, researcher
+authority, provenance, reproducibility, uncertainty, and validation boundaries.
+
+The governing principle is:
+
+> **MaterialGraph should fit into established scientific practice first and
+> improve it where evidence shows that improvement is useful. It should not
+> invent a replacement research process merely because software can impose one.**
+
+The MaterialGraph Research Cycle should therefore be treated as a common
+research-assistance framework rather than a claim that every materials-science
+domain follows one universal procedure. Battery research, catalysis, alloys,
+semiconductors, polymers, structural materials, and other domains may share
+important stages while differing substantially in evidence requirements,
+methods, validation routes, experimental constraints, and decision criteria.
+
+A preferred conceptual relationship is:
+
+``` text
+Established Scientific Practice
+        │
+        ├── research question and prior knowledge
+        ├── hypotheses and candidate selection
+        ├── domain methods and computations
+        ├── experiments and measurements
+        ├── interpretation and peer scrutiny
+        └── iteration
+        │
+        ▼
+MaterialGraph Research Assistance
+        │
+        ├── explicit objectives and constraints
+        ├── structured scientific context
+        ├── deterministic exploration
+        ├── inspectable evidence and provenance
+        ├── comparison and validation priorities
+        └── preserved investigation context
+        │
+        ▼
+Researcher Judgement + Established Validation Methods
+        │
+        ▼
+Attributed Findings and Continued Investigation
+```
+
+MaterialGraph may make familiar work more systematic by helping researchers:
+
+- express research intent and constraints explicitly;
+- preserve the relationship between a question, method, evidence, and decision;
+- compare alternatives without hiding uncertainty or disagreement;
+- move between graph reasoning, literature, computation, and experiment without
+  losing context;
+- record negative, inconclusive, or conflicting outcomes as usable research
+  context;
+- identify which evidence or validation step would most reduce uncertainty;
+- reproduce or revisit an investigation using preserved data, configuration,
+  method, and software versions.
+
+These enhancements must not be confused with scientific authority. MaterialGraph
+should not declare that a workflow is correct merely because it is encoded in
+the platform. Domain methods remain subject to their own applicability,
+assumptions, standards, validation requirements, and expert judgement.
+
+### Research workflow claims require evidence
+
+The current MaterialGraph Research Cycle is a product and architectural
+hypothesis informed by the system built so far. Before it is treated as a mature
+or canonical researcher workflow, representative scientific workflows should be
+studied and the cycle should be tested with domain researchers.
+
+MaterialGraph should examine, at minimum:
+
+1. how researchers formulate and revise scientific questions;
+2. how materials, structures, properties, and prior evidence are selected;
+3. how literature, databases, simulations, structural analysis, and experiments
+   contribute to decisions;
+4. how candidates or hypotheses are rejected, retained, or revisited;
+5. how uncertainty, conflicting evidence, failed work, and negative results are
+   recorded;
+6. how workflows differ across representative materials-science domains;
+7. which steps are already served well by established tools and should be
+   integrated rather than duplicated;
+8. which recurring friction points can be reduced without weakening scientific
+   practice.
+
+Researcher feedback should be allowed to change the Research Cycle. A mismatch
+between the software workflow and established scientific practice is evidence
+for redesign, not evidence that researchers should adapt to MaterialGraph.
+
+### Common framework, domain-specific extensions
+
+MaterialGraph should prefer a stable common framework with explicit
+domain-specific extensions over one rigid universal procedure. The common
+framework may preserve concepts such as objective, context, exploration,
+evidence, comparison, validation, interpretation, and iteration, while
+domain-specific modules or workflows define the scientific details required for
+a particular research question.
+
+A future domain workflow should therefore answer:
+
+1. Which parts of the common Research Cycle apply unchanged?
+2. Which domain-specific evidence, structure, property, or method context is
+   required?
+3. Which established external tools or scientific methods should remain the
+   authority for domain computation or validation?
+4. Which outputs can MaterialGraph legitimately compare or reason over?
+5. Which assumptions, limitations, and applicability conditions must remain
+   visible?
+6. How do results return to the investigation as attributed evidence rather than
+   automatic truth?
+
+### Design and roadmap consequence
+
+Before a major researcher-facing workflow is frozen, MaterialGraph should ask:
+
+- Does this interaction resemble a real research task?
+- Are we preserving terminology and distinctions researchers already rely on?
+- Are we reducing friction, or merely introducing a new software-specific step?
+- Can domain experts use their established methods without losing provenance or
+  investigation context?
+- Can the workflow accommodate legitimate differences between scientific
+  domains?
+- Has the proposed workflow been checked against representative researchers,
+  case studies, or documented scientific practice?
+
+This principle complements the Research Cycle rather than replacing it. The
+Research Cycle defines the coherent experience MaterialGraph is trying to
+provide; workflow-compatibility validation determines whether that experience
+actually fits scientific practice.
+
+-------------------------------------------------------------------------------
+
 ## 3. The System Should Work as One Intelligence Pipeline
 
 The reviewed implementation shows a meaningful layered flow:

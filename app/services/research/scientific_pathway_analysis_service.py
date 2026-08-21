@@ -558,6 +558,9 @@ class ScientificPathwayAnalysisService:
                 "Confidence reflects the deterministic scientific usefulness score "
                 "and does not represent experimental validation."
             ],
+            "confidence_scope": (
+                "deterministic_pathway_ranking_not_external_validation"
+            ),
         }
 
     def _next_investigation(self, score: float) -> str:

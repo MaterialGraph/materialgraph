@@ -82,6 +82,16 @@ Missing, unavailable, inferred, estimated, and conflicting values must remain di
 
 Color, size, position, line weight, animation, and ordering must not imply scientific superiority, confidence, feasibility, or causality unless backed by a defined field.
 
+### 3.8 Workflow familiarity before novelty
+
+The interface should fit recognizable scientific research practice before introducing new interaction patterns. MaterialGraph may make a workflow more connected, explicit, reproducible, or inspectable, but it must not create unfamiliar procedural steps merely to make the product appear distinctive.
+
+Distinctiveness should come from how effectively the interface exposes research context, graph relationships, objective-sensitive reasoning, evidence, provenance, uncertainty, and investigation continuity. It should not come from forcing researchers into a novel process that conflicts with established scientific methods.
+
+Where domain workflows differ, the interface should support a stable common investigation framework with domain-specific information and actions rather than pretend that every materials-science task has identical requirements.
+
+A researcher-facing workflow should be treated as provisional until representative researchers or case studies confirm that it reflects a real task. If researcher testing reveals that the page flow conflicts with scientifically appropriate practice, the workflow should be revised rather than expecting the researcher to adapt to the application.
+
 ---
 
 ## 3. MaterialGraph Research Cycle
@@ -148,6 +158,14 @@ A saved investigation may be cloned or revised. Re-execution creates a new versi
 ### 4.10 Design gate
 
 Every frontend capability should improve at least one stage of the Research Cycle. Features that do not improve the cycle require explicit justification.
+
+The Research Cycle itself is also subject to validation. Before a major workflow is treated as stable, the design should be checked against representative researcher practice and should identify:
+
+- which existing scientific step the interaction supports;
+- what friction or information loss MaterialGraph reduces;
+- which established external method or tool remains authoritative;
+- what provenance and investigation context must survive the transition;
+- which domain-specific differences require an extension rather than a universal UI assumption.
 
 ---
 

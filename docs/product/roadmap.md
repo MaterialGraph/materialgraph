@@ -168,6 +168,60 @@ partners.
 
 ---
 
+## Research Workflow Validation Milestone
+
+Before the mature MaterialGraph Research Cycle and researcher-facing interaction
+model are treated as stable, validate them against representative scientific
+practice. The objective is not to replace established researcher methods, but to
+identify where MaterialGraph can structure, connect, preserve, or improve them
+without weakening scientific meaning.
+
+Required work:
+
+- document representative end-to-end materials-research workflows across more
+  than one research context;
+- identify common stages and scientifically important domain-specific
+  differences;
+- map existing researcher methods, databases, literature workflows, simulation
+  tools, structural-analysis tools, experimental steps, and decision points to
+  the MaterialGraph Research Cycle;
+- identify where researchers currently lose provenance, repeat searches, compare
+  evidence manually, or struggle to preserve investigation context;
+- distinguish workflow friction that MaterialGraph can legitimately reduce from
+  scientific activities that should remain owned by established methods or
+  specialist tools;
+- conduct structured review with independent materials researchers;
+- test representative frontend workflows with real or literature-backed case
+  studies;
+- record which interactions are useful, confusing, missing, redundant, or
+  scientifically misleading;
+- revise the Research Cycle, terminology, state model, and frontend flow where
+  evidence requires it;
+- document domain-specific extensions rather than forcing one universal research
+  procedure.
+
+Workflow validation should answer:
+
+1. Does each major MaterialGraph interaction correspond to a recognizable
+   research task?
+2. Does MaterialGraph reduce friction without changing the scientific meaning of
+   the task?
+3. Can researchers continue using established domain methods and tools?
+4. Are objective, evidence, method, provenance, uncertainty, and decision context
+   preserved across those transitions?
+5. Which workflow steps are common across domains, and which require explicit
+   domain-specific handling?
+6. Which current MaterialGraph assumptions should change based on researcher
+   evidence?
+
+Completion of this milestone does not mean that MaterialGraph is scientifically
+validated. It establishes that the product workflow has been checked for
+compatibility with representative research practice. Scientific claims and
+individual research outputs still require the appropriate literature,
+computational, structural, experimental, and researcher validation.
+
+---
+
 ## Conditional Scientific Compute Integration Milestone
 
 External scientific computation should be introduced only where a validated
@@ -246,6 +300,7 @@ technically possible.
 
 ## Research Workflow and Knowledge Milestones
 
+- Research Workflow Compatibility and Validation;
 - Research Validation Planning;
 - Research Gap Analysis;
 - Hypothesis Exploration;
