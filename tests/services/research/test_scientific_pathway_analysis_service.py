@@ -138,6 +138,145 @@ def test_scientific_pathway_analysis_quality_summary_exists(db_session):
         "weak",
         "unknown",
     }
+    assert quality_summary["risk_summary_status"] in {
+        "complete",
+        "partial",
+        "unavailable",
+    }
+
+
+def test_quality_summary_selects_highest_known_risk(db_session):
+    service = ScientificPathwayAnalysisService(db_session)
+
+    summary = service._quality_summary(
+        materials=[
+            {"material_id": 1, "formula": "LiFePO4"},
+            {"material_id": 2, "formula": "NaFePO4"},
+        ],
+        quality=[
+            {
+                "material_id": 1,
+                "quality_score": 12.0,
+                "risk_score": 2.0,
+                "risk_known": True,
+            },
+            {
+                "material_id": 2,
+                "quality_score": 10.0,
+                "risk_score": 7.0,
+                "risk_known": True,
+            },
+        ],
+    )
+
+    assert summary["highest_risk_material"] == "NaFePO4"
+    assert summary["known_risk_material_count"] == 2
+    assert summary["total_risk_material_count"] == 2
+    assert summary["risk_coverage"] == 1.0
+    assert summary["risk_summary_status"] == "complete"
+
+
+def test_quality_summary_excludes_unknown_risk_from_selection(db_session):
+    service = ScientificPathwayAnalysisService(db_session)
+
+    summary = service._quality_summary(
+        materials=[
+            {"material_id": 1, "formula": "UnknownRiskMaterial"},
+            {"material_id": 2, "formula": "KnownRiskMaterial"},
+        ],
+        quality=[
+            {
+                "material_id": 1,
+                "quality_score": 12.0,
+                "risk_score": None,
+                "risk_known": False,
+            },
+            {
+                "material_id": 2,
+                "quality_score": 10.0,
+                "risk_score": 4.0,
+                "risk_known": True,
+            },
+        ],
+    )
+
+    assert summary["highest_risk_material"] == "KnownRiskMaterial"
+    assert summary["known_risk_material_count"] == 1
+    assert summary["total_risk_material_count"] == 2
+    assert summary["risk_coverage"] == 0.5
+    assert summary["risk_summary_status"] == "partial"
+
+
+def test_quality_summary_reports_all_unknown_risk_as_unavailable(db_session):
+    service = ScientificPathwayAnalysisService(db_session)
+
+    summary = service._quality_summary(
+        materials=[
+            {"material_id": 1, "formula": "MaterialA"},
+            {"material_id": 2, "formula": "MaterialB"},
+        ],
+        quality=[
+            {
+                "material_id": 1,
+                "quality_score": 8.0,
+                "risk_score": None,
+                "risk_known": False,
+            },
+            {
+                "material_id": 2,
+                "quality_score": 6.0,
+                "risk_score": None,
+                "risk_known": False,
+            },
+        ],
+    )
+
+    assert summary["highest_risk_material"] is None
+    assert summary["known_risk_material_count"] == 0
+    assert summary["total_risk_material_count"] == 2
+    assert summary["risk_coverage"] == 0.0
+    assert summary["risk_summary_status"] == "unavailable"
+
+
+def test_quality_summary_excludes_non_finite_risk(db_session):
+    service = ScientificPathwayAnalysisService(db_session)
+
+    summary = service._quality_summary(
+        materials=[
+            {"material_id": 1, "formula": "InvalidRiskMaterial"},
+            {"material_id": 2, "formula": "KnownRiskMaterial"},
+        ],
+        quality=[
+            {
+                "material_id": 1,
+                "quality_score": 8.0,
+                "risk_score": float("nan"),
+                "risk_known": True,
+            },
+            {
+                "material_id": 2,
+                "quality_score": 6.0,
+                "risk_score": 3.0,
+                "risk_known": True,
+            },
+        ],
+    )
+
+    assert summary["highest_risk_material"] == "KnownRiskMaterial"
+    assert summary["risk_coverage"] == 0.5
+    assert summary["risk_summary_status"] == "partial"
+
+
+def test_quality_summary_empty_input_has_unavailable_risk(db_session):
+    service = ScientificPathwayAnalysisService(db_session)
+
+    summary = service._quality_summary(materials=[], quality=[])
+
+    assert summary["highest_risk_material"] is None
+    assert summary["known_risk_material_count"] == 0
+    assert summary["total_risk_material_count"] == 0
+    assert summary["risk_coverage"] == 0.0
+    assert summary["risk_summary_status"] == "unavailable"
 
 
 def test_scientific_pathway_analysis_empty_material_is_safe(db_session):

@@ -62,6 +62,14 @@ class QualitySummary(BaseModel):
     overall_quality: QualityLabel
     highest_risk_material: str | None = None
     lowest_quality_material: str | None = None
+    known_risk_material_count: int = Field(default=0, ge=0)
+    total_risk_material_count: int = Field(default=0, ge=0)
+    risk_coverage: float = Field(default=0.0, ge=0.0, le=1.0)
+    risk_summary_status: Literal[
+        "complete",
+        "partial",
+        "unavailable",
+    ] = "unavailable"
 
 
 class ConfidenceExplanation(BaseModel):

@@ -1,7 +1,8 @@
 import time
-from loguru import logger
-
 from collections.abc import Collection
+from math import isfinite
+
+from loguru import logger
 from sqlalchemy.orm import Session
 
 from app.services.material.quality_service import MaterialQualityService
@@ -585,6 +586,10 @@ class ScientificPathwayAnalysisService:
                 "overall_quality": "unknown",
                 "highest_risk_material": None,
                 "lowest_quality_material": None,
+                "known_risk_material_count": 0,
+                "total_risk_material_count": 0,
+                "risk_coverage": 0.0,
+                "risk_summary_status": "unavailable",
             }
 
         material_by_id = {
@@ -597,10 +602,32 @@ class ScientificPathwayAnalysisService:
             2,
         )
 
-        highest_risk = max(
-            quality,
-            key=lambda item: item.get("risk_score", 0.0),
+        known_risk_quality = [
+            item
+            for item in quality
+            if self._has_known_finite_risk(item)
+        ]
+        highest_risk = (
+            max(
+                known_risk_quality,
+                key=lambda item: item["risk_score"],
+            )
+            if known_risk_quality
+            else None
         )
+        known_risk_material_count = len(known_risk_quality)
+        total_risk_material_count = len(quality)
+        risk_coverage = round(
+            known_risk_material_count / total_risk_material_count,
+            4,
+        )
+
+        if known_risk_material_count == total_risk_material_count:
+            risk_summary_status = "complete"
+        elif known_risk_material_count:
+            risk_summary_status = "partial"
+        else:
+            risk_summary_status = "unavailable"
 
         lowest_quality = min(
             quality,
@@ -610,15 +637,34 @@ class ScientificPathwayAnalysisService:
         return {
             "average_quality_score": average_quality,
             "overall_quality": self._quality_label(average_quality),
-            "highest_risk_material": self._material_label(
-                material_by_id,
-                highest_risk["material_id"],
+            "highest_risk_material": (
+                self._material_label(
+                    material_by_id,
+                    highest_risk["material_id"],
+                )
+                if highest_risk is not None
+                else None
             ),
             "lowest_quality_material": self._material_label(
                 material_by_id,
                 lowest_quality["material_id"],
             ),
+            "known_risk_material_count": known_risk_material_count,
+            "total_risk_material_count": total_risk_material_count,
+            "risk_coverage": risk_coverage,
+            "risk_summary_status": risk_summary_status,
         }
+
+    @staticmethod
+    def _has_known_finite_risk(item: dict) -> bool:
+        risk_score = item.get("risk_score")
+
+        return (
+            item.get("risk_known") is True
+            and isinstance(risk_score, (int, float))
+            and not isinstance(risk_score, bool)
+            and isfinite(risk_score)
+        )
 
     def _quality_label(self, score: float) -> str:
         if score >= 12:
