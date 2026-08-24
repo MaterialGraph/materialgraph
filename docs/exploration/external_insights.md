@@ -1179,7 +1179,224 @@ No implementation milestone is created by this observation.
 
 ------------------------------------------------------------------------
 
-# 11. Cross-Project Lessons
+# 11. Nature Materials: The Data-Only Illusion and the Gap From Compound to Useful Material
+
+## Source
+
+Berend Smit and Susana Garcia --- *The data-only illusion in materials discovery*, *Nature Materials* (2026), examined together with a LinkedIn discussion by Aldo Ferrari highlighting implications for synthesis, application-specific functionality, and intellectual-property context.
+
+## Why We Examined It
+
+The commentary challenges the assumption that materials discovery can advance primarily by scaling datasets and predictive models. This is directly relevant to MaterialGraph because the project is intended to support scientifically inspectable research decisions rather than equate candidate generation with discovery.
+
+The discussion also makes an important distinction between identifying a plausible compound and establishing a material that is synthesizable, characterizable, functional, and useful for a particular human or industrial objective.
+
+## Relevant Observations
+
+Materials data differ from domains such as language and images in important ways. Experimentally characterized materials occupy a comparatively sparse and heterogeneous scientific landscape, and useful materials depend on synthesis conditions, structures, processing, characterization, application context, and expert scientific knowledge.
+
+A computationally proposed compound therefore does not automatically constitute a useful material.
+
+``` text
+Predicted / Proposed Compound
+            |
+            v
+Scientific Plausibility
+            |
+            v
+Synthesis Feasibility
+            |
+            v
+Characterization / Validation
+            |
+            v
+Application-Relevant Functionality
+            |
+            v
+Useful Material for a Stated Objective
+```
+
+Failure can occur at any transition. A candidate may be computationally attractive but difficult to synthesize, unstable under relevant conditions, incompatible with processing requirements, poorly suited to the target application, or unsupported by sufficient evidence.
+
+The durable lesson is therefore that **prediction, synthesis, validation, and utility are different scientific states**.
+
+## Potential MaterialGraph Insight
+
+### Candidate Generation Must Not Be Equated With Materials Discovery
+
+MaterialGraph should preserve explicit distinctions among candidate identification, scientific plausibility, evidence state, validation readiness, physical or experimental validation, and objective-specific usefulness.
+
+``` text
+Research Objective
+        |
+        v
+Candidate / Pathway
+        |
+        v
+Why It May Be Relevant
+        |
+        v
+Evidence + Provenance
+        |
+        v
+Unknowns / Contradictions
+        |
+        v
+Validation Priority
+        |
+        v
+Validation Route / Readiness
+        |
+        v
+New Evidence
+        |
+        v
+Researcher Evaluation of Utility
+```
+
+A candidate ranking should therefore remain a research aid rather than a declaration that a material has been discovered or established as useful.
+
+### Domain Knowledge Should Participate in Reasoning, Not Merely Post-Process Predictions
+
+The commentary reinforces MaterialGraph's existing direction toward structured scientific knowledge, explicit relationships, constraints, evidence, and researcher-defined objectives.
+
+MaterialGraph should not assume that sufficiently large datasets can eliminate the need for domain knowledge. Where scientific rules or relationships are represented canonically, they should remain attributable, inspectable, bounded by their applicability, and open to revision through appropriate scientific governance.
+
+This supports the distinction between:
+
+``` text
+Data / Observations
+        +
+Scientific Knowledge
+        +
+Research Objective
+        +
+Explicit Reasoning
+        +
+Validation
+        =
+Research Intelligence
+```
+
+rather than treating model output alone as scientific authority.
+
+### Material Utility Is Objective-Dependent
+
+Whether a material is useful cannot be determined independently of the research or application objective.
+
+The same candidate may be attractive for one investigation and unacceptable for another because of differences in required performance, stability, criticality, toxicity, processing, cost, operating conditions, structural characteristics, or other constraints.
+
+MaterialGraph should therefore continue treating the **Research Objective as first-class scientific context** rather than searching for a universally "best" material.
+
+A stronger eventual question is not merely:
+
+> Is this candidate scientifically interesting?
+
+but:
+
+> **What evidence supports this candidate as useful for this stated research objective, what trade-offs remain, and what must still be established?**
+
+### Synthesis and Scale-Up Context May Become Important Evidence Dimensions
+
+The article's carbon-capture example emphasizes that predicted performance is insufficient if a candidate cannot be synthesized or translated into a practical material.
+
+MaterialGraph does not currently need to become a synthesis-planning or manufacturing platform. However, future evidence models may need to represent relevant states such as:
+
+- synthesis demonstrated / not demonstrated / unknown;
+- synthesis conditions and provenance;
+- reproducibility evidence;
+- processing constraints;
+- scale-up evidence or uncertainty;
+- application-condition validation.
+
+These should be evidence dimensions rather than automatically inferred properties.
+
+### Intellectual-Property Context Is a Legitimate Future Exploration Question
+
+The associated LinkedIn discussion also raises patent-landscape and freedom-to-operate considerations for commercially exploitable materials.
+
+This is potentially relevant to enterprise research decisions:
+
+``` text
+Scientifically Promising
+        +
+Validation / Feasibility
+        +
+Application Utility
+        +
+Commercial / IP Context
+        ->
+Potentially Actionable R&D Opportunity
+```
+
+However, patent status and freedom-to-operate are specialized legal/technical questions. MaterialGraph should **not** create a patentability, infringement, or FTO score without dedicated data sources, explicit semantics, provenance, specialist validation, and appropriate legal boundaries.
+
+For now, IP intelligence remains an exploratory external context that could eventually be integrated through specialist evidence or external tools.
+
+## Relationship to Existing Architecture
+
+This observation reinforces rather than replaces several existing MaterialGraph directions:
+
+- Research Objectives as first-class context;
+- deterministic and inspectable reasoning;
+- Evidence Intelligence;
+- unknown and contradiction handling;
+- local and structural scientific context;
+- Validation Priority Intelligence;
+- Validation Route Selection;
+- Physical Modeling Readiness;
+- Scientific Task / Result contracts;
+- external Scientific Compute integration;
+- investigation history and provenance;
+- researcher authority over scientific interpretation.
+
+It also strengthens an important semantic boundary:
+
+> **Candidate != validated material != useful material for an objective.**
+
+## What MaterialGraph Should Not Infer From It
+
+This commentary does **not** establish that MaterialGraph should:
+
+- reject machine learning or large scientific datasets;
+- claim that AI cannot contribute substantially to materials discovery;
+- implement synthesis prediction immediately;
+- implement manufacturing or scale-up simulation;
+- treat expert opinion as unquestionable canonical truth;
+- automatically infer usefulness from synthesis success;
+- add patent/FTO scoring to candidate ranking;
+- claim that its current reasoning establishes experimental utility;
+- broaden scope before representative researcher workflows justify it.
+
+The lesson is not "data is unimportant." The lesson is that **data-driven prediction is only one part of the materials-discovery and materials-development process**.
+
+## Current Decision
+
+**DURABLE SCIENTIFIC / PRODUCT INSIGHT ACCEPTED --- NO NEW IMPLEMENTATION COMMITMENT**
+
+The following principles are accepted for continued evaluation:
+
+1. candidate generation must remain distinct from scientific validation and objective-specific material utility;
+2. domain knowledge, evidence, and research context remain necessary complements to data-driven methods;
+3. Research Objectives should remain first-class because usefulness is context-dependent;
+4. synthesis, processing, scale-up, and application evidence may eventually become important evidence dimensions;
+5. IP/FTO intelligence is a legitimate future exploration area but requires specialist boundaries and should not enter current scoring or canonical reasoning.
+
+## Promotion / Implementation Criteria
+
+Consider additional canonical promotion or implementation only when:
+
+- representative researcher workflows demonstrate that synthesis, processing, application, or commercial context materially changes decisions;
+- the relevant scientific states and evidence semantics can be represented honestly;
+- authoritative or appropriately attributed data sources are available;
+- missing evidence can remain explicitly unknown;
+- domain experts can evaluate representative outputs;
+- any IP-related capability has clear provenance, legal boundaries, and specialist validation;
+- the added context improves researcher decisions without turning MaterialGraph into an unbounded universal materials platform.
+
+------------------------------------------------------------------------
+
+# 12. Cross-Project Lessons
 
 ## Public Scientific Data Is a Foundation, Not the Entire Research Context
 
@@ -1281,6 +1498,18 @@ MaterialGraph should preferentially compose mature specialist
 capabilities where that is scientifically and product-wise justified
 rather than duplicate them.
 
+## Prediction, Validation, and Utility Are Different Scientific States
+
+A generated or ranked candidate should not silently become a discovered or useful material. MaterialGraph should preserve the transitions among plausibility, synthesis, characterization, validation, and objective-specific utility.
+
+## Material Utility Is Defined Relative to a Research Objective
+
+A material can be scientifically credible yet unsuitable for a particular application or constraint set. Research Objectives should remain first-class context for interpreting candidate value, evidence, trade-offs, and validation needs.
+
+## Domain Knowledge Complements Data-Driven Methods
+
+Scientific data and learned models can be powerful inputs, but materials research also depends on structured domain knowledge, conditions, synthesis and processing context, evidence provenance, and expert interpretation. MaterialGraph should compose these sources without treating any single one as automatic scientific truth.
+
 ## Researcher Authority Remains Central
 
 Even as scientific systems become more automated, researchers should
@@ -1289,7 +1518,7 @@ decisions.
 
 ------------------------------------------------------------------------
 
-# 12. Ideas Deliberately Not Promoted
+# 13. Ideas Deliberately Not Promoted
 
 The following ideas have been encountered but currently do not
 constitute MaterialGraph requirements:
@@ -1309,7 +1538,7 @@ not sufficient justification for implementation.
 
 ------------------------------------------------------------------------
 
-# 13. Future Exploration Questions
+# 14. Future Exploration Questions
 
 For each external project or idea, ask:
 
