@@ -341,3 +341,58 @@ def test_search_state_budget_reports_truncation(db_session, monkeypatch):
 
     assert metadata["expanded_state_count"] == 1
     assert metadata["search_truncated"] is True
+
+
+def test_soft_preference_does_not_block_later_preferred_endpoint(
+    db_session,
+    monkeypatch,
+):
+    from app.services.discovery.chain_service import DiscoveryChainService
+
+    service = DiscoveryChainService(db_session)
+    related_materials = {
+        1: [_candidate(2)],
+        2: [_candidate(3)],
+        3: [],
+    }
+
+    monkeypatch.setattr(
+        service,
+        "_get_family_result",
+        lambda material_id: {
+            "related_materials": related_materials[material_id],
+        },
+    )
+    monkeypatch.setattr(
+        service,
+        "_build_transition",
+        lambda from_material, to_candidate, **_: _transition(
+            from_material,
+            to_candidate,
+        ),
+    )
+
+    chains, _ = service._build_chains(
+        base_material=SimpleNamespace(
+            id=1,
+            mp_id="mp-1",
+            pretty_formula="FePO4",
+            formula="FePO4",
+        ),
+        elements_map={
+            1: ["Fe", "P", "O"],
+            2: ["Fe", "P", "O"],
+            3: ["Na", "Fe", "P", "O"],
+        },
+        avoid_elements=frozenset(),
+        prefer_elements=frozenset({"Na"}),
+        max_hops=2,
+    )
+
+    paths = [
+        [material["material_id"] for material in chain["materials"]]
+        for chain in chains
+    ]
+
+    assert [1, 2] in paths
+    assert [1, 2, 3] in paths

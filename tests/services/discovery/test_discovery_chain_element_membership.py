@@ -1,7 +1,7 @@
 from app.services.discovery.chain_service import DiscoveryChainService
 
 
-def test_next_candidates_does_not_match_n_to_na():
+def test_soft_preference_does_not_filter_candidate_membership():
     service = DiscoveryChainService.__new__(DiscoveryChainService)
     service._candidate_cache = {}
     service.EXPANSION_LIMIT = 6
@@ -32,10 +32,10 @@ def test_next_candidates_does_not_match_n_to_na():
         },
     )
 
-    assert [candidate["material_id"] for candidate in candidates] == [11]
+    assert [candidate["material_id"] for candidate in candidates] == [10, 11]
 
 
-def test_next_candidates_does_not_admit_unknown_preferred_membership():
+def test_soft_preference_retains_candidate_with_unknown_membership():
     service = DiscoveryChainService.__new__(DiscoveryChainService)
     service._candidate_cache = {}
     service.EXPANSION_LIMIT = 6
@@ -57,4 +57,4 @@ def test_next_candidates_does_not_admit_unknown_preferred_membership():
         elements_map={},
     )
 
-    assert candidates == []
+    assert [candidate["material_id"] for candidate in candidates] == [12]

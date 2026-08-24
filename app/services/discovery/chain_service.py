@@ -11,7 +11,6 @@ from app.models.material_element import MaterialElement
 from app.services.discovery.candidate_service import DiscoveryCandidateService
 from app.services.discovery.transition_validator import DiscoveryTransitionValidator
 from app.services.material.family_service import MaterialFamilyService
-from app.utils.chemical_formula import extract_elements
 
 
 class DiscoveryChainService:
@@ -240,29 +239,6 @@ class DiscoveryChainService:
             mp_id = candidate.get("mp_id") or ""
 
             if mp_id.startswith("mp-test"):
-                continue
-
-            formula = (
-                candidate.get("pretty_formula")
-                or candidate.get("formula")
-                or ""
-            )
-            candidate_id = candidate["material_id"]
-
-            if candidate_id in elements_map:
-                candidate_elements: set[str] | None = set(
-                    elements_map[candidate_id]
-                )
-            else:
-                parsed_elements = extract_elements(formula)
-                candidate_elements = parsed_elements or None
-
-            if normalized_prefer_elements and (
-                candidate_elements is None
-                or not candidate_elements.intersection(
-                    normalized_prefer_elements
-                )
-            ):
                 continue
 
             candidates.append(candidate)
