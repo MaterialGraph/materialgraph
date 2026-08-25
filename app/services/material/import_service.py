@@ -17,30 +17,40 @@ class MaterialImportService:
         self,
         candidates: list[MaterialCandidate],
     ) -> int:
+        """Import one atomic batch using the session transaction.
+
+        This service owns the transaction: it commits the complete batch on
+        success and rolls back all pending session changes on failure. Callers
+        must therefore provide a session dedicated to the import operation.
+        """
         imported_count = 0
 
-        for candidate in candidates:
-            if self._material_exists(candidate.mp_id):
-                continue
+        try:
+            for candidate in candidates:
+                if self._material_exists(candidate.mp_id):
+                    continue
 
-            fractions = MaterialCompositionService.resolve_import_fractions(
-                elements=candidate.elements,
-                composition_fractions=candidate.composition_fractions,
-            )
+                fractions = MaterialCompositionService.resolve_import_fractions(
+                    elements=candidate.elements,
+                    composition_fractions=candidate.composition_fractions,
+                )
 
-            material = self._create_material(candidate)
-            self.db.flush()
+                material = self._create_material(candidate)
+                self.db.flush()
 
-            self._link_elements(
-                material_id=material.id,
-                fractions=fractions,
-            )
+                self._link_elements(
+                    material_id=material.id,
+                    fractions=fractions,
+                )
 
-            imported_count += 1
+                imported_count += 1
 
-        self.db.commit()
+            self.db.commit()
 
-        return imported_count
+            return imported_count
+        except Exception:
+            self.db.rollback()
+            raise
 
     def _material_exists(self, mp_id: str) -> bool:
         return (

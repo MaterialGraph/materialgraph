@@ -1,5 +1,7 @@
-import pytest
 from uuid import uuid4
+
+import pytest
+from sqlalchemy.exc import IntegrityError
 
 from app.models.element import Element
 from app.models.material import Material
@@ -293,3 +295,59 @@ def test_import_materials_rejects_invalid_fraction(
         match="invalid composition fraction",
     ):
         service.import_materials([candidate])
+
+
+def test_failed_batch_rolls_back_earlier_candidate_and_reuses_session(
+    db_session,
+):
+    service = MaterialImportService(db_session)
+    valid_candidate = make_candidate()
+    invalid_candidate = make_candidate(
+        composition_fractions={
+            "Li": 0.1,
+            "Fe": 0.1,
+            "P": 0.1,
+            "O": 0.6,
+            "Na": 0.1,
+        }
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="element membership does not match",
+    ):
+        service.import_materials([valid_candidate, invalid_candidate])
+
+    rolled_back_material = (
+        db_session.query(Material)
+        .filter(Material.mp_id == valid_candidate.mp_id)
+        .first()
+    )
+    recovery_candidate = make_candidate()
+
+    assert rolled_back_material is None
+    assert service.import_materials([recovery_candidate]) == 1
+
+
+def test_database_failure_rolls_back_and_reuses_session(
+    db_session,
+    monkeypatch,
+):
+    service = MaterialImportService(db_session)
+    existing_candidate = make_candidate()
+    service.import_materials([existing_candidate])
+
+    monkeypatch.setattr(service, "_material_exists", lambda _mp_id: False)
+
+    with pytest.raises(IntegrityError):
+        service.import_materials([existing_candidate])
+
+    recovery_candidate = make_candidate()
+
+    assert service.import_materials([recovery_candidate]) == 1
+    assert (
+        db_session.query(Material)
+        .filter(Material.mp_id == existing_candidate.mp_id)
+        .count()
+        == 1
+    )
