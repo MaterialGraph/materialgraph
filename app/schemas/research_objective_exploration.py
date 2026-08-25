@@ -104,6 +104,17 @@ class MaterialQualityEvidence(BaseModel):
     stability_quality_contribution: float = 0.0
     energy_above_hull: float | None = None
     criticality_score: float | None = None
+    criticality_composition_evidence_status: Literal[
+        "complete",
+        "partial",
+        "unavailable",
+    ] = "unavailable"
+    criticality_composition_fraction_coverage: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+    )
+    criticality_composition_evidence_complete: bool = False
     risk_score: float | None = None
     risk_known: bool = False
     risk_profile_coverage: float = 0.0

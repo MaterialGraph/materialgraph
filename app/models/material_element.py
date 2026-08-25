@@ -1,4 +1,4 @@
-from sqlalchemy import Float, ForeignKey, UniqueConstraint
+from sqlalchemy import Boolean, Float, ForeignKey, UniqueConstraint, false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -19,6 +19,11 @@ class MaterialElement(Base):
     )
 
     fraction: Mapped[float] = mapped_column(Float)
+    fraction_known: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        server_default=false(),
+    )
 
     __table_args__ = (
         UniqueConstraint("material_id", "element_id", name="uq_material_element"),

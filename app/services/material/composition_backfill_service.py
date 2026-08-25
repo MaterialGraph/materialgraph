@@ -36,6 +36,7 @@ class MaterialCompositionBackfillResult:
     formula: str
     changed_links: int
     previous_fractions: dict[str, float]
+    previous_fraction_evidence: dict[str, bool]
     corrected_fractions: dict[str, float]
 
 
@@ -217,6 +218,10 @@ class MaterialCompositionBackfillService:
             symbol: float(rows_by_symbol[symbol].fraction)
             for symbol in sorted(rows_by_symbol)
         }
+        previous_fraction_evidence = {
+            symbol: bool(rows_by_symbol[symbol].fraction_known)
+            for symbol in sorted(rows_by_symbol)
+        }
 
         changed_links = 0
 
@@ -229,8 +234,9 @@ class MaterialCompositionBackfillService:
                 corrected_fraction,
                 rel_tol=0.0,
                 abs_tol=FRACTION_SUM_ABS_TOLERANCE,
-            ):
+            ) or not link.fraction_known:
                 link.fraction = corrected_fraction
+                link.fraction_known = True
                 changed_links += 1
 
         return MaterialCompositionBackfillResult(
@@ -239,6 +245,7 @@ class MaterialCompositionBackfillService:
             formula=material.pretty_formula or material.formula,
             changed_links=changed_links,
             previous_fractions=previous_fractions,
+            previous_fraction_evidence=previous_fraction_evidence,
             corrected_fractions={
                 symbol: corrected_fractions[symbol]
                 for symbol in sorted(corrected_fractions)
@@ -391,6 +398,7 @@ class MaterialCompositionBackfillService:
         )
 
         print(f"  before={result.previous_fractions}")
+        print(f"  known ={result.previous_fraction_evidence}")
         print(f"  after ={result.corrected_fractions}")
 
     @staticmethod

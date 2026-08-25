@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -6,7 +8,8 @@ class MaterialCriticalityElement(BaseModel):
     symbol: str
     name: str
 
-    fraction: float
+    fraction: float | None
+    fraction_known: bool
     risk_year: int | None
 
     abundance_score: float | None
@@ -37,6 +40,16 @@ class MaterialCriticalityResponse(BaseModel):
     shared_evidence_dimensions: list[str]
     criticality_evidence_dimensions: list[str]
     aggregation_method: str
+    composition_evidence_status: Literal[
+        "complete",
+        "partial",
+        "unavailable",
+    ]
+    composition_fraction_coverage: float
+    composition_evidence_complete: bool
+    known_composition_element_count: int
+    unknown_composition_element_count: int
+    unknown_composition_elements: list[str]
 
     criticality_profile_coverage: float
     criticality_fraction_coverage: float

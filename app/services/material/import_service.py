@@ -34,6 +34,7 @@ class MaterialImportService:
                     elements=candidate.elements,
                     composition_fractions=candidate.composition_fractions,
                 )
+                fraction_known = bool(candidate.composition_fractions)
 
                 material = self._create_material(candidate)
                 self.db.flush()
@@ -41,6 +42,7 @@ class MaterialImportService:
                 self._link_elements(
                     material_id=material.id,
                     fractions=fractions,
+                    fraction_known=fraction_known,
                 )
 
                 imported_count += 1
@@ -85,6 +87,7 @@ class MaterialImportService:
         self,
         material_id: int,
         fractions: dict[str, float],
+        fraction_known: bool,
     ) -> None:
         for symbol, fraction in sorted(fractions.items()):
             element = self._get_or_create_element(symbol)
@@ -94,6 +97,7 @@ class MaterialImportService:
                     material_id=material_id,
                     element_id=element.id,
                     fraction=fraction,
+                    fraction_known=fraction_known,
                 )
             )
 

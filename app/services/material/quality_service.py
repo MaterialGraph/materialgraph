@@ -37,6 +37,18 @@ class MaterialQualityService:
             material=material,
             criticality_score=criticality_score,
             risk_signal=risk_signal,
+            criticality_composition_evidence_status=criticality.get(
+                "composition_evidence_status",
+                "unavailable",
+            ),
+            criticality_composition_fraction_coverage=criticality.get(
+                "composition_fraction_coverage",
+                0.0,
+            ),
+            criticality_composition_evidence_complete=criticality.get(
+                "composition_evidence_complete",
+                False,
+            ),
         )
 
         self._quality_cache[material_id] = quality
@@ -104,6 +116,18 @@ class MaterialQualityService:
                     material=material,
                     criticality_score=criticality_score,
                     risk_signal=risk_signal,
+                    criticality_composition_evidence_status=criticality.get(
+                        "composition_evidence_status",
+                        "unavailable",
+                    ),
+                    criticality_composition_fraction_coverage=criticality.get(
+                        "composition_fraction_coverage",
+                        0.0,
+                    ),
+                    criticality_composition_evidence_complete=criticality.get(
+                        "composition_evidence_complete",
+                        False,
+                    ),
                 )
 
         return {
@@ -119,6 +143,9 @@ class MaterialQualityService:
         material: Material,
         criticality_score: float | None,
         risk_signal: dict,
+        criticality_composition_evidence_status: str = "unavailable",
+        criticality_composition_fraction_coverage: float = 0.0,
+        criticality_composition_evidence_complete: bool = False,
     ) -> dict:
         risk_score = risk_signal.get("risk_score")
         risk_known = risk_signal.get("risk_known", False)
@@ -156,6 +183,15 @@ class MaterialQualityService:
             ),
             "energy_above_hull": material.energy_above_hull,
             "criticality_score": criticality_score,
+            "criticality_composition_evidence_status": (
+                criticality_composition_evidence_status
+            ),
+            "criticality_composition_fraction_coverage": (
+                criticality_composition_fraction_coverage
+            ),
+            "criticality_composition_evidence_complete": (
+                criticality_composition_evidence_complete
+            ),
             "risk_score": risk_score,
             "risk_known": risk_known,
             "risk_profile_coverage": risk_signal.get("risk_profile_coverage", 0.0),
@@ -263,6 +299,9 @@ class MaterialQualityService:
             "stability_quality_contribution": 0.0,
             "energy_above_hull": None,
             "criticality_score": None,
+            "criticality_composition_evidence_status": "unavailable",
+            "criticality_composition_fraction_coverage": 0.0,
+            "criticality_composition_evidence_complete": False,
             "risk_score": None,
             "risk_known": False,
             "risk_profile_coverage": 0.0,

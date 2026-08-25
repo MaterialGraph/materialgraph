@@ -139,6 +139,8 @@ class MaterialCriticalityService:
         partial_criticality_profile_elements: list[str] = []
         complete_criticality_profile_element_count = 0
         available_dimension_count = 0
+        known_composition_element_count = 0
+        unknown_composition_elements: list[str] = []
 
         for material_element, element in material_element_rows:
             risk_profile = risk_profiles_by_element_id.get(element.id)
@@ -157,15 +159,26 @@ class MaterialCriticalityService:
             criticality_known = element_criticality_score is not None
             risk_year = risk_profile.year if risk_profile is not None else None
 
-            fraction = material_element.fraction or 0.0
-            total_fraction += fraction
+            fraction_known = bool(material_element.fraction_known)
+            fraction = (
+                float(material_element.fraction)
+                if fraction_known
+                else None
+            )
+
+            if fraction_known:
+                known_composition_element_count += 1
+                total_fraction += fraction
+            else:
+                unknown_composition_elements.append(element.symbol)
 
             if criticality_known:
                 known_criticality_element_count += 1
-                known_criticality_fraction += fraction
-                weighted_scores.append(
-                    element_criticality_score * fraction
-                )
+                if fraction is not None:
+                    known_criticality_fraction += fraction
+                    weighted_scores.append(
+                        element_criticality_score * fraction
+                    )
                 if dimension_summary["complete"]:
                     complete_criticality_profile_element_count += 1
                 else:
@@ -181,6 +194,7 @@ class MaterialCriticalityService:
                     "symbol": element.symbol,
                     "name": element.name,
                     "fraction": fraction,
+                    "fraction_known": fraction_known,
                     "risk_year": risk_year,
                     "abundance_score": (
                         risk_profile.abundance_score
@@ -238,10 +252,33 @@ class MaterialCriticalityService:
         expected_dimension_count = (
             total_element_count * len(CRITICALITY_EVIDENCE_DIMENSIONS)
         )
+        unknown_composition_element_count = (
+            total_element_count - known_composition_element_count
+        )
+        composition_fraction_coverage = (
+            known_composition_element_count / total_element_count
+            if total_element_count > 0
+            else 0.0
+        )
+        composition_evidence_complete = (
+            total_element_count > 0
+            and known_composition_element_count == total_element_count
+        )
 
-        criticality_score = self._calculate_material_criticality_score(
-            weighted_scores=weighted_scores,
-            known_fraction=known_criticality_fraction,
+        if composition_evidence_complete:
+            composition_evidence_status = "complete"
+        elif known_composition_element_count:
+            composition_evidence_status = "partial"
+        else:
+            composition_evidence_status = "unavailable"
+
+        criticality_score = (
+            self._calculate_material_criticality_score(
+                weighted_scores=weighted_scores,
+                known_fraction=known_criticality_fraction,
+            )
+            if composition_evidence_complete
+            else None
         )
 
         criticality_known = criticality_score is not None
@@ -254,13 +291,17 @@ class MaterialCriticalityService:
 
         criticality_fraction_coverage = (
             known_criticality_fraction / total_fraction
-            if total_fraction > 0
+            if composition_evidence_complete and total_fraction > 0
             else 0.0
         )
 
-        unknown_criticality_fraction = max(
-            total_fraction - known_criticality_fraction,
-            0.0,
+        unknown_criticality_fraction = (
+            max(
+                total_fraction - known_criticality_fraction,
+                0.0,
+            )
+            if composition_evidence_complete
+            else 0.0
         )
 
         element_details.sort(
@@ -288,6 +329,21 @@ class MaterialCriticalityService:
                 CRITICALITY_EVIDENCE_DIMENSIONS
             ),
             "aggregation_method": CRITICALITY_AGGREGATION_METHOD,
+            "composition_evidence_status": composition_evidence_status,
+            "composition_fraction_coverage": round(
+                composition_fraction_coverage,
+                4,
+            ),
+            "composition_evidence_complete": composition_evidence_complete,
+            "known_composition_element_count": (
+                known_composition_element_count
+            ),
+            "unknown_composition_element_count": (
+                unknown_composition_element_count
+            ),
+            "unknown_composition_elements": sorted(
+                unknown_composition_elements
+            ),
             "criticality_profile_coverage": round(
                 criticality_profile_coverage,
                 4,
@@ -335,7 +391,7 @@ class MaterialCriticalityService:
                 6,
             ),
             "criticality_evidence_complete": (
-                total_element_count > 0
+                composition_evidence_complete
                 and complete_criticality_profile_element_count
                 == total_element_count
             ),
@@ -399,6 +455,12 @@ class MaterialCriticalityService:
                 CRITICALITY_EVIDENCE_DIMENSIONS
             ),
             "aggregation_method": CRITICALITY_AGGREGATION_METHOD,
+            "composition_evidence_status": "unavailable",
+            "composition_fraction_coverage": 0.0,
+            "composition_evidence_complete": False,
+            "known_composition_element_count": 0,
+            "unknown_composition_element_count": 0,
+            "unknown_composition_elements": [],
             "criticality_profile_coverage": 0.0,
             "criticality_fraction_coverage": 0.0,
             "criticality_complete_profile_coverage": 0.0,

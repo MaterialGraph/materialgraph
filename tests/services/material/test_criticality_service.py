@@ -32,11 +32,13 @@ def _material_element(
     material_id: int,
     element_id: int,
     fraction: float,
+    fraction_known: bool = True,
 ):
     return SimpleNamespace(
         material_id=material_id,
         element_id=element_id,
         fraction=fraction,
+        fraction_known=fraction_known,
     )
 
 
@@ -222,6 +224,65 @@ def test_material_with_no_known_criticality_returns_none():
     assert result["criticality_fraction_coverage"] == 0.0
     assert result["criticality_evidence_complete"] is False
     assert result["unknown_criticality_elements"] == ["A", "B"]
+
+
+def test_unknown_composition_does_not_produce_weighted_criticality():
+    service = MaterialCriticalityService.__new__(
+        MaterialCriticalityService
+    )
+    material = _material(formula="AB")
+    element_a = _element(1, "A")
+    element_b = _element(2, "B")
+    rows = [
+        (
+            _material_element(
+                material.id,
+                element_a.id,
+                1.0,
+                fraction_known=False,
+            ),
+            element_a,
+        ),
+        (
+            _material_element(
+                material.id,
+                element_b.id,
+                1.0,
+                fraction_known=False,
+            ),
+            element_b,
+        ),
+    ]
+    profiles = {
+        element_a.id: _risk_profile(
+            element_id=element_a.id,
+            abundance_score=2.0,
+        ),
+        element_b.id: _risk_profile(
+            element_id=element_b.id,
+            abundance_score=8.0,
+        ),
+    }
+
+    result = service._build_criticality_response(
+        material=material,
+        material_element_rows=rows,
+        risk_profiles_by_element_id=profiles,
+    )
+
+    assert result["criticality_score"] is None
+    assert result["criticality_known"] is False
+    assert result["composition_evidence_status"] == "unavailable"
+    assert result["composition_fraction_coverage"] == 0.0
+    assert result["composition_evidence_complete"] is False
+    assert result["unknown_composition_elements"] == ["A", "B"]
+    assert result["criticality_profile_coverage"] == 1.0
+    assert result["criticality_evidence_complete"] is False
+    assert all(item["fraction"] is None for item in result["elements"])
+    assert all(
+        item["fraction_known"] is False
+        for item in result["elements"]
+    )
 
 
 def test_score_eligible_partial_profiles_are_not_evidence_complete():

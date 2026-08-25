@@ -17,6 +17,9 @@ def test_material_quality_service_returns_quality_metadata(db_session):
     assert "stability_quality_contribution" in result
     assert "energy_above_hull" in result
     assert "criticality_score" in result
+    assert "criticality_composition_evidence_status" in result
+    assert "criticality_composition_fraction_coverage" in result
+    assert "criticality_composition_evidence_complete" in result
     assert "risk_score" in result
     assert "risk_known" in result
     assert "risk_profile_coverage" in result
@@ -56,6 +59,9 @@ def test_material_quality_service_returns_empty_quality_for_missing_material(db_
         "stability_quality_contribution": 0.0,
         "energy_above_hull": None,
         "criticality_score": None,
+        "criticality_composition_evidence_status": "unavailable",
+        "criticality_composition_fraction_coverage": 0.0,
+        "criticality_composition_evidence_complete": False,
         "risk_score": None,
         "risk_known": False,
         "risk_profile_coverage": 0.0,
