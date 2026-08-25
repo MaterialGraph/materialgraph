@@ -77,7 +77,23 @@ def upgrade() -> None:
     op.create_index(op.f('ix_material_elements_material_id'), 'material_elements', ['material_id'], unique=False)
     op.create_unique_constraint('uq_material_element', 'material_elements', ['material_id', 'element_id'])
     op.add_column('materials', sa.Column('formation_energy_per_atom', sa.Float(), nullable=True))
-    op.add_column('materials', sa.Column('source', sa.String(length=100), nullable=False))
+    op.add_column('materials', sa.Column('source', sa.String(length=100), nullable=True))
+
+    materials = sa.table(
+        'materials',
+        sa.column('source', sa.String(length=100)),
+    )
+    op.execute(
+        materials.update()
+        .where(materials.c.source.is_(None))
+        .values(source=op.inline_literal('legacy_unknown'))
+    )
+    op.alter_column(
+        'materials',
+        'source',
+        existing_type=sa.String(length=100),
+        nullable=False,
+    )
     # ### end Alembic commands ###
 
 
