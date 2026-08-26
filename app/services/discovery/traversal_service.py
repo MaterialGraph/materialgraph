@@ -282,6 +282,7 @@ class DiscoveryTraversalService:
             avoid_element=avoid_element,
             prefer_element=prefer_element,
             max_depth=max_hops,
+            path_search_mode=True,
         )
 
         node_by_id = {

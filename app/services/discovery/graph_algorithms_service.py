@@ -165,11 +165,16 @@ class DiscoveryGraphAlgorithmsService:
         prefer_element: str | None = None,
         max_depth: int = DEFAULT_MAX_DEPTH,
     ) -> dict:
+        effective_max_depth = self.graph_builder.get_effective_max_depth(
+            max_depth,
+            path_search_mode=True,
+        )
         graph = self.graph_builder.build_graph(
             start_material_id=start_material_id,
             avoid_element=avoid_element,
             prefer_element=prefer_element,
-            max_depth=max_depth,
+            max_depth=effective_max_depth,
+            path_search_mode=True,
         )
 
         nodes_by_id = {
@@ -201,12 +206,15 @@ class DiscoveryGraphAlgorithmsService:
                     "start_material_id": start_material_id,
                     "target_material_id": target_material_id,
                     "path_found": True,
+                    "requested_max_depth": max_depth,
+                    "effective_max_depth": effective_max_depth,
+                    "depth_truncated": effective_max_depth < max_depth,
                     "path_cost": round(current_cost, 2),
                     "hop_count": len(path) - 1,
                     "path": path,
                 }
 
-            if current_depth >= max_depth:
+            if current_depth >= effective_max_depth:
                 continue
 
             for edge in adjacency.get(material_id, []):
@@ -243,6 +251,9 @@ class DiscoveryGraphAlgorithmsService:
             "start_material_id": start_material_id,
             "target_material_id": target_material_id,
             "path_found": False,
+            "requested_max_depth": max_depth,
+            "effective_max_depth": effective_max_depth,
+            "depth_truncated": effective_max_depth < max_depth,
             "path_cost": None,
             "hop_count": None,
             "path": [],

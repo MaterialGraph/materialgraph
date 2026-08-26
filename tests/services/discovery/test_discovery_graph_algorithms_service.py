@@ -126,3 +126,102 @@ def test_weighted_shortest_path_preserves_shallower_state(
     assert result["hop_count"] == 2
     assert result["path_cost"] == 6.0
     assert result["hop_count"] <= 2
+    assert result["requested_max_depth"] == 2
+    assert result["effective_max_depth"] == 2
+    assert result["depth_truncated"] is False
+
+
+def test_weighted_shortest_path_builds_real_two_hop_graph(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryGraphAlgorithmsService(db_session)
+    candidates = {
+        5: [
+            {
+                "material_id": 6,
+                "mp_id": "mp-6",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2",
+            }
+        ],
+        6: [
+            {
+                "material_id": 7,
+                "mp_id": "mp-7",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4",
+            }
+        ],
+        7: [],
+    }
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "_get_candidates",
+        lambda material_id, **_: candidates.get(material_id, []),
+    )
+    monkeypatch.setattr(
+        service.graph_builder,
+        "_build_transition",
+        lambda **_: {
+            "transition_type": "shared_element_continuity",
+            "preserved_framework": ["Fe", "O", "P"],
+            "removed_elements": [],
+            "introduced_elements": [],
+            "reason": "Validated test transition.",
+        },
+    )
+    monkeypatch.setattr(
+        service,
+        "_calculate_edge_cost",
+        lambda edge, target_node: 1.0,
+    )
+
+    result = service.weighted_shortest_path(
+        start_material_id=5,
+        target_material_id=7,
+        max_depth=2,
+    )
+
+    assert result["path_found"] is True
+    assert result["path"] == [5, 6, 7]
+    assert result["hop_count"] == 2
+    assert result["path_cost"] == 2.0
+
+
+def test_weighted_shortest_path_discloses_three_hop_cap(
+    db_session,
+    monkeypatch,
+):
+    service = DiscoveryGraphAlgorithmsService(db_session)
+    calls = []
+
+    def fake_build_graph(**kwargs):
+        calls.append(kwargs)
+        return {"nodes": [], "edges": [], "adjacency": {}}
+
+    monkeypatch.setattr(
+        service.graph_builder,
+        "build_graph",
+        fake_build_graph,
+    )
+
+    result = service.weighted_shortest_path(
+        start_material_id=1,
+        target_material_id=5,
+        max_depth=5,
+    )
+
+    assert calls == [
+        {
+            "start_material_id": 1,
+            "avoid_element": None,
+            "prefer_element": None,
+            "max_depth": 3,
+            "path_search_mode": True,
+        }
+    ]
+    assert result["requested_max_depth"] == 5
+    assert result["effective_max_depth"] == 3
+    assert result["depth_truncated"] is True

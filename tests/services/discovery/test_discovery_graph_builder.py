@@ -1,5 +1,30 @@
 from app.services.discovery.graph_builder import DiscoveryGraphBuilder
 
+
+def test_graph_builder_uses_distinct_bounded_depth_modes():
+    assert DiscoveryGraphBuilder.get_effective_max_depth(3) == 1
+    assert DiscoveryGraphBuilder.get_effective_max_depth(
+        3,
+        analytics_mode=True,
+    ) == 2
+    assert DiscoveryGraphBuilder.get_effective_max_depth(
+        3,
+        path_search_mode=True,
+    ) == 3
+
+
+def test_graph_builder_rejects_conflicting_depth_modes():
+    try:
+        DiscoveryGraphBuilder.get_effective_max_depth(
+            2,
+            analytics_mode=True,
+            path_search_mode=True,
+        )
+    except ValueError as exc:
+        assert "mutually exclusive" in str(exc)
+    else:
+        raise AssertionError("Conflicting graph modes must be rejected")
+
 def test_discovery_graph_builder_returns_adjacency(db_session):
     builder = DiscoveryGraphBuilder(db_session)
 

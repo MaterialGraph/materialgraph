@@ -21,6 +21,7 @@ class DiscoveryGraphBuilder:
     DEFAULT_MAX_DEPTH = 2
     MAX_ALLOWED_DEPTH = 1
     MAX_ANALYTICS_DEPTH = 2
+    MAX_PATH_SEARCH_DEPTH = 3
 
     def __init__(self, db: Session):
         self.db = db
@@ -41,12 +42,19 @@ class DiscoveryGraphBuilder:
         requested_depth: int,
         *,
         analytics_mode: bool = False,
+        path_search_mode: bool = False,
     ) -> int:
-        allowed_depth = (
-            cls.MAX_ANALYTICS_DEPTH
-            if analytics_mode
-            else cls.MAX_ALLOWED_DEPTH
-        )
+        if analytics_mode and path_search_mode:
+            raise ValueError(
+                "analytics_mode and path_search_mode are mutually exclusive"
+            )
+
+        if path_search_mode:
+            allowed_depth = cls.MAX_PATH_SEARCH_DEPTH
+        elif analytics_mode:
+            allowed_depth = cls.MAX_ANALYTICS_DEPTH
+        else:
+            allowed_depth = cls.MAX_ALLOWED_DEPTH
 
         return min(requested_depth, allowed_depth)
 
@@ -59,6 +67,7 @@ class DiscoveryGraphBuilder:
         prefer_element: str | None = None,
         max_depth: int = DEFAULT_MAX_DEPTH,
         analytics_mode: bool = False,
+        path_search_mode: bool = False,
     ) -> dict:
         with timed_block(
             f"DiscoveryGraphBuilder.total start_material_id={start_material_id}",
@@ -67,6 +76,7 @@ class DiscoveryGraphBuilder:
             max_depth = self.get_effective_max_depth(
                 max_depth,
                 analytics_mode=analytics_mode,
+                path_search_mode=path_search_mode,
             )
 
             base_material = self.db.get(Material, start_material_id)

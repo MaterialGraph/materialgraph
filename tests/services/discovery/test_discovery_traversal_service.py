@@ -165,6 +165,7 @@ def test_discovery_path_returns_two_hop_path_and_forwards_limit(
     )
 
     assert calls[0]["max_depth"] == 2
+    assert calls[0]["path_search_mode"] is True
     assert result["path_found"] is True
     assert result["hop_count"] == 2
     assert [
@@ -223,6 +224,7 @@ def test_discovery_path_rejects_target_beyond_max_hops(
     )
 
     assert calls[0]["max_depth"] == 1
+    assert calls[0]["path_search_mode"] is True
     assert result["path_found"] is False
     assert result["hop_count"] is None
     assert result["materials"] == []
