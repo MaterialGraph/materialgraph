@@ -500,6 +500,117 @@ actually fits scientific practice.
 
 -------------------------------------------------------------------------------
 
+## 2.5. MaterialGraph Should Support Scientific Decisions, Not Make Them
+
+Researcher authority is not merely a user-interface preference. It is a scientific boundary for the platform.
+
+> **MaterialGraph should improve the quality of a research decision by making alternatives, evidence, reasoning, trade-offs, uncertainty, and validation needs more inspectable. The researcher or R&D team remains responsible for the decision itself.**
+
+MaterialGraph may legitimately answer questions such as:
+
+- Which candidates satisfy the stated hard constraints?
+- How do candidates rank under the explicit research objective?
+- Why does one alternative rank differently from another?
+- What evidence supports or weakens each opportunity?
+- What remains unknown or contradictory?
+- Which unresolved assumption could materially change the comparison?
+- What validation need appears most decision-relevant?
+- Which class of scientific validation may address that need?
+
+It should not silently turn those outputs into commands such as:
+
+- choose this material;
+- reject that material as universally inferior;
+- perform this experiment because the software selected it;
+- accept a pathway as scientifically valid because it ranked first;
+- treat workflow completion as approval for an R&D decision.
+
+### Ranking is conditional decision support
+
+A top-ranked candidate should be interpreted as:
+
+> **Under this stated objective, constraints, methodology, software/data context, and currently available evidence, this candidate has the strongest supported ranking.**
+
+It must not implicitly mean:
+
+> **MaterialGraph has determined that this is the material the researcher should use.**
+
+This distinction is especially important when industrial decisions depend on information outside current MaterialGraph coverage, including processability, impurity sensitivity, raw-material variability, manufacturing robustness, scale-up, customer qualification, cost, regulatory constraints, operating conditions, or organization-specific knowledge.
+
+### Decision support should expose alternatives rather than manufacture authority
+
+Where several alternatives remain scientifically plausible, MaterialGraph should preserve the comparison and trade-offs. A single score or rank should not erase dimensions that may be decisive to the researcher.
+
+``` text
+Research Objective
+        |
+        v
+MaterialGraph Exploration / Ranking
+        |
+        +-- alternatives
+        +-- explicit constraints
+        +-- evidence and provenance
+        +-- trade-offs
+        +-- unknowns / contradictions
+        +-- sensitivity
+        +-- validation priorities
+        |
+        v
+Researcher / R&D Team Judgement
+        |
+        v
+Research Decision
+```
+
+The system should make it possible for a researcher to disagree with a ranking, choose a lower-ranked candidate for an explicit reason, override a validation priority, and preserve that rationale as part of the investigation history. Human override should not corrupt canonical scientific knowledge.
+
+### Validation Priority Intelligence follows the same boundary
+
+VPI should identify and explain decision-relevant unresolved questions. It may indicate validation classes and readiness where scientifically justified, but it should not become an autonomous experiment-selection authority.
+
+The intended distinction is:
+
+``` text
+MaterialGraph: "Resolving X could materially change the decision, for these reasons."
+
+Researcher:     decides whether, when, and how X should be investigated.
+```
+
+Future automation may execute an explicitly authorized workflow, but automation of execution must not be confused with delegation of scientific judgement.
+
+### Evaluation consequence
+
+MaterialGraph evaluation should eventually test **decision-support quality**, not only candidate-generation or ranking accuracy. Representative evaluations should ask whether the system:
+
+1. exposes scientifically important alternatives and trade-offs;
+2. scopes rankings to the explicit objective and evidence state;
+3. preserves missing, contradictory, and uncertain evidence honestly;
+4. explains why alternatives differ;
+5. identifies decision-sensitive validation needs without manufacturing precision;
+6. preserves the researcher's ability to inspect, disagree, override, and record rationale;
+7. helps researchers make better-informed decisions without implying that software output constitutes scientific authority.
+
+This complements engineering correctness and external scientific validity. A deterministic result can be implemented correctly yet still provide poor decision support if it hides decisive uncertainty or frames a conditional ranking as an authoritative choice.
+
+### Design and architecture consequence
+
+Researcher authority should remain visible across objective modeling, ranking, comparison, VPI, validation-route selection, automation, saved investigations, collaboration, and researcher-facing language.
+
+When a future capability proposes to choose or act on behalf of a researcher, MaterialGraph should ask:
+
+1. Is the choice a deterministic software operation or a scientific judgement?
+2. What evidence and context would be required to justify the choice?
+3. Can the researcher inspect and override it?
+4. Is the system expressing a recommendation, a priority, a constraint result, or established scientific fact?
+5. Will the resulting decision and rationale remain attributable?
+6. Could automation create an appearance of scientific certainty beyond the evidence?
+
+The governing rule is:
+
+> **Increase the sophistication of MaterialGraph's scientific intelligence without transferring scientific authority away from the researcher.**
+
+-------------------------------------------------------------------------------
+
 ## 3. The System Should Work as One Intelligence Pipeline
 
 The reviewed implementation shows a meaningful layered flow:

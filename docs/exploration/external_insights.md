@@ -1809,7 +1809,105 @@ No implementation milestone is created by this observation.
 
 ------------------------------------------------------------------------
 
-# 13. Cross-Project Lessons
+# 13. Industrial Materials R&D: Learning-Driven Development and Researcher Decision Authority
+
+## Source
+
+Serge Lapshin --- LinkedIn discussion, *Materials AI: From Bayesian Optimization to Learning-Driven R&D* (August 2026), describing industrial materials development as a multi-constraint process involving materials science, AI/ML, experimental design, simulation, laboratory automation, scale-up knowledge, application expertise, and R&D data infrastructure.
+
+## Why We Examined It
+
+The post is relevant because it frames materials R&D around better scientific decisions rather than model output alone. A candidate that performs well on one predicted or measured property may still fail because of processability, stability, impurity sensitivity, raw-material variability, customer qualification, cost, regulatory constraints, manufacturing robustness, or scale-up requirements.
+
+This reinforces a founding MaterialGraph boundary: the platform should improve the researcher's decision context without becoming the scientific decision-maker.
+
+## Relevant Observations
+
+Industrial materials development is inherently multi-objective and context-dependent. Prediction or optimization can narrow the search space and help prioritize work, but practical value depends on evidence and constraints distributed across scientific, experimental, process, manufacturing, application, and organizational contexts.
+
+A useful conceptual distinction is:
+
+``` text
+Algorithm / Model / MaterialGraph Signal
+                |
+                v
+Candidate or Research Opportunity
+                |
+                v
+Evidence + Trade-offs + Unknowns
+                |
+                v
+Validation Options / Priorities
+                |
+                v
+Researcher / R&D Team Judgement
+                |
+                v
+Research Decision
+```
+
+The durable lesson is not that Bayesian optimization or Materials AI should be rejected. It is that **learning faster and testing more intelligently remain means for improving human scientific decisions, not substitutes for scientific judgement.**
+
+## Potential MaterialGraph Insight
+
+### MaterialGraph Should Support Decisions, Not Make Them
+
+MaterialGraph may rank, compare, expose trade-offs, identify uncertainty, prioritize validation needs, and show how a result changes under an explicit objective. It should not silently convert those outputs into an instruction that a researcher must choose a particular material, pathway, experiment, or validation route.
+
+A researcher-facing result should preserve the conditional meaning of ranking:
+
+> **Under this stated objective, these constraints, this methodology, and the currently available evidence, this candidate ranks highest.**
+
+This must remain distinct from:
+
+> **This is the material the researcher should use.**
+
+The latter requires scientific and practical judgement that may depend on context MaterialGraph does not possess.
+
+### Validation Priority Intelligence Must Preserve Researcher Choice
+
+VPI should identify which unresolved questions appear most decision-relevant and explain why resolving them may matter. It may suggest an appropriate class of validation where applicability is represented. It should not autonomously prescribe the next experiment as scientific truth.
+
+Researchers should be able to inspect, disagree with, override, or defer a validation priority and preserve the reason for doing so. This makes VPI a decision-support capability rather than an autonomous research authority.
+
+### Industrial Constraints Are Evidence and Objective Context, Not Automatic Universal Scores
+
+Processability, impurity sensitivity, raw-material variability, manufacturability, scalability, customer qualification, cost, regulatory constraints, and manufacturing robustness may eventually matter to MaterialGraph investigations. They should not be collapsed prematurely into one universal industrial-readiness score.
+
+Where such dimensions are introduced, MaterialGraph should preserve their definitions, conditions, provenance, evidence coverage, uncertainty, and objective relevance.
+
+### Evaluation Should Include Decision-Support Quality
+
+This observation also strengthens the emerging evaluation direction recorded through Material Discovery Bench. MaterialGraph should eventually be evaluated not only on whether it generates a plausible or known candidate, but also on whether it provides sufficiently accurate, relevant, inspectable, and uncertainty-aware information for a researcher to make a better-informed decision.
+
+Possible evaluation questions include:
+
+- Were important trade-offs exposed rather than hidden by a single score?
+- Were missing or contradictory evidence states visible?
+- Was the ranking correctly scoped to the stated objective and evidence state?
+- Did the system distinguish recommendation strength from scientific validity?
+- Could the researcher understand why alternatives differed?
+- Did validation priorities identify decision-relevant uncertainty without removing researcher authority?
+
+## Relationship to Existing Architecture
+
+This reinforces existing MaterialGraph directions: Research Objectives, deterministic ranking, comparative intelligence, Evidence Intelligence, uncertainty and contradiction handling, VPI, Validation Route Selection, investigation history, external scientific-tool integration, and researcher authority over interpretation and decisions.
+
+## What MaterialGraph Should Not Infer From It
+
+This post does **not** establish that MaterialGraph should implement Bayesian optimization, automate industrial R&D, model every manufacturing constraint now, autonomously choose experiments, or create a universal industrial-readiness score. Those capabilities require separate evidence, semantics, researcher validation, and scope justification.
+
+## Current Decision
+
+**DURABLE PRINCIPLE REINFORCED / PROMOTED TO CANONICAL DOCUMENTATION --- NO NEW IMPLEMENTATION COMMITMENT**
+
+The promoted principle is:
+
+> **MaterialGraph should improve the quality of scientific decisions by structuring alternatives, evidence, trade-offs, uncertainty, and validation needs while preserving the researcher's authority to decide.**
+
+------------------------------------------------------------------------
+
+# 14. Cross-Project Lessons
 
 ## Public Scientific Data Is a Foundation, Not the Entire Research Context
 
@@ -1941,7 +2039,7 @@ decisions.
 
 ------------------------------------------------------------------------
 
-# 14. Ideas Deliberately Not Promoted
+# 15. Ideas Deliberately Not Promoted
 
 The following ideas have been encountered but currently do not
 constitute MaterialGraph requirements:
@@ -1961,7 +2059,7 @@ not sufficient justification for implementation.
 
 ------------------------------------------------------------------------
 
-# 15. Future Exploration Questions
+# 16. Future Exploration Questions
 
 For each external project or idea, ask:
 
