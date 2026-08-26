@@ -10,6 +10,8 @@ from app.services.material.risk_evidence_policy import (
     RISK_AGGREGATION_METHOD,
     RISK_EVIDENCE_DIMENSIONS,
     SHARED_EVIDENCE_DIMENSIONS,
+    calculate_element_risk_score,
+    calculate_material_risk_from_element_scores,
     evidence_dimension_summary,
 )
 
@@ -84,12 +86,9 @@ class MaterialRiskService:
                 )
             )
 
-        if element_risks:
-            material_risk_score = sum(
-                item.risk_score for item in element_risks
-            ) / len(element_risks)
-        else:
-            material_risk_score = None
+        material_risk_score = calculate_material_risk_from_element_scores(
+            [item.risk_score for item in element_risks]
+        )
 
         total_element_count = len(element_rows)
         known_count = len(element_risks)
@@ -233,12 +232,15 @@ class MaterialRiskService:
                 total_element_count * len(RISK_EVIDENCE_DIMENSIONS)
             )
 
+            material_risk_score = (
+                calculate_material_risk_from_element_scores(
+                    element_risk_scores
+                )
+            )
+
             risk_signals[material_id] = {
                 "material_id": material_id,
-                "risk_score": round(
-                    sum(element_risk_scores) / known_count,
-                    3,
-                ),
+                "risk_score": material_risk_score,
                 "risk_known": True,
                 "risk_profile_coverage": coverage,
                 "risk_complete_profile_coverage": round(
@@ -321,22 +323,12 @@ class MaterialRiskService:
         self,
         profile: ElementRiskProfile,
     ) -> float | None:
-        values = [
-            profile.supply_risk_score,
-            profile.geopolitical_risk_score,
-            profile.toxicity_score,
-        ]
-
-        available_values = [
-            value for value in values if value is not None
-        ]
-
-        if not available_values:
-            return None
-
-        return round(
-            sum(available_values) / len(available_values),
-            3,
+        return calculate_element_risk_score(
+            [
+                profile.supply_risk_score,
+                profile.geopolitical_risk_score,
+                profile.toxicity_score,
+            ]
         )
 
     def get_material_risk_score(

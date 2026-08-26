@@ -10,6 +10,8 @@ class SensitivityScenarioResult(BaseModel):
     risk_dimension: str
     baseline_component_score: float | None
     adjusted_component_score: float | None
+    adjusted_material_risk_score: float | None
+    material_risk_delta: float | None
     adjusted_score: float | None
     score_delta: float | None
 

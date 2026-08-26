@@ -22,6 +22,38 @@ CRITICALITY_AGGREGATION_METHOD = (
 )
 
 
+def calculate_element_risk_score(
+    values: list[float | None],
+) -> float | None:
+    available_values = [value for value in values if value is not None]
+
+    if not available_values:
+        return None
+
+    return round(sum(available_values) / len(available_values), 3)
+
+
+def calculate_material_risk_score(
+    element_dimension_values: list[list[float | None]],
+) -> float | None:
+    element_scores = [
+        score
+        for values in element_dimension_values
+        if (score := calculate_element_risk_score(values)) is not None
+    ]
+
+    return calculate_material_risk_from_element_scores(element_scores)
+
+
+def calculate_material_risk_from_element_scores(
+    element_scores: list[float],
+) -> float | None:
+    if not element_scores:
+        return None
+
+    return round(sum(element_scores) / len(element_scores), 3)
+
+
 def evidence_dimension_summary(profile, dimensions: tuple[str, ...]) -> dict:
     expected = len(dimensions)
     available = (

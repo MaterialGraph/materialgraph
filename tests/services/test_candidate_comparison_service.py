@@ -78,6 +78,11 @@ def _candidate(
         formula=formula,
         pretty_formula=formula,
         score=score,
+        score_before_risk_penalty=(
+            score + risk_score * 5
+            if risk_known and risk_score is not None
+            else score
+        ),
         material_risk_score=risk_score,
         risk_known=risk_known,
         risk_profile_coverage=1.0 if risk_known else 0.0,

@@ -101,7 +101,20 @@ def test_known_risk_applies_numeric_penalty():
 
     assert result.material_risk_score == 2.0
     assert result.risk_penalty == 10.0
+    assert result.score_before_risk_penalty == 70.0
     assert result.score == 60.0
+
+
+def test_risk_penalty_recomputation_uses_unclipped_pre_risk_score():
+    service = CandidateScreeningService(FakeDB([]))
+
+    score, penalty = service.apply_material_risk_penalty(
+        score_before_risk_penalty=10.0,
+        material_risk_score=4.0,
+    )
+
+    assert score == 0.0
+    assert penalty == 20.0
 
 def test_unknown_risk_is_not_reported_as_low_numeric_risk():
     material = _material(1, formula="A")

@@ -185,15 +185,16 @@ class CandidateScreeningService:
 
             material_risk_score = risk_signal.get("risk_score")
             risk_known = risk_signal.get("risk_known", False)
+            score_before_risk_penalty = score
+
+            score, risk_penalty = self.apply_material_risk_penalty(
+                score_before_risk_penalty=score_before_risk_penalty,
+                material_risk_score=(
+                    material_risk_score if risk_known else None
+                ),
+            )
 
             if risk_known and material_risk_score is not None:
-                risk_penalty = (
-                    material_risk_score
-                    * self.weights["risk_penalty_multiplier"]
-                )
-
-                score -= risk_penalty
-
                 reasons.append(
                     f"Material risk score {material_risk_score} "
                     f"applied as penalty {round(risk_penalty, 3)}"
@@ -206,8 +207,6 @@ class CandidateScreeningService:
                     "risk penalty not applied"
                 )
 
-            score = max(0.0, min(100.0, score))
-
             results.append(
                 CandidateScreeningResult(
                     material_id=material.id,
@@ -215,6 +214,10 @@ class CandidateScreeningService:
                     formula=material.formula,
                     pretty_formula=material.pretty_formula,
                     score=round(score, 3),
+                    score_before_risk_penalty=round(
+                        score_before_risk_penalty,
+                        3,
+                    ),
                     material_risk_score=material_risk_score,
                     risk_known=risk_known,
                     risk_profile_coverage=risk_signal.get(
@@ -256,6 +259,25 @@ class CandidateScreeningService:
         )
 
         return ranked_results
+
+    def apply_material_risk_penalty(
+        self,
+        *,
+        score_before_risk_penalty: float,
+        material_risk_score: float | None,
+    ) -> tuple[float, float]:
+        risk_penalty = (
+            material_risk_score
+            * self.weights["risk_penalty_multiplier"]
+            if material_risk_score is not None
+            else 0.0
+        )
+        score = max(
+            0.0,
+            min(100.0, score_before_risk_penalty - risk_penalty),
+        )
+
+        return score, risk_penalty
 
     @staticmethod
     def _filter_disposition(
@@ -323,10 +345,8 @@ class CandidateScreeningService:
         self,
         candidate: CandidateScreeningResult,
     ) -> tuple[float, bool, float]:
-        pre_risk_score = candidate.score + candidate.risk_penalty
-
         return (
-            pre_risk_score,
+            candidate.score_before_risk_penalty,
             candidate.risk_known,
             candidate.score,
         )

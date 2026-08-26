@@ -16,6 +16,7 @@ class CandidateScreeningResult(BaseModel):
     formula: str
     pretty_formula: str
     score: float
+    score_before_risk_penalty: float
 
     material_risk_score: float | None
     risk_known: bool

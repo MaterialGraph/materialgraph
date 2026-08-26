@@ -7,11 +7,15 @@ from app.schemas.sensitivity import (
     SensitivityScenarioResult,
 )
 from app.services.candidate_screening_service import CandidateScreeningService
+from app.services.material.risk_evidence_policy import (
+    RISK_EVIDENCE_DIMENSIONS,
+    calculate_material_risk_score,
+)
 from app.services.material.risk_service import MaterialRiskService
 
 
 class SensitivityAnalysisService:
-    RISK_PENALTY_WEIGHT = 5.0
+    RISK_SCORE_MAX = 10.0
     SCENARIO_DEFINITIONS = (
         ("supply_risk_plus_25_percent", "supply_risk", 1.25),
         ("supply_risk_plus_50_percent", "supply_risk", 1.50),
@@ -65,6 +69,9 @@ class SensitivityAnalysisService:
 
         scenarios = self._build_sensitivity_scenarios(
             baseline_score=baseline.score,
+            score_before_risk_penalty=baseline.score_before_risk_penalty,
+            baseline_material_risk_score=baseline.material_risk_score,
+            material_risk=material_risk,
             baseline_supply_risk_score=supply_risk_score,
             baseline_geopolitical_risk_score=geopolitical_risk_score,
         )
@@ -94,6 +101,9 @@ class SensitivityAnalysisService:
     def _build_sensitivity_scenarios(
         self,
         baseline_score: float,
+        score_before_risk_penalty: float,
+        baseline_material_risk_score: float | None,
+        material_risk,
         baseline_supply_risk_score: float | None,
         baseline_geopolitical_risk_score: float | None,
     ) -> list[SensitivityScenarioResult]:
@@ -113,26 +123,64 @@ class SensitivityAnalysisService:
                         risk_dimension=risk_dimension,
                         baseline_component_score=None,
                         adjusted_component_score=None,
+                        adjusted_material_risk_score=None,
+                        material_risk_delta=None,
                         adjusted_score=None,
                         score_delta=None,
                     )
                 )
                 continue
 
-            adjusted_component = baseline_component * multiplier
-            penalty_delta = (
-                adjusted_component - baseline_component
-            ) * self.RISK_PENALTY_WEIGHT
-            adjusted_score = max(0.0, baseline_score - penalty_delta)
+            attribute = self._risk_attribute(risk_dimension)
+            adjusted_component = self._mean_adjusted_component_score(
+                material_risk=material_risk,
+                attribute=attribute,
+                multiplier=multiplier,
+            )
+            adjusted_material_risk = self._adjusted_material_risk_score(
+                material_risk=material_risk,
+                attribute=attribute,
+                multiplier=multiplier,
+            )
+
+            if adjusted_material_risk is None:
+                adjusted_score = None
+                material_risk_delta = None
+            else:
+                adjusted_score, _ = (
+                    self.screening_service.apply_material_risk_penalty(
+                        score_before_risk_penalty=score_before_risk_penalty,
+                        material_risk_score=adjusted_material_risk,
+                    )
+                )
+                material_risk_delta = (
+                    adjusted_material_risk - baseline_material_risk_score
+                    if baseline_material_risk_score is not None
+                    else None
+                )
 
             results.append(
                 SensitivityScenarioResult(
                     scenario=name,
                     risk_dimension=risk_dimension,
                     baseline_component_score=round(baseline_component, 3),
-                    adjusted_component_score=round(adjusted_component, 3),
-                    adjusted_score=round(adjusted_score, 3),
-                    score_delta=round(adjusted_score - baseline_score, 3),
+                    adjusted_component_score=adjusted_component,
+                    adjusted_material_risk_score=adjusted_material_risk,
+                    material_risk_delta=(
+                        round(material_risk_delta, 3)
+                        if material_risk_delta is not None
+                        else None
+                    ),
+                    adjusted_score=(
+                        round(adjusted_score, 3)
+                        if adjusted_score is not None
+                        else None
+                    ),
+                    score_delta=(
+                        round(adjusted_score - baseline_score, 3)
+                        if adjusted_score is not None
+                        else None
+                    ),
                 )
             )
 
@@ -156,6 +204,61 @@ class SensitivityAnalysisService:
             return None
 
         return round(sum(values) / len(values), 3)
+
+    def _mean_adjusted_component_score(
+        self,
+        *,
+        material_risk,
+        attribute: str,
+        multiplier: float,
+    ) -> float | None:
+        if material_risk is None:
+            return None
+
+        adjusted_values = [
+            min(
+                self.RISK_SCORE_MAX,
+                getattr(element_risk, attribute) * multiplier,
+            )
+            for element_risk in material_risk.element_risks
+            if getattr(element_risk, attribute) is not None
+        ]
+
+        if not adjusted_values:
+            return None
+
+        return round(sum(adjusted_values) / len(adjusted_values), 3)
+
+    def _adjusted_material_risk_score(
+        self,
+        *,
+        material_risk,
+        attribute: str,
+        multiplier: float,
+    ) -> float | None:
+        if material_risk is None:
+            return None
+
+        element_dimension_values = []
+
+        for element_risk in material_risk.element_risks:
+            values = []
+
+            for dimension in RISK_EVIDENCE_DIMENSIONS:
+                value = getattr(element_risk, dimension)
+
+                if dimension == attribute and value is not None:
+                    value = min(self.RISK_SCORE_MAX, value * multiplier)
+
+                values.append(value)
+
+            element_dimension_values.append(values)
+
+        return calculate_material_risk_score(element_dimension_values)
+
+    @staticmethod
+    def _risk_attribute(risk_dimension: str) -> str:
+        return f"{risk_dimension}_score"
 
     def _classify_sensitivity(self, max_delta: float) -> str:
         if max_delta >= 15:
