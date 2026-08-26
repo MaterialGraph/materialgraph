@@ -28,9 +28,6 @@ class DiscoveryExplanationService:
         if "lower_criticality" in paths:
             reasons.append("It has lower estimated criticality than the base material.")
 
-        if "stable_material" in paths:
-            reasons.append("It is marked as stable in the material dataset.")
-
         if "same_application" in paths:
             reasons.append(
                 "It shares at least one application context with the base material."

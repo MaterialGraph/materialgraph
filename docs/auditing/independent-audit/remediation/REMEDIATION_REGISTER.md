@@ -5,8 +5,8 @@
 - Audited commit: `a1605e61f72035890692ab4df63ebd2f7b859069`
 - Remediation baseline: documentation commit `2d33273c916771f592200d87bafe1935aa8ec942`
   over audited implementation commit `a1605e61f72035890692ab4df63ebd2f7b859069`
-- Implementation remediations: **4**
-- Verified remediations: **4 of 20 actionable findings**
+- Implementation remediations: **7**
+- Verified remediations: **7 of 20 actionable findings**
 - Post-freeze invalidations: **1 (`MG-IA-011`)**
 
 ## Status definitions
@@ -27,12 +27,12 @@
 | `MG-IA-004` | Determinism | Genuinely new | Pending | — |
 | `MG-IA-007` | Provenance | Genuinely new | Pending | — |
 | `MG-IA-008` | Integrity | Genuinely new | Verified | `verification/MG-IA-008.md` |
-| `MG-IA-009` | Scientific semantics | Related residual behavior | Pending | — |
-| `MG-IA-010` | Scientific mathematics | Related but distinct | Pending | — |
+| `MG-IA-009` | Scientific semantics | Related residual behavior | Verified | `verification/MG-IA-009.md` |
+| `MG-IA-010` | Scientific mathematics | Related but distinct | Verified | `verification/MG-IA-010.md` |
 | `MG-IA-011` | Boundedness | Invalidated by exact repository evidence | Not actionable | `verification/BASELINE-AND-CHRONOLOGY.md` |
 | `MG-IA-012` | Determinism | Genuinely new | Pending | — |
 | `MG-IA-013` | API consistency | Incomplete earlier scope | Pending | — |
-| `MG-IA-014` | Scientific semantics | Incomplete dependency scope | Pending | — |
+| `MG-IA-014` | Scientific semantics | Incomplete dependency scope | Verified | `verification/MG-IA-014.md` |
 | `MG-IA-015` | Graph correctness | Related but distinct | Pending | — |
 | `MG-IA-016` | Objective semantics | Incomplete original remediation | Verified | `verification/MG-IA-016.md` |
 | `MG-IA-017` | Null safety | Incomplete downstream scope | Verified | `verification/MG-IA-017.md` |

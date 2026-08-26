@@ -57,12 +57,14 @@ def _material(
     formula: str,
     *,
     stable: bool = True,
+    energy_above_hull: float | None = None,
 ):
     return SimpleNamespace(
         id=material_id,
         formula=formula,
         pretty_formula=formula,
         is_stable=stable,
+        energy_above_hull=energy_above_hull,
     )
 
 
@@ -173,9 +175,15 @@ def test_unknown_risk_is_nullable_and_receives_no_low_risk_component():
     substitute = result.substitutes[0]
 
     # Similarity is 1/3: 0.233 after the 0.7 weighting,
-    # plus the 0.05 stability bonus. Unknown risk contributes
-    # no fabricated low-risk benefit.
-    assert substitute.rank_score == 0.283
+    # plus 0.025 from incomplete stable-flag fallback evidence.
+    # Unknown risk contributes no fabricated low-risk benefit.
+    assert substitute.rank_score == 0.258
+    assert substitute.stability_rank_contribution == 0.025
+    assert substitute.stability_evidence_basis == (
+        "imported_is_stable_fallback"
+    )
+    assert substitute.stability_evidence_complete is False
+
     assert substitute.material_risk_score is None
     assert substitute.risk_known is False
     assert substitute.risk_profile_coverage == 0.0
@@ -286,6 +294,85 @@ def test_unknown_source_risk_remains_nullable_in_result_and_explanation():
         "source material-risk evidence is unavailable"
         in explanation
     )
+
+
+def test_substitution_uses_energy_primary_stability_evidence():
+    source = _material(1, "AB")
+    candidate = _material(
+        2,
+        "AC",
+        stable=True,
+        energy_above_hull=0.2,
+    )
+    signals = {
+        1: _risk_signal(
+            1,
+            risk_score=4.0,
+            risk_known=True,
+            coverage=1.0,
+            complete=True,
+            known_elements=["A", "B"],
+        ),
+        2: _risk_signal(
+            2,
+            risk_score=4.0,
+            risk_known=True,
+            coverage=1.0,
+            complete=True,
+            known_elements=["A", "C"],
+        ),
+    }
+
+    result = _service(source, [candidate], signals).analyze(
+        SubstitutionRequest(material_id=1, top_n=5)
+    )
+
+    assert result is not None
+    substitute = result.substitutes[0]
+    assert substitute.stability_band == "unstable"
+    assert substitute.stability_evidence_basis == "energy_above_hull"
+    assert substitute.stability_evidence_complete is True
+    assert substitute.stability_source_consistency == "inconsistent"
+    assert substitute.stability_rank_contribution == 0.0
+    assert "energy above hull 0.2" in substitute.explanation.lower()
+    assert "sources are inconsistent" in substitute.explanation.lower()
+    assert "stable candidate" not in substitute.explanation.lower()
+
+
+def test_substitution_scales_canonical_fallback_contribution():
+    source = _material(1, "AB")
+    candidate = _material(2, "AC", stable=True)
+    signals = {
+        1: _risk_signal(
+            1,
+            risk_score=4.0,
+            risk_known=True,
+            coverage=1.0,
+            complete=True,
+            known_elements=["A", "B"],
+        ),
+        2: _risk_signal(
+            2,
+            risk_score=4.0,
+            risk_known=True,
+            coverage=1.0,
+            complete=True,
+            known_elements=["A", "C"],
+        ),
+    }
+
+    result = _service(source, [candidate], signals).analyze(
+        SubstitutionRequest(material_id=1, top_n=5)
+    )
+
+    assert result is not None
+    substitute = result.substitutes[0]
+    assert substitute.stability_evidence_basis == (
+        "imported_is_stable_fallback"
+    )
+    assert substitute.stability_evidence_complete is False
+    assert substitute.stability_rank_contribution == 0.025
+    assert "incomplete fallback evidence" in substitute.explanation.lower()
 
 
 def test_substitution_bulk_loads_elements_and_risk_once():

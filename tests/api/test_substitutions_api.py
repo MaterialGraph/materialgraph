@@ -15,6 +15,11 @@ def test_substitution_analysis_api(client):
     assert len(data["substitutes"]) <= 5
     assert len(data["substitutes"]) > 0
     assert "removed_elements" in data["substitutes"][0]
+    assert "stability_band" in data["substitutes"][0]
+    assert "stability_evidence_basis" in data["substitutes"][0]
+    assert "stability_evidence_complete" in data["substitutes"][0]
+    assert "stability_source_consistency" in data["substitutes"][0]
+    assert "stability_rank_contribution" in data["substitutes"][0]
     assert "explanation" in data["substitutes"][0]
 
 

@@ -141,3 +141,39 @@ def test_non_lower_criticality_direction_does_not_apply_bonus():
     assert breakdown == {
         "recommendation_score": 100.0,
     }
+
+
+def test_discovery_does_not_reapply_inherited_stability_contribution():
+    service = DiscoveryScoringService()
+
+    score, paths, breakdown = service.score_recommendation_candidate(
+        {
+            "recommendation_score": 120.0,
+            "is_stable": True,
+            "stability_score_contribution": 20.0,
+            "shared_application_count": 0,
+        }
+    )
+
+    assert score == 120.0
+    assert paths == ["recommendation_engine", "similar_material"]
+    assert breakdown == {"recommendation_score": 120.0}
+
+
+def test_discovery_does_not_reward_raw_flag_that_conflicts_with_energy():
+    service = DiscoveryScoringService()
+
+    score, paths, breakdown = service.score_recommendation_candidate(
+        {
+            "recommendation_score": 100.0,
+            "is_stable": True,
+            "stability_band": "unstable",
+            "stability_source_consistency": "inconsistent",
+            "stability_score_contribution": 0.0,
+            "shared_application_count": 0,
+        }
+    )
+
+    assert score == 100.0
+    assert "stable_material" not in paths
+    assert "stability_bonus" not in breakdown

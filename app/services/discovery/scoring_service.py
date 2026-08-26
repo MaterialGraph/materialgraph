@@ -1,6 +1,5 @@
 FAMILY_BONUS = 40.0
 SUBSTITUTION_BONUS = 35.0
-STABILITY_BONUS = 20.0
 PREFERRED_ELEMENT_BONUS = 25.0
 AVOIDED_ELEMENT_REMOVED_BONUS = 25.0
 AVOIDED_ELEMENT_PRESENT_PENALTY = 50.0
@@ -43,11 +42,6 @@ class DiscoveryScoringService:
         score_breakdown = {
             "recommendation_score": candidate["recommendation_score"],
         }
-
-        if candidate["is_stable"]:
-            score += STABILITY_BONUS
-            paths.append("stable_material")
-            score_breakdown["stability_bonus"] = STABILITY_BONUS
 
         if candidate["shared_application_count"] > 0:
             score += SAME_APPLICATION_BONUS

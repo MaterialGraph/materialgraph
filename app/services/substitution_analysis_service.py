@@ -11,6 +11,13 @@ from app.schemas.substitution import (
     SubstitutionResult,
 )
 from app.services.material.risk_service import MaterialRiskService
+from app.services.material.stability_evidence_policy import (
+    StabilityEvidence,
+    StabilityEvidencePolicy,
+)
+
+
+STABILITY_CONTRIBUTION_SCALE = 400.0
 
 
 class SubstitutionAnalysisService:
@@ -84,12 +91,19 @@ class SubstitutionAnalysisService:
                 else 0.0
             )
 
-            stability_bonus = 0.05 if material.is_stable else 0.0
+            stability_evidence = StabilityEvidencePolicy.assess(
+                is_stable=material.is_stable,
+                energy_above_hull=material.energy_above_hull,
+            )
+            stability_contribution = (
+                stability_evidence.similarity_score_contribution
+                / STABILITY_CONTRIBUTION_SCALE
+            )
 
             rank_score = (
                 (similarity * 0.7)
                 + (risk_component * 0.3)
-                + stability_bonus
+                + stability_contribution
             )
 
             shared_elements = sorted(source_elements.intersection(candidate_elements))
@@ -119,17 +133,31 @@ class SubstitutionAnalysisService:
                         "unknown_risk_elements",
                         [],
                     ),
+                    stability_band=stability_evidence.band,
+                    stability_evidence_basis=(
+                        stability_evidence.evidence_basis
+                    ),
+                    stability_evidence_complete=(
+                        stability_evidence.evidence_complete
+                    ),
+                    stability_source_consistency=(
+                        stability_evidence.source_consistency
+                    ),
+                    stability_rank_contribution=round(
+                        stability_contribution,
+                        3,
+                    ),
                     rank_score=round(rank_score, 3),
                     shared_elements=shared_elements,
                     replacement_elements=replacement_elements,
                     removed_elements=removed_elements,
                     explanation=self._build_explanation(
-                        candidate=material,
                         shared_elements=shared_elements,
                         replacement_elements=replacement_elements,
                         removed_elements=removed_elements,
                         source_risk=source_risk,
                         candidate_risk=candidate_risk,
+                        stability_evidence=stability_evidence,
                     ),
                 )
             )
@@ -207,12 +235,12 @@ class SubstitutionAnalysisService:
 
     def _build_explanation(
         self,
-        candidate: Material,
         shared_elements: list[str],
         replacement_elements: list[str],
         removed_elements: list[str],
         source_risk: float | None,
         candidate_risk: float | None,
+        stability_evidence: StabilityEvidence,
     ) -> str:
         parts = []
 
@@ -228,8 +256,10 @@ class SubstitutionAnalysisService:
                 + ", ".join(replacement_elements)
             )
 
-        if candidate.is_stable:
-            parts.append("Stable candidate")
+        parts.append(stability_evidence.reason)
+
+        if stability_evidence.source_consistency == "inconsistent":
+            parts.append("Imported stability sources are inconsistent")
 
         if candidate_risk is None:
             parts.append(

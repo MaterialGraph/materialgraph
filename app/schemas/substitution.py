@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -16,6 +18,19 @@ class SubstituteCandidate(BaseModel):
     risk_profile_coverage: float
     risk_evidence_complete: bool
     unknown_risk_elements: list[str]
+    stability_band: Literal[
+        "stable", "near_stable", "metastable", "unstable", "unknown"
+    ]
+    stability_evidence_basis: Literal[
+        "energy_above_hull",
+        "imported_is_stable_fallback",
+        "unavailable",
+    ]
+    stability_evidence_complete: bool
+    stability_source_consistency: Literal[
+        "consistent", "inconsistent", "not_comparable"
+    ]
+    stability_rank_contribution: float
     rank_score: float
     shared_elements: list[str]
     replacement_elements: list[str]
