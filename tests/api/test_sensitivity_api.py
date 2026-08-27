@@ -13,6 +13,9 @@ def test_sensitivity_analysis_api(client):
     assert data["material_id"] == 6
     assert data["baseline_score"] >= 0
     assert data["baseline_material_risk_score"] >= 0
+    assert data["selected_risk_profile_ids"]
+    assert data["selected_risk_profile_years"]
+    assert data["selected_risk_profile_sources"]
     assert len(data["scenarios"]) == 4
     assert all(
         "adjusted_material_risk_score" in scenario

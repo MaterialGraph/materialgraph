@@ -93,6 +93,9 @@ def _risk_signal(
         "known_risk_elements": known_elements,
         "unknown_risk_elements": unknown_elements,
         "risk_evidence_complete": complete,
+        "selected_profile_ids": [material_id * 10] if risk_known else [],
+        "selected_profile_years": [2026] if risk_known else [],
+        "selected_profile_sources": ["substitution_test"] if risk_known else [],
     }
 
 
@@ -178,6 +181,10 @@ def test_unknown_risk_is_nullable_and_receives_no_low_risk_component():
     # plus 0.025 from incomplete stable-flag fallback evidence.
     # Unknown risk contributes no fabricated low-risk benefit.
     assert substitute.rank_score == 0.258
+    assert result.source_selected_risk_profile_ids == [10]
+    assert result.source_selected_risk_profile_years == [2026]
+    assert result.source_selected_risk_profile_sources == ["substitution_test"]
+    assert substitute.selected_risk_profile_ids == []
     assert substitute.stability_rank_contribution == 0.025
     assert substitute.stability_evidence_basis == (
         "imported_is_stable_fallback"

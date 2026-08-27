@@ -15,6 +15,15 @@ def test_get_material_risk(client):
     assert data["aggregation_method"] == (
         "mean_available_dimensions_then_equal_mean_calculable_elements"
     )
+    assert data["selected_profile_ids"]
+    assert data["selected_profile_years"]
+    assert data["selected_profile_sources"]
+    assert all(
+        item["risk_profile_id"] in data["selected_profile_ids"]
+        and item["risk_year"] in data["selected_profile_years"]
+        and item["risk_source"] in data["selected_profile_sources"]
+        for item in data["element_risks"]
+    )
 
 
 def test_get_material_risk_not_found(client):
@@ -47,6 +56,9 @@ def test_get_material_risk_preserves_unknown_as_null(
             "aggregation_method": (
                 "mean_available_dimensions_then_equal_mean_calculable_elements"
             ),
+            "selected_profile_ids": [],
+            "selected_profile_years": [],
+            "selected_profile_sources": [],
             "risk_profile_coverage": 0.0,
             "risk_complete_profile_coverage": 0.0,
             "risk_dimension_coverage": 0.0,

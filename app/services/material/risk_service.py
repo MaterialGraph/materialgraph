@@ -45,6 +45,7 @@ class MaterialRiskService:
         profiles_by_element_id = self._get_latest_profiles(element_ids)
 
         element_risks: list[ElementRiskSummary] = []
+        selected_profiles: list[ElementRiskProfile] = []
         available_dimension_count = 0
         complete_profile_count = 0
 
@@ -63,12 +64,16 @@ class MaterialRiskService:
             if risk_score is None:
                 continue
 
+            selected_profiles.append(profile)
             available_dimension_count += dimension_summary["available"]
             complete_profile_count += int(dimension_summary["complete"])
 
             element_risks.append(
                 ElementRiskSummary(
                     symbol=element.symbol,
+                    risk_profile_id=profile.id,
+                    risk_year=profile.year,
+                    risk_source=profile.source,
                     risk_score=risk_score,
                     supply_risk_score=profile.supply_risk_score,
                     geopolitical_risk_score=profile.geopolitical_risk_score,
@@ -95,6 +100,9 @@ class MaterialRiskService:
         expected_dimension_count = (
             total_element_count * len(RISK_EVIDENCE_DIMENSIONS)
         )
+        selected_profile_attribution = self._profile_attribution(
+            selected_profiles
+        )
 
         return MaterialRiskRead(
             material_id=material.id,
@@ -109,6 +117,7 @@ class MaterialRiskService:
             shared_evidence_dimensions=list(SHARED_EVIDENCE_DIMENSIONS),
             risk_evidence_dimensions=list(RISK_EVIDENCE_DIMENSIONS),
             aggregation_method=RISK_AGGREGATION_METHOD,
+            **selected_profile_attribution,
             risk_profile_coverage=(
                 round(known_count / total_element_count, 4)
                 if total_element_count
@@ -188,6 +197,7 @@ class MaterialRiskService:
             partial_profile_symbols = []
             complete_profile_count = 0
             available_dimension_count = 0
+            selected_profiles: list[ElementRiskProfile] = []
 
             for element in elements:
                 profile = profiles_by_element_id.get(element.id)
@@ -207,6 +217,7 @@ class MaterialRiskService:
                     unknown_element_symbols.append(element.symbol)
                     continue
 
+                selected_profiles.append(profile)
                 element_risk_scores.append(risk_score)
                 known_element_symbols.append(element.symbol)
                 if dimension_summary["complete"]:
@@ -236,6 +247,9 @@ class MaterialRiskService:
                 calculate_material_risk_from_element_scores(
                     element_risk_scores
                 )
+            )
+            selected_profile_attribution = self._profile_attribution(
+                selected_profiles
             )
 
             risk_signals[material_id] = {
@@ -273,6 +287,7 @@ class MaterialRiskService:
                 ),
                 "risk_evidence_dimensions": list(RISK_EVIDENCE_DIMENSIONS),
                 "aggregation_method": RISK_AGGREGATION_METHOD,
+                **selected_profile_attribution,
             }
 
         return risk_signals
@@ -331,6 +346,22 @@ class MaterialRiskService:
             ]
         )
 
+    @staticmethod
+    def _profile_attribution(
+        profiles: list[ElementRiskProfile],
+    ) -> dict:
+        return {
+            "selected_profile_ids": sorted(
+                {profile.id for profile in profiles}
+            ),
+            "selected_profile_years": sorted(
+                {profile.year for profile in profiles}
+            ),
+            "selected_profile_sources": sorted(
+                {profile.source for profile in profiles}
+            ),
+        }
+
     def get_material_risk_score(
         self,
         material_id: int,
@@ -364,4 +395,7 @@ class MaterialRiskService:
             "shared_evidence_dimensions": list(SHARED_EVIDENCE_DIMENSIONS),
             "risk_evidence_dimensions": list(RISK_EVIDENCE_DIMENSIONS),
             "aggregation_method": RISK_AGGREGATION_METHOD,
+            "selected_profile_ids": [],
+            "selected_profile_years": [],
+            "selected_profile_sources": [],
         }

@@ -94,6 +94,21 @@ class SensitivityAnalysisService:
             baseline_material_risk_score=baseline.material_risk_score,
             baseline_supply_risk_score=supply_risk_score,
             baseline_geopolitical_risk_score=geopolitical_risk_score,
+            selected_risk_profile_ids=(
+                getattr(material_risk, "selected_profile_ids", [])
+                if material_risk is not None
+                else []
+            ),
+            selected_risk_profile_years=(
+                getattr(material_risk, "selected_profile_years", [])
+                if material_risk is not None
+                else []
+            ),
+            selected_risk_profile_sources=(
+                getattr(material_risk, "selected_profile_sources", [])
+                if material_risk is not None
+                else []
+            ),
             sensitivity_level=sensitivity_level,
             scenarios=scenarios,
         )

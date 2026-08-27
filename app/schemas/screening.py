@@ -25,6 +25,9 @@ class CandidateScreeningResult(BaseModel):
     total_element_count: int
     risk_evidence_complete: bool
     unknown_risk_elements: list[str]
+    selected_risk_profile_ids: list[int] = Field(default_factory=list)
+    selected_risk_profile_years: list[int] = Field(default_factory=list)
+    selected_risk_profile_sources: list[str] = Field(default_factory=list)
 
     risk_penalty: float
     elements: list[str]

@@ -20,6 +20,9 @@ def test_material_quality_service_returns_quality_metadata(db_session):
     assert "criticality_composition_evidence_status" in result
     assert "criticality_composition_fraction_coverage" in result
     assert "criticality_composition_evidence_complete" in result
+    assert result["criticality_profile_ids"]
+    assert result["criticality_profile_years"]
+    assert result["criticality_profile_sources"]
     assert "risk_score" in result
     assert "risk_known" in result
     assert "risk_profile_coverage" in result
@@ -33,6 +36,9 @@ def test_material_quality_service_returns_quality_metadata(db_session):
     assert "risk_evidence_basis" in result
     assert "risk_evidence_dimensions" in result
     assert "risk_aggregation_method" in result
+    assert result["risk_profile_ids"]
+    assert result["risk_profile_years"]
+    assert result["risk_profile_sources"]
     assert "quality_score" in result
 
     assert isinstance(result["stability_score"], float)
@@ -65,6 +71,9 @@ def test_material_quality_service_returns_empty_quality_for_missing_material(
         "criticality_composition_evidence_status": "unavailable",
         "criticality_composition_fraction_coverage": 0.0,
         "criticality_composition_evidence_complete": False,
+        "criticality_profile_ids": [],
+        "criticality_profile_years": [],
+        "criticality_profile_sources": [],
         "risk_score": None,
         "risk_quality_contribution": 0.0,
         "risk_known": False,
@@ -79,6 +88,9 @@ def test_material_quality_service_returns_empty_quality_for_missing_material(
         "unknown_risk_elements": [],
         "partial_risk_profile_elements": [],
         "risk_evidence_basis": None,
+        "risk_profile_ids": [],
+        "risk_profile_years": [],
+        "risk_profile_sources": [],
         "risk_evidence_dimensions": [],
         "risk_aggregation_method": None,
         "quality_score": 0.0,

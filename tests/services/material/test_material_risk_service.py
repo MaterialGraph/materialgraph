@@ -175,6 +175,9 @@ def test_material_risk_signal_characterizes_partial_element_coverage(db_session)
     assert signal["risk_evidence_complete"] is False
     assert signal["risk_complete_profile_coverage"] == 0.25
     assert signal["risk_dimension_coverage"] == 0.25
+    assert signal["selected_profile_ids"]
+    assert signal["selected_profile_years"] == [2026]
+    assert signal["selected_profile_sources"] == ["audit_characterization"]
 
 
 def test_material_risk_signal_scalar_and_bulk_match_for_partial_coverage(db_session):
@@ -228,3 +231,66 @@ def test_material_risk_signal_scalar_and_bulk_match_for_partial_coverage(db_sess
     assert scalar["risk_dimension_coverage"] == 0.1667
     assert scalar["partial_risk_profile_elements"] == [symbols[0]]
     assert scalar["risk_evidence_complete"] is False
+
+
+def test_material_risk_preserves_multi_source_profile_attribution(db_session):
+    suffix = uuid4().hex[:7]
+    elements = [
+        Element(symbol=f"S{index}{suffix}", name=f"Source element {index}")
+        for index in range(2)
+    ]
+    db_session.add_all(elements)
+    db_session.flush()
+
+    material = Material(
+        mp_id=f"mp-profile-source-{uuid4().hex}",
+        formula="".join(element.symbol for element in elements),
+        pretty_formula="".join(element.symbol for element in elements),
+        is_stable=True,
+        source="profile_source_test",
+    )
+    db_session.add(material)
+    db_session.flush()
+    db_session.add_all(
+        MaterialElement(
+            material_id=material.id,
+            element_id=element.id,
+            fraction=0.5,
+        )
+        for element in elements
+    )
+    profiles = [
+        ElementRiskProfile(
+            element_id=element.id,
+            year=2025 + index,
+            supply_risk_score=2.0 + index,
+            geopolitical_risk_score=3.0 + index,
+            toxicity_score=1.0 + index,
+            source=f"dataset_{index}",
+        )
+        for index, element in enumerate(elements)
+    ]
+    db_session.add_all(profiles)
+    db_session.flush()
+
+    result = MaterialRiskService(db_session).get_material_risk(material.id)
+
+    assert result is not None
+    assert result.selected_profile_ids == sorted(profile.id for profile in profiles)
+    assert result.selected_profile_years == [2025, 2026]
+    assert result.selected_profile_sources == ["dataset_0", "dataset_1"]
+    assert {
+        item.symbol: (
+            item.risk_profile_id,
+            item.risk_year,
+            item.risk_source,
+        )
+        for item in result.element_risks
+    } == {
+        elements[index].symbol: (
+            profiles[index].id,
+            profiles[index].year,
+            profiles[index].source,
+        )
+        for index in range(2)
+    }

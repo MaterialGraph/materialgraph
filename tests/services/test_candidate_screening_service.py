@@ -72,6 +72,9 @@ def _risk_signal(
         "known_risk_elements": ["A"] if risk_known else [],
         "unknown_risk_elements": unknown_elements or [],
         "risk_evidence_complete": complete,
+        "selected_profile_ids": [101] if risk_known else [],
+        "selected_profile_years": [2026] if risk_known else [],
+        "selected_profile_sources": ["screening_test"] if risk_known else [],
     }
 
 def test_known_risk_applies_numeric_penalty():
@@ -103,6 +106,9 @@ def test_known_risk_applies_numeric_penalty():
     assert result.risk_penalty == 10.0
     assert result.score_before_risk_penalty == 70.0
     assert result.score == 60.0
+    assert result.selected_risk_profile_ids == [101]
+    assert result.selected_risk_profile_years == [2026]
+    assert result.selected_risk_profile_sources == ["screening_test"]
 
 
 def test_risk_penalty_recomputation_uses_unclipped_pre_risk_score():

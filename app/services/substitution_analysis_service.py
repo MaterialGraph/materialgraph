@@ -133,6 +133,18 @@ class SubstitutionAnalysisService:
                         "unknown_risk_elements",
                         [],
                     ),
+                    selected_risk_profile_ids=risk_signal.get(
+                        "selected_profile_ids",
+                        [],
+                    ),
+                    selected_risk_profile_years=risk_signal.get(
+                        "selected_profile_years",
+                        [],
+                    ),
+                    selected_risk_profile_sources=risk_signal.get(
+                        "selected_profile_sources",
+                        [],
+                    ),
                     stability_band=stability_evidence.band,
                     stability_evidence_basis=(
                         stability_evidence.evidence_basis
@@ -201,6 +213,18 @@ class SubstitutionAnalysisService:
             ),
             source_unknown_risk_elements=source_risk_signal.get(
                 "unknown_risk_elements",
+                [],
+            ),
+            source_selected_risk_profile_ids=source_risk_signal.get(
+                "selected_profile_ids",
+                [],
+            ),
+            source_selected_risk_profile_years=source_risk_signal.get(
+                "selected_profile_years",
+                [],
+            ),
+            source_selected_risk_profile_sources=source_risk_signal.get(
+                "selected_profile_sources",
                 [],
             ),
             substitutes=top_substitutes,

@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SubstitutionRequest(BaseModel):
@@ -18,6 +18,9 @@ class SubstituteCandidate(BaseModel):
     risk_profile_coverage: float
     risk_evidence_complete: bool
     unknown_risk_elements: list[str]
+    selected_risk_profile_ids: list[int] = Field(default_factory=list)
+    selected_risk_profile_years: list[int] = Field(default_factory=list)
+    selected_risk_profile_sources: list[str] = Field(default_factory=list)
     stability_band: Literal[
         "stable", "near_stable", "metastable", "unstable", "unknown"
     ]
@@ -46,4 +49,7 @@ class SubstitutionResult(BaseModel):
     source_risk_profile_coverage: float
     source_risk_evidence_complete: bool
     source_unknown_risk_elements: list[str]
+    source_selected_risk_profile_ids: list[int] = Field(default_factory=list)
+    source_selected_risk_profile_years: list[int] = Field(default_factory=list)
+    source_selected_risk_profile_sources: list[str] = Field(default_factory=list)
     substitutes: list[SubstituteCandidate]

@@ -45,14 +45,17 @@ def _material_element(
 def _risk_profile(
     element_id: int,
     *,
+    profile_id: int | None = None,
     abundance_score=None,
     supply_risk_score=None,
     toxicity_score=None,
     recyclability_score=None,
     geopolitical_risk_score=None,
     year: int = 2026,
+    source: str = "test_source",
 ):
     return SimpleNamespace(
+        id=profile_id if profile_id is not None else element_id,
         element_id=element_id,
         abundance_score=abundance_score,
         supply_risk_score=supply_risk_score,
@@ -60,6 +63,7 @@ def _risk_profile(
         recyclability_score=recyclability_score,
         geopolitical_risk_score=geopolitical_risk_score,
         year=year,
+        source=source,
     )
 
 
@@ -130,6 +134,12 @@ def test_element_without_profile_is_excluded_from_criticality_aggregation():
     )
 
     assert known_detail["abundance_score"] == 8.0
+    assert known_detail["risk_profile_id"] == known_element.id
+    assert known_detail["risk_year"] == 2026
+    assert known_detail["risk_source"] == "test_source"
+    assert result["selected_profile_ids"] == [known_element.id]
+    assert result["selected_profile_years"] == [2026]
+    assert result["selected_profile_sources"] == ["test_source"]
 
     assert unknown_detail["criticality_known"] is False
     assert unknown_detail["element_criticality_score"] is None

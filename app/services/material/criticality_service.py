@@ -130,6 +130,7 @@ class MaterialCriticalityService:
     ) -> dict:
         element_details: list[dict] = []
         weighted_scores: list[float] = []
+        selected_profiles: list[ElementRiskProfile] = []
 
         total_fraction = 0.0
         known_criticality_fraction = 0.0
@@ -144,6 +145,9 @@ class MaterialCriticalityService:
 
         for material_element, element in material_element_rows:
             risk_profile = risk_profiles_by_element_id.get(element.id)
+
+            if risk_profile is not None:
+                selected_profiles.append(risk_profile)
 
             element_criticality_score = (
                 self._calculate_element_criticality_score(risk_profile)
@@ -195,7 +199,17 @@ class MaterialCriticalityService:
                     "name": element.name,
                     "fraction": fraction,
                     "fraction_known": fraction_known,
+                    "risk_profile_id": (
+                        risk_profile.id
+                        if risk_profile is not None
+                        else None
+                    ),
                     "risk_year": risk_year,
+                    "risk_source": (
+                        risk_profile.source
+                        if risk_profile is not None
+                        else None
+                    ),
                     "abundance_score": (
                         risk_profile.abundance_score
                         if risk_profile
@@ -330,6 +344,15 @@ class MaterialCriticalityService:
                 CRITICALITY_EVIDENCE_DIMENSIONS
             ),
             "aggregation_method": CRITICALITY_AGGREGATION_METHOD,
+            "selected_profile_ids": sorted(
+                {profile.id for profile in selected_profiles}
+            ),
+            "selected_profile_years": sorted(
+                {profile.year for profile in selected_profiles}
+            ),
+            "selected_profile_sources": sorted(
+                {profile.source for profile in selected_profiles}
+            ),
             "composition_evidence_status": composition_evidence_status,
             "composition_fraction_coverage": round(
                 composition_fraction_coverage,
@@ -456,6 +479,9 @@ class MaterialCriticalityService:
                 CRITICALITY_EVIDENCE_DIMENSIONS
             ),
             "aggregation_method": CRITICALITY_AGGREGATION_METHOD,
+            "selected_profile_ids": [],
+            "selected_profile_years": [],
+            "selected_profile_sources": [],
             "composition_evidence_status": "unavailable",
             "composition_fraction_coverage": 0.0,
             "composition_evidence_complete": False,

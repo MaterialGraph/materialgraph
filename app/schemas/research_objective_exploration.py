@@ -118,6 +118,9 @@ class MaterialQualityEvidence(BaseModel):
         le=1.0,
     )
     criticality_composition_evidence_complete: bool = False
+    criticality_profile_ids: list[int] = Field(default_factory=list)
+    criticality_profile_years: list[int] = Field(default_factory=list)
+    criticality_profile_sources: list[str] = Field(default_factory=list)
     risk_score: float | None = None
     risk_known: bool = False
     risk_profile_coverage: float = 0.0
@@ -131,6 +134,9 @@ class MaterialQualityEvidence(BaseModel):
     unknown_risk_elements: list[str] = Field(default_factory=list)
     partial_risk_profile_elements: list[str] = Field(default_factory=list)
     risk_evidence_basis: str | None = None
+    risk_profile_ids: list[int] = Field(default_factory=list)
+    risk_profile_years: list[int] = Field(default_factory=list)
+    risk_profile_sources: list[str] = Field(default_factory=list)
     risk_evidence_dimensions: list[str] = Field(default_factory=list)
     risk_aggregation_method: str | None = None
     risk_quality_contribution: float = 0.0

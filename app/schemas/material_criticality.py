@@ -10,7 +10,9 @@ class MaterialCriticalityElement(BaseModel):
 
     fraction: float | None
     fraction_known: bool
+    risk_profile_id: int | None
     risk_year: int | None
+    risk_source: str | None
 
     abundance_score: float | None
     supply_risk_score: float | None
@@ -40,6 +42,9 @@ class MaterialCriticalityResponse(BaseModel):
     shared_evidence_dimensions: list[str]
     criticality_evidence_dimensions: list[str]
     aggregation_method: str
+    selected_profile_ids: list[int]
+    selected_profile_years: list[int]
+    selected_profile_sources: list[str]
     composition_evidence_status: Literal[
         "complete",
         "partial",

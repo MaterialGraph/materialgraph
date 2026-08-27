@@ -49,6 +49,18 @@ class MaterialQualityService:
                 "composition_evidence_complete",
                 False,
             ),
+            criticality_profile_ids=criticality.get(
+                "selected_profile_ids",
+                [],
+            ),
+            criticality_profile_years=criticality.get(
+                "selected_profile_years",
+                [],
+            ),
+            criticality_profile_sources=criticality.get(
+                "selected_profile_sources",
+                [],
+            ),
         )
 
         self._quality_cache[material_id] = quality
@@ -128,6 +140,18 @@ class MaterialQualityService:
                         "composition_evidence_complete",
                         False,
                     ),
+                    criticality_profile_ids=criticality.get(
+                        "selected_profile_ids",
+                        [],
+                    ),
+                    criticality_profile_years=criticality.get(
+                        "selected_profile_years",
+                        [],
+                    ),
+                    criticality_profile_sources=criticality.get(
+                        "selected_profile_sources",
+                        [],
+                    ),
                 )
 
         return {
@@ -146,6 +170,9 @@ class MaterialQualityService:
         criticality_composition_evidence_status: str = "unavailable",
         criticality_composition_fraction_coverage: float = 0.0,
         criticality_composition_evidence_complete: bool = False,
+        criticality_profile_ids: list[int] | None = None,
+        criticality_profile_years: list[int] | None = None,
+        criticality_profile_sources: list[str] | None = None,
     ) -> dict:
         risk_score = risk_signal.get("risk_score")
         risk_known = risk_signal.get("risk_known", False)
@@ -207,6 +234,9 @@ class MaterialQualityService:
             "criticality_composition_evidence_complete": (
                 criticality_composition_evidence_complete
             ),
+            "criticality_profile_ids": criticality_profile_ids or [],
+            "criticality_profile_years": criticality_profile_years or [],
+            "criticality_profile_sources": criticality_profile_sources or [],
             "risk_score": risk_score,
             "risk_quality_contribution": risk_quality_contribution,
             "risk_known": risk_known,
@@ -236,6 +266,12 @@ class MaterialQualityService:
                 [],
             ),
             "risk_evidence_basis": risk_signal.get("evidence_basis"),
+            "risk_profile_ids": risk_signal.get("selected_profile_ids", []),
+            "risk_profile_years": risk_signal.get("selected_profile_years", []),
+            "risk_profile_sources": risk_signal.get(
+                "selected_profile_sources",
+                [],
+            ),
             "risk_evidence_dimensions": risk_signal.get(
                 "risk_evidence_dimensions",
                 [],
@@ -345,6 +381,9 @@ class MaterialQualityService:
             "criticality_composition_evidence_status": "unavailable",
             "criticality_composition_fraction_coverage": 0.0,
             "criticality_composition_evidence_complete": False,
+            "criticality_profile_ids": [],
+            "criticality_profile_years": [],
+            "criticality_profile_sources": [],
             "risk_score": None,
             "risk_quality_contribution": 0.0,
             "risk_known": False,
@@ -359,6 +398,9 @@ class MaterialQualityService:
             "unknown_risk_elements": [],
             "partial_risk_profile_elements": [],
             "risk_evidence_basis": None,
+            "risk_profile_ids": [],
+            "risk_profile_years": [],
+            "risk_profile_sources": [],
             "risk_evidence_dimensions": [],
             "risk_aggregation_method": None,
             "quality_score": 0.0,

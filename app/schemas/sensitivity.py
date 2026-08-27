@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SensitivityAnalysisRequest(BaseModel):
@@ -23,5 +23,8 @@ class SensitivityAnalysisResult(BaseModel):
     baseline_material_risk_score: float | None
     baseline_supply_risk_score: float | None
     baseline_geopolitical_risk_score: float | None
+    selected_risk_profile_ids: list[int] = Field(default_factory=list)
+    selected_risk_profile_years: list[int] = Field(default_factory=list)
+    selected_risk_profile_sources: list[str] = Field(default_factory=list)
     sensitivity_level: str
     scenarios: list[SensitivityScenarioResult]

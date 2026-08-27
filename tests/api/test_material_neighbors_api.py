@@ -37,7 +37,17 @@ def test_get_material_criticality_exposes_composition_evidence(client):
     assert isinstance(data["known_composition_element_count"], int)
     assert isinstance(data["unknown_composition_element_count"], int)
     assert isinstance(data["unknown_composition_elements"], list)
+    assert data["selected_profile_ids"]
+    assert data["selected_profile_years"]
+    assert data["selected_profile_sources"]
     assert all(
         element["fraction_known"] is (element["fraction"] is not None)
         for element in data["elements"]
+    )
+    assert all(
+        element["risk_profile_id"] in data["selected_profile_ids"]
+        and element["risk_year"] in data["selected_profile_years"]
+        and element["risk_source"] in data["selected_profile_sources"]
+        for element in data["elements"]
+        if element["risk_profile_id"] is not None
     )

@@ -240,6 +240,18 @@ class CandidateScreeningService:
                         "unknown_risk_elements",
                         [],
                     ),
+                    selected_risk_profile_ids=risk_signal.get(
+                        "selected_profile_ids",
+                        [],
+                    ),
+                    selected_risk_profile_years=risk_signal.get(
+                        "selected_profile_years",
+                        [],
+                    ),
+                    selected_risk_profile_sources=risk_signal.get(
+                        "selected_profile_sources",
+                        [],
+                    ),
                     risk_penalty=round(risk_penalty, 3),
                     elements=sorted(element_symbols),
                     contains_scarce_elements=bool(
@@ -338,6 +350,9 @@ class CandidateScreeningService:
             "known_risk_elements": [],
             "unknown_risk_elements": sorted(element_symbols),
             "risk_evidence_complete": False,
+            "selected_profile_ids": [],
+            "selected_profile_years": [],
+            "selected_profile_sources": [],
         }
 
 

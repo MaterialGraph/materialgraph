@@ -135,3 +135,20 @@ def test_material_quality_contract_exposes_separate_quality_contributions():
 
     assert quality.criticality_quality_contribution == 2.25
     assert quality.risk_quality_contribution == 1.2
+
+
+def test_material_quality_contract_exposes_selected_profile_attribution():
+    quality = MaterialQualityEvidence.model_validate({
+        "material_id": 5,
+        "criticality_profile_ids": [11],
+        "criticality_profile_years": [2026],
+        "criticality_profile_sources": ["criticality_dataset"],
+        "risk_profile_ids": [12],
+        "risk_profile_years": [2025],
+        "risk_profile_sources": ["risk_dataset"],
+    })
+
+    assert quality.criticality_profile_ids == [11]
+    assert quality.criticality_profile_sources == ["criticality_dataset"]
+    assert quality.risk_profile_ids == [12]
+    assert quality.risk_profile_sources == ["risk_dataset"]

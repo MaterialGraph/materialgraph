@@ -36,6 +36,9 @@ def _material_risk(
 ):
     toxicity_scores = toxicity_scores or [None] * len(supply_scores)
     return SimpleNamespace(
+        selected_profile_ids=[101],
+        selected_profile_years=[2026],
+        selected_profile_sources=["sensitivity_test"],
         element_risks=[
             SimpleNamespace(
                 supply_risk_score=supply,
@@ -118,6 +121,9 @@ def test_named_risk_dimensions_use_distinct_component_baselines(db_session):
     assert result is not None
     assert result.baseline_supply_risk_score == 3.0
     assert result.baseline_geopolitical_risk_score == 8.0
+    assert result.selected_risk_profile_ids == [101]
+    assert result.selected_risk_profile_years == [2026]
+    assert result.selected_risk_profile_sources == ["sensitivity_test"]
 
     supply_25, supply_50, geopolitical_25, geopolitical_50 = result.scenarios
 
