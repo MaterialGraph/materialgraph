@@ -1,6 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from app.api.dependencies.element_filters import (
+    normalize_element_parameter,
+    normalize_optional_element_parameter,
+)
 from app.core.database import get_db
 from app.schemas.material_criticality import MaterialCriticalityResponse
 from app.schemas.material_neighbor import MaterialNeighborsResponse
@@ -15,8 +19,6 @@ from app.services.material.neighbor_service import MaterialNeighborService
 from app.services.material.neighborhood_service import MaterialNeighborhoodService
 from app.services.material.recommendation_service import MaterialRecommendationService
 from app.services.material.similarity_service import MaterialSimilarityService
-from app.utils.chemical_formula import is_valid_element_symbol
-
 from app.api.v1.route_utils import ensure_material_found
 
 router = APIRouter(prefix="/materials", tags=["Material Intelligence"])
@@ -205,23 +207,15 @@ def get_material_scenario_recommendations(
     ),
     db: Session = Depends(get_db),
 ) -> MaterialScenarioRecommendationResponse:
-    if not is_valid_element_symbol(element):
-        raise HTTPException(
-            status_code=422,
-            detail="element must be a valid chemical symbol, e.g. Li, Co, Na",
-        )
-
-    if not is_valid_element_symbol(avoid_element):
-        raise HTTPException(
-            status_code=422,
-            detail="avoid_element must be a valid chemical symbol, e.g. Co",
-        )
-
-    if not is_valid_element_symbol(prefer_element):
-        raise HTTPException(
-            status_code=422,
-            detail="prefer_element must be a valid chemical symbol, e.g. Na",
-        )
+    element = normalize_element_parameter(element, "element")
+    avoid_element = normalize_optional_element_parameter(
+        avoid_element,
+        "avoid_element",
+    )
+    prefer_element = normalize_optional_element_parameter(
+        prefer_element,
+        "prefer_element",
+    )
 
     service = MaterialRecommendationService(db)
 

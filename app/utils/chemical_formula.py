@@ -1,7 +1,6 @@
 import re
 
-
-ELEMENT_SYMBOL_PATTERN = re.compile(r"^[A-Z][a-z]?$")
+from app.domain.periodic_table import ELEMENT_SYMBOLS
 
 def extract_elements(formula: str | None) -> set[str]:
     if not formula:
@@ -18,4 +17,4 @@ def is_valid_element_symbol(element: str | None) -> bool:
     if element is None:
         return True
 
-    return bool(ELEMENT_SYMBOL_PATTERN.match(element))
+    return element in ELEMENT_SYMBOLS

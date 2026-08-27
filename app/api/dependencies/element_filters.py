@@ -12,18 +12,15 @@ class ElementFilters:
     prefer_element: str | None
 
 
-def _normalize_optional_symbol(
-    value: str | None,
+def normalize_element_parameter(
+    value: str,
     parameter_name: str,
-) -> str | None:
-    if value is None:
-        return None
-
+) -> str:
     try:
         return normalize_element_symbol(value)
     except ValueError as exc:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail={
                 "code": "unknown_element_symbol",
                 "parameter": parameter_name,
@@ -31,6 +28,16 @@ def _normalize_optional_symbol(
                 "message": str(exc),
             },
         ) from exc
+
+
+def normalize_optional_element_parameter(
+    value: str | None,
+    parameter_name: str,
+) -> str | None:
+    if value is None:
+        return None
+
+    return normalize_element_parameter(value, parameter_name)
 
 
 def get_element_filters(
@@ -44,11 +51,11 @@ def get_element_filters(
     ] = None,
 ) -> ElementFilters:
     return ElementFilters(
-        avoid_element=_normalize_optional_symbol(
+        avoid_element=normalize_optional_element_parameter(
             avoid_element,
             "avoid_element",
         ),
-        prefer_element=_normalize_optional_symbol(
+        prefer_element=normalize_optional_element_parameter(
             prefer_element,
             "prefer_element",
         ),

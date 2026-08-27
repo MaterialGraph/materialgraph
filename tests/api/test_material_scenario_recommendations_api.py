@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_get_material_scenario_recommendations(client):
     response = client.get(
         "/api/v1/materials/5/recommendations/scenario"
@@ -107,3 +110,56 @@ def test_scenario_recommendations_can_opt_in_to_lower_criticality(client):
     policy = response.json()["ranking_policy"]
     assert policy["prefer_lower_criticality"] is True
     assert policy["criticality_delta_multiplier"] == 2.0
+
+
+def test_scenario_recommendations_normalize_element_parameters(client):
+    response = client.get(
+        "/api/v1/materials/5/recommendations/scenario",
+        params={
+            "element": " li",
+            "avoid_element": "co",
+            "prefer_element": "NA",
+            "limit": 5,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["scenario"] == {
+        "element": "Li",
+        "supply_risk_multiplier": 1.0,
+        "avoid_element": "Co",
+        "prefer_element": "Na",
+        "limit": 5,
+    }
+
+
+@pytest.mark.parametrize(
+    ("parameter", "value"),
+    [
+        ("element", "Q"),
+        ("element", "Xx"),
+        ("avoid_element", "Q"),
+        ("avoid_element", "Xx"),
+        ("prefer_element", "Q"),
+        ("prefer_element", "Xx"),
+    ],
+)
+def test_scenario_recommendations_reject_unknown_element_symbols(
+    client,
+    parameter,
+    value,
+):
+    params = {"element": "Li", parameter: value}
+
+    response = client.get(
+        "/api/v1/materials/5/recommendations/scenario",
+        params=params,
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == {
+        "code": "unknown_element_symbol",
+        "parameter": parameter,
+        "value": value,
+        "message": f"Unknown chemical element symbol: {value}",
+    }

@@ -43,6 +43,27 @@ def test_discovery_graph_reports_avoid_element_validation_location(client):
     )
 
 
+@pytest.mark.parametrize("parameter", ["avoid_element", "prefer_element"])
+@pytest.mark.parametrize("value", ["Q", "Xx"])
+def test_discovery_routes_reject_unknown_element_symbols(
+    client,
+    parameter,
+    value,
+):
+    response = client.get(
+        "/api/v1/materials/5/discovery/chains",
+        params={parameter: value},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == {
+        "code": "unknown_element_symbol",
+        "parameter": parameter,
+        "value": value,
+        "message": f"Unknown chemical element symbol: {value}",
+    }
+
+
 @pytest.mark.parametrize(
     "route",
     [

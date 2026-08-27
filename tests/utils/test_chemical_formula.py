@@ -1,4 +1,10 @@
-from app.utils.chemical_formula import contains_element, extract_elements
+import pytest
+
+from app.utils.chemical_formula import (
+    contains_element,
+    extract_elements,
+    is_valid_element_symbol,
+)
 
 
 def test_extract_elements_from_simple_formula():
@@ -35,3 +41,13 @@ def test_contains_element_does_not_match_symbol_prefixes():
 def test_formula_can_legitimately_contain_c_and_ca():
     assert contains_element("CaCO3", "Ca") is True
     assert contains_element("CaCO3", "C") is True
+
+
+@pytest.mark.parametrize("symbol", [None, "H", "Li", "Og"])
+def test_valid_element_symbol_requires_periodic_table_membership(symbol):
+    assert is_valid_element_symbol(symbol) is True
+
+
+@pytest.mark.parametrize("symbol", ["Q", "Xx", "li", "Li ", "Lithium", ""])
+def test_invalid_element_symbol_is_rejected(symbol):
+    assert is_valid_element_symbol(symbol) is False
