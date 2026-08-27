@@ -5,8 +5,8 @@
 - Audited commit: `a1605e61f72035890692ab4df63ebd2f7b859069`
 - Remediation baseline: documentation commit `2d33273c916771f592200d87bafe1935aa8ec942`
   over audited implementation commit `a1605e61f72035890692ab4df63ebd2f7b859069`
-- Implementation remediations: **11**
-- Verified remediations: **11 of 20 actionable findings**
+- Implementation remediations: **12**
+- Verified remediations: **12 of 20 actionable findings**
 - Post-freeze invalidations: **1 (`MG-IA-011`)**
 
 ## Status definitions
@@ -39,7 +39,7 @@
 | `MG-IA-018` | API/scientific contract | Incomplete earlier scope | Verified | `verification/MG-IA-018.md` |
 | `MG-IA-019` | Boundedness | Omitted endpoint scope | Verified | `verification/MG-IA-019.md` |
 | `MG-IA-020` | Resource semantics | Genuinely new | Verified | `verification/MG-IA-020.md` |
-| `MG-IA-021` | Configuration | Genuinely new | Pending | — |
+| `MG-IA-021` | Configuration | Genuinely new | Verified | `verification/MG-IA-021.md` |
 | `MG-IA-023` | Documentation | Runtime fix effective; stale docs | Pending | — |
 | `MG-IA-024` | Documentation | Related but distinct | Pending | — |
 | `MG-IA-025` | Documentation | Runtime fix effective; stale docs | Pending | — |

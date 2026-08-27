@@ -38,6 +38,20 @@ def test_materials_project_environment_key_matches_settings_and_docs():
     assert "MP_API_KEY=" not in getting_started
 
 
+def test_every_advertised_environment_key_maps_to_settings_field():
+    env_example = (PROJECT_ROOT / ".env.example").read_text(
+        encoding="utf-8"
+    )
+    advertised_keys = {
+        line.partition("=")[0].strip().lower()
+        for line in env_example.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+
+    assert advertised_keys <= set(Settings.model_fields)
+    assert "MP_API_URL=" not in env_example
+
+
 def test_runtime_version_uses_installed_package_metadata(monkeypatch):
     monkeypatch.setattr(
         metadata,
