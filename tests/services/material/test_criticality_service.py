@@ -501,3 +501,57 @@ def test_higher_abundance_reduces_element_criticality():
     assert low_abundance_score == 80.0
     assert high_abundance_score == 20.0
     assert high_abundance_score < low_abundance_score
+
+
+def test_element_order_is_stable_for_permuted_known_and_unknown_ties():
+    service = MaterialCriticalityService.__new__(
+        MaterialCriticalityService
+    )
+    material = _material(formula="ABCD")
+    elements = {
+        symbol: _element(element_id, symbol)
+        for element_id, symbol in enumerate("ABCD", start=1)
+    }
+    rows_by_symbol = {
+        symbol: (
+            _material_element(
+                material.id,
+                element.id,
+                0.25,
+            ),
+            element,
+        )
+        for symbol, element in elements.items()
+    }
+    tied_profile = {
+        "abundance_score": 5.0,
+        "supply_risk_score": 5.0,
+        "toxicity_score": 5.0,
+        "recyclability_score": 5.0,
+        "geopolitical_risk_score": 5.0,
+    }
+    profiles = {
+        elements[symbol].id: _risk_profile(
+            element_id=elements[symbol].id,
+            **tied_profile,
+        )
+        for symbol in ("A", "B")
+    }
+
+    results = [
+        service._build_criticality_response(
+            material=material,
+            material_element_rows=[
+                rows_by_symbol[symbol]
+                for symbol in order
+            ],
+            risk_profiles_by_element_id=profiles,
+        )
+        for order in ("DCBA", "ABCD")
+    ]
+
+    assert [
+        item["symbol"]
+        for item in results[0]["elements"]
+    ] == ["A", "B", "C", "D"]
+    assert results[0]["elements"] == results[1]["elements"]

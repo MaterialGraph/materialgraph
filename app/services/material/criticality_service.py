@@ -306,12 +306,13 @@ class MaterialCriticalityService:
 
         element_details.sort(
             key=lambda item: (
-                item["element_criticality_score"] is not None,
-                item["element_criticality_score"]
+                item["element_criticality_score"] is None,
+                -item["element_criticality_score"]
                 if item["element_criticality_score"] is not None
                 else 0.0,
+                item["symbol"],
+                item["element_id"],
             ),
-            reverse=True,
         )
 
         return {

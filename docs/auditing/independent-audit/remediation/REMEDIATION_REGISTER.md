@@ -5,8 +5,8 @@
 - Audited commit: `a1605e61f72035890692ab4df63ebd2f7b859069`
 - Remediation baseline: documentation commit `2d33273c916771f592200d87bafe1935aa8ec942`
   over audited implementation commit `a1605e61f72035890692ab4df63ebd2f7b859069`
-- Implementation remediations: **14**
-- Verified remediations: **14 of 20 actionable findings**
+- Implementation remediations: **15**
+- Verified remediations: **15 of 20 actionable findings**
 - Post-freeze invalidations: **1 (`MG-IA-011`)**
 
 ## Status definitions
@@ -24,7 +24,7 @@
 | Finding | Priority group | Reconciliation | Status | Verification record |
 |---|---|---|---|---|
 | `MG-IA-003` | Integrity | Genuinely new | Verified | `verification/MG-IA-003.md` |
-| `MG-IA-004` | Determinism | Genuinely new | Pending | — |
+| `MG-IA-004` | Determinism | Genuinely new | Verified | `verification/MG-IA-004.md` |
 | `MG-IA-007` | Provenance | Genuinely new | Pending | — |
 | `MG-IA-008` | Integrity | Genuinely new | Verified | `verification/MG-IA-008.md` |
 | `MG-IA-009` | Scientific semantics | Related residual behavior | Verified | `verification/MG-IA-009.md` |
