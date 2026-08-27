@@ -223,6 +223,11 @@ scientifically validated.
 
 ## Quick Start
 
+The minimal sequence below requires a running PostgreSQL instance and an empty
+database. For platform-specific environment activation, database creation,
+secret-scanning setup, and verification steps, see the
+[Getting Started guide](docs/guide/getting_started.md).
+
 ```bash
 git clone https://github.com/MaterialGraph/materialgraph.git
 cd materialgraph
@@ -230,11 +235,21 @@ cd materialgraph
 python -m venv .venv
 pip install -r requirements.txt
 
+# Copy .env.example to .env, then set DATABASE_URL to the prepared database.
+# Linux/macOS: cp .env.example .env
+# Windows PowerShell: Copy-Item .env.example .env
+
 alembic upgrade head
-python scripts/import_materials_project.py
+
+# Optional data import; first set MATERIALS_PROJECT_API_KEY in .env.
+# python scripts/import_materials_project.py
 
 uvicorn app.main:app --reload
 ```
+
+`DATABASE_URL` is required for migrations and application startup.
+`MATERIALS_PROJECT_API_KEY` is required only when running the optional
+Materials Project import.
 
 ---
 

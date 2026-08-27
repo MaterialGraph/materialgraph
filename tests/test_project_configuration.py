@@ -90,3 +90,22 @@ def test_readme_discloses_that_graph_job_routes_are_not_public():
         "Public graph-job routes are intentionally not registered"
         in normalized_readme
     )
+
+
+def test_readme_quick_start_documents_required_configuration():
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    quick_start = readme.split("## Quick Start", maxsplit=1)[1].split(
+        "## Documentation", maxsplit=1
+    )[0]
+    normalized_quick_start = quick_start.replace("`", "")
+
+    assert ".env.example" in quick_start
+    assert "DATABASE_URL is required" in normalized_quick_start
+    assert (
+        "MATERIALS_PROJECT_API_KEY is required only"
+        in normalized_quick_start
+    )
+    assert "optional" in quick_start.lower()
+    assert quick_start.index("DATABASE_URL") < quick_start.index(
+        "alembic upgrade head"
+    )
