@@ -193,6 +193,46 @@ def test_bounded_traversal_is_deterministic() -> None:
     assert first["edges"] == second["edges"]
 
 
+def test_permuted_ties_preserve_membership_expansion_and_edge_order() -> None:
+    def build_service(root_neighbor_ids: list[int]) -> MaterialNeighborhoodService:
+        service = MaterialNeighborhoodService(Mock())
+        responses = {
+            1: _response(
+                1,
+                [_neighbor(neighbor_id, 100) for neighbor_id in root_neighbor_ids],
+            ),
+            2: _response(2, []),
+            3: _response(3, []),
+        }
+        service.neighbor_service.get_neighbors = Mock(
+            side_effect=lambda material_id: responses[material_id]
+        )
+        return service
+
+    first_service = build_service([3, 2])
+    second_service = build_service([2, 3])
+
+    first = first_service.get_neighborhood(material_id=1, depth=2, limit=3)
+    second = second_service.get_neighborhood(material_id=1, depth=2, limit=3)
+
+    assert first == second
+    assert [node["material_id"] for node in first["nodes"]] == [1, 2, 3]
+    assert [
+        (edge["source_material_id"], edge["target_material_id"])
+        for edge in first["edges"]
+    ] == [(1, 2), (1, 3)]
+    assert first_service.neighbor_service.get_neighbors.call_args_list == [
+        call(1),
+        call(2),
+        call(3),
+    ]
+    assert second_service.neighbor_service.get_neighbors.call_args_list == [
+        call(1),
+        call(2),
+        call(3),
+    ]
+
+
 def test_depth_remains_maximum_expansion_depth() -> None:
     service = _service()
 

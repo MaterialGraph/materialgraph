@@ -2,7 +2,10 @@ from collections import deque
 
 from sqlalchemy.orm import Session
 
-from app.services.material.neighbor_service import MaterialNeighborService
+from app.services.material.neighbor_service import (
+    MaterialNeighborService,
+    neighbor_ranking_key,
+)
 
 
 class MaterialNeighborhoodService:
@@ -59,7 +62,12 @@ class MaterialNeighborhoodService:
                 cache=neighbor_cache,
             )
 
-            for neighbor in current_neighbors["neighbors"]:
+            ordered_neighbors = sorted(
+                current_neighbors["neighbors"],
+                key=neighbor_ranking_key,
+            )
+
+            for neighbor in ordered_neighbors:
                 neighbor_id = neighbor["material_id"]
                 next_depth = current_depth + 1
 
@@ -109,8 +117,11 @@ class MaterialNeighborhoodService:
 
         sorted_edges = sorted(
             edges,
-            key=lambda item: item["edge_score"],
-            reverse=True,
+            key=lambda item: (
+                -item["edge_score"],
+                item["source_material_id"],
+                item["target_material_id"],
+            ),
         )
 
         limited_nodes = sorted_nodes[:limit]

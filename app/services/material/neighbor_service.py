@@ -5,6 +5,15 @@ from app.models.material_application import MaterialApplication
 from app.models.material_element import MaterialElement
 
 
+def neighbor_ranking_key(item: dict) -> tuple[int, int, int, int]:
+    return (
+        -item["neighbor_score"],
+        -item["shared_application_count"],
+        -item["shared_element_count"],
+        item["material_id"],
+    )
+
+
 class MaterialNeighborService:
     ELEMENT_RELATIONSHIP = "SHARED_ELEMENT"
     APPLICATION_RELATIONSHIP = "SHARED_APPLICATION"
@@ -44,14 +53,7 @@ class MaterialNeighborService:
             materials_by_id=materials_by_id,
         )
 
-        neighbors.sort(
-            key=lambda item: (
-                item["neighbor_score"],
-                item["shared_application_count"],
-                item["shared_element_count"],
-            ),
-            reverse=True,
-        )
+        neighbors.sort(key=neighbor_ranking_key)
 
         return {
             "material_id": material.id,
