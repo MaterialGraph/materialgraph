@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ScenarioRankingRequest(BaseModel):
     scenario_name: str
-    top_n: int = 10
+    top_n: int = Field(default=10, ge=1, le=20)
 
 
 class ScenarioRankingResult(BaseModel):

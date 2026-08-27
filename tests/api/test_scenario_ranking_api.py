@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_scenario_ranking_api(client):
     response = client.post(
         "/api/v1/scenarios/rank",
@@ -16,6 +19,35 @@ def test_scenario_ranking_api(client):
     assert data[0]["rank"] == 1
     assert data[0]["scenario_name"] == "lithium_supply_shock"
     assert "ranking_explanation" in data[0]
+
+
+def test_scenario_ranking_api_accepts_maximum_result_limit(client):
+    response = client.post(
+        "/api/v1/scenarios/rank",
+        json={
+            "scenario_name": "lithium_supply_shock",
+            "top_n": 20,
+        },
+    )
+
+    assert response.status_code == 200
+    assert len(response.json()) <= 20
+
+
+@pytest.mark.parametrize("top_n", [-1, 0, 21])
+def test_scenario_ranking_api_rejects_invalid_result_limits(
+    client,
+    top_n,
+):
+    response = client.post(
+        "/api/v1/scenarios/rank",
+        json={
+            "scenario_name": "lithium_supply_shock",
+            "top_n": top_n,
+        },
+    )
+
+    assert response.status_code == 422
 
 
 def test_scenario_ranking_api_unknown_scenario(client):

@@ -1,10 +1,38 @@
 from types import SimpleNamespace
 
 import pytest
+from pydantic import ValidationError
 
 from app.schemas.scenario_ranking import ScenarioRankingRequest
 from app.services.candidate_screening_service import CandidateScreeningService
 from app.services.scenario_ranking_service import ScenarioRankingService
+
+
+def test_scenario_ranking_request_uses_bounded_default():
+    request = ScenarioRankingRequest(
+        scenario_name="lithium_supply_shock",
+    )
+
+    assert request.top_n == 10
+
+
+@pytest.mark.parametrize("top_n", [1, 20])
+def test_scenario_ranking_request_accepts_result_limit_boundaries(top_n):
+    request = ScenarioRankingRequest(
+        scenario_name="lithium_supply_shock",
+        top_n=top_n,
+    )
+
+    assert request.top_n == top_n
+
+
+@pytest.mark.parametrize("top_n", [-1, 0, 21])
+def test_scenario_ranking_request_rejects_invalid_result_limits(top_n):
+    with pytest.raises(ValidationError):
+        ScenarioRankingRequest(
+            scenario_name="lithium_supply_shock",
+            top_n=top_n,
+        )
 
 
 def test_lithium_supply_shock_ranking_returns_top_candidates(db_session):
