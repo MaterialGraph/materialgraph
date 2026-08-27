@@ -263,7 +263,7 @@ Materials Project import.
 | [Research Architecture](docs/architecture/research_architecture.md) | Researcher workflow and validation responsibilities |
 | [Roadmap](docs/architecture/roadmap.md) | Remediation, validation, and future milestones |
 | [Known Issues](docs/guide/technical_notes.md) | Current limitations and tracked issues |
-| [Deployment Guide](docs/development/deployment.md) | AWS EC2, Neon PostgreSQL, systemd, and Nginx deployment |
+| [Deployment Guide](docs/guide/DEPLOYMENT.md) | AWS EC2, Neon PostgreSQL, systemd, and Nginx deployment |
 | [Security Documentation](docs/security/README.md) | Security architecture and implementation plan |
 
 ---

@@ -146,13 +146,11 @@ sudo chown ubuntu:ubuntu /opt/materialgraph
 
 Clone repository:
 
-cd /opt/materialgraph
-
-git clone https://github.com/MaterialGraph/materialgraph.git
+git clone https://github.com/MaterialGraph/materialgraph.git /opt/materialgraph
 
 Enter project:
 
-cd materialgraph
+cd /opt/materialgraph
 
 Create virtual environment:
 
@@ -210,17 +208,29 @@ Expected:
 
 # systemd Service
 
-Service file:
+The repository supplies the reviewed unit definition at its root:
+
+materialgraph.service
+
+It runs Uvicorn as the `ubuntu` user from `/opt/materialgraph`, loads secrets
+from `/opt/materialgraph/.env`, binds only to `127.0.0.1:8000`, and restarts
+after process failures. The tracked unit contains no credential values.
+
+Install the unit with root ownership and read-only system permissions:
+
+sudo install -o root -g root -m 0644 \
+materialgraph.service \
+/etc/systemd/system/materialgraph.service
+
+Installed service file:
 
 /etc/systemd/system/materialgraph.service
 
-Commands:
+Reload systemd, enable the service for boot, and start it now:
 
 sudo systemctl daemon-reload
 
-sudo systemctl start materialgraph
-
-sudo systemctl enable materialgraph
+sudo systemctl enable --now materialgraph
 
 Check status:
 
@@ -316,7 +326,7 @@ http://35.154.84.47/health
 
 Pull latest code:
 
-cd /opt/materialgraph/materialgraph
+cd /opt/materialgraph
 
 git pull origin main
 

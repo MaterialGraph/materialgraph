@@ -109,3 +109,32 @@ def test_readme_quick_start_documents_required_configuration():
     assert quick_start.index("DATABASE_URL") < quick_start.index(
         "alembic upgrade head"
     )
+
+
+def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
+    unit_path = PROJECT_ROOT / "materialgraph.service"
+    deployment_path = PROJECT_ROOT / "docs/guide/DEPLOYMENT.md"
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    unit = unit_path.read_text(encoding="utf-8")
+    deployment = deployment_path.read_text(encoding="utf-8")
+
+    assert "WorkingDirectory=/opt/materialgraph" in unit
+    assert "EnvironmentFile=/opt/materialgraph/.env" in unit
+    assert "User=ubuntu" in unit
+    assert "Group=ubuntu" in unit
+    assert "--host 127.0.0.1 --port 8000" in unit
+    assert "Restart=on-failure" in unit
+    assert "DATABASE_URL=" not in unit
+    assert "MATERIALS_PROJECT_API_KEY=" not in unit
+
+    install_command = "sudo install -o root -g root -m 0644"
+    assert deployment.index(install_command) < deployment.index(
+        "sudo systemctl daemon-reload"
+    )
+    clone_command = (
+        "git clone https://github.com/MaterialGraph/materialgraph.git "
+        "/opt/materialgraph"
+    )
+    assert clone_command in deployment
+    assert "cd /opt/materialgraph/materialgraph" not in deployment
+    assert "docs/guide/DEPLOYMENT.md" in readme

@@ -5,8 +5,8 @@
 - Audited commit: `a1605e61f72035890692ab4df63ebd2f7b859069`
 - Remediation baseline: documentation commit `2d33273c916771f592200d87bafe1935aa8ec942`
   over audited implementation commit `a1605e61f72035890692ab4df63ebd2f7b859069`
-- Implementation remediations: **19**
-- Verified remediations: **19 of 20 actionable findings**
+- Implementation remediations: **20**
+- Verified remediations: **20 of 20 actionable findings**
 - Post-freeze invalidations: **1 (`MG-IA-011`)**
 
 ## Status definitions
@@ -43,7 +43,7 @@
 | `MG-IA-023` | Documentation | Runtime fix effective; stale docs | Verified | `verification/MG-IA-023.md` |
 | `MG-IA-024` | Documentation | Related but distinct | Verified | `verification/MG-IA-024.md` |
 | `MG-IA-025` | Documentation | Runtime fix effective; stale docs | Verified | `verification/MG-IA-025.md` |
-| `MG-IA-026` | Deployment docs | Genuinely new | Pending | — |
+| `MG-IA-026` | Deployment docs | Genuinely new | Verified | `verification/MG-IA-026.md` |
 
 The register records remediation only. It does not alter the frozen finding
 classification, priority, confidence, or original evidence.
