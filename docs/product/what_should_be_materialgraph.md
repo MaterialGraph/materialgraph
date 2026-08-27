@@ -801,28 +801,35 @@ Current objective handling exposes list-shaped concepts such as:
 -   `prefer_elements`
 -   `preserve_elements`
 
-However, reviewed objective-chain execution currently forwards only the
-first avoid element and first prefer element into chain generation and
-path ranking.
+Current objective-chain execution forwards the complete `avoid_elements`
+and `prefer_elements` collections into both chain generation and path
+ranking. Chain generation evaluates normalized element sets, path ranking
+receives the same complete collections, and objective exploration iterates
+over every requested avoid and prefer element.
 
 This creates an important principle:
 
 > **The apparent expressiveness of a research objective must match the
 > actual semantics executed by the system.**
 
-MaterialGraph should not accept a richer objective shape while silently
-executing only a subset unless that limitation is explicit.
+MaterialGraph must continue to preserve that collection-shaped contract
+without silently executing only a subset. Effective objective policy must
+also remain explicit: stability requirements apply as hard path-wide
+constraints when enabled, while lower criticality affects objective ranking
+only when requested.
 
-Future work should determine whether to:
+Future work should:
 
--   support all avoid/prefer elements end to end;
--   constrain the schema to actual supported semantics; or
--   expose explicit warnings when only part of an objective is applied.
+-   preserve all avoid/prefer elements end to end as objective features
+    evolve;
+-   keep schemas, execution, and disclosed policy aligned; and
+-   add explicit warnings if any future bounded or unsupported operation
+    applies only part of an objective.
 
-The correct choice should be made after tracing all dependent services.
-It should not be patched locally without understanding candidate
-generation, transition validation, ranking, comparison, and backward
-compatibility.
+Changes should be made only after tracing candidate generation, transition
+validation, ranking, comparison, and backward compatibility. Existing
+multi-element objective regressions verify complete collection propagation
+into chain generation and path ranking.
 
 ------------------------------------------------------------------------
 
