@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.services.material.quality_service import MaterialQualityService
 from app.services.research.objective_service import ResearchObjectiveService
 from app.utils.chemical_formula import contains_element
 
@@ -8,6 +9,7 @@ class ResearchObjectiveExplorationService:
     def __init__(self, db: Session):
         self.db = db
         self.objective_service = ResearchObjectiveService(db)
+        self.quality_service = MaterialQualityService(db)
 
     def explore(self, material_id: int, request) -> dict:
         chain_result = self.objective_service.generate_chains_for_objective(
@@ -38,6 +40,7 @@ class ResearchObjectiveExplorationService:
             "material_id": material_id,
             "base_formula": chain_result.get("base_formula"),
             "objective": request.objective,
+            "objective_policy": chain_result["objective_policy"],
             "mode": request.mode,
             "constraint_policy": self._build_constraint_policy(request.mode),
             "search_metadata": search_metadata,
@@ -99,8 +102,18 @@ class ResearchObjectiveExplorationService:
             "hard_rejection_scope": "none",
         }
 
-    def _rank_candidates_from_chains(self, chains, objective, mode: str) -> list[dict]:
+    def _rank_candidates_from_chains(
+        self,
+        chains,
+        objective,
+        mode: str,
+    ) -> list[dict]:
         candidate_map: dict[int, dict] = {}
+        quality_by_id = (
+            self._quality_for_candidates(chains)
+            if objective.prefer_lower_criticality
+            else {}
+        )
 
         for chain in chains:
             materials = chain.get("materials", [])
@@ -128,6 +141,7 @@ class ResearchObjectiveExplorationService:
                     transitions=attribution_transitions,
                     objective=objective,
                     mode=mode,
+                    quality=quality_by_id.get(material_id, {}),
                 )
 
                 candidate["score"] = max(candidate["score"], score)
@@ -137,6 +151,7 @@ class ResearchObjectiveExplorationService:
                         material=material,
                         transitions=attribution_transitions,
                         objective=objective,
+                        quality=quality_by_id.get(material_id, {}),
                     )
                 )
 
@@ -157,7 +172,14 @@ class ResearchObjectiveExplorationService:
             reverse=True,
         )
 
-    def _score_material(self, material, transitions, objective, mode: str) -> float:
+    def _score_material(
+        self,
+        material,
+        transitions,
+        objective,
+        mode: str,
+        quality: dict | None = None,
+    ) -> float:
         score = 50.0
 
         formula = material.get("formula", "")
@@ -192,9 +214,21 @@ class ResearchObjectiveExplorationService:
         if mode == "exploratory":
             score += 5.0
 
+        if objective.prefer_lower_criticality:
+            score += (quality or {}).get(
+                "criticality_quality_contribution",
+                0.0,
+            )
+
         return round(score, 2)
 
-    def _build_reasons(self, material, transitions, objective) -> list[str]:
+    def _build_reasons(
+        self,
+        material,
+        transitions,
+        objective,
+        quality: dict | None = None,
+    ) -> list[str]:
         reasons = []
 
         formula = material.get("formula", "")
@@ -215,7 +249,27 @@ class ResearchObjectiveExplorationService:
                     "Structural preservation is not validated."
                 )
 
+        criticality_contribution = (quality or {}).get(
+            "criticality_quality_contribution",
+            0.0,
+        )
+        if objective.prefer_lower_criticality and criticality_contribution:
+            reasons.append(
+                "Lower-criticality preference contributes "
+                f"{criticality_contribution:.1f} through canonical material "
+                "quality evidence."
+            )
+
         return list(dict.fromkeys(reasons))
+
+    def _quality_for_candidates(self, chains: list[dict]) -> dict[int, dict]:
+        material_ids = list(dict.fromkeys(
+            material["material_id"]
+            for chain in chains
+            for material in chain.get("materials", [])[1:]
+            if material.get("material_id") is not None
+        ))
+        return self.quality_service.get_material_quality_bulk(material_ids)
 
     def _build_candidate_warnings(self, material, objective, mode: str) -> list[str]:
         warnings = []

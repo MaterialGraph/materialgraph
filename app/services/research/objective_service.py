@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.services.discovery.chain_service import DiscoveryChainService
 from app.services.discovery.path_ranking_service import DiscoveryPathRankingService
+from app.services.material.quality_service import MaterialQualityService
 from app.utils.chemical_formula import extract_elements
 
 
@@ -10,6 +11,7 @@ class ResearchObjectiveService:
         self.db = db
         self.chain_service = DiscoveryChainService(db)
         self.path_ranking_service = DiscoveryPathRankingService(db)
+        self.quality_service = MaterialQualityService(db)
 
     def generate_chains_for_objective(
         self,
@@ -53,6 +55,7 @@ class ResearchObjectiveService:
             "material_id": result["material_id"],
             "base_formula": result["base_formula"],
             "objective": objective,
+            "objective_policy": self._build_objective_policy(objective),
             "search_metadata": search_metadata,
             "chains": chains,
         }
@@ -63,6 +66,11 @@ class ResearchObjectiveService:
         objective,
     ) -> list[dict]:
         filtered = []
+        quality_by_id = (
+            self._quality_for_chains(chains)
+            if objective.require_stable_materials
+            else {}
+        )
 
         for chain in chains:
             if not self._preserves_required_elements(
@@ -74,6 +82,15 @@ class ResearchObjectiveService:
             if not self._matches_target_family(
                 chain,
                 objective.target_family,
+            ):
+                continue
+
+            if (
+                objective.require_stable_materials
+                and not self._has_only_stable_non_root_materials(
+                    chain=chain,
+                    quality_by_id=quality_by_id,
+                )
             ):
                 continue
 
@@ -170,6 +187,9 @@ class ResearchObjectiveService:
                 transitions=chain["transitions"],
                 avoid_elements=objective.avoid_elements,
                 prefer_elements=objective.prefer_elements,
+                prefer_lower_criticality=(
+                    objective.prefer_lower_criticality
+                ),
             )
 
             ranked_chains.append({
@@ -183,3 +203,62 @@ class ResearchObjectiveService:
         )
 
         return ranked_chains
+
+    def _quality_for_chains(
+        self,
+        chains: list[dict],
+    ) -> dict[int, dict]:
+        material_ids = list(dict.fromkeys(
+            material["material_id"]
+            for chain in chains
+            for material in chain.get("materials", [])[1:]
+            if material.get("material_id") is not None
+        ))
+        return self.quality_service.get_material_quality_bulk(material_ids)
+
+    @staticmethod
+    def _has_only_stable_non_root_materials(
+        *,
+        chain: dict,
+        quality_by_id: dict[int, dict],
+    ) -> bool:
+        non_root_materials = chain.get("materials", [])[1:]
+        if not non_root_materials:
+            return False
+
+        return all(
+            quality_by_id.get(
+                material.get("material_id"),
+                {},
+            ).get("stability_band") == "stable"
+            for material in non_root_materials
+        )
+
+    @staticmethod
+    def _build_objective_policy(objective) -> dict:
+        return {
+            "stable_materials": (
+                "hard_rejection"
+                if objective.require_stable_materials
+                else "not_required"
+            ),
+            "stability_scope": (
+                "all_non_root_chain_materials"
+                if objective.require_stable_materials
+                else "none"
+            ),
+            "stability_evidence_policy": (
+                "canonical_energy_primary_with_imported_flag_fallback"
+            ),
+            "unknown_stability_evidence": (
+                "hard_rejection"
+                if objective.require_stable_materials
+                else "not_applicable"
+            ),
+            "lower_criticality": (
+                "canonical_quality_preference"
+                if objective.prefer_lower_criticality
+                else "excluded_from_objective_ranking"
+            ),
+            "unknown_criticality_evidence": "no_criticality_credit",
+        }

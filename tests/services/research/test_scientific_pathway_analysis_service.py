@@ -23,6 +23,10 @@ def test_scientific_pathway_analysis_returns_opportunities(db_session):
 
     assert result["material_id"] == 5
     assert result["researcher_decision_required"] is True
+    assert result["objective_policy"]["lower_criticality"] == (
+        "canonical_quality_preference"
+    )
+    assert result["objective_policy"]["stable_materials"] == "not_required"
     assert "pathway_opportunities" in result
     assert "pathway_comparison" in result
 

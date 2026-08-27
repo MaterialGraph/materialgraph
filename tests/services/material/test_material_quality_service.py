@@ -42,7 +42,9 @@ def test_material_quality_service_returns_quality_metadata(db_session):
     assert isinstance(result["quality_score"], float)
 
 
-def test_material_quality_service_returns_empty_quality_for_missing_material(db_session):
+def test_material_quality_service_returns_empty_quality_for_missing_material(
+    db_session,
+):
     from app.services.material.quality_service import MaterialQualityService
 
     service = MaterialQualityService(db_session)
@@ -59,10 +61,12 @@ def test_material_quality_service_returns_empty_quality_for_missing_material(db_
         "stability_quality_contribution": 0.0,
         "energy_above_hull": None,
         "criticality_score": None,
+        "criticality_quality_contribution": 0.0,
         "criticality_composition_evidence_status": "unavailable",
         "criticality_composition_fraction_coverage": 0.0,
         "criticality_composition_evidence_complete": False,
         "risk_score": None,
+        "risk_quality_contribution": 0.0,
         "risk_known": False,
         "risk_profile_coverage": 0.0,
         "risk_complete_profile_coverage": 0.0,

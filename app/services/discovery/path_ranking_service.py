@@ -30,6 +30,7 @@ class DiscoveryPathRankingService:
         prefer_element: str | None = None,
         avoid_elements: Collection[str] | None = None,
         prefer_elements: Collection[str] | None = None,
+        prefer_lower_criticality: bool | None = None,
     ) -> dict:
         normalized_avoid_elements = self._normalize_elements(
             element=avoid_element,
@@ -56,7 +57,8 @@ class DiscoveryPathRankingService:
             transitions
         )
         material_quality_score = self._score_material_quality(
-            materials
+            materials,
+            prefer_lower_criticality=prefer_lower_criticality,
         )
 
         total_score = round(
@@ -82,7 +84,7 @@ class DiscoveryPathRankingService:
                 transitions=transitions,
                 avoid_elements=normalized_avoid_elements,
                 prefer_elements=normalized_prefer_elements,
-            ),
+            ) + self._criticality_policy_reason(prefer_lower_criticality),
         }
 
     def _score_shared_element_continuity(
@@ -432,6 +434,7 @@ class DiscoveryPathRankingService:
     def _score_material_quality(
         self,
         materials: list[dict],
+        prefer_lower_criticality: bool | None = None,
     ) -> float:
         if (
             self.material_quality_service is None
@@ -454,7 +457,10 @@ class DiscoveryPathRankingService:
         )
 
         material_scores = [
-            quality_by_id[material_id].get("quality_score", 0.0)
+            self._objective_quality_score(
+                quality_by_id[material_id],
+                prefer_lower_criticality=prefer_lower_criticality,
+            )
             for material_id in material_ids
             if material_id in quality_by_id
         ]
@@ -468,7 +474,10 @@ class DiscoveryPathRankingService:
         if endpoint_quality is None:
             return 0.0
 
-        endpoint_score = endpoint_quality.get("quality_score", 0.0)
+        endpoint_score = self._objective_quality_score(
+            endpoint_quality,
+            prefer_lower_criticality=prefer_lower_criticality,
+        )
         bottleneck_score = min(material_scores)
 
         # Geometric composition keeps endpoint quality visible while also
@@ -476,6 +485,46 @@ class DiscoveryPathRankingService:
         # whole-path mean, shared starting materials cannot dilute endpoint
         # differences merely because a path contains more nodes.
         return round(sqrt(endpoint_score * bottleneck_score), 2)
+
+    def _objective_quality_score(
+        self,
+        quality: dict,
+        *,
+        prefer_lower_criticality: bool | None,
+    ) -> float:
+        if prefer_lower_criticality is None:
+            return quality.get("quality_score", 0.0)
+
+        score = (
+            quality.get("stability_quality_contribution", 0.0)
+            + quality.get("risk_quality_contribution", 0.0)
+        )
+        if prefer_lower_criticality:
+            score += quality.get(
+                "criticality_quality_contribution",
+                0.0,
+            )
+
+        return round(
+            min(score, MaterialQualityService.QUALITY_SCORE_MAX),
+            2,
+        )
+
+    @staticmethod
+    def _criticality_policy_reason(
+        prefer_lower_criticality: bool | None,
+    ) -> str:
+        if prefer_lower_criticality is True:
+            return (
+                " Lower-criticality preference is applied through the "
+                "canonical criticality-quality contribution."
+            )
+        if prefer_lower_criticality is False:
+            return (
+                " Criticality is excluded from objective-specific pathway "
+                "ranking."
+            )
+        return ""
 
 
     @staticmethod

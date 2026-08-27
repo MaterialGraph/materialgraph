@@ -105,6 +105,10 @@ def test_research_objective_chains_include_ranking_fields(db_session):
 
     assert result["material_id"] == 5
     assert result["chains"]
+    assert result["objective_policy"]["lower_criticality"] == (
+        "canonical_quality_preference"
+    )
+    assert result["objective_policy"]["stable_materials"] == "not_required"
 
     for chain in result["chains"]:
         assert "scientific_usefulness_score" in chain

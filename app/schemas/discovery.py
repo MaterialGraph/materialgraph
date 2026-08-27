@@ -130,9 +130,27 @@ class ResearchObjectiveChainRequest(BaseModel):
     objective: ResearchObjective
 
 
+class ResearchObjectiveExecutionPolicy(BaseModel):
+    stable_materials: Literal["hard_rejection", "not_required"]
+    stability_scope: Literal["all_non_root_chain_materials", "none"]
+    stability_evidence_policy: Literal[
+        "canonical_energy_primary_with_imported_flag_fallback"
+    ]
+    unknown_stability_evidence: Literal[
+        "hard_rejection",
+        "not_applicable",
+    ]
+    lower_criticality: Literal[
+        "canonical_quality_preference",
+        "excluded_from_objective_ranking",
+    ]
+    unknown_criticality_evidence: Literal["no_criticality_credit"]
+
+
 class ResearchObjectiveChainResponse(BaseModel):
     material_id: int
     base_formula: str | None = None
     objective: ResearchObjective
+    objective_policy: ResearchObjectiveExecutionPolicy
     search_metadata: DiscoverySearchMetadata
     chains: list[DiscoveryChain]

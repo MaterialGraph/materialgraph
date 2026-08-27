@@ -11,6 +11,8 @@ def _objective(*, avoid_elements=None, prefer_elements=None):
         prefer_elements=prefer_elements or [],
         preserve_elements=[],
         target_family=None,
+        prefer_lower_criticality=False,
+        require_stable_materials=False,
     )
 
 

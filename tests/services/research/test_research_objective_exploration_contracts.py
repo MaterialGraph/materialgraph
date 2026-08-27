@@ -101,6 +101,9 @@ def test_analysis_openapi_schema_uses_concrete_nested_models():
     assert properties["pathway_opportunities"]["items"] == {
         "$ref": "#/$defs/ScientificPathwayOpportunity"
     }
+    assert properties["objective_policy"] == {
+        "$ref": "#/$defs/ResearchObjectiveExecutionPolicy"
+    }
     assert schema["$defs"]["EvidenceSummary"]["properties"][
         "evidence_readiness"
     ]["enum"] == ["strong", "moderate", "limited"]
@@ -121,3 +124,14 @@ def test_material_quality_contract_exposes_stability_evidence_policy():
 
     assert quality.stability_evidence_basis == "energy_above_hull"
     assert quality.stability_quality_contribution == 10.5
+
+
+def test_material_quality_contract_exposes_separate_quality_contributions():
+    quality = MaterialQualityEvidence.model_validate({
+        "material_id": 5,
+        "criticality_quality_contribution": 2.25,
+        "risk_quality_contribution": 1.2,
+    })
+
+    assert quality.criticality_quality_contribution == 2.25
+    assert quality.risk_quality_contribution == 1.2

@@ -109,6 +109,7 @@ class ScientificPathwayAnalysisService:
             "material_id": result["material_id"],
             "base_formula": result["base_formula"],
             "objective": objective,
+            "objective_policy": result["objective_policy"],
             "pathway_opportunities": opportunities,
             "pathway_comparison": comparison,
             "endpoint_sensitive_ranking": endpoint_sensitive_ranking,

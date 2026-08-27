@@ -8,6 +8,7 @@ from app.schemas.discovery import (
     DiscoveryChainTransition,
     DiscoverySearchMetadata,
     ResearchObjective,
+    ResearchObjectiveExecutionPolicy,
 )
 
 
@@ -48,6 +49,7 @@ class ResearchObjectiveExplorationResponse(BaseModel):
     material_id: int
     base_formula: str | None = None
     objective: ResearchObjective
+    objective_policy: ResearchObjectiveExecutionPolicy
     mode: Literal["balanced", "exploratory", "strict"]
     constraint_policy: ResearchObjectiveConstraintPolicy
     search_metadata: DiscoverySearchMetadata
@@ -104,6 +106,7 @@ class MaterialQualityEvidence(BaseModel):
     stability_quality_contribution: float = 0.0
     energy_above_hull: float | None = None
     criticality_score: float | None = None
+    criticality_quality_contribution: float = 0.0
     criticality_composition_evidence_status: Literal[
         "complete",
         "partial",
@@ -130,6 +133,7 @@ class MaterialQualityEvidence(BaseModel):
     risk_evidence_basis: str | None = None
     risk_evidence_dimensions: list[str] = Field(default_factory=list)
     risk_aggregation_method: str | None = None
+    risk_quality_contribution: float = 0.0
     quality_score: float = 0.0
 
 
@@ -494,6 +498,7 @@ class ScientificPathwayAnalysisResponse(BaseModel):
     material_id: int
     base_formula: str | None = None
     objective: ResearchObjective
+    objective_policy: ResearchObjectiveExecutionPolicy
     pathway_opportunities: list[ScientificPathwayOpportunity]
     endpoint_sensitive_ranking: EndpointSensitiveRanking | None = None
     pathway_comparison: PathwayComparison

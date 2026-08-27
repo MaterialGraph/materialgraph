@@ -164,6 +164,18 @@ class MaterialQualityService:
             risk_known=risk_known,
             risk_evidence_complete=risk_evidence_complete,
         )
+        criticality_quality_contribution = (
+            self._calculate_criticality_quality_contribution(
+                criticality_score
+            )
+        )
+        risk_quality_contribution = (
+            self._calculate_risk_evidence_quality_contribution(
+                risk_score=risk_score,
+                risk_known=risk_known,
+                risk_evidence_complete=risk_evidence_complete,
+            )
+        )
 
         return {
             "material_id": material.id,
@@ -183,6 +195,9 @@ class MaterialQualityService:
             ),
             "energy_above_hull": material.energy_above_hull,
             "criticality_score": criticality_score,
+            "criticality_quality_contribution": (
+                criticality_quality_contribution
+            ),
             "criticality_composition_evidence_status": (
                 criticality_composition_evidence_status
             ),
@@ -193,6 +208,7 @@ class MaterialQualityService:
                 criticality_composition_evidence_complete
             ),
             "risk_score": risk_score,
+            "risk_quality_contribution": risk_quality_contribution,
             "risk_known": risk_known,
             "risk_profile_coverage": risk_signal.get("risk_profile_coverage", 0.0),
             "risk_complete_profile_coverage": risk_signal.get(
@@ -272,21 +288,47 @@ class MaterialQualityService:
         risk_known: bool,
         risk_evidence_complete: bool,
     ) -> float:
-        score = 0.0
+        return (
+            self._calculate_criticality_quality_contribution(
+                criticality_score
+            )
+            + self._calculate_risk_evidence_quality_contribution(
+                risk_score=risk_score,
+                risk_known=risk_known,
+                risk_evidence_complete=risk_evidence_complete,
+            )
+        )
 
-        if criticality_score is not None:
-            if criticality_score <= 30:
-                score += self.QUALITY_SCORE_MAX * 0.15
-            elif criticality_score <= 60:
-                score += self.QUALITY_SCORE_MAX * 0.08
+    def _calculate_criticality_quality_contribution(
+        self,
+        criticality_score: float | None,
+    ) -> float:
+        if criticality_score is None:
+            return 0.0
+        if criticality_score <= 30:
+            return self.QUALITY_SCORE_MAX * 0.15
+        if criticality_score <= 60:
+            return self.QUALITY_SCORE_MAX * 0.08
+        return 0.0
 
-        if risk_known and risk_evidence_complete and risk_score is not None:
-            if risk_score <= 3:
-                score += self.QUALITY_SCORE_MAX * 0.15
-            elif risk_score <= 6:
-                score += self.QUALITY_SCORE_MAX * 0.08
-
-        return score
+    def _calculate_risk_evidence_quality_contribution(
+        self,
+        *,
+        risk_score: float | None,
+        risk_known: bool,
+        risk_evidence_complete: bool,
+    ) -> float:
+        if not (
+            risk_known
+            and risk_evidence_complete
+            and risk_score is not None
+        ):
+            return 0.0
+        if risk_score <= 3:
+            return self.QUALITY_SCORE_MAX * 0.15
+        if risk_score <= 6:
+            return self.QUALITY_SCORE_MAX * 0.08
+        return 0.0
 
     def _empty_quality(self, material_id: int) -> dict:
         return {
@@ -299,10 +341,12 @@ class MaterialQualityService:
             "stability_quality_contribution": 0.0,
             "energy_above_hull": None,
             "criticality_score": None,
+            "criticality_quality_contribution": 0.0,
             "criticality_composition_evidence_status": "unavailable",
             "criticality_composition_fraction_coverage": 0.0,
             "criticality_composition_evidence_complete": False,
             "risk_score": None,
+            "risk_quality_contribution": 0.0,
             "risk_known": False,
             "risk_profile_coverage": 0.0,
             "risk_complete_profile_coverage": 0.0,

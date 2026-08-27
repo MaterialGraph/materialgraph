@@ -17,6 +17,14 @@ class FakeObjectiveService:
         return {
             "material_id": material_id,
             "base_formula": "LiFePO4",
+            "objective_policy": {
+                "require_stable_materials": (
+                    objective.require_stable_materials
+                ),
+                "prefer_lower_criticality": (
+                    objective.prefer_lower_criticality
+                ),
+            },
             "chains": self.chains,
         }
 

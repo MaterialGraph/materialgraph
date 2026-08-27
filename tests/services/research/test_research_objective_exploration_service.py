@@ -5,6 +5,7 @@ from app.schemas.research_objective_exploration import (
 from app.services.research.objective_exploration_service import (
     ResearchObjectiveExplorationService,
 )
+from app.services.research.objective_service import ResearchObjectiveService
 
 
 class _ObjectiveServiceStub:
@@ -21,6 +22,9 @@ class _ObjectiveServiceStub:
             "material_id": material_id,
             "base_formula": "LiFePO4",
             "objective": objective,
+            "objective_policy": (
+                ResearchObjectiveService._build_objective_policy(objective)
+            ),
             "search_metadata": {
                 "search_policy": "bounded_breadth_first",
                 "requested_result_limit": objective.limit,
@@ -271,6 +275,7 @@ def test_candidate_attribution_excludes_future_transitions(db_session):
         target_family=None,
         max_hops=2,
         limit=5,
+        prefer_lower_criticality=False,
     )
     chain = {
         "materials": [
