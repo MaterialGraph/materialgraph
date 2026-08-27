@@ -36,6 +36,31 @@ def test_research_objective_exploration_api(client):
     assert "warnings" in data
 
 
+def test_research_objective_exploration_returns_404_for_missing_material(
+    client,
+):
+    response = client.post(
+        "/api/v1/materials/999999/discovery/objective/explore",
+        json={
+            "objective": {
+                "avoid_elements": ["Li"],
+                "prefer_elements": ["Na"],
+                "preserve_elements": ["Fe", "P", "O"],
+                "target_family": "phosphate",
+                "max_hops": 2,
+                "limit": 5,
+                "prefer_lower_criticality": True,
+                "require_stable_materials": False,
+            },
+            "mode": "balanced",
+            "limit": 5,
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Material not found"}
+
+
 def test_strict_research_objective_exploration_enforces_hard_avoidance(client):
     response = client.post(
         "/api/v1/materials/5/discovery/objective/explore",

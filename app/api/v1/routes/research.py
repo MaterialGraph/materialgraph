@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.api.v1.route_utils import ensure_material_exists
 from app.core.database import get_db
 from app.schemas.discovery import ResearchObjectiveChainRequest
 from app.services.research.scientific_pathway_analysis_service import (
@@ -26,6 +27,8 @@ def analyze_scientific_pathways(
     request: ResearchObjectiveChainRequest,
     db: Session = Depends(get_db),
 ):
+    ensure_material_exists(db, material_id)
+
     service = ScientificPathwayAnalysisService(db)
 
     return service.analyze(

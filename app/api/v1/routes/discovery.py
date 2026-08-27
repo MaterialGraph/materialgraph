@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from app.api.dependencies.element_filters import ElementFiltersDependency
+from app.api.v1.route_utils import ensure_material_exists
 from app.core.database import get_db
 from app.schemas.discovery import DiscoveryCandidatesResponse, DiscoveryChainsResponse
 from app.services.discovery.candidate_service import DiscoveryCandidateService
@@ -28,9 +30,6 @@ from app.services.research.objective_exploration_service import (
     ResearchObjectiveService,
     ResearchObjectiveExplorationService,
 )
-from app.api.dependencies.element_filters import ElementFiltersDependency
-
-
 
 router = APIRouter(
     prefix="/materials",
@@ -88,6 +87,8 @@ def get_discovery_chains(
     limit: int = Query(default=5, ge=1, le=20),
     db: Session = Depends(get_db),
 ):
+    ensure_material_exists(db, material_id)
+
     service = DiscoveryChainService(db)
 
     return service.get_discovery_chains(
@@ -107,6 +108,8 @@ def generate_discovery_chains_for_objective(
     request: ResearchObjectiveChainRequest,
     db: Session = Depends(get_db),
 ):
+    ensure_material_exists(db, material_id)
+
     service = ResearchObjectiveService(db)
 
     return service.generate_chains_for_objective(
@@ -238,6 +241,8 @@ def explore_research_objective(
     request: ResearchObjectiveExplorationRequest,
     db: Session = Depends(get_db),
 ):
+    ensure_material_exists(db, material_id)
+
     service = ResearchObjectiveExplorationService(db)
 
     return service.explore(

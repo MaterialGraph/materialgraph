@@ -45,6 +45,28 @@ def test_scientific_pathway_analysis_returns_comparative_intelligence(
         assert opportunity["position"] == expected_position
         assert opportunity["pathway_id"].startswith("pathway:")
 
+
+def test_scientific_pathways_returns_404_for_missing_material(client):
+    response = client.post(
+        "/api/v1/materials/999999/research/scientific-pathways",
+        json={
+            "objective": {
+                "avoid_elements": ["Li"],
+                "prefer_elements": ["Na"],
+                "preserve_elements": ["Fe", "P", "O"],
+                "target_family": "phosphate",
+                "max_hops": 2,
+                "limit": 5,
+                "prefer_lower_criticality": True,
+                "require_stable_materials": False,
+            }
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Material not found"}
+
+
 def test_scientific_pathway_comparison_top_rank_matches_highest_score(
     client,
 ):
