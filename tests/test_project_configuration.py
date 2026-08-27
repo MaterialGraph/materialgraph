@@ -75,3 +75,18 @@ def test_runtime_version_has_non_release_fallback(monkeypatch):
 def test_fastapi_uses_resolved_package_version():
     assert "project_version" not in Settings.model_fields
     assert app.version == PROJECT_VERSION
+
+
+def test_readme_discloses_that_graph_job_routes_are_not_public():
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    normalized_readme = " ".join(readme.split())
+    graph_job_paths = {
+        path for path in app.openapi()["paths"] if "graph-job" in path
+    }
+
+    assert graph_job_paths == set()
+    assert "PostgreSQL-backed graph-job routes and persistence" not in readme
+    assert (
+        "Public graph-job routes are intentionally not registered"
+        in normalized_readme
+    )

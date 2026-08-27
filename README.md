@@ -109,7 +109,9 @@ scientifically valid.
 - Graph Analytics;
 - Material Quality;
 - Node and Edge Intelligence;
-- PostgreSQL-backed graph-job routes and persistence.
+- PostgreSQL-backed graph-job persistence and lifecycle primitives. Public
+  graph-job routes are intentionally not registered while worker ownership,
+  lifecycle, and API-contract requirements remain incomplete.
 
 ### Research and Evidence Intelligence
 
