@@ -8,7 +8,7 @@ They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
 
 | Area | Observation | Evidence required |
 |---|---|---|
-| Request validation | Some request models accept unbounded element lists or strings. | Exercise extreme valid payloads, confirm body-size controls, and measure downstream work. |
+| Request validation | Research-objective cardinality is promoted to `MG-SEC-008`; screening/comparison collections and several strings remain unbounded without separate material amplification evidence. | Confirm effective body-size behavior and measure only the remaining distinct paths. |
 | Substitutions | `SubstitutionRequest.top_n` lacks an explicit lower and upper bound. | Test negative and extreme positive values and trace database work. |
 | Operational exposure | Swagger, ReDoc, OpenAPI, and health endpoints are public; root health returns version and environment. | Confirm intended consumers and capture public responses and error behavior. |
 | Readiness | The service exposes liveness-style health responses but no demonstrated database readiness check. | Confirm monitoring requirements and failure behavior. |

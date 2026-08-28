@@ -108,9 +108,31 @@ MaterialGraph session.
 - Nginx configuration is syntactically valid.
 - PostgreSQL terminates idle-in-transaction sessions after five minutes.
 
+## Request-cardinality evidence
+
+- Screening and comparison request models accept unbounded `scarce_elements`
+  and `avoid_elements` collections.
+- Research objectives accept unbounded `avoid_elements`, `prefer_elements`, and
+  `preserve_elements` collections and an unbounded `target_family` string.
+- `SubstitutionRequest.top_n` accepts negative, zero, and extreme positive
+  values.
+- A local, database-free model probe accepted 10,000-entry collections. The
+  serialized research objective was 336,839 bytes with unique values.
+- A second local, database-free benchmark used 10,000 repeated avoided and
+  10,000 repeated preferred elements, serialized to 100,173 bytes, across 20
+  candidate evaluations. It took 2.825286 seconds versus 0.000759 seconds for
+  one avoided and one preferred element: a measured 3,722.38-times time
+  amplification with a 937,943-byte measured peak allocation.
+- The amplification occurs because exploration scoring, reason generation, and
+  warning generation iterate the raw collections for each candidate and
+  repeatedly parse the candidate formula. Duplicate values are not normalized
+  before this work.
+- These probes did not connect to a database or call the deployed API.
+
 ## Evidence still required
 
-- Extreme-but-valid request and payload measurements.
+- Remaining substitution `top_n`, screening/comparison cardinality, and string
+  bound classification.
 - Public health, documentation, and error-response behavior.
 - Dependency vulnerability scan and CI dependency-update policy.
 - Backup/PITR retention, recovery targets, restore runbook, and restore test.
