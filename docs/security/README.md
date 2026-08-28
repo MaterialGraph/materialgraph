@@ -1,8 +1,8 @@
 # MaterialGraph Security
 
-**Status:** Security foundation established; formal Stage 1 review pending
+**Status:** Formal Stage 1 review active; inspection and evidence collection
 **Project stage:** Deterministic scientific prototype
-**Last updated:** 2026-08-19
+**Last updated:** 2026-08-28
 
 ## Purpose
 
@@ -212,14 +212,17 @@ The two workstreams may proceed in parallel, but security changes must not silen
 
 ## Next Step
 
-The current architecture audit remediation remains the active engineering workstream.
+The independent implementation audit is closed. The formal Stage 1 security
+review is active and is governed by this document.
 
-Once that remediation reaches the agreed transition point, MaterialGraph will begin the formal Stage 1 security review defined in this document. The review will inspect the deployed prototype systematically before creating the initial set of verified `MG-SEC-*` findings.
+Current review records are maintained under [`stage-1-review/`](stage-1-review/README.md).
+The review separates confirmed findings, evidence, and observations that still
+require investigation. No remediation begins until the inspection result is
+reviewed and explicitly approved.
 
-The security foundation already implemented—particularly secret scanning, environment isolation, and credential-handling procedures—will be treated as existing safeguards during that review rather than as evidence that the corresponding security areas are fully resolved.
-
-After inspection, confirmed findings will be recorded using the `MG-SEC-*` series, prioritized by risk, remediated methodically, and closed only after verification.
-
-Until that transition, security work should remain limited to maintaining the established safeguards and addressing any immediate security issue that cannot reasonably be deferred.
+The security foundation already implemented—particularly secret scanning,
+environment isolation, and credential-handling procedures—is treated as an
+existing safeguard rather than evidence that the corresponding security areas
+are fully resolved.
 
 Security documentation will evolve alongside MaterialGraph. As major capabilities such as authentication, organization workspaces, document ingestion, AI integration, and subscription management are introduced, dedicated security documentation and implementation guidance will be added for those features. This approach keeps the documentation aligned with the actual system architecture and avoids documenting designs that have not yet been implemented.
