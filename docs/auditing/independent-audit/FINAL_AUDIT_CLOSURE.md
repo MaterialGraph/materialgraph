@@ -38,8 +38,29 @@ environment. Change-impact records preserve externally visible and system-level
 effects.
 
 The closure consistency test verifies finding counts, register status counts,
-verification-record existence, absence of pending rows, landing-page closure
-language, and root-document links.
+verification-record existence and status consistency, absence of pending rows,
+landing-page closure language, and root-document links.
+
+## Post-closure evidence reconciliation
+
+A post-closure review found that the `MG-IA-016` remediation register row was
+correctly marked `Verified`, but its finding-specific verification and
+change-impact records still retained their earlier local-verification-pending
+language. This was an evidence-record consistency defect, not a demonstrated
+implementation or scientific-result defect, and it did not reopen the frozen
+`MG-IA-016` finding.
+
+The outstanding verification was completed against clean commit
+`32bc57cc78754e061f9a2f4294d81aa39e4f9955`:
+
+- focused discovery-chain tests: **13 passed**;
+- adjacent research-service and API regression tests: **29 passed**;
+- complete project suite: **729 passed**;
+- Ruff: **All checks passed**.
+
+The `MG-IA-016` verification and change-impact records were reconciled with
+those results. The closure totals remain unchanged at **20 of 20 actionable
+findings verified** and **0 pending remediation rows**.
 
 ## Boundary of closure
 

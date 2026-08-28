@@ -6,8 +6,11 @@ Preferred elements remain soft throughout discovery-chain generation
 
 ## Status
 
-Implementation and regression tests prepared; local project verification
-pending.
+Verified.
+
+Local project verification completed against clean commit
+`32bc57cc78754e061f9a2f4294d81aa39e4f9955` on Windows with Python 3.14.5,
+pytest 9.0.3, and Ruff.
 
 ## Acceptance criteria
 
@@ -48,16 +51,32 @@ Result: passed in the remediation workspace.
 `git diff --check` also passed. The workspace Python runtime does not include
 `pytest` or Ruff.
 
-## Required local verification
+## Local project verification
 
-Run from the activated project virtual environment:
+The required commands were run from the activated project virtual environment.
 
 ```powershell
 pytest tests/services/discovery/test_discovery_chain_element_membership.py tests/services/discovery/test_discovery_chain_service.py -v
 pytest tests/services/research/test_research_objective_service.py tests/services/research/test_research_objective_exploration_service.py tests/api/test_discovery_chains_api.py tests/api/test_research_objective_exploration_api.py -v
-pytest -v
+pytest -q
 ruff check .
 ```
 
-Record test counts, failures if any, and Ruff output before changing the status
-to `Verified`.
+Results:
+
+- Focused discovery-chain verification: **13 passed in 0.59s**.
+- Adjacent research-service and API regression verification: **29 passed in
+  1.48s**.
+- Complete project suite: **729 passed in 31.01s**.
+- Ruff: **All checks passed**.
+
+The complete-suite command used quiet rather than verbose output; this changed
+reporting verbosity only, not test selection or execution.
+
+## Verification conclusion
+
+All acceptance criteria are supported by focused and adjacent regression tests,
+the complete project suite passes, and Ruff reports no violations. Preferred
+elements remain soft during chain generation while strict avoided-element
+handling, search bounds, transition validation, deterministic ordering, and
+downstream preference ranking remain covered. No regression was observed.

@@ -184,7 +184,20 @@ def test_independent_audit_closure_records_are_consistent():
 
     for row in remediation_rows:
         verification_path = re.findall(r"`([^`]+\.md)`", row)[-1]
-        assert (remediation_root / verification_path).is_file()
+        verification_file = remediation_root / verification_path
+
+        assert verification_file.is_file()
+
+        if "| Verified |" not in row:
+            continue
+
+        verification_record = verification_file.read_text(encoding="utf-8")
+        status_section = verification_record.split(
+            "## Status", maxsplit=1
+        )[1].split("## ", maxsplit=1)[0]
+
+        assert "verified" in status_section.lower()
+        assert "pending" not in status_section.lower()
 
     assert "Actionable findings verified: **20 of 20**" in closure
     assert "Closure hardening: **1 (`MG-IA-022`)**" in closure
