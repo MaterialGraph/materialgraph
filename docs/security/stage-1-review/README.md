@@ -55,10 +55,10 @@ availability scenario.
 
 ## Current phase
 
-Seven findings are confirmed. Inspection remains active for detailed database
-schema/table grants and role separation, dependency and CI supply-chain
-exposure, logging and error disclosure, backup and restore readiness, and
-remaining request-boundary observations.
+Seven findings are confirmed. The database evidence group is complete.
+Inspection remains active for dependency and CI supply-chain exposure, logging
+and error disclosure, backup and restore readiness, and remaining
+request-boundary observations.
 
 No remediation record or implementation change is authorized by this review
 checkpoint. Security changes must preserve deterministic scientific results

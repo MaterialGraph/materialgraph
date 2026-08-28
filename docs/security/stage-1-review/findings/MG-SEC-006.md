@@ -22,6 +22,9 @@ reported:
 - TLS version is null;
 - cipher is null.
 
+The separately configured Alembic connection reports the same unencrypted
+session properties. Both production database paths are affected.
+
 The query did not print or record the connection URL, database name, role name,
 or credential values.
 
@@ -48,7 +51,8 @@ outputs.
 - Certificate validation policy appropriate for the Neon endpoint.
 - Startup or deployment verification that fails when the session is not using
   TLS.
-- Regression evidence for production and migration connections.
+- Regression evidence that requires encrypted production and migration
+  connections.
 
 ## Recommended remediation
 

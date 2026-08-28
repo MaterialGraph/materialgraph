@@ -15,7 +15,6 @@ They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
 | Nginx disclosure | `server_tokens` is not disabled in the effective configuration. | Capture public response headers and default error pages. |
 | Host containment | systemd lacks additional sandboxing beyond the privilege issue recorded in `MG-SEC-004`. | Define required runtime writes and test a least-privilege unit design. |
 | Network egress | EC2 outbound traffic is unrestricted. | Establish required destinations and determine whether egress restriction is practical for this prototype. |
-| Database grants | Role attributes are confirmed as overprivileged, but detailed schema/table/sequence grants and application/migration role separation remain unverified. | Inspect redacted grants and determine whether migrations use the runtime credential. |
 | Dependencies | No repository dependency-vulnerability workflow has been confirmed. | Run a scanner against frozen dependency files and inspect update policy. |
 | CI supply chain | CI actions and containers may use mutable version tags. | Inspect exact workflow references and accepted trust policy. |
 | Runtime dependencies | Production dependency inputs may include development tooling. | Reconcile deployment installation commands and dependency files. |

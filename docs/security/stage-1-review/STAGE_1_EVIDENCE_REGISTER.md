@@ -82,6 +82,14 @@ values:
 - The application role is not a PostgreSQL superuser, but has role creation,
   database creation, login, replication, and row-level-security bypass
   attributes.
+- Runtime and Alembic have different configured URLs, but both authenticate as
+  the same database role. The distinction is connection-path configuration,
+  not privilege separation.
+- The Alembic session also reports `ssl=false`; TLS version and cipher are null.
+- The runtime role can create databases, connect, and create temporary objects.
+- Across all nine inspected `public` tables, the runtime role has `SELECT`,
+  `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER`.
+- No explicit usage grants were returned for the runtime role.
 - `statement_timeout` is `0` and `lock_timeout` is `0`.
 - `idle_in_transaction_session_timeout` is `5min`.
 
@@ -102,8 +110,6 @@ MaterialGraph session.
 
 ## Evidence still required
 
-- Detailed schema/table/sequence grants and application/migration role
-  separation.
 - Extreme-but-valid request and payload measurements.
 - Public health, documentation, and error-response behavior.
 - Dependency vulnerability scan and CI dependency-update policy.

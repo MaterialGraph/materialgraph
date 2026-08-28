@@ -25,9 +25,15 @@ reported that the application role:
 - has replication capability;
 - can bypass row-level security.
 
-Detailed schema, table, and sequence grants and migration-role separation still
-require inspection, but the confirmed role attributes already exceed the
-current runtime application's needs.
+The deployed environment defines different runtime and migration URLs, but
+both connections authenticate as the same role. The runtime role can create
+databases, connect, and create temporary objects. It also has `SELECT`,
+`INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER` across all
+nine inspected `public` tables. No explicit usage grants were returned.
+
+The confirmed attributes and grants exceed the current runtime application's
+needs. The URL distinction provides pooled/direct connection selection but no
+credential or privilege separation.
 
 ## Threat scenario
 
