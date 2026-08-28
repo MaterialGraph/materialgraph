@@ -85,13 +85,21 @@ Production environment file:
 
 /opt/materialgraph/.env
 
-Required variables:
+Application variables:
 
 DATABASE_URL=
-DATABASE_MIGRATION_URL=
 MATERIALS_PROJECT_API_KEY=
 ENVIRONMENT=production
 LOG_LEVEL=INFO
+
+Optional migration-specific override:
+
+DATABASE_MIGRATION_URL=
+
+Alembic prefers `DATABASE_MIGRATION_URL` when it is configured and otherwise
+uses `DATABASE_URL`. The migration-specific value is useful when pooled and
+direct database connections differ. If neither variable is configured,
+Alembic fails without connecting to a fallback database.
 
 Important:
 

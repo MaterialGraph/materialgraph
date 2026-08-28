@@ -100,6 +100,13 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost/materialgraph
 MATERIALS_PROJECT_API_KEY=your_materials_project_api_key
 ```
 
+`DATABASE_URL` is required by the application and is also Alembic's default
+migration target. A deployment may additionally set
+`DATABASE_MIGRATION_URL` when migrations require a separate direct connection;
+Alembic prefers that value when both variables are present. If neither database
+variable is configured, migration commands fail without selecting a fallback
+database.
+
 The `.env` file is local configuration and must never be committed.
 
 Use `.env.example` to document required variable names without storing credentials. Never place production passwords, API keys, access tokens, or connection strings containing real credentials in tracked files.
