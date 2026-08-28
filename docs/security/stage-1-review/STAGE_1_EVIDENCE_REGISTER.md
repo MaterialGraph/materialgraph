@@ -72,6 +72,23 @@
 - No other inbound ports were present in the inspected group.
 - Outbound traffic is permitted to all IPv4 destinations.
 
+## Database session evidence
+
+The following values were queried through MaterialGraph's deployed SQLAlchemy
+engine without printing the connection URL, database name, role name, or secret
+values:
+
+- `pg_stat_ssl` reports `ssl=false`; TLS version and cipher are null.
+- The application role is not a PostgreSQL superuser, but has role creation,
+  database creation, login, replication, and row-level-security bypass
+  attributes.
+- `statement_timeout` is `0` and `lock_timeout` is `0`.
+- `idle_in_transaction_session_timeout` is `5min`.
+
+The same results were observed independently in the Neon SQL Editor, but the
+application-engine query is the authoritative evidence for the deployed
+MaterialGraph session.
+
 ## Confirmed positive safeguards
 
 - Production credentials are external to the tracked repository.
@@ -81,12 +98,12 @@
 - Graph and search operations have multiple per-request complexity bounds.
 - Graph-job routes are unmounted.
 - Nginx configuration is syntactically valid.
+- PostgreSQL terminates idle-in-transaction sessions after five minutes.
 
 ## Evidence still required
 
-- Database session TLS version and cipher.
-- Application and migration role privileges and separation.
-- PostgreSQL statement, lock, and idle-transaction timeouts.
+- Detailed schema/table/sequence grants and application/migration role
+  separation.
 - Extreme-but-valid request and payload measurements.
 - Public health, documentation, and error-response behavior.
 - Dependency vulnerability scan and CI dependency-update policy.

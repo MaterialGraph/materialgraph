@@ -20,6 +20,8 @@
 | [`MG-SEC-003`](findings/MG-SEC-003.md) | Production environment file is world-readable | Medium | High | EC2 filesystem | Open |
 | [`MG-SEC-004`](findings/MG-SEC-004.md) | Internet-facing service runs with passwordless root authority | High | High | systemd and EC2 account boundary | Open |
 | [`MG-SEC-005`](findings/MG-SEC-005.md) | Public API traffic is served over unencrypted HTTP | Medium | High | Nginx and EC2 network boundary | Open |
+| [`MG-SEC-006`](findings/MG-SEC-006.md) | Production database connection is unencrypted | High | High | EC2-to-Neon database transport | Open |
+| [`MG-SEC-007`](findings/MG-SEC-007.md) | Application database role has administrative capabilities | High | High | Neon role and application credential boundary | Open |
 
 ## Review rule
 

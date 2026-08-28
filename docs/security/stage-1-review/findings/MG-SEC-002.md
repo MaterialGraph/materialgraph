@@ -21,6 +21,8 @@ Open.
 - No cancellation signal is propagated through synchronous scientific work.
 - `create_engine()` configures `pool_pre_ping=True` but no project-defined
   statement, lock, or pool-acquisition timeout.
+- The deployed application session reports `statement_timeout=0` and
+  `lock_timeout=0`.
 - Effective deployed Nginx configuration defines no explicit proxy connect,
   send, or read timeout.
 - No timeout, rollback, or cancellation regression tests were found.
@@ -37,6 +39,7 @@ does not demonstrate cancellation of synchronous work already executing.
 - Graph traversal and enumeration have explicit per-request bounds.
 - Uvicorn is supervised by systemd.
 - SQLAlchemy checks stale pooled connections.
+- PostgreSQL enforces `idle_in_transaction_session_timeout=5min`.
 
 ## Missing safeguards
 
