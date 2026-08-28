@@ -1,13 +1,14 @@
-# MG-IA-022 Remediation Verification
+# MG-IA-022 Applicability Correction and Closure-Hardening Verification
 
 ## Title
 
-Alembic fails closed when no migration database target is configured
+Alembic's fail-closed target is explicit and independent of import order
 
 ## Status
 
-Verified in the local project environment on Windows with Python 3.14.5 and
-the configured PostgreSQL test environment.
+Original proposition retired as not actionable; subsequent defense-in-depth
+hardening verified in the local project environment on Windows with Python
+3.14.5 and the configured PostgreSQL test environment.
 
 ## Acceptance criteria
 
@@ -23,17 +24,20 @@ the configured PostgreSQL test environment.
 7. Local and deployment documentation describe the effective policy.
 8. Focused, migration, full-suite, lint, and whitespace checks pass.
 
-## Current-baseline confirmation
+## Applicability correction
 
-The finding was re-evaluated directly against GitHub commit `fdc5eb3` during
-the final closure review. `alembic.ini` still contained
-`postgresql+psycopg://postgres:postgres@localhost:5432/materialgraph`, while
-`alembic/env.py` replaced it only when one of the two environment variables was
-truthy. Both online and offline paths otherwise consumed the retained URL. The
-frozen finding remained fully applicable and had been accidentally omitted
-from the remediation register.
+The final independent-pass register retired `MG-IA-022` after import-order
+correction. `alembic/env.py` imported `app.models` before URL selection;
+application model imports constructed required settings, so a missing
+`DATABASE_URL` failed before the INI fallback was reachable. The original
+silent-fallback proposition therefore did not satisfy the audit's reachability
+threshold and was not an actionable finding.
 
-## Implemented changes
+The closure review initially overlooked that indirect guard. This record
+corrects the classification while preserving the useful hardening subsequently
+committed at `3b3a429`.
+
+## Closure-hardening changes
 
 - Added a pure migration database URL resolver.
 - Enforced migration-specific URL precedence and application URL fallback.
@@ -73,4 +77,7 @@ scientific calculation.
 
 ## Conclusion
 
-All acceptance criteria are satisfied. `MG-IA-022` is verified as remediated.
+The explicit configuration acceptance criteria are satisfied. `MG-IA-022`
+remains **Not actionable** as an audit finding; commit `3b3a429` is retained as
+verified defense-in-depth hardening and is not counted among the 20 actionable
+remediations.

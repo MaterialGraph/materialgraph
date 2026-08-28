@@ -1,3 +1,12 @@
-# Reconciliation — Reserved
+# Independent-Audit Reconciliation
 
-Reconciliation with `MG-AUD-001`–`MG-AUD-094` must not begin until the independent inspection is formally complete. No previous finding details or remediation records are used during the current pass.
+## Status
+
+Complete. Reconciliation began only after the independent pass was formally
+frozen. The records in this directory compare the 21 confirmed independent
+findings with `MG-AUD-001`–`MG-AUD-094` while preserving the original
+independent classifications and evidence.
+
+Reconciliation does not rewrite frozen findings or convert historical test
+claims into current verification. Current remediation authority resides in
+`../remediation/REMEDIATION_REGISTER.md`.

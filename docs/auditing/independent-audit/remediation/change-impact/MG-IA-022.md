@@ -1,5 +1,9 @@
 # MG-IA-022 Change Impact — Explicit Alembic Database Target
 
+> Closure classification: defense-in-depth hardening for a retired proposition;
+> not counted as an actionable-finding remediation. See the paired verification
+> record for the import-order reachability correction.
+
 ## Status
 
 Verified locally: focused migration-configuration and project-configuration

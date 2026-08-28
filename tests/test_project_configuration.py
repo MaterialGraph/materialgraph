@@ -1,3 +1,4 @@
+import re
 from importlib import metadata
 from pathlib import Path
 
@@ -138,3 +139,68 @@ def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
     assert clone_command in deployment
     assert "cd /opt/materialgraph/materialgraph" not in deployment
     assert "docs/guide/DEPLOYMENT.md" in readme
+
+
+def test_independent_audit_closure_records_are_consistent():
+    audit_root = PROJECT_ROOT / "docs/auditing/independent-audit"
+    remediation_root = audit_root / "remediation"
+    independent_register = (
+        audit_root / "INDEPENDENT_AUDIT_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    remediation_register = (
+        remediation_root / "REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    closure = (audit_root / "FINAL_AUDIT_CLOSURE.md").read_text(
+        encoding="utf-8"
+    )
+
+    confirmed_section = independent_register.split(
+        "## Confirmed findings", maxsplit=1
+    )[1].split("## Retired finding identifiers", maxsplit=1)[0]
+    retired_section = independent_register.split(
+        "## Retired finding identifiers", maxsplit=1
+    )[1].split("## Open observations", maxsplit=1)[0]
+    confirmed_rows = [
+        line for line in confirmed_section.splitlines()
+        if line.startswith("| `MG-IA-")
+    ]
+    retired_rows = [
+        line for line in retired_section.splitlines()
+        if line.startswith("| `MG-IA-")
+    ]
+    remediation_rows = [
+        line for line in remediation_register.splitlines()
+        if line.startswith("| `MG-IA-")
+    ]
+
+    assert len(confirmed_rows) == 21
+    assert len(retired_rows) == 5
+    assert len(remediation_rows) == 22
+    assert sum("| Verified |" in row for row in remediation_rows) == 20
+    assert sum(
+        "| Not actionable |" in row for row in remediation_rows
+    ) == 2
+    assert not any("| Pending |" in row for row in remediation_rows)
+
+    for row in remediation_rows:
+        verification_path = re.findall(r"`([^`]+\.md)`", row)[-1]
+        assert (remediation_root / verification_path).is_file()
+
+    assert "Actionable findings verified: **20 of 20**" in closure
+    assert "Closure hardening: **1 (`MG-IA-022`)**" in closure
+
+
+def test_root_readme_audit_status_and_local_links_are_current():
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    local_targets = [
+        target
+        for target in re.findall(r"\]\(([^)]+)\)", readme)
+        if "://" not in target and not target.startswith("#")
+    ]
+
+    assert "20 of 20 actionable findings verified" in readme
+    assert "remediation in progress" not in readme.lower()
+    assert "23 are resolved" not in readme
+    assert "71 remain open" not in readme
+    assert local_targets
+    assert all((PROJECT_ROOT / target).exists() for target in local_targets)

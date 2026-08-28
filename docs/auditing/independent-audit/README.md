@@ -2,7 +2,9 @@
 
 ## Status
 
-Independent inspection is in progress. No implementation remediation is authorized or underway. Reconciliation with the earlier `MG-AUD-001`–`MG-AUD-094` work has not begun.
+Independent inspection, reconciliation, and remediation are complete. The
+workstream is formally closed; see
+[`FINAL_AUDIT_CLOSURE.md`](FINAL_AUDIT_CLOSURE.md).
 
 ## Review baseline
 
@@ -49,35 +51,27 @@ If any element remains uncertain, the item stays an observation. Later evidence 
 
 Each component is traced vertically through persistence, services, schemas, routes, callers, tests, and non-audit documentation. Passing tests are evidence, not proof of correctness. Sound behavior and negative results are recorded alongside defects.
 
-## Current progress
+## Final result
 
-Reviewed so far:
+The frozen pass produced 21 confirmed finding records, 16 observations, three
+improvements, and five retired identifiers. Subsequent exact-repository
+revalidation classified `MG-IA-011` as not actionable and verified remediation
+for the remaining 20 actionable findings. Retired `MG-IA-022` received a
+separate defense-in-depth configuration hardening during closure.
 
-- configuration, packaging, startup, health, and version resolution;
-- SQLAlchemy domain models and all three Alembic revisions;
-- Materials Project import orchestration and normalization;
-- composition persistence and legacy fallback behavior;
-- canonical risk seeding;
-- material risk and criticality aggregation;
-- stability evidence and material quality;
-- candidate screening;
-- sensitivity analysis;
-- substitution analysis;
-- supporting Pydantic schemas, routes, and tests supplied for those components.
-
-Current strict-threshold result:
-
-- 6 confirmed findings;
-- 9 open observations;
-- 2 improvements;
-- 4 retired finding identifiers following evidence-threshold correction;
-- 0 remediations;
-- 0 reconciled items.
+- Confirmed finding records: **21**
+- Verified actionable remediations: **20 of 20**
+- Post-freeze invalidations: **1 (`MG-IA-011`)**
+- Retired identifiers: **5**, including `MG-IA-022`
+- Pending remediation rows: **0**
+- Security review: separate and active under `MG-SEC-*`
 
 ## Directory structure
 
 - `INDEPENDENT_AUDIT_REGISTER.md` — canonical independent-pass register
+- `FINAL_AUDIT_CLOSURE.md` — final reconciliation/remediation closure
 - `evidence/` — stack evidence, inventory, and positive/negative checks
 - `findings/` — one record per confirmed `MG-IA-*` item
 - `improvements/` — worthwhile non-defect improvements
-- `reconciliation/` — reserved until independent inspection is complete
+- `reconciliation/` — comparison with the earlier `MG-AUD-*` workstream
+- `remediation/` — verified implementation and change-impact records

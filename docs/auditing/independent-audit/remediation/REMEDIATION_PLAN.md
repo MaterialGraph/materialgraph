@@ -1,5 +1,13 @@
 # Independent-Audit Remediation Plan
 
+## Status
+
+Completed. All five batches were executed and verified. The final closure
+review also hardened retired `MG-IA-022` by making Alembic's explicit
+configuration invariant independent of import order. This document preserves
+the planned sequencing; current status is authoritative in
+`REMEDIATION_REGISTER.md`.
+
 ## Sequencing principle
 
 Remediation follows technical dependency and risk, not numerical ID order.

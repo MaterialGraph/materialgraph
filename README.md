@@ -179,15 +179,19 @@ enter later, explicitly versioned datasets or policies.
 |---|---|
 | Unit and regression testing | Implemented; coverage continues to expand |
 | API and deterministic-behaviour verification | Completed for tested workflows |
-| Architecture and implementation audit | Reconciled; remediation in progress |
+| Architecture and implementation audit (`MG-AUD-*`) | Complete: 92 remediated, 2 accepted behavior, 0 open |
+| Independent implementation audit (`MG-IA-*`) | Closed: 20 of 20 actionable findings verified; 1 post-freeze invalidation |
+| Stage 1 security review (`MG-SEC-*`) | In progress as a separate workstream |
 | Literature-backed case studies | Not yet completed |
 | Independent materials-researcher review | Not yet completed |
 | DFT cross-validation | Not yet completed |
 | Experimental validation | Not completed |
 
-The reconciled canonical audit register currently tracks 94 findings: 23 are
-resolved within their documented engineering scope and 71 remain open or
-require policy decisions.
+The completed architecture register tracks 94 findings: 92 are remediated and
+2 are accepted behavior. The later independent pass preserved 21 confirmed
+findings; exact-baseline revalidation made one non-actionable, and all remaining
+20 actionable findings are verified. Retired `MG-IA-022` also received
+defense-in-depth migration-configuration hardening during closure.
 
 “Resolved” means that a specified implementation defect was corrected and
 verified within scope. It does not mean that the affected output has been
@@ -261,7 +265,7 @@ Materials Project import.
 | [System Architecture](docs/architecture/system_architecture.md) | Implemented layers and cross-cutting architecture |
 | [Scientific Principles](docs/architecture/scientific_principles.md) | Governing scientific and evidence boundaries |
 | [Research Architecture](docs/architecture/research_architecture.md) | Researcher workflow and validation responsibilities |
-| [Roadmap](docs/architecture/roadmap.md) | Remediation, validation, and future milestones |
+| [Roadmap](docs/product/roadmap.md) | Validation, product, and future milestones |
 | [Known Issues](docs/guide/technical_notes.md) | Current limitations and tracked issues |
 | [Deployment Guide](docs/guide/DEPLOYMENT.md) | AWS EC2, Neon PostgreSQL, systemd, and Nginx deployment |
 | [Security Documentation](docs/security/README.md) | Security architecture and implementation plan |
@@ -270,17 +274,18 @@ Materials Project import.
 
 ## Roadmap Priorities
 
-1. Remediate scientific-correctness and unknown-risk findings.
-2. Correct graph, traversal, path, objective, and evidence semantics.
-3. Harden graph-job concurrency, ownership, authorization, and API contracts.
-4. Bound graph-search cost and remove query amplification.
-5. Establish literature-backed cases and independent researcher review.
-6. Add governed evidence capture and a versioned Scientific Knowledge Layer.
+1. Complete the separate Stage 1 security review and evidence-backed hardening.
+2. Harden graph-job worker ownership, lifecycle, authorization, and recovery
+   before considering public route activation.
+3. Measure repository-scale graph/search cost and address evidenced bottlenecks.
+4. Establish literature-backed cases and independent researcher review.
+5. Add governed evidence capture and a versioned Scientific Knowledge Layer.
+6. Build the researcher-facing workflow and frontend over the verified API.
 7. Introduce Go or Rust computation only where profiling justifies it.
 8. Explore ML or LLM assistance without replacing canonical deterministic
    computation.
 
-See the [roadmap](docs/architecture/roadmap.md) for status definitions and the
+See the [roadmap](docs/product/roadmap.md) for status definitions and the
 full sequence.
 
 ---
