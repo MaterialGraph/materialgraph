@@ -107,6 +107,45 @@ MaterialGraph session.
 - Graph-job routes are unmounted.
 - Nginx configuration is syntactically valid.
 - PostgreSQL terminates idle-in-transaction sessions after five minutes.
+- The local and deployed Python environments pass `pip check`.
+- A fully version-pinned dependency snapshot exists in `requirements.txt`.
+- Current application tracing found no mounted image-upload or Pillow-processing
+  path, no `request.form()` call, no trust decision based on
+  `request.url.hostname` or `request.url.netloc`, and no use of
+  `NestedSecretsSettingsSource`.
+
+## Dependency and supply-chain evidence
+
+- `pyproject.toml` declares all direct runtime dependencies without version
+  constraints.
+- The production deployment guide runs `pip install -e .`; it does not install
+  the pinned `requirements.txt` snapshot or enforce package hashes.
+- `requirements.txt` pins 93 packages but does not include distribution hashes.
+- The deployed environment is internally consistent according to `pip check`.
+- Production contained Starlette `1.2.1` while `requirements.txt` pinned
+  Starlette `1.2.0`, directly demonstrating resolution drift.
+- Independent OSV and PyPI audits of the pinned snapshot both returned a
+  nonzero vulnerability result for Pillow `12.2.0`, pydantic-settings `2.14.1`,
+  and Starlette `1.2.0`. The deployed environment contained Pillow `12.2.0`,
+  pydantic-settings `2.14.1`, and Starlette `1.2.1`.
+- The scanner output contained duplicate aliases or records. Package presence,
+  affected version ranges, applicability, and distinct advisory identity were
+  evaluated separately from the scanner headline counts.
+- Pillow is installed transitively through Matplotlib. Current MaterialGraph
+  code does not import Pillow or expose image/file-upload processing.
+- The pydantic-settings advisory affects `NestedSecretsSettingsSource` with a
+  writable or attacker-influenced secrets directory. MaterialGraph uses
+  `SettingsConfigDict` with ordinary `.env` loading and does not configure that
+  source.
+- One Starlette advisory requires application trust in reconstructed
+  `request.url` hostname or authority. MaterialGraph contains no such caller.
+- The other Starlette advisory requires `request.form()` processing of
+  `application/x-www-form-urlencoded` data. MaterialGraph contains no such
+  caller; mounted POST APIs use JSON request models.
+- No Dependabot, Renovate, dependency-review, `pip-audit`, OSV, or equivalent
+  dependency-vulnerability workflow is configured.
+- Gitleaks CI uses read-only repository permission and scans complete history,
+  but dependency vulnerability detection is outside its purpose.
 
 ## Request-cardinality evidence
 
@@ -147,6 +186,5 @@ MaterialGraph session.
 ## Evidence still required
 
 - Public health, documentation, and error-response behavior.
-- Dependency vulnerability scan and CI dependency-update policy.
 - Backup/PITR retention, recovery targets, restore runbook, and restore test.
 - Redacted production log samples for representative failures.

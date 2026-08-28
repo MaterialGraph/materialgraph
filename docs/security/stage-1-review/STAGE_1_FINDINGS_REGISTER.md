@@ -24,6 +24,7 @@
 | [`MG-SEC-007`](findings/MG-SEC-007.md) | Application database role has administrative capabilities | High | High | Neon role and application credential boundary | Open |
 | [`MG-SEC-008`](findings/MG-SEC-008.md) | Unbounded research-objective collections permit CPU amplification | High | High | Public research and objective-exploration requests | Open |
 | [`MG-SEC-009`](findings/MG-SEC-009.md) | Screening logs unbounded request collections verbatim | Medium | High | Screening service and system journal | Open |
+| [`MG-SEC-010`](findings/MG-SEC-010.md) | Production dependencies are neither reproducibly installed nor vulnerability-gated | Medium | High | Packaging, deployment, and dependency maintenance | Open |
 
 ## Review rule
 
