@@ -23,6 +23,7 @@
 | [`MG-SEC-006`](findings/MG-SEC-006.md) | Production database connection is unencrypted | High | High | EC2-to-Neon database transport | Open |
 | [`MG-SEC-007`](findings/MG-SEC-007.md) | Application database role has administrative capabilities | High | High | Neon role and application credential boundary | Open |
 | [`MG-SEC-008`](findings/MG-SEC-008.md) | Unbounded research-objective collections permit CPU amplification | High | High | Public research and objective-exploration requests | Open |
+| [`MG-SEC-009`](findings/MG-SEC-009.md) | Screening logs unbounded request collections verbatim | Medium | High | Screening service and system journal | Open |
 
 ## Review rule
 

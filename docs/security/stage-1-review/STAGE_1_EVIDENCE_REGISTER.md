@@ -129,10 +129,23 @@ MaterialGraph session.
   before this work.
 - These probes did not connect to a database or call the deployed API.
 
+## Request logging and proxy-bound evidence
+
+- `CandidateScreeningService` logs complete `scarce_elements` and
+  `avoid_elements` collections at `INFO` after screening completes.
+- MaterialGraph standard output is routed to the system journal; standard error
+  inherits the service destination.
+- Active and archived journals occupied 167.1 MB at the evidence checkpoint.
+- No project-specific journal storage or rate setting was present in effective
+  journald configuration.
+- Effective Nginx configuration defines no explicit `client_max_body_size`,
+  `client_body_buffer_size`, or `large_client_header_buffers` policy.
+- A local process-isolated Loguru probe used the accepted 10,000-entry screening
+  collections. A 157,871-byte serialized request produced a 177,850-byte log
+  entry without printing the entry or calling the deployed API.
+
 ## Evidence still required
 
-- Remaining substitution `top_n`, screening/comparison cardinality, and string
-  bound classification.
 - Public health, documentation, and error-response behavior.
 - Dependency vulnerability scan and CI dependency-update policy.
 - Backup/PITR retention, recovery targets, restore runbook, and restore test.

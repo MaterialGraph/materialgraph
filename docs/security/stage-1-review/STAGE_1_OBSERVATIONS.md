@@ -8,8 +8,6 @@ They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
 
 | Area | Observation | Evidence required |
 |---|---|---|
-| Request validation | Research-objective cardinality is promoted to `MG-SEC-008`; screening/comparison collections and several strings remain unbounded without separate material amplification evidence. | Confirm effective body-size behavior and measure only the remaining distinct paths. |
-| Substitutions | `SubstitutionRequest.top_n` lacks an explicit lower and upper bound. | Test negative and extreme positive values and trace database work. |
 | Operational exposure | Swagger, ReDoc, OpenAPI, and health endpoints are public; root health returns version and environment. | Confirm intended consumers and capture public responses and error behavior. |
 | Readiness | The service exposes liveness-style health responses but no demonstrated database readiness check. | Confirm monitoring requirements and failure behavior. |
 | Nginx disclosure | `server_tokens` is not disabled in the effective configuration. | Capture public response headers and default error pages. |
@@ -26,3 +24,13 @@ They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
 Promote an observation only after the current component, concrete threat,
 existing safeguards, and material missing safeguard are confirmed. Close or
 retain an observation explicitly when new evidence does not support a finding.
+
+## Resolved request-boundary classifications
+
+| Area | Evidence-based disposition |
+|---|---|
+| Research-objective collections | Promoted to `MG-SEC-008` after measured single-request CPU amplification. |
+| Screening request collections | Verbatim logging is promoted to `MG-SEC-009`; set construction itself did not establish a separate computation finding. |
+| Comparison request collections | Comparison evaluates exactly two materials. Collection bounds remain API hardening, but no separate security finding was confirmed. |
+| Substitution `top_n` | Negative, zero, and extreme values are accepted, but the complete finite candidate pool is evaluated before slicing. This is an API-contract defect, not a separate current resource-exhaustion finding. |
+| Subgraph and objective strings | Explicit length bounds remain desirable, but bounded downstream comparisons did not establish material resource amplification in the current prototype. |

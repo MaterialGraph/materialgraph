@@ -55,10 +55,10 @@ availability scenario.
 
 ## Current phase
 
-Eight findings are confirmed. The database evidence group is complete. Request
-validation inspection has confirmed a research-objective cardinality finding
-and remains active for the narrower substitution and string-bound observations.
-Inspection also remains active for dependency and CI supply-chain exposure,
+Nine findings are confirmed. The database and request-boundary evidence groups
+are complete. Remaining request-model gaps that did not meet the security
+finding threshold are explicitly classified in the observation register.
+Inspection remains active for dependency and CI supply-chain exposure, broader
 logging and error disclosure, and backup and restore readiness.
 
 No remediation record or implementation change is authorized by this review
