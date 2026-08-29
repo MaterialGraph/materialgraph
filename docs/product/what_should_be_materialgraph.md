@@ -155,10 +155,13 @@ continuous, inspectable research investigation.
 The intended cycle is:
 
 ``` text
-Start From a Material
+Research Need / Scientific Question
         │
         ▼
-Define a Research Objective
+Formalize the Problem and Starting Context
+        │
+        ▼
+Define an Explicit Research Objective
         │
         ▼
 Generate Ranked, Explained Candidates
@@ -611,6 +614,266 @@ The governing rule is:
 
 -------------------------------------------------------------------------------
 
+## 2.6. MaterialGraph Should Help Formalize Research Problems Without Inventing Scientific Priorities
+
+Researchers may enter MaterialGraph with a precise scientific objective, but they
+may also begin with an incompletely specified need such as reducing supply risk,
+lowering cost, preserving performance, or finding an alternative chemistry. The
+platform should be able to help translate that need into an explicit research
+objective before deterministic search begins.
+
+Problem formalization should make visible, where applicable:
+
+- the original research need or scientific question;
+- the starting material, family, application, or other scientific context;
+- assumptions introduced while translating the need into computable terms;
+- hard endpoint and path-wide constraints;
+- soft constraints and preferences;
+- preservation requirements;
+- target properties, families, applications, or scientific context;
+- treatment of missing or unknown evidence;
+- exploration bounds and exploration policy.
+
+MaterialGraph may suggest a structured interpretation, but it must not silently
+decide what the researcher values. For example, a request for a "cheaper"
+material should not silently become one particular cost proxy, and a request for
+a "safer" material should not silently become one particular risk metric. Any
+such operationalization should be inspectable, editable, attributable, and
+preserved with the investigation.
+
+A researcher who already has a well-specified objective should be able to enter it
+directly without being forced through an artificial wizard. Problem formalization
+is therefore a support boundary, not a mandatory claim that all research begins
+with an unstructured question.
+
+The governing rule is:
+
+> **Help researchers make intent explicit enough to compute, without transferring
+> ownership of scientific priorities from the researcher to the software.**
+
+## 2.7. MaterialGraph Should Separate Exploration Policy From Scientific Constraints
+
+MaterialGraph should distinguish **what is scientifically permissible for an
+investigation** from **how broadly the system should search within that permissible
+space**. Hard and soft constraints describe the research objective; exploration
+policy describes the search posture.
+
+A future explicit exploration policy may support modes such as:
+
+- **targeted / conservative** --- emphasize objective satisfaction, strong evidence,
+  and close or well-supported graph neighborhoods;
+- **balanced** --- preserve objective alignment while allowing controlled novelty
+  or broader graph exploration;
+- **exploratory** --- intentionally surface unusual pathways, sparsely explored
+  regions, or weaker direct similarity when scientifically permissible.
+
+Exploratory search must not mean unconstrained search. Hard constraints remain
+hard constraints unless the researcher explicitly changes the objective. A search
+policy may change which eligible opportunities are surfaced or prioritized; it
+must not silently redefine candidate eligibility.
+
+This separation is important for future research-gap analysis. A weakly explored
+region may be interesting because it is novel, because it appears likely to
+satisfy an objective, or because it offers a useful trade-off between the two.
+MaterialGraph should make that intent explicit rather than hiding it inside one
+opaque ranking weight.
+
+------------------------------------------------------------------------
+
+## 2.8. MaterialGraph Should Be Domain-Extensible Without Making the Core Domain-Specific
+
+MaterialGraph should be capable of supporting different materials-science domains
+and materials-dependent industries without turning the scientific-reasoning Core
+into a collection of hard-coded vertical applications.
+
+The governing architectural distinction is:
+
+> **The Core should own domain-independent scientific-reasoning semantics.
+> Domain extensions should own domain-specific scientific meaning.**
+
+The Core may therefore understand concepts that recur across scientific domains:
+
+- explicit objectives and researcher-owned priorities;
+- preferences, soft constraints, hard endpoint constraints, and hard path-wide
+  constraints;
+- missing, conflicting, inferred, and externally validated evidence states;
+- provenance, applicability, uncertainty, and evidence scope;
+- reasoning pathways versus transformation or synthesis pathways;
+- validation requirements and validation status as structured concepts;
+- deterministic graph reasoning and search-space construction;
+- conflicts created by composed objectives or contexts;
+- investigation history, versioning, and reproducible reasoning traces.
+
+The Core should not hard-code that a cathode requires a particular
+electrochemical window, that a turbine material requires a particular creep
+threshold, or that a catalyst requires a particular turnover frequency. Those
+meanings belong to validated domain-specific knowledge.
+
+### Scientific domains and cross-domain decision contexts are different extension classes
+
+MaterialGraph should distinguish a **Scientific Domain Extension** from a
+**Cross-Domain Decision Context**.
+
+A Scientific Domain Extension may define, where justified:
+
+- domain terminology and material concepts;
+- relevant properties and scientific relationships;
+- evidence requirements;
+- applicability conditions;
+- domain-specific validation criteria;
+- accepted external methods and scientific tools;
+- common research templates and warnings.
+
+Representative future scientific domains may include battery materials, alloys,
+catalysis, semiconductors, polymers, ceramics, structural materials, or other
+materials-science areas. Naming a domain here does not claim that MaterialGraph
+currently supports or has scientifically validated that domain.
+
+A Cross-Domain Decision Context may define concerns that can apply across several
+scientific domains, such as supply risk and availability, sustainability,
+economics, regulation or compliance, and organization-specific qualification.
+
+```text
+Scientific Domain
+        +
+Cross-Domain Context(s)
+        +
+Researcher Objective
+        +
+Explicit Constraints / Preferences
+        =
+Contextual MaterialGraph Investigation
+```
+
+This composition allows a cross-domain concern such as supply risk to be reused
+across multiple validated scientific domains without duplicating the underlying
+scientific extension.
+
+### Validation is a first-class contract, not merely another property
+
+Different domains establish confidence through different validation practices.
+MaterialGraph's Core should understand the **structure and state of validation**
+without deciding the scientific content of those requirements.
+
+A future validation contract may need to represent:
+
+- validation requirement identity;
+- required evidence class;
+- applicability conditions;
+- blocking or non-blocking status;
+- current satisfaction state;
+- supporting, weakening, missing, or contradictory evidence;
+- provenance, uncertainty, and review status.
+
+Domain extensions should define which validation requirements apply, what
+evidence can satisfy them, which conditions matter, and which requirements are
+blocking. The Core should track and expose those states consistently.
+
+Configurability alone does not make a validation requirement scientifically
+trustworthy. Its basis, applicability, provenance, review state, and version
+should remain inspectable.
+
+### Domain research templates are versioned scientific artifacts
+
+Domain templates can provide familiar entry points without forcing researchers
+to learn a generic constraint language. A template is not merely a UI shortcut
+when it encodes assumptions about how a scientific problem should be formalized.
+
+A future domain template should therefore be:
+
+- inspectable and editable where appropriate;
+- attributable to its source or contributors;
+- versioned;
+- explicit about default assumptions, proxies, constraints, and preferences;
+- explicit about applicability conditions and validation requirements;
+- reviewable and replaceable as scientific understanding evolves.
+
+```text
+Research Need
+        │
+        ▼
+Domain Template + Contexts
+        │
+        ▼
+Researcher Inspection / Modification
+        │
+        ▼
+Explicit Objective Specification
+        │
+        ▼
+Deterministic Reasoning Run
+```
+
+A template must never silently convert a vague objective into an undisclosed
+scientific priority. Template defaults remain proposed structure until accepted
+or modified by the researcher.
+
+### Composed objectives require conflict and applicability checks
+
+Combining a domain extension, one or more cross-domain contexts, a template, and
+researcher-defined constraints does not guarantee a coherent objective.
+
+MaterialGraph should detect and expose conflicts such as:
+
+- incompatible hard constraints;
+- a template assumption contradicting an explicit researcher requirement;
+- a context rule outside the scientific domain's applicability;
+- validation requirements that cannot simultaneously be satisfied under the
+  stated objective;
+- incompatible assumptions that materially affect eligibility.
+
+The Core may identify that the composed specification is contradictory or
+incomplete. It must not silently decide which scientific priority wins.
+
+Where resolution requires scientific judgement, the researcher should decide
+whether to revise, prioritize, relax, or retain competing requirements. The
+resolution and rationale should be preserved with the investigation.
+
+### Domain expertise should extend the platform without bypassing scientific governance
+
+The preferred long-term authoring model is layered:
+
+1. **Core primitives** — canonical constraint, evidence, provenance,
+   validation-state, graph-reasoning, and reproducibility semantics.
+2. **Declarative domain definitions** — versioned concepts, evidence
+   expectations, validation requirements, applicability rules, terminology, and
+   templates where configuration is scientifically appropriate.
+3. **Expert-authored and reviewed knowledge** — domain experts may propose,
+   review, and maintain domain rules or templates without requiring Core changes
+   for every scientifically meaningful update.
+4. **Scientific adapters** — specialized computation remains owned by appropriate
+   scientific engines and returns attributed evidence through explicit contracts.
+5. **Learned assistance, if introduced later** — ML or LLM systems may suggest
+   mappings, rules, templates, or extension changes, but those suggestions must
+   pass evidence, review, testing, and versioning before influencing trusted
+   deterministic behavior.
+
+> **Domain expertise should extend MaterialGraph without requiring domain logic
+> to be hard-coded into the Core, while no domain extension should become trusted
+> merely because it is configurable. Its scientific semantics, evidence
+> requirements, applicability, templates, and validation rules must themselves
+> be inspectable, versioned, and validated.**
+
+### Cross-industry consequence
+
+This architecture allows MaterialGraph to aim beyond one application such as
+battery-material discovery. The same reasoning infrastructure may eventually
+support discovery, substitution, comparison, prioritization, evidence
+management, and decision support across multiple scientifically validated
+domains and materials-dependent industries.
+
+That is an architectural direction, not a current market-readiness claim. A new
+domain or industrial use case should be considered supported only after its data,
+scientific semantics, validation requirements, representative workflows, and
+researcher usefulness have been established.
+
+> **Expansion into a scientifically compatible domain should primarily extend
+> domain knowledge, evidence semantics, validation requirements, and research
+> workflows rather than require reconstruction of MaterialGraph's reasoning
+> platform.**
+
+------------------------------------------------------------------------
+
 ## 3. The System Should Work as One Intelligence Pipeline
 
 The reviewed implementation shows a meaningful layered flow:
@@ -907,6 +1170,25 @@ A transition should be understood as:
 ---not as proof that the physical transformation is experimentally
 feasible.
 
+### Pathway terminology must preserve scientific meaning
+
+MaterialGraph should distinguish at least three pathway meanings rather than use
+"pathway" as an undifferentiated claim:
+
+1. **Reasoning pathway** --- an inspectable sequence of encoded graph relationships
+   explaining how an opportunity became connected to the starting context.
+2. **Transformation pathway** --- a proposed scientifically meaningful sequence of
+   transformations or transitions whose physical plausibility requires appropriate
+   evidence and validation.
+3. **Synthesis pathway** --- an experimentally supported or otherwise appropriately
+   evidenced route describing how a material may be synthesized under stated
+   conditions.
+
+A reasoning pathway must never be presented as a transformation or synthesis
+pathway merely because it is graph-connected or highly ranked. Where evidence is
+insufficient to promote one pathway type to another, that limitation should remain
+explicit.
+
 ------------------------------------------------------------------------
 
 ## 9. MaterialGraph Should Preserve Layer Ownership
@@ -1123,10 +1405,29 @@ MaterialGraph should increasingly make visible:
 -   missing evidence;
 -   assumptions;
 -   validation priorities;
--   uncertainty boundaries.
+-   uncertainty boundaries;
+-   candidate eligibility and rejection reasons;
+-   the objective, exploration policy, data/configuration versions, and ordering
+    rules that produced the result;
+-   researcher overrides, selections, and preserved rationale where applicable.
 
 A polished explanation without inspectable support is not enough for a
-research system.
+research system. MaterialGraph should move toward a **reproducible reasoning
+trace** that preserves not only the final ranked opportunities but also the major
+computational decisions through which the eligible research space was constructed.
+
+A candidate may be excluded from the eligible result set without being erased
+from the reasoning record. Where practical and scientifically meaningful, the
+trace should preserve which hard constraint excluded it and which evaluation
+state produced that decision. This makes objective changes inspectable: if a hard
+constraint later becomes soft, a researcher should be able to understand why a
+previously excluded candidate entered the ranked space.
+
+Longer term, saved investigations should be replayable against preserved or newer
+knowledge versions so that MaterialGraph can distinguish changes caused by the
+research objective from changes caused by evidence, data, configuration, rules,
+or software evolution. Replay must remain version-aware and must not imply that
+old and new evidence states are scientifically equivalent.
 
 ------------------------------------------------------------------------
 
@@ -1702,9 +2003,29 @@ Public Evidence   Private Research Context
 
 Every private contribution should preserve, where applicable, its
 provenance, ownership or access scope, research context, version,
-validation status, and relationship to canonical material identities.
-Conflicts between private and shared evidence should remain visible
-rather than being resolved by silent overwrite or precedence rules.
+validation status, and relationship to canonical material identities. In addition,
+evidence should preserve enough **epistemic context** to understand what the
+observation can legitimately support. Depending on evidence type, this may include:
+
+- contributor and originating source;
+- experimental, computational, theoretical, literature, or observational basis;
+- material, phase, structure, local-environment, or process context;
+- method, conditions, parameters, and assumptions;
+- number of observations, samples, runs, or other relevant support where meaningful;
+- uncertainty or reported confidence without converting it into a false universal
+  probability;
+- review or validation status;
+- independent corroboration where known;
+- contradictory or disagreeing evidence;
+- applicability limitations.
+
+Evidence access scope, evidence quantity, and scientific strength are separate
+dimensions. A private failed synthesis may be highly relevant to the owning
+research context while remaining insufficient to establish that the material is
+generally unsynthesizable under other procedures or conditions.
+
+Conflicts between private and shared evidence should remain visible rather than
+being resolved by silent overwrite or precedence rules.
 
 > **Private evidence should be usable within the research context that
 > owns or is authorized to access it, but it should not become canonical
@@ -2239,13 +2560,16 @@ The priority should be:
 11. seek researcher feedback;
 12. add capabilities only where demonstrated gaps exist.
 
-The current LiFePO4 → Na/phosphate objective should continue to serve as
-a reference trace while the architecture audit proceeds. Its five-way
-`94.95` tie is especially useful for checking whether downstream
-services preserve uncertainty rather than manufacturing differentiation.
+The LiFePO4 → Na/phosphate objective should continue to serve as a reference
+trace after audit closure. Its historical five-way `94.95` tie remains useful for
+checking whether downstream services preserve uncertainty rather than
+manufacturing differentiation, while newer cases should be added as the scientific
+validation program expands.
 
-The project is now mature enough that restraint, auditability, and
-remediation are part of good engineering.
+The architecture and independent implementation audits are now closed within
+their documented engineering scopes. The project is mature enough that restraint,
+auditability, security review, scientific validation, and evidence-backed evolution
+should remain part of normal engineering rather than one-time cleanup activities.
 
 ------------------------------------------------------------------------
 
@@ -2277,7 +2601,18 @@ MaterialGraph should help researchers answer:
 -   Which modeling prerequisites are missing or uncertain?
 -   What is known locally, what requires external resolution, and what
     is outside current coverage?
--   How can the reasoning be independently checked?
+-   How was the original research need translated into this objective?
+-   Which constraints were walls, which were slopes, and which assumptions were introduced?
+-   Which opportunities were excluded, and why?
+-   Is this a reasoning pathway, a proposed transformation pathway, or an evidence-supported synthesis pathway?
+-   What exploration policy shaped the search?
+-   Which scientific domain extension, cross-domain contexts, and template version
+    shaped the investigation?
+-   Which validation requirements apply, which are satisfied, and which remain
+    blocking or unresolved?
+-   Did composed constraints or assumptions conflict, and how did the researcher
+    resolve them?
+-   How can the reasoning be independently checked or replayed?
 
 MaterialGraph should not hide uncertainty behind ranking precision.
 

@@ -41,7 +41,9 @@ MaterialGraph should feel like a continuous scientific investigation workspace, 
 
 The product should help users:
 
-- begin with a known material or a scientific objective;
+- begin with a research need, known material, domain research template, or
+  already explicit scientific objective;
+- formalize an incomplete problem without hiding introduced assumptions;
 - define explicit constraints and preferences;
 - inspect ranked and explainable alternatives;
 - evaluate coverage and uncertainty;
@@ -92,6 +94,14 @@ Where domain workflows differ, the interface should support a stable common inve
 
 A researcher-facing workflow should be treated as provisional until representative researchers or case studies confirm that it reflects a real task. If researcher testing reveals that the page flow conflicts with scientifically appropriate practice, the workflow should be revised rather than expecting the researcher to adapt to the application.
 
+### 3.9 Domain-aware entry without hidden domain policy
+
+The interface should support domain-specific vocabulary and research templates without encoding domain-specific scientific assumptions as invisible frontend behavior.
+
+Where a validated domain extension or cross-domain context is active, the UI should make its identity, version, applicability, and important assumptions inspectable. Domain templates may provide familiar starting points, but researchers must be able to inspect and modify template-derived assumptions before execution.
+
+A domain template is a versioned scientific artifact when it encodes objective defaults, constraints, proxies, validation requirements, or applicability conditions. It must not be treated as an unversioned convenience preset.
+
 ---
 
 ## 3. MaterialGraph Research Cycle
@@ -99,9 +109,11 @@ A researcher-facing workflow should be treated as provisional until representati
 The user experience follows a continuous cycle:
 
 ```text
-Start from Material
+Research Need / Scientific Question
         ↓
-Define Research Objective
+Formalize Problem and Starting Context
+        ↓
+Define / Confirm Explicit Research Objective
         ↓
 Generate Explainable Candidates
         ↓
@@ -119,13 +131,23 @@ Refine Objective
         ↺
 ```
 
-### 4.1 Start from material
+### 4.1 Begin from research need or explicit context
 
-The user identifies a base material by formula, identifier, family, application, or prior investigation.
+The user may begin from a scientific question, known material, material family,
+application context, prior investigation, domain research template, or an already
+explicit objective. A precise objective should not be forced through an
+unnecessary formalization wizard.
 
-### 4.2 Define research objective
+### 4.2 Formalize problem and define research objective
 
-The user expresses hard constraints, preferences, preservation requirements, target family, stability requirements, search depth, and result limits.
+Where needed, the interface helps translate the research need into explicit hard
+constraints, soft constraints, preferences, preservation requirements, target
+context, unknown-handling policy, exploration bounds, and exploration policy.
+
+Any assumption, proxy, or default introduced by a domain template or context must
+be visible and editable before execution. If active extensions or contexts create
+an explicit conflict, the UI must surface the conflict and require researcher
+resolution rather than silently choosing a priority.
 
 ### 4.3 Generate candidates
 
@@ -522,11 +544,34 @@ Provide a trustworthy scientific identity page and entry point into an investiga
 
 #### Purpose
 
-Translate a research question into an explicit, validated objective.
+Translate research intent into an explicit executable objective while preserving
+the source of domain defaults, assumptions, and researcher modifications.
+
+#### Domain-aware entry and templates
+
+Where supported by validated backend contracts, the objective builder may offer:
+
+- Scientific Domain Extension selection or inherited domain context;
+- optional Cross-Domain Contexts;
+- domain research templates;
+- direct advanced objective entry for researchers who do not need a template.
+
+The interface must display active domain, context, and template versions where
+they materially affect the objective. Template-derived defaults must be visually
+distinguishable from researcher-entered requirements until confirmed.
+
+If composition creates incompatible hard constraints, contradictory assumptions,
+or explicit applicability conflicts, the builder must show the conflict before
+execution and preserve the researcher's resolution.
 
 #### Fields
 
-- base material;
+- research need / scientific question where present;
+- base material or starting scientific context;
+- active Scientific Domain Extension and version where applicable;
+- active Cross-Domain Contexts and versions where applicable;
+- research template and version where applicable;
+- template assumptions / proxies and researcher modifications;
 - avoid elements;
 - prefer elements;
 - preserve elements;
@@ -1093,8 +1138,8 @@ Do not record private objective contents, notes, unpublished material details, o
 
 ### Phase 2 — Core investigation cycle
 
-**Screens:** Objective builder, candidate results, evidence panel.  
-**Goal:** Complete the canonical LiFePO4 sodium/phosphate investigation with tied ranking and coverage preserved.
+**Screens:** Research entry / problem formalization, objective builder, candidate results, evidence panel.  
+**Goal:** Complete the canonical LiFePO4 sodium/phosphate investigation with tied ranking and coverage preserved, while ensuring any formalization assumptions remain explicit and bypassable for a precise objective.
 
 ### Phase 3 — Comparative and multi-hop exploration
 
@@ -1118,6 +1163,9 @@ Do not record private objective contents, notes, unpublished material details, o
 The frontend architecture is implementation-ready when:
 
 - every primary workflow maps to the Research Cycle;
+- problem-formalization assumptions are inspectable and editable;
+- active domain/context/template versions are visible where they affect reasoning;
+- explicit composition conflicts are surfaced rather than silently resolved;
 - every backend status maps to an explicit UI state;
 - tied ranks remain tied;
 - every score has coverage context;
@@ -1167,7 +1215,10 @@ The frontend architecture is implementation-ready when:
 6. Frontend state management beyond server-state caching.
 7. Design token and branding direction.
 8. Dataset and methodology version comparison UX.
-9. Backend standardization of partial computation contracts.
+9. Domain/context/template selection and version-comparison UX after backend
+   extension contracts are validated.
+10. Conflict-resolution UX for composed objectives.
+11. Backend standardization of partial computation contracts.
 
 ---
 
@@ -1176,7 +1227,7 @@ The frontend architecture is implementation-ready when:
 - notebook-style investigations;
 - publication-ready report generation;
 - institutional review workflows;
-- plugin architecture;
+- general third-party plugin marketplace or unrestricted plugin architecture;
 - literature summarization;
 - LLM-assisted note organization;
 - simulation integration;

@@ -215,10 +215,141 @@ validation gaps.
 Implementation, testing, audit remediation, researcher review, computational
 validation, and experimental validation are different states.
 
-MaterialGraph is currently engineering-tested and undergoing audit remediation.
-It has not yet been independently scientifically validated by materials
-researchers, DFT cross-validation, or experiment.
+MaterialGraph is currently engineering-tested. The architecture and implementation
+audits have been closed within their documented engineering scopes, while the
+separate Stage 1 security review remains in progress. MaterialGraph has not yet
+been independently scientifically validated by materials researchers, DFT
+cross-validation, or experiment.
 
 Resolving an implementation finding means that the specified defect was
 corrected and verified within its documented engineering scope. It does not
 scientifically validate the affected output.
+
+---
+
+## 15. Problem Formalization Must Preserve Researcher Intent
+
+MaterialGraph may help translate an incompletely specified research need into an
+explicit objective, but it must not silently choose the researcher's scientific
+priorities. Assumptions, proxies, inferred constraints, and suggested preferences
+introduced during formalization must be visible, editable, attributable, and
+preserved with the investigation.
+
+A researcher with a precise objective must be able to supply it directly.
+
+---
+
+## 16. Evidence Must Preserve Epistemic Context
+
+Evidence provenance is necessary but not sufficient. Where applicable, an evidence
+record should preserve enough context to understand what the evidence can
+legitimately support, including source or contributor, evidence basis, method,
+material/structure/local context, conditions, parameters, sample or run count where
+meaningful, uncertainty, review status, corroboration, contradiction, and
+applicability limitations.
+
+Access scope, evidence quantity, and scientific strength are separate dimensions.
+A private observation or single failed synthesis may be decision-relevant without
+establishing a universal scientific conclusion. Conflicting evidence should remain
+inspectable unless an explicit reviewed process justifies a stronger synthesis.
+
+---
+
+## 17. Pathway Semantics Must Be Typed
+
+MaterialGraph must distinguish:
+
+- **reasoning pathways**, which explain graph-based computational connection;
+- **transformation pathways**, which propose scientifically meaningful physical
+  transformations requiring appropriate evidence and validation;
+- **synthesis pathways**, which are supported by appropriate experimental or other
+  scientific evidence under stated conditions.
+
+Graph reachability, path score, or multi-hop plausibility does not by itself
+promote a reasoning pathway into a transformation or synthesis pathway.
+
+---
+
+## 18. Exclusion Must Not Erase Reasoning
+
+Hard constraints may remove a candidate from the eligible result set, but the
+system should preserve the reason for exclusion where practical and relevant to
+reproducibility. Negative reasoning is part of scientific explanation.
+
+A saved investigation should therefore be able to distinguish "not generated",
+"generated but ineligible", "eligible but ranked lower", and "unknown because
+required evidence was unavailable" where the implementation can support those
+states unambiguously.
+
+---
+
+## 19. Exploration Policy Must Be Explicit and Reproducible
+
+Scientific constraints define the permissible research space. Exploration policy
+defines how MaterialGraph searches within that space. A targeted, balanced, or
+exploratory posture may legitimately alter prioritization or which eligible regions
+are surfaced, but it must not silently weaken hard constraints.
+
+The exploration policy and its parameters must be inspectable and preserved with
+the investigation whenever they materially affect results.
+
+---
+
+## 20. Research-Facing Results Should Support a Reproducible Reasoning Trace
+
+Where applicable, a saved investigation should retain enough information to
+reconstruct the major computational decisions that produced a result: objective,
+constraints, exploration policy, source/evidence versions, configuration, rules,
+software version, eligibility decisions, score decomposition, pathway reasoning,
+and researcher overrides or rationale.
+
+Replay against a different knowledge or software state must identify the versions
+involved and should distinguish changes caused by the research objective from
+changes caused by data, evidence, configuration, rules, or implementation.
+
+---
+
+## 21. Core Scientific-Reasoning Semantics and Domain-Specific Meaning Must Remain Separate
+
+MaterialGraph's Core should own scientific-reasoning semantics reusable across
+domains: objective and constraint classes, evidence and epistemic states,
+provenance, uncertainty, pathway semantics, validation-state structure,
+deterministic reasoning, conflict detection, and reproducibility.
+
+Domain extensions should own domain-specific scientific meaning, including
+properties, terminology, applicability conditions, evidence requirements,
+validation criteria, and domain research templates.
+
+The Core must not silently hard-code one domain's scientific priorities as
+universal MaterialGraph semantics.
+
+---
+
+## 22. Configurability Does Not Establish Scientific Authority
+
+A domain rule, validation requirement, evidence mapping, or research template
+does not become scientifically trustworthy merely because MaterialGraph can
+represent or execute it.
+
+Domain extensions and templates should be attributable, inspectable, versioned,
+reviewable, testable, and validated for their intended scope. Learned or
+AI-generated proposals must pass an explicit evidence and review process before
+they can influence trusted deterministic behavior.
+
+---
+
+## 23. Composed Scientific Context Must Expose Conflicts
+
+An investigation may combine a scientific domain extension, cross-domain decision
+contexts, a research template, and researcher-defined objectives or constraints.
+Composition must not silently resolve contradictions among those sources.
+
+Where explicit semantics reveal incompatible hard constraints, contradictory
+assumptions, applicability conflicts, or incompatible validation requirements,
+MaterialGraph should detect and explain the conflict before relying on the
+composed objective.
+
+The Core may identify the inconsistency. Scientific-priority resolution remains
+with the researcher, and the resolution should be preserved with the
+investigation where it materially affects results.
+

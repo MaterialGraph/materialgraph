@@ -1907,7 +1907,101 @@ The promoted principle is:
 
 ------------------------------------------------------------------------
 
-# 14. Cross-Project Lessons
+# 14. Evidence Intelligence: Independent Information, Redundancy, and Decision Value
+
+## Source
+
+Robert Vrabel --- *Determinant Dynamics under Low-Rank Perturbations: A Unified Framework for Singular Systems* (2026), encountered through a LinkedIn discussion emphasizing the geometric interpretation that new independent directions can expand a represented volume while redundant directions do not.
+
+This entry records the broader evidence-intelligence question prompted by that idea. It does **not** adopt determinant dynamics, pseudodeterminants, or the paper's matrix formalism as a MaterialGraph evidence method.
+
+## Why We Examined It
+
+MaterialGraph already treats evidence as more than a collection of supporting records. Existing directions distinguish provenance, missing evidence, contradiction, comparability, objective relevance, validation priority, and scientific validation state.
+
+The post raises a useful additional question:
+
+> **When new evidence is added to an investigation, what scientifically relevant information does it actually contribute?**
+
+Several records may appear to provide substantial support while ultimately depending on the same underlying dataset, experiment, computational method, database record, or derived source. Conversely, one independent measurement or method may materially change the evidence state even though it adds only one additional record.
+
+This suggests that evidence quantity and evidence contribution should remain distinct concepts.
+
+## Relevant Observations
+
+### Evidence Collection and Evidence Processing Are Different Responsibilities
+
+A mature evidence workflow may need to distinguish evidence acquisition, identity/scope, provenance, quality/applicability, comparability, independence/redundancy, agreement/contradiction, coverage, objective relevance, decision sensitivity, potential information value, and validation priority.
+
+These dimensions need not become a single linear implementation pipeline. The important point is that "we have more evidence" is not equivalent to "we have proportionally more independent scientific information."
+
+### Evidence Quantity Is Not Evidence Diversity
+
+MaterialGraph should eventually be able to distinguish, where scientific semantics and provenance permit it, multiple records reporting the same underlying result; independent measurements of the same claim; different computational methods addressing the same property; evidence obtained under materially different conditions; corroborating or contradictory evidence; evidence that is not scientifically comparable; and evidence whose dependency or provenance is unknown.
+
+Five records should not automatically be interpreted as five independent confirmations.
+
+At the same time, related or repeated evidence is not necessarily useless. Replication, corroboration, methodological agreement, reinterpretation, and broader condition coverage can each have scientific value. MaterialGraph should therefore avoid both naive evidence counting and naive deduplication.
+
+### Evidence Relationships May Be First-Class Scientific Context
+
+A future evidence model may need relationships such as `derived_from`, `corroborates`, `contradicts`, `independently_supports`, `shares_underlying_source_with`, `shares_method_with`, `validates_under_different_conditions`, `not_comparable_with`, and `dependency_unknown`.
+
+These are conceptual examples, not a proposed schema or controlled vocabulary.
+
+The broader architectural insight is that evidence may itself form a graph of claims, sources, methods, dependencies, conditions, and validation relationships rather than exist only as flat attachments to a material or candidate.
+
+### Evidence Strength Should Not Be Collapsed Prematurely Into One Score
+
+A researcher may benefit more from an inspectable evidence profile than from a single aggregate number. Relevant dimensions could include evidence coverage, source diversity, independent support, method agreement, structural evidence, experimental evidence, objective relevance, and decision sensitivity.
+
+MaterialGraph should be cautious about collapsing coverage, diversity, independence, quality, agreement, applicability, and objective relevance into a universal "evidence score." If aggregate measures are eventually introduced, their components and limitations should remain inspectable.
+
+### Information Contribution May Matter to Validation Priority
+
+This observation extends the existing Validation Priority Intelligence direction.
+
+VPI currently asks which unresolved question matters most to the research decision. A later evidence-intelligence question may be:
+
+> **Among scientifically appropriate validation options, which one is likely to contribute the most decision-relevant and sufficiently independent information?**
+
+Possible considerations include objective relevance, independence/redundancy, uncertainty reduction, decision sensitivity, and applicability/readiness.
+
+This does not mean that MaterialGraph should automatically optimize experiments or calculate a universal information-gain value. It means that the **incremental scientific contribution of evidence** may eventually be relevant when explaining why one validation need deserves attention before another.
+
+## Relationship to Existing Architecture
+
+This observation extends Evidence Intelligence, evidence provenance and coverage, unknown and contradiction handling, computational evidence comparability, Research Objectives, scenario and sensitivity semantics, Validation Priority Intelligence, Validation Route Selection, Scientific Task / Result contracts, investigation history, and researcher authority over validation and decisions.
+
+It also reinforces a broader MaterialGraph principle:
+
+> **Evidence should be processed according to its scientific meaning and contribution to the investigation, not merely accumulated and counted.**
+
+## What MaterialGraph Should Not Infer From It
+
+This observation does **not** currently justify using determinants or pseudodeterminants to score scientific evidence; assuming evidence can be represented meaningfully as independent numerical vectors; implementing a universal information-gain formula; assigning independence automatically from source count; treating different methods as automatically independent; discarding repeated or correlated evidence as scientifically worthless; creating a universal evidence-strength score; autonomously selecting experiments; or changing current candidate ranking solely because this concept is attractive.
+
+Any quantitative treatment of evidence dependence, novelty, information gain, or expected validation value would require explicit scientific semantics, appropriate representations, calibration, representative researcher workflows, and domain-expert validation.
+
+## Current Decision
+
+**HIGH-VALUE EVIDENCE-INTELLIGENCE INSIGHT --- EXPLORATORY / NO IMPLEMENTATION COMMITMENT**
+
+The durable principle to retain is:
+
+> **MaterialGraph should eventually distinguish evidence quantity from evidence diversity, independence, comparability, corroboration, contradiction, coverage, objective relevance, and decision value. Additional evidence is valuable not merely because it increases the number of supporting records, but because of what scientifically relevant information it contributes to the investigation.**
+
+The determinant-based mathematics that prompted this observation is **not** promoted into MaterialGraph architecture.
+
+## Promotion / Implementation Criteria
+
+Consider further canonical promotion or implementation only when representative researcher workflows show that correlated, duplicated, or dependent evidence materially affects decisions; evidence identity and provenance are sufficiently structured to reason about dependency honestly; comparability and independence semantics can be defined for specific evidence classes; unknown dependency can remain explicitly unknown; corroboration and replication can be preserved without being mistaken for independent evidence; any quantitative measure has a scientifically defensible interpretation rather than manufactured precision; VPI can use evidence contribution without confusing expected information value with scientific validity; domain experts can evaluate representative evidence profiles and validation-priority explanations; and researcher authority remains explicit.
+
+No implementation milestone is created by this observation.
+
+------------------------------------------------------------------------
+
+# 15. Cross-Project Lessons
 
 ## Public Scientific Data Is a Foundation, Not the Entire Research Context
 
@@ -2031,6 +2125,14 @@ synthesis and processing context, evidence provenance, and expert
 interpretation. MaterialGraph should compose these sources without
 treating any single one as automatic scientific truth.
 
+## Evidence Quantity and Evidence Contribution Are Different
+
+More evidence records do not necessarily mean proportionally more independent
+scientific information. MaterialGraph should eventually preserve evidence
+dependencies, redundancy, corroboration, contradiction, comparability,
+coverage, and objective relevance where those relationships can be established
+honestly.
+
 ## Researcher Authority Remains Central
 
 Even as scientific systems become more automated, researchers should
@@ -2039,7 +2141,7 @@ decisions.
 
 ------------------------------------------------------------------------
 
-# 15. Ideas Deliberately Not Promoted
+# 16. Ideas Deliberately Not Promoted
 
 The following ideas have been encountered but currently do not
 constitute MaterialGraph requirements:
@@ -2059,7 +2161,7 @@ not sufficient justification for implementation.
 
 ------------------------------------------------------------------------
 
-# 16. Future Exploration Questions
+# 17. Future Exploration Questions
 
 For each external project or idea, ask:
 
@@ -2088,3 +2190,8 @@ deliberately**.
     evaluation principles are appropriate for measuring MaterialGraph's
     scientific and researcher usefulness without confusing benchmark
     performance with scientific validity?
+
+-   How should MaterialGraph represent evidence dependence, redundancy,
+    corroboration, and independent information contribution without inventing
+    unjustified quantitative precision, and when should those distinctions
+    influence validation priority?

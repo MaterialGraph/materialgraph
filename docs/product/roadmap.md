@@ -72,44 +72,37 @@ independently scientifically validated.
 
 ---
 
-## Current Priority — Audit Remediation and Production Integrity
+## Current Engineering Baseline — Audit Closure and Production Integrity
 
-The original architecture audit and independent post-remediation audit have
-been reconciled into one canonical register.
+The canonical architecture and implementation audit (`MG-AUD-*`) is complete
+within its documented engineering scope:
 
-At the time of this roadmap update:
+- 94 canonical findings were tracked;
+- 92 were remediated;
+- 2 were recorded as accepted behavior;
+- 0 remain open in that audit.
 
-- 94 distinct canonical findings are tracked;
-- 23 are resolved within their documented engineering scope;
-- 71 remain open or require policy decisions.
+The later independent implementation audit (`MG-IA-*`) is also closed: all 20
+actionable findings were verified, with 1 post-freeze invalidation recorded.
 
-Current remediation priorities are:
+These closures do not establish scientific validity. The separate Stage 1
+security review (`MG-SEC-*`) remains in progress, and scientific/researcher
+validation remains incomplete.
 
-1. scientific-scoring and abundance-direction correctness;
-2. unknown-risk propagation and non-favourable uncertainty handling;
-3. scenario and sensitivity semantics;
-4. graph, traversal, and path integrity;
-5. strict objective and endpoint-family enforcement;
-6. evidence-readiness and explanation accuracy;
-7. graph-job concurrency, ownership, and authorization;
-8. bounded K-best search and query-performance work.
+Current engineering priorities are therefore:
+
+1. complete the separate security review and evidence-backed hardening;
+2. preserve regression coverage and deterministic semantics after audit closure;
+3. harden graph-job worker ownership, lifecycle, authorization, and recovery
+   before public route activation;
+4. measure representative repository-scale graph and search workloads;
+5. preserve dataset, configuration, rule, evidence, and software-version
+   provenance;
+6. maintain documented known limitations and real-response verification as the
+   system evolves.
 
 Resolution means engineering correction and scoped verification. It does not
-mean researcher or experimental validation.
-
----
-
-## Next Milestone — Engineering Validation Baseline
-
-- remediate or explicitly decide all P0/P1 findings;
-- expand focused and full regression coverage;
-- verify graph closure, depth, and canonical transition semantics;
-- unify constraint, tie, composition, and evidence interpretations;
-- enforce API input bounds and response contracts;
-- harden graph-job state transitions and ownership;
-- define dataset, configuration, and software-version provenance;
-- benchmark representative graph workloads;
-- publish documented known limitations.
+mean researcher, computational, or experimental validation.
 
 ---
 
@@ -122,19 +115,22 @@ feature views.
 
 The workspace should allow a researcher to:
 
-1. start from a material;
-2. define a research objective;
-3. receive ranked, explained candidates;
-4. inspect evidence, assumptions, warnings, and missing information;
-5. explore relationships and pathways;
-6. compare alternatives without manufacturing false certainty;
-7. save the investigation and its reproducibility context;
-8. share or collaborate with appropriate access controls;
-9. refine the objective and continue the investigation.
+1. begin from a research need, scientific question, material, or explicit
+   objective;
+2. formalize the problem and starting context where needed;
+3. define or confirm an explicit research objective;
+4. receive ranked, explained candidates;
+5. inspect evidence, assumptions, warnings, and missing information;
+6. explore relationships and pathways;
+7. compare alternatives without manufacturing false certainty;
+8. save the investigation and its reproducibility context;
+9. share or collaborate with appropriate access controls;
+10. refine the objective and continue the investigation.
 
 Initial delivery priorities:
 
-- material search and identity-aware selection;
+- research-need and material entry with identity-aware selection;
+- problem-formalization support that exposes introduced assumptions;
 - objective editor with explicit preference and constraint semantics;
 - candidate and explanation workspace;
 - evidence and validation-gap inspection;
@@ -222,6 +218,55 @@ computational, structural, experimental, and researcher validation.
 
 ---
 
+## Domain Extension Architecture Validation Milestone
+
+MaterialGraph should validate the Core/extension boundary before treating
+domain-extensibility as a stable platform capability.
+
+The objective is not to build many vertical products immediately. It is to test
+whether common scientific-reasoning semantics can remain stable while
+domain-specific scientific meaning is supplied through explicit, governed
+extensions.
+
+Required work:
+
+1. study representative workflows from at least two scientifically distinct
+   materials domains;
+2. identify which objective, evidence, provenance, pathway, validation, and
+   reproducibility semantics genuinely remain common;
+3. identify which properties, terminology, applicability rules, evidence
+   requirements, validation criteria, and external methods are domain-specific;
+4. distinguish Scientific Domain Extensions from cross-domain decision contexts
+   such as supply risk, sustainability, economics, or regulation;
+5. define a conservative validation-requirement contract in which the Core tracks
+   validation state while domain extensions define scientific requirements;
+6. define versioned, inspectable research-template semantics and preserve
+   template-derived assumptions in the investigation;
+7. define conflict and applicability checks for composed domains, contexts,
+   templates, and researcher constraints;
+8. prototype one narrowly scoped reference extension without hard-coding its
+   scientific meaning into the Core;
+9. test whether domain experts can review or maintain appropriate extension
+   content without weakening governance;
+10. validate extension behavior with representative case studies and researcher
+    review before stabilizing an extension API or schema.
+
+Exit criteria should include:
+
+- no domain-specific scientific threshold is required in the shared Core merely
+  to support the reference extension;
+- extension and template versions are attributable and reproducible;
+- validation requirements remain domain-owned but Core-visible;
+- explicit composition conflicts are surfaced rather than silently resolved;
+- extension configuration is treated as untrusted until reviewed and validated;
+- adding a second representative domain does not require reconstruction of the
+  reasoning architecture.
+
+This milestone establishes an architectural boundary, not scientific validation
+of every possible domain or industry.
+
+---
+
 ## Conditional Scientific Compute Integration Milestone
 
 External scientific computation should be introduced only where a validated
@@ -301,6 +346,9 @@ technically possible.
 ## Research Workflow and Knowledge Milestones
 
 - Research Workflow Compatibility and Validation;
+- Domain Extension Architecture Validation;
+- versioned Scientific Domain Extensions and Cross-Domain Decision Contexts where validated;
+- inspectable domain research templates with explicit assumptions and applicability;
 - Research Validation Planning;
 - Research Gap Analysis;
 - Hypothesis Exploration;

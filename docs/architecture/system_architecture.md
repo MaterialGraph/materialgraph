@@ -27,7 +27,8 @@ flowchart TD
 ### Research Experience Architecture
 
 The intelligence layers should be exposed through the **MaterialGraph Research
-Cycle**: start from a material, define an objective, generate explained
+Cycle**: begin from a research need or scientific question, formalize the problem
+and starting context where needed, define an explicit objective, generate explained
 candidates, inspect evidence, explore pathways, compare alternatives, save and
 share the investigation, and refine the objective.
 
@@ -39,13 +40,103 @@ semantics in the frontend or workspace layer.
 
 ```mermaid
 flowchart LR
-    A["Material and objective"] --> B["Canonical intelligence services"]
-    B --> C["Explainable research workspace"]
-    C --> D["Saved investigation context"]
-    D --> E["Collaboration and review"]
-    E --> F["Refined objective"]
-    F --> B
+    A["Research need / material context"] --> B["Problem formalization + explicit objective"]
+    B --> C["Canonical intelligence services"]
+    C --> D["Explainable research workspace"]
+    D --> E["Saved investigation + reasoning trace"]
+    E --> F["Collaboration and review"]
+    F --> G["Refined objective"]
+    G --> C
 ```
+
+### Planned Problem Formalization and Objective Context Boundary
+
+The research-experience layer may help convert an incompletely specified research
+need into an explicit objective, but this support must remain separate from
+canonical scientific computation. It should preserve the original request, any
+introduced assumptions or proxies, the resulting hard/soft constraints and
+preferences, unknown-handling policy, exploration bounds, and exploration policy.
+
+Suggested objective structure must be inspectable and editable by the researcher.
+The frontend or future planner must call canonical constraint and objective
+semantics rather than inventing parallel interpretations.
+
+### Planned Domain Extension and Context Composition Boundary
+
+MaterialGraph should evolve toward a domain-extensible architecture in which the
+Core owns reusable scientific-reasoning semantics while extensions provide
+domain-specific scientific meaning.
+
+```mermaid
+flowchart TD
+    A["MaterialGraph Scientific Reasoning Core"] --> E["Extension / composition boundary"]
+    B["Scientific Domain Extension"] --> E
+    C["Cross-Domain Context(s)"] --> E
+    D["Versioned Research Template + researcher input"] --> E
+    E --> F["Conflict / applicability validation"]
+    F --> G["Explicit objective + validation context"]
+    G --> H["Canonical intelligence services"]
+    H --> I["Reasoning trace + researcher review"]
+```
+
+The Core should remain responsible for canonical objective and constraint
+semantics, evidence and epistemic states, provenance and applicability,
+validation-state representation, pathway semantics, deterministic graph
+reasoning, conflict detection, and reproducible investigation state.
+
+Scientific Domain Extensions should define domain-specific properties,
+terminology, evidence expectations, applicability conditions, validation
+requirements, external scientific methods, and research templates.
+
+Cross-Domain Contexts may contribute concerns such as supply risk,
+sustainability, economics, regulation, or organization-specific qualification
+where those concerns legitimately apply across several scientific domains.
+
+The extension boundary is planned, not implemented. No named domain should be
+presented as supported until representative workflows, scientific semantics,
+evidence requirements, validation criteria, and researcher usefulness have been
+established.
+
+#### Validation requirement contract
+
+The Core should represent validation requirements and states without deciding
+their domain-specific scientific content. A future contract may include
+requirement identity, evidence class, applicability, blocking/non-blocking state,
+satisfaction state, supporting or contradictory evidence, provenance,
+uncertainty, and review status.
+
+The active domain extension owns the definition of which requirements apply and
+what evidence can legitimately satisfy them.
+
+#### Versioned research templates
+
+Research templates should be treated as versioned domain artifacts when they
+encode objective defaults, assumptions, proxies, constraints, preferences,
+applicability, or validation requirements. Template identity and version should
+be preserved in the investigation, and researchers must be able to inspect or
+modify template-derived assumptions before execution.
+
+#### Conflict and applicability validation
+
+Composition must not imply automatic consistency. Canonical logic should detect
+contradictions expressible from available semantics, such as incompatible hard
+constraints or explicit applicability conflicts, before a composed objective is
+executed.
+
+The system may block execution or require researcher resolution when a conflict
+makes the objective incoherent. It must not silently select one scientific
+priority over another.
+
+#### Extension governance
+
+Scientifically meaningful extension content should be attributable, versioned,
+reviewable, testable, and replaceable. Declarative configuration is preferred
+where it reduces unnecessary Core coupling, but configuration validity is not a
+substitute for scientific validation.
+
+Future learned or AI-assisted extension proposals should enter as untrusted
+proposals and pass through evidence, expert review, testing, and versioning
+before influencing canonical deterministic behavior.
 
 ### Graph Foundation
 
@@ -123,6 +214,12 @@ objective?
 Internal support, data completeness, external evidence coverage, validation
 readiness, and scientific-validation status must remain separate concepts.
 
+Pathway outputs should also carry an explicit semantic type where the product
+exposes different scientific meanings: reasoning pathway, proposed transformation
+pathway, or evidence-supported synthesis pathway. Current graph/path analysis must
+not be promoted to a physical transformation or synthesis claim without the
+required evidence.
+
 ### Scientific Knowledge Layer
 
 **Planned purpose**
@@ -134,6 +231,9 @@ readiness, and scientific-validation status must remain separate concepts.
   explicitly scoped research evidence;
 - preserve contributor, source, access-scope, review, disagreement, and version
   provenance;
+- preserve epistemic context such as evidence basis, method, scientific conditions,
+  relevant material/structure/local context, sample or run count where meaningful,
+  uncertainty, corroboration, contradiction, and applicability limitations;
 - support review, disagreement, and versioned knowledge enrichment.
 
 Evidence scope and canonical scientific status are separate dimensions. Private
@@ -181,6 +281,25 @@ External results enter MaterialGraph as attributed computational evidence.
 Execution success or numerical convergence must not automatically be interpreted
 as physical validity or experimental agreement.
 
+### Planned Investigation and Reasoning Trace
+
+Saved research state should eventually preserve a version-aware reasoning trace in
+addition to user-facing notes and result snapshots. Depending on the workflow, the
+trace may include:
+
+- original research need and problem-formalization assumptions;
+- explicit objective, constraints, unknown policy, and exploration policy;
+- candidate eligibility and hard-constraint rejection reasons;
+- graph traversal and reasoning-pathway decisions;
+- score decomposition, evidence state, warnings, and trade-offs;
+- source-data, configuration, rule, evidence, and software versions;
+- researcher overrides, annotations, decisions, and later validation outcomes.
+
+The trace should distinguish an excluded candidate from one that was never
+generated, and should preserve enough version context to support future replay or
+change analysis. A replay mechanism must report version differences rather than
+pretend that results from different evidence states are directly equivalent.
+
 ### Future Research Orchestration Boundary
 
 The Research Experience Architecture may later coordinate deterministic
@@ -213,7 +332,13 @@ judgement.
 | Concern | Architectural requirement |
 |---|---|
 | Provenance | Trace outputs to source data, rules, configuration, and software version |
-| Validation status | Separate engineering verification from researcher, computational, and experimental validation |
+| Reasoning trace | Preserve objective context, eligibility/rejection decisions, pathway reasoning, and researcher rationale where applicable |
+| Epistemic evidence context | Keep source, conditions, method, scope, corroboration, contradiction, uncertainty, and applicability distinct from mere evidence presence |
+| Exploration policy | Keep search posture explicit and separate from hard/soft scientific constraints |
+| Domain extension ownership | Keep domain-independent reasoning semantics in the Core and domain-specific scientific meaning in reviewed extensions |
+| Context composition | Distinguish Scientific Domain Extensions from cross-domain decision contexts and preserve active versions in the investigation |
+| Conflict detection | Detect explicit contradictions or applicability conflicts before composed objectives drive deterministic reasoning |
+| Validation status | Separate engineering verification from researcher, computational, and experimental validation; let extensions define domain requirements while the Core preserves validation semantics |
 | Uncertainty | Preserve unknown values; never treat missing evidence as favourable |
 | Canonical semantics | Reuse one implementation for composition, scoring, constraints, evidence, and ties |
 | API contracts | Validate inputs consistently and expose explicit response schemas |
@@ -314,13 +439,14 @@ scientific validity.
 
 ## Current Engineering Status
 
-The listed intelligence services are implemented, but the project is undergoing
-reconciled architecture and implementation audit remediation.
+The listed intelligence services are implemented. The canonical architecture and
+implementation audit (`MG-AUD-*`) is complete: 92 findings were remediated and 2
+were recorded as accepted behavior, with 0 open. The later independent
+implementation audit (`MG-IA-*`) is closed with all 20 actionable findings
+verified and 1 post-freeze invalidation recorded. The separate Stage 1 security
+review (`MG-SEC-*`) remains in progress.
 
-The canonical audit register contains 94 findings: 23 resolved within their
-documented engineering scope and 71 requiring remediation or a policy decision
-at the time of this architecture update.
-
+These closures establish engineering status only within their documented scopes.
 MaterialGraph has not yet completed independent materials-researcher review,
 literature-backed case studies, DFT cross-validation, or experimental
 validation.
@@ -329,8 +455,11 @@ validation.
 
 ## Planned Architecture
 
-- Research Gap Analysis and Hypothesis Exploration;
-- versioned Scientific Knowledge Layer with explicit evidence scope and canonicalization governance;
+- Problem Formalization and explicit Objective Context, including inspectable assumptions and exploration policy;
+- validated Domain Extension and Cross-Domain Context contracts, including versioned research templates, validation-requirement semantics, and conflict/applicability checks;
+- Research Gap Analysis and Hypothesis Exploration with an explicit targeted/balanced/exploratory search posture;
+- versioned Scientific Knowledge Layer with explicit evidence scope, epistemic context, and canonicalization governance;
+- version-aware Investigation / Reasoning Trace with preserved eligibility and rejection decisions;
 - Physical Modeling Readiness and adapter-oriented external scientific compute integration;
 - future research orchestration that composes canonical reasoning, evidence, and scientific compute without duplicating their semantics;
 - optional workload-validated document storage for research sessions,

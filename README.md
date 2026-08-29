@@ -46,20 +46,28 @@ researcher should be able to move through one continuous investigation:
 
 ```mermaid
 flowchart TD
-    A["Start from a material"] --> B["Define a research objective"]
-    B --> C["Generate ranked, explained candidates"]
-    C --> D["Inspect evidence, assumptions, and gaps"]
-    D --> E["Explore relationships and pathways"]
-    E --> F["Compare alternatives"]
-    F --> G["Save the investigation"]
-    G --> H["Share and collaborate"]
-    H --> I["Refine the objective"]
-    I --> C
+    A["Research need / scientific question"] --> B["Formalize problem and starting context"]
+    B --> C["Define explicit research objective"]
+    C --> D["Generate ranked, explained candidates"]
+    D --> E["Inspect evidence, assumptions, and gaps"]
+    E --> F["Explore relationships and pathways"]
+    F --> G["Compare alternatives"]
+    G --> H["Save the investigation"]
+    H --> I["Share and collaborate"]
+    I --> J["Refine the objective"]
+    J --> D
 ```
 
 The cycle is iterative because scientific exploration rarely ends with one
 ranking or comparison. Each result should help the researcher refine the
 question, inspect another possibility, or identify the next validation step.
+Problem formalization is a planned research-assistance capability: when the
+researcher already has a precise objective, it should be possible to enter that
+objective directly.
+
+Longer term, MaterialGraph is intended to preserve not only research outputs but
+the objective, assumptions, evidence state, reasoning, exclusions, and researcher
+decisions through which those outputs were reached.
 
 ---
 
@@ -146,7 +154,9 @@ data and rules. They are not probabilities of scientific correctness.
 The platform should separately expose internal rule support, data completeness,
 external evidence coverage, validation readiness, and scientific-validation
 status. A pathway can have strong internal support while having no external
-validation evidence.
+validation evidence. Graph/path outputs should be interpreted as **reasoning
+pathways or pathway hypotheses** unless appropriate evidence explicitly supports a
+physical transformation or synthesis pathway.
 
 Objectives distinguish preferences, soft constraints, hard endpoint
 constraints, and hard path-wide constraints. Unknown evidence cannot be assumed
@@ -167,9 +177,21 @@ flowchart TD
 ```
 
 The planned Scientific Knowledge Layer will preserve attributed literature,
-observations, simulations, experiments, review status, and disagreement.
-Evidence will not silently alter canonical computation; reviewed evidence may
-enter later, explicitly versioned datasets or policies.
+observations, simulations, experiments, review status, disagreement, and the
+scientific context needed to interpret evidence appropriately. Evidence will not
+silently alter canonical computation; reviewed evidence may enter later, explicitly
+versioned datasets or policies. Planned investigation persistence should also
+preserve enough versioned objective and reasoning context to make important
+eligibility, rejection, and ranking decisions inspectable.
+
+MaterialGraph is also being architected toward a **domain-extensible** model. The
+shared Core should preserve domain-independent scientific-reasoning semantics such
+as constraints, evidence states, provenance, validation awareness, deterministic
+graph reasoning, and reproducibility, while future validated domain extensions
+provide domain-specific scientific meaning. Cross-domain decision contexts such
+as supply risk or sustainability may eventually be composed with those domains.
+This is a planned architecture boundary, not a claim that multiple industry
+verticals are currently implemented or scientifically validated.
 
 ---
 
@@ -279,10 +301,12 @@ Materials Project import.
    before considering public route activation.
 3. Measure repository-scale graph/search cost and address evidenced bottlenecks.
 4. Establish literature-backed cases and independent researcher review.
-5. Add governed evidence capture and a versioned Scientific Knowledge Layer.
-6. Build the researcher-facing workflow and frontend over the verified API.
-7. Introduce Go or Rust computation only where profiling justifies it.
-8. Explore ML or LLM assistance without replacing canonical deterministic
+5. Validate the Core/domain-extension boundary against representative workflows
+   before stabilizing domain extension or template contracts.
+6. Add governed evidence capture and a versioned Scientific Knowledge Layer.
+7. Build the researcher-facing workflow and frontend over the verified API.
+8. Introduce Go or Rust computation only where profiling justifies it.
+9. Explore ML or LLM assistance without replacing canonical deterministic
    computation.
 
 See the [roadmap](docs/product/roadmap.md) for status definitions and the

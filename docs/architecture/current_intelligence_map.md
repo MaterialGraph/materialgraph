@@ -769,6 +769,28 @@ MaterialGraph does not replace laboratory validation.
 The system still requires structured feedback from real researchers to confirm
 which outputs are useful, confusing, missing, or misleading.
 
+### 8.9 Future Domain Extension Boundary — Not Implemented
+
+The current intelligence map describes implemented MaterialGraph intelligence.
+Scientific Domain Extensions, Cross-Domain Decision Contexts, versioned domain
+research templates, and an extension runtime are **not current implemented
+intelligence layers** and should not be represented as if they already exist.
+
+The planned direction is to determine whether current reusable services can form
+a stable scientific-reasoning Core that owns domain-independent semantics such as
+constraints, evidence states, provenance, validation-state structure,
+deterministic graph reasoning, conflict detection, and reproducible investigation
+traces.
+
+Future extensions may provide domain-specific scientific meaning, while
+cross-domain contexts may contribute concerns such as supply risk,
+sustainability, economics, or regulation.
+
+Before this boundary is treated as stable, MaterialGraph should verify it against
+representative workflows from more than one scientific domain. This map should
+continue to distinguish implemented intelligence from planned extension
+architecture.
+
 ---
 
 ## 9. Gate for New Capabilities
@@ -790,6 +812,11 @@ Before implementing a new capability, answer all of the following.
 13. Which real response or case study will verify usefulness?
 14. What is the production performance risk?
 15. Does it preserve researcher autonomy?
+16. Is the capability domain-independent Core semantics, domain-specific
+    scientific meaning, or a cross-domain decision context?
+17. If it is extension content, how will its provenance, version, applicability,
+    review state, and validation be preserved?
+18. Could composition introduce an explicit constraint or applicability conflict?
 
 If these questions cannot be answered clearly, implementation should not begin.
 
