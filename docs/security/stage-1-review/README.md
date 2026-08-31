@@ -55,11 +55,11 @@ availability scenario.
 
 ## Current phase
 
-Ten findings are confirmed. The database, request-boundary, and dependency
-evidence groups are complete. Remaining request-model and dependency-advisory
-cases that did not meet the security finding threshold are explicitly
-classified in the observation register. Inspection remains active for mutable
-CI supply-chain references, broader logging and error disclosure, and backup
+Eleven findings are confirmed. The database, request-boundary, dependency, and
+CI-integrity evidence groups are complete. Remaining request-model,
+dependency-advisory, and source-governance cases that did not meet the security
+finding threshold are explicitly classified in the observation register.
+Inspection remains active for broader logging and error disclosure and backup
 and restore readiness.
 
 No remediation record or implementation change is authorized by this review

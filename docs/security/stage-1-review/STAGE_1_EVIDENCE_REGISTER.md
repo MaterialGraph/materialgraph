@@ -147,6 +147,28 @@ MaterialGraph session.
 - Gitleaks CI uses read-only repository permission and scans complete history,
   but dependency vulnerability detection is outside its purpose.
 
+## CI and automation-integrity evidence
+
+- The secret-scan workflow references `actions/checkout@v4` and
+  `ghcr.io/gitleaks/gitleaks:v8.18.4`; neither reference is pinned to an
+  immutable commit SHA or container digest.
+- The repository permits all actions and reusable workflows, and the setting
+  requiring full-length commit-SHA pinning is disabled.
+- The repository's default workflow token has read-only contents and packages
+  permission. GitHub Actions cannot create or approve pull requests.
+- The workflow separately declares `contents: read`.
+- Workflow approval is required for first-time external contributors.
+- No self-hosted runner or Actions policy is configured.
+- The local Gitleaks pre-commit hook mounts the complete repository read-write
+  into the tagged container. The mount can include ignored local configuration
+  such as `.env`, and the container has no declared network restriction.
+- Secret Scan run 49 completed successfully on the first attempt for commit
+  `5bf859ae70444d223a147018c48f80bee1d90e21`.
+- No repository ruleset or classic branch-protection rule applies to `main`.
+- OIDC uses the default template with an immutable subject claim, but the
+  current workflow does not request `id-token` permission or access a cloud
+  trust relationship.
+
 ## Request-cardinality evidence
 
 - Screening and comparison request models accept unbounded `scarce_elements`
