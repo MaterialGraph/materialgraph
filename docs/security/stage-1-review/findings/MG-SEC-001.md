@@ -24,6 +24,10 @@ Open.
 - Effective deployed Nginx configuration has no `limit_req` or `limit_conn`.
 - The prototype is Internet-accessible on port 80 and runs one Uvicorn process
   on the documented small EC2 host class.
+- A deployed unauthenticated request with an empty JSON body invoked screening
+  across all 28 candidate materials and returned a 21,685-byte response. This
+  confirms that a minimal valid request can trigger the complete screening
+  workload without an admission-control decision.
 
 ## Threat scenario
 

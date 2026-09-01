@@ -1,20 +1,17 @@
 # Stage 1 Security Observations
 
 **Status:** Active — not confirmed findings
-**Last updated:** 2026-08-28
+**Last updated:** 2026-09-01
 
 Observations are propositions requiring additional evidence or classification.
 They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
 
 | Area | Observation | Evidence required |
 |---|---|---|
-| Operational exposure | Swagger, ReDoc, OpenAPI, and health endpoints are public; root health returns version and environment. | Confirm intended consumers and capture public responses and error behavior. |
-| Readiness | The service exposes liveness-style health responses but no demonstrated database readiness check. | Confirm monitoring requirements and failure behavior. |
-| Nginx disclosure | `server_tokens` is not disabled in the effective configuration. | Capture public response headers and default error pages. |
 | Host containment | systemd lacks additional sandboxing beyond the privilege issue recorded in `MG-SEC-004`. | Define required runtime writes and test a least-privilege unit design. |
 | Network egress | EC2 outbound traffic is unrestricted. | Establish required destinations and determine whether egress restriction is practical for this prototype. |
 | Source governance | No ruleset or classic branch protection applies to `main`. | Define the collaboration and release trust model before deciding whether pull-request, status-check, signed-commit, force-push, or deletion protections are required. |
-| Logging | No global exception correlation or redacted deployed-error sample has been reviewed. | Inspect representative Nginx/Uvicorn failures without secrets or personal data. |
+| Logging | No global exception correlation is implemented. Reviewed deployed `404` and `422` responses contained no stack trace or internal exception. | Evaluate unexpected-exception and correlation behavior safely outside production before deciding whether additional handling is required. |
 | Recovery | Backup retention, RPO/RTO, restore procedure, and restore-test evidence are not documented. | Inspect Neon settings and perform or document a restore test. |
 
 ## Classification rule
@@ -22,6 +19,17 @@ They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
 Promote an observation only after the current component, concrete threat,
 existing safeguards, and material missing safeguard are confirmed. Close or
 retain an observation explicitly when new evidence does not support a finding.
+
+## Resolved operational-exposure classifications
+
+| Area | Evidence-based disposition |
+|---|---|
+| Public documentation and schema | Swagger, ReDoc, and OpenAPI are publicly reachable through the deployed proxy. This is intentional prototype exposure and did not establish a separate current threat scenario. Retained as production-hardening policy, not promoted to a finding. |
+| Health disclosure | Root health exposes application version and environment, while both health routes provide liveness rather than demonstrated database readiness. These are operational-hardening observations, not separately confirmed vulnerabilities. |
+| Nginx disclosure | Response headers and the default `405` page disclose `nginx/1.24.0 (Ubuntu)`. The fingerprinting value alone did not meet the material-threat threshold for a separate finding. |
+| Client errors | Unknown routes and malformed JSON returned generic `404` and structured `422` responses without stack traces, source paths, secrets, or internal exceptions. Recorded as positive response behavior. |
+| TRACE handling | Nginx rejected `TRACE` with `405` before the request reached Uvicorn. Recorded as a positive proxy safeguard. |
+| Empty screening request | An empty JSON body triggered screening of all 28 deployed materials and returned 21,685 bytes. This strengthens `MG-SEC-001`; it is not a distinct finding. |
 
 ## Resolved dependency classifications
 

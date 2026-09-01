@@ -1,7 +1,7 @@
 # Stage 1 Security Evidence Register
 
 **Status:** Active — evidence collection in progress
-**Last updated:** 2026-08-28
+**Last updated:** 2026-09-01
 
 ## Evidence-handling rules
 
@@ -205,8 +205,33 @@ MaterialGraph session.
   collections. A 157,871-byte serialized request produced a 177,850-byte log
   entry without printing the entry or calling the deployed API.
 
+## Public operational and error-response evidence
+
+- Deployed Nginx returned `200` for `/health`, `/api/v1/health`, `/docs`,
+  `/redoc`, and `/openapi.json` through the production proxy boundary.
+- Root `/health` returned the application version and the `production`
+  environment name. The API health route returned a generic service-status
+  response. Neither response demonstrated database readiness.
+- The OpenAPI response was 134,046 bytes at the evidence checkpoint.
+- Nginx response headers disclosed `nginx/1.24.0 (Ubuntu)`. Its default `405`
+  response body disclosed the same version and operating-system label.
+- An unknown route returned a generic 22-byte `404` JSON response. Malformed
+  JSON returned a structured 125-byte `422` response. Neither response exposed
+  a stack trace, source path, secret, or internal exception.
+- Nginx rejected `TRACE /` with `405` and did not forward that request to
+  Uvicorn.
+- An unauthenticated empty JSON screening request was accepted, screened all 28
+  deployed candidate materials, and returned a 21,685-byte response. The
+  application log recorded the screened count and empty filter collections.
+- Uvicorn journal entries and Nginx access entries contained expected request
+  metadata for the probe. The matching Nginx error-log query returned no entry.
+- The public exposure and response-disclosure evidence did not establish a new
+  finding. The empty screening request strengthens the aggregate availability
+  scenario already recorded in `MG-SEC-001`.
+
 ## Evidence still required
 
-- Public health, documentation, and error-response behavior.
 - Backup/PITR retention, recovery targets, restore runbook, and restore test.
-- Redacted production log samples for representative failures.
+- Safe non-production evidence for unexpected application exceptions and
+  correlation behavior, if structured exception handling is introduced or
+  separately evaluated.
