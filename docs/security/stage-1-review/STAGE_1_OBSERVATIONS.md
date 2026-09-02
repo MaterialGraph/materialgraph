@@ -1,7 +1,7 @@
 # Stage 1 Security Observations
 
 **Status:** Active — not confirmed findings
-**Last updated:** 2026-09-01
+**Last updated:** 2026-09-02
 
 Observations are propositions requiring additional evidence or classification.
 They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
@@ -12,13 +12,18 @@ They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
 | Network egress | EC2 outbound traffic is unrestricted. | Establish required destinations and determine whether egress restriction is practical for this prototype. |
 | Source governance | No ruleset or classic branch protection applies to `main`. | Define the collaboration and release trust model before deciding whether pull-request, status-check, signed-commit, force-push, or deletion protections are required. |
 | Logging | No global exception correlation is implemented. Reviewed deployed `404` and `422` responses contained no stack trace or internal exception. | Evaluate unexpected-exception and correlation behavior safely outside production before deciding whether additional handling is required. |
-| Recovery | Backup retention, RPO/RTO, restore procedure, and restore-test evidence are not documented. | Inspect Neon settings and perform or document a restore test. |
 
 ## Classification rule
 
 Promote an observation only after the current component, concrete threat,
 existing safeguards, and material missing safeguard are confirmed. Close or
 retain an observation explicitly when new evidence does not support a finding.
+
+## Resolved recovery classifications
+
+| Area | Evidence-based disposition |
+|---|---|
+| Backup and recovery | Promoted to `MG-SEC-012` after the sole six-hour history window, absence of snapshots and external backups, and absence of any restore test, runbook, RPO, or RTO were confirmed. |
 
 ## Resolved operational-exposure classifications
 

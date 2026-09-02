@@ -55,12 +55,13 @@ availability scenario.
 
 ## Current phase
 
-Eleven findings are confirmed. The database, request-boundary, dependency,
-CI-integrity, and public operational-exposure and error-response evidence
-groups are complete. Remaining request-model, dependency-advisory,
-source-governance, and operational-hardening cases that did not meet the
-security finding threshold are explicitly classified in the observation
-register. Inspection remains active for backup and restore readiness.
+Twelve findings are confirmed. The database, request-boundary, dependency,
+CI-integrity, public operational-exposure and error-response, and backup and
+recovery evidence groups are complete. Remaining request-model,
+dependency-advisory, source-governance, and operational-hardening cases that
+did not meet the security finding threshold are explicitly classified in the
+observation register. Stage 1 is ready for final evidence reconciliation and a
+prioritized remediation proposal.
 
 No remediation record or implementation change is authorized by this review
 checkpoint. Security changes must preserve deterministic scientific results

@@ -1,7 +1,7 @@
 # Stage 1 Security Findings Register
 
 **Status:** Active — inspection in progress
-**Last reconciled:** 2026-08-28
+**Last reconciled:** 2026-09-02
 
 ## Status definitions
 
@@ -26,6 +26,7 @@
 | [`MG-SEC-009`](findings/MG-SEC-009.md) | Screening logs unbounded request collections verbatim | Medium | High | Screening service and system journal | Open |
 | [`MG-SEC-010`](findings/MG-SEC-010.md) | Production dependencies are neither reproducibly installed nor vulnerability-gated | Medium | High | Packaging, deployment, and dependency maintenance | Open |
 | [`MG-SEC-011`](findings/MG-SEC-011.md) | Mutable third-party automation references permit unreviewed code execution | Medium | High | Local pre-commit hook and GitHub Actions | Open |
+| [`MG-SEC-012`](findings/MG-SEC-012.md) | Production recovery is limited to an untested six-hour history window | Medium | High | Neon database and recovery process | Open |
 
 ## Review rule
 

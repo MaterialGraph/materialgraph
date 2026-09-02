@@ -1,7 +1,7 @@
 # Stage 1 Security Evidence Register
 
 **Status:** Active — evidence collection in progress
-**Last updated:** 2026-09-01
+**Last updated:** 2026-09-02
 
 ## Evidence-handling rules
 
@@ -113,6 +113,8 @@ MaterialGraph session.
   path, no `request.form()` call, no trust decision based on
   `request.url.hostname` or `request.url.netloc`, and no use of
   `NestedSecretsSettingsSource`.
+- Neon provides point-in-time restore capability within the configured six-hour
+  production history window.
 
 ## Dependency and supply-chain evidence
 
@@ -229,9 +231,27 @@ MaterialGraph session.
   finding. The empty screening request strengthens the aggregate availability
   scenario already recorded in `MG-SEC-001`.
 
+## Backup and recovery evidence
+
+- The production Neon project uses the Free plan and reports a six-hour history
+  retention window.
+- Neon exposes point-in-time restoration of the production branch to a selected
+  point within that six-hour history window.
+- No manual snapshot exists and no snapshot schedule is configured. The
+  inspected console indicates that scheduled snapshots require a plan upgrade.
+- No external logical or physical database backup is maintained.
+- MaterialGraph has never completed a Neon restore or recovery test.
+- No recovery runbook, recovery-point objective, or recovery-time objective is
+  documented inside or outside the repository.
+- The current prototype contains no private user or tenant data, and repository
+  migrations, seeds, and import mechanisms can reconstruct some database state.
+  They do not constitute a verified restoration of the complete production
+  state.
+- The combination of a short sole recovery window, no independent backup, and
+  no tested procedure meets the finding threshold in `MG-SEC-012`.
+
 ## Evidence still required
 
-- Backup/PITR retention, recovery targets, restore runbook, and restore test.
 - Safe non-production evidence for unexpected application exceptions and
   correlation behavior, if structured exception handling is introduced or
   separately evaluated.
