@@ -1,6 +1,6 @@
 # Stage 1 Security Observations
 
-**Status:** Active — not confirmed findings
+**Status:** Inspection complete — retained non-finding observations
 **Last updated:** 2026-09-02
 
 Observations are propositions requiring additional evidence or classification.

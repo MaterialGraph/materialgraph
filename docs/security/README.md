@@ -1,8 +1,8 @@
 # MaterialGraph Security
 
-**Status:** Formal Stage 1 review active; inspection and evidence collection
+**Status:** Stage 1 inspection complete; remediation approval pending
 **Project stage:** Deterministic scientific prototype
-**Last updated:** 2026-08-28
+**Last updated:** 2026-09-02
 
 ## Purpose
 
@@ -78,7 +78,8 @@ MaterialGraph security work will follow these principles:
 
 ## Current Security Foundation
 
-Although the formal Stage 1 security review is intentionally deferred until the current architecture audit remediation reaches its transition point, a small security foundation has already been established where immediate operational risk required action.
+Before the formal Stage 1 review, a small security foundation was established
+where immediate operational risk required action.
 
 Current safeguards include:
 
@@ -90,9 +91,9 @@ Current safeguards include:
 * documented production credential-handling and credential-rotation procedures
 * separation of local-development and production environment configuration
 
-These safeguards do not constitute completion of the Stage 1 security review. They establish baseline protections while architecture audit remediation continues.
-
-The formal security review will still inspect the complete Stage 1 scope before security findings are confirmed and prioritized.
+These safeguards did not constitute completion of the Stage 1 security review.
+They were inspected as existing controls during Stage 1 rather than treated as
+proof that the corresponding areas were secure.
 
 ## Security Foundation History
 
@@ -213,11 +214,12 @@ The two workstreams may proceed in parallel, but security changes must not silen
 ## Next Step
 
 The independent implementation audit is closed. The formal Stage 1 security
-review is active and is governed by this document.
+inspection is also complete and remains governed by this document.
 
 Current review records are maintained under [`stage-1-review/`](stage-1-review/README.md).
-The review separates confirmed findings, evidence, and observations that still
-require investigation. No remediation begins until the inspection result is
+The final inspection report records 12 confirmed open findings, verified
+safeguards, and explicitly retained observations. The remediation plan is a
+proposal only; no remediation begins until the inspection result and plan are
 reviewed and explicitly approved.
 
 The security foundation already implemented—particularly secret scanning,

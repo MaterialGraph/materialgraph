@@ -1,6 +1,6 @@
 # Stage 1 Security Findings Register
 
-**Status:** Active — inspection in progress
+**Status:** Inspection complete — 12 open findings; remediation not begun
 **Last reconciled:** 2026-09-02
 
 ## Status definitions

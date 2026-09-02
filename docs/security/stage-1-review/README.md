@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Active — inspection and evidence collection
+**Status:** Inspection complete — remediation approval pending
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -8,12 +8,15 @@
 
 - Frozen application review commit:
   `32bc57cc78754e061f9a2f4294d81aa39e4f9955`.
-- Current repository and deployment evidence checkpoint:
+- Initial repository and deployment evidence checkpoint:
   `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`.
-- The intervening commit reconciles independent-audit documentation and its
-  consistency test; it does not change security-relevant application behavior.
-- Bundle SHA-256:
-  `456591e419c41e8e377f4a718240bd234c3843c9e93b60e801b6e717d29b666b`.
+- Final inspection and evidence checkpoint:
+  `870e9861abbb607b1dc0b51ee20be5c19d9de222`.
+- Final bundle SHA-256:
+  `7db00cf30e716b3cb1cbdcc78cb9bd32c515ac2340c7dc03bf7a9b7a8d290ec5`.
+- Commits after the frozen application baseline record audit reconciliation,
+  architecture and product documentation, and Stage 1 evidence; they do not
+  change the inspected application behavior.
 
 ## Review boundary
 
@@ -51,6 +54,10 @@ availability scenario.
   evidence and positive safeguards.
 - [`STAGE_1_OBSERVATIONS.md`](STAGE_1_OBSERVATIONS.md) — propositions awaiting
   evidence or classification.
+- [`STAGE_1_FINAL_INSPECTION.md`](STAGE_1_FINAL_INSPECTION.md) — reconciled
+  inspection result and scope conclusion.
+- [`STAGE_1_REMEDIATION_PLAN.md`](STAGE_1_REMEDIATION_PLAN.md) — proposed
+  prerequisite-aware remediation and verification sequence.
 - [`findings/`](findings/) — complete finding records.
 
 ## Current phase
@@ -60,12 +67,12 @@ CI-integrity, public operational-exposure and error-response, and backup and
 recovery evidence groups are complete. Remaining request-model,
 dependency-advisory, source-governance, and operational-hardening cases that
 did not meet the security finding threshold are explicitly classified in the
-observation register. Stage 1 is ready for final evidence reconciliation and a
-prioritized remediation proposal.
+observation register. Final evidence reconciliation is complete and the
+proposed remediation sequence is ready for review.
 
 No remediation record or implementation change is authorized by this review
-checkpoint. Security changes must preserve deterministic scientific results
-and ordering and must be verified in both tests and deployed behavior.
+closure. Security changes must preserve deterministic scientific results and
+ordering and must be verified in both tests and deployed behavior.
 
 ## Investigation sequence
 

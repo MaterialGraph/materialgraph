@@ -1,6 +1,6 @@
 # Stage 1 Security Evidence Register
 
-**Status:** Active — evidence collection in progress
+**Status:** Stage 1 inspection evidence reconciled
 **Last updated:** 2026-09-02
 
 ## Evidence-handling rules
@@ -17,9 +17,10 @@
 | Evidence | Result |
 |---|---|
 | Frozen application review commit | `32bc57cc78754e061f9a2f4294d81aa39e4f9955` |
-| Current evidence checkpoint | `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d` |
-| Bundle history | Complete |
-| Bundle SHA-256 | `456591e419c41e8e377f4a718240bd234c3843c9e93b60e801b6e717d29b666b` |
+| Initial deployment evidence checkpoint | `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d` |
+| Final inspection and evidence checkpoint | `870e9861abbb607b1dc0b51ee20be5c19d9de222` |
+| Final bundle history | Complete |
+| Final bundle SHA-256 | `7db00cf30e716b3cb1cbdcc78cb9bd32c515ac2340c7dc03bf7a9b7a8d290ec5` |
 | Review worktree | Clean at inspection start |
 
 ## Application evidence
@@ -250,7 +251,7 @@ MaterialGraph session.
 - The combination of a short sole recovery window, no independent backup, and
   no tested procedure meets the finding threshold in `MG-SEC-012`.
 
-## Evidence still required
+## Conditional follow-up evidence
 
 - Safe non-production evidence for unexpected application exceptions and
   correlation behavior, if structured exception handling is introduced or
