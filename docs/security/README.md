@@ -1,8 +1,8 @@
 # MaterialGraph Security
 
-**Status:** Stage 1 inspection complete; remediation approval pending
+**Status:** Stage 1 inspection complete; Wave 0 recovery remediation active
 **Project stage:** Deterministic scientific prototype
-**Last updated:** 2026-09-02
+**Last updated:** 2026-09-04
 
 ## Purpose
 
@@ -217,10 +217,11 @@ The independent implementation audit is closed. The formal Stage 1 security
 inspection is also complete and remains governed by this document.
 
 Current review records are maintained under [`stage-1-review/`](stage-1-review/README.md).
-The final inspection report records 12 confirmed open findings, verified
-safeguards, and explicitly retained observations. The remediation plan is a
-proposal only; no remediation begins until the inspection result and plan are
-reviewed and explicitly approved.
+The final inspection report records 12 confirmed findings, verified safeguards,
+and explicitly retained observations. The remediation sequence is approved.
+Wave 0 begins with a cost-conscious backup and isolated recovery design for
+`MG-SEC-012`; database TLS and least-privilege work in `MG-SEC-006` and
+`MG-SEC-007` follows only after recovery is verified.
 
 The security foundation already implemented—particularly secret scanning,
 environment isolation, and credential-handling procedures—is treated as an

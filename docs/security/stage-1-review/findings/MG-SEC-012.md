@@ -2,7 +2,12 @@
 
 ## Status
 
-Open.
+In remediation.
+
+The approved remediation design and pending verification are tracked under
+[`../remediation/`](../remediation/README.md). No backup infrastructure or
+database restoration had been executed at the remediation initialization
+checkpoint.
 
 ## Assessment
 

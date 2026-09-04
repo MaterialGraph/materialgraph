@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — remediation approval pending
+**Status:** Inspection complete — Wave 0 remediation active
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -58,6 +58,8 @@ availability scenario.
   inspection result and scope conclusion.
 - [`STAGE_1_REMEDIATION_PLAN.md`](STAGE_1_REMEDIATION_PLAN.md) — proposed
   prerequisite-aware remediation and verification sequence.
+- [`remediation/`](remediation/README.md) — active remediation register,
+  change-impact records, verification evidence, and operational runbooks.
 - [`findings/`](findings/) — complete finding records.
 
 ## Current phase
@@ -70,9 +72,12 @@ did not meet the security finding threshold are explicitly classified in the
 observation register. Final evidence reconciliation is complete and the
 proposed remediation sequence is ready for review.
 
-No remediation record or implementation change is authorized by this review
-closure. Security changes must preserve deterministic scientific results and
-ordering and must be verified in both tests and deployed behavior.
+The remediation sequence is approved, with `MG-SEC-012` active in Wave 0 and
+`MG-SEC-006` and `MG-SEC-007` approved as the coordinated database sequence
+that follows verified recovery. No infrastructure or database mutation is
+recorded at this initialization checkpoint. Security changes must preserve
+deterministic scientific results and ordering and must be verified in both
+tests and deployed behavior.
 
 ## Investigation sequence
 

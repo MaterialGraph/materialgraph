@@ -1,6 +1,6 @@
 # Stage 1 Security Findings Register
 
-**Status:** Inspection complete — 12 open findings; remediation not begun
+**Status:** Inspection complete — Wave 0 remediation active
 **Last reconciled:** 2026-09-02
 
 ## Status definitions
@@ -26,7 +26,7 @@
 | [`MG-SEC-009`](findings/MG-SEC-009.md) | Screening logs unbounded request collections verbatim | Medium | High | Screening service and system journal | Open |
 | [`MG-SEC-010`](findings/MG-SEC-010.md) | Production dependencies are neither reproducibly installed nor vulnerability-gated | Medium | High | Packaging, deployment, and dependency maintenance | Open |
 | [`MG-SEC-011`](findings/MG-SEC-011.md) | Mutable third-party automation references permit unreviewed code execution | Medium | High | Local pre-commit hook and GitHub Actions | Open |
-| [`MG-SEC-012`](findings/MG-SEC-012.md) | Production recovery is limited to an untested six-hour history window | Medium | High | Neon database and recovery process | Open |
+| [`MG-SEC-012`](findings/MG-SEC-012.md) | Production recovery is limited to an untested six-hour history window | Medium | High | Neon database and recovery process | In remediation |
 
 ## Review rule
 
@@ -34,3 +34,5 @@ This register is an index. Exact evidence, threat scenario, current safeguards,
 missing safeguards, remediation recommendation, and verification requirements
 are maintained in the linked finding record. Observations are not counted as
 findings and remain in [`STAGE_1_OBSERVATIONS.md`](STAGE_1_OBSERVATIONS.md).
+Current remediation status and evidence are maintained separately under
+[`remediation/`](remediation/README.md).
