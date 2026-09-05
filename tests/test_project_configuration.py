@@ -154,6 +154,7 @@ def test_backup_units_are_persistent_bounded_and_do_not_embed_secrets():
     assert "UMask=0077" in service
     assert "TimeoutStartSec=30min" in service
     assert "NoNewPrivileges=true" in service
+    assert "ProtectHome=tmpfs" in service
     assert "ProtectSystem=strict" in service
     assert "DATABASE_URL=" not in service
     assert "MATERIALGRAPH_BACKUP_BUCKET=" not in service
