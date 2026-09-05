@@ -2,7 +2,8 @@
 
 ## Status
 
-Approved design; implementation not started.
+Infrastructure and initial recovery exercise completed; tracked daily
+automation prepared for deployment and scheduled verification.
 
 ## Before
 
@@ -59,4 +60,12 @@ captured and production connectivity is reconfirmed.
 
 ## Observed impact
 
-Pending implementation and verification.
+- A private, versioned, SSE-S3 backup destination with bounded lifecycle and a
+  constrained EC2 upload role was established without a paid monitoring,
+  database, replica, KMS, or backup-plan service.
+- A PostgreSQL 17 custom-format production dump was validated, uploaded, and
+  restored transactionally into an isolated Neon recovery database.
+- All nine source and restored application table counts reconciled. Production
+  was not used as a restore target.
+- The tracked daily service and persistent timer still require deployment and
+  their first scheduled success before the remediation can be Verified.

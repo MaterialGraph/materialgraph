@@ -252,6 +252,52 @@ Restart:
 
 sudo systemctl restart materialgraph
 
+## Daily database backup timer
+
+The reviewed backup job uses the existing direct database URL in
+`/opt/materialgraph/.env` and the EC2 instance role. Do not add database or AWS
+credentials to the backup environment file.
+
+Prerequisites are PostgreSQL 17 client tools, AWS CLI v2, a private versioned
+S3 bucket with the controls in the recovery runbook, and the constrained EC2
+backup role. Copy the safe example, then replace only the bucket placeholder in
+the installed file:
+
+```bash
+sudo install -d -o root -g root -m 0755 /etc/materialgraph
+sudo install -o root -g root -m 0600 \
+  materialgraph-backup.env.example \
+  /etc/materialgraph/backup.env
+sudoedit /etc/materialgraph/backup.env
+```
+
+Install the reviewed units, check their syntax, and run one manual backup
+before enabling the timer:
+
+```bash
+sudo install -o root -g root -m 0644 \
+  materialgraph-backup.service \
+  /etc/systemd/system/materialgraph-backup.service
+sudo install -o root -g root -m 0644 \
+  materialgraph-backup.timer \
+  /etc/systemd/system/materialgraph-backup.timer
+sudo systemd-analyze verify \
+  /etc/systemd/system/materialgraph-backup.service \
+  /etc/systemd/system/materialgraph-backup.timer
+sudo systemctl daemon-reload
+sudo systemctl start materialgraph-backup.service
+sudo systemctl status materialgraph-backup.service --no-pager
+sudo journalctl -u materialgraph-backup.service -n 30 --no-pager
+sudo systemctl enable --now materialgraph-backup.timer
+sudo systemctl list-timers materialgraph-backup.timer --all --no-pager
+```
+
+A successful run logs one `backup_verified` record. Any dump, validation,
+upload, encryption, or remote-size failure produces a nonzero service result
+and a `backup_failed` category without logging credentials. Review the timer
+and newest verified object daily until external failure notification is added
+through an approved low-cost channel.
+
 ---
 
 # Nginx Configuration

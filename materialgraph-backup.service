@@ -1,0 +1,29 @@
+[Unit]
+Description=MaterialGraph verified PostgreSQL backup
+Documentation=file:/opt/materialgraph/docs/security/stage-1-review/remediation/runbooks/database_backup_restore.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/materialgraph
+EnvironmentFile=/etc/materialgraph/backup.env
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/materialgraph/.venv/bin/python /opt/materialgraph/scripts/backup_database.py
+StateDirectory=materialgraph-backup
+StateDirectoryMode=0700
+UMask=0077
+TimeoutStartSec=30min
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictSUIDSGID=true
+LockPersonality=true

@@ -2,8 +2,9 @@
 
 ## Status
 
-Draft; not executed. Values in angle brackets are operator-supplied at runtime
-and must not be committed.
+Initial manual backup and isolated database restore completed on 2026-09-05.
+Tracked daily automation is prepared for deployment; its first scheduled run
+remains required before closure. Runtime values must not be committed.
 
 ## Objective
 
@@ -44,8 +45,10 @@ Create a dedicated bucket or isolated prefix with:
 3. Default SSE-S3 encryption.
 4. A policy denying requests when `aws:SecureTransport` is false.
 5. Versioning enabled.
-6. Lifecycle expiration for current and noncurrent backup data on the approved
-   bounded schedule, including expired delete-marker cleanup.
+6. Lifecycle expiration for current data after 30 days, noncurrent data after
+   seven days with zero newer versions retained, and incomplete multipart
+   uploads after one day. Expired delete-marker cleanup is not enabled because
+   S3 does not allow it in the same rule as current-version expiration.
 7. No website hosting, public access point, or cross-account grant.
 
 Use timestamped object names and never overwrite a prior backup. Do not record
@@ -88,13 +91,17 @@ identity rather than the public application process.
    - expected application table names and row counts;
    - representative non-secret scientific record identifiers;
    - application commit.
+   Export the manifest queries and dump from one PostgreSQL exported snapshot
+   so concurrent writes cannot make their recorded states disagree.
 6. Run `pg_dump` in custom format with ownership and access-control restoration
    excluded from the portable recovery contract.
 7. Verify the dump is nonempty and inspectable with `pg_restore --list`.
 8. Calculate SHA-256 for the dump and manifest.
 9. Upload both to a unique timestamped S3 prefix using HTTPS and SSE-S3.
-10. Inspect remote object size, checksum metadata, encryption state, and
-    creation time.
+10. Inspect remote object size and creation time through prefix listing, and
+    require each upload response to confirm SSE-S3. SHA-256 is stored in object
+    metadata and in the separately uploaded manifest; recovery verifies it
+    before restore.
 11. Remove the local temporary files only after remote verification succeeds.
 12. Record bounded success evidence. On failure, retain protected local data
     only long enough for diagnosis and never delete an earlier S3 recovery
@@ -106,9 +113,9 @@ identity rather than the public application process.
 - Prevent overlapping executions with an exclusive local lock.
 - Apply bounded execution time and fail when dump, inspection, checksum, upload,
   or remote verification fails.
-- Send failure notification through an existing or near-zero-cost channel
-  approved during implementation; do not add a paid monitoring platform solely
-  for this prototype.
+- Record failure in journald and the systemd service result. Review it daily
+  until an existing or near-zero-cost external notification channel is
+  approved; do not add a paid monitoring platform solely for this prototype.
 - Review the newest verified object age and timer result regularly. A successful
   service exit without a remotely verified object is a failure.
 
@@ -137,6 +144,17 @@ identity rather than the public application process.
 10. Record redacted evidence and limitations.
 11. Remove the temporary restore target only after verification evidence is
     complete and no diagnostic need remains.
+
+## Automation deployment
+
+The repository supplies `scripts/backup_database.py`,
+`materialgraph-backup.service`, `materialgraph-backup.timer`, and
+`materialgraph-backup.env.example`. Follow the exact installation and first-run
+checks in [`../../../../guide/DEPLOYMENT.md`](../../../../guide/DEPLOYMENT.md).
+The installed `/etc/materialgraph/backup.env` contains only the private bucket
+name, region, and prefix. Database configuration remains in the existing
+protected application environment file and AWS access comes from the instance
+role.
 
 ## Failure and escalation
 

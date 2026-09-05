@@ -2,7 +2,10 @@
 
 ## Status
 
-Prepared; implementation and verification pending.
+In progress. Initial infrastructure, backup, and isolated relational restore
+checks passed on 2026-09-05. Automation deployment, scheduled-run evidence,
+deterministic API comparison, final production-health evidence, and isolated
+branch cleanup confirmation remain pending.
 
 ## Approved targets
 
@@ -59,11 +62,27 @@ Prepared; implementation and verification pending.
 
 ## Verification commands and results
 
-Pending. Commands must use placeholders or redacted output and must not expose
-connection strings, passwords, AWS account details, bucket names, or object
-keys containing sensitive context.
+Redacted results recorded from the operator-controlled production host:
+
+| Check | Result |
+|---|---|
+| EC2 instance role and temporary credentials | Expected role attached; temporary credentials available |
+| S3 boundary | Location/list/upload allowed only as designed; outside-prefix list, download, and delete denied |
+| PostgreSQL clients | `pg_dump`, `pg_restore`, and `psql` 17.11 |
+| Backup archive | Custom format; 30,967 bytes; 77 archive entries; SHA-256 verified |
+| S3 upload | Succeeded; remote size matched; local temporary archive removed |
+| Isolated restore | Transactional restore completed into a separate recovery database |
+| Relational reconciliation | 9 source tables and 9 restored tables; every recorded row count matched |
+| Cleanup | Local restore archive removed; recovery connection removed from shell |
+
+The backup identifier, bucket identifier, AWS account details, database URL,
+password, and complete object key are intentionally omitted. The exact
+repository patch, timer enablement and first scheduled run will be recorded
+after deployment.
 
 ## Conclusion
 
-Pending. Backup creation alone is insufficient; the finding remains In
-remediation until isolated restoration and all integrity checks pass.
+The independent recovery path is proven at the database level, but the finding
+remains In remediation. Closure requires the persistent timer's scheduled
+success plus the remaining API, production-health, cleanup, complete-test, and
+second-operator evidence.

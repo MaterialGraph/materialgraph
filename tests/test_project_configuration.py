@@ -141,6 +141,29 @@ def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
     assert "docs/guide/DEPLOYMENT.md" in readme
 
 
+def test_backup_units_are_persistent_bounded_and_do_not_embed_secrets():
+    service = (PROJECT_ROOT / "materialgraph-backup.service").read_text(encoding="utf-8")
+    timer = (PROJECT_ROOT / "materialgraph-backup.timer").read_text(encoding="utf-8")
+    example = (PROJECT_ROOT / "materialgraph-backup.env.example").read_text(
+        encoding="utf-8"
+    )
+
+    assert "EnvironmentFile=/etc/materialgraph/backup.env" in service
+    assert "StateDirectory=materialgraph-backup" in service
+    assert "StateDirectoryMode=0700" in service
+    assert "UMask=0077" in service
+    assert "TimeoutStartSec=30min" in service
+    assert "NoNewPrivileges=true" in service
+    assert "ProtectSystem=strict" in service
+    assert "DATABASE_URL=" not in service
+    assert "MATERIALGRAPH_BACKUP_BUCKET=" not in service
+    assert "OnCalendar=*-*-* 02:15:00 UTC" in timer
+    assert "RandomizedDelaySec=15min" in timer
+    assert "Persistent=true" in timer
+    assert "replace-with-private-backup-bucket" in example
+    assert "DATABASE_" not in example
+
+
 def test_independent_audit_closure_records_are_consistent():
     audit_root = PROJECT_ROOT / "docs/auditing/independent-audit"
     remediation_root = audit_root / "remediation"
