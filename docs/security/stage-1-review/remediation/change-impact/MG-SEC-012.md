@@ -2,8 +2,7 @@
 
 ## Status
 
-Infrastructure and initial recovery exercise completed; tracked daily
-automation prepared for deployment and scheduled verification.
+Implemented, deployed, and verified.
 
 ## Before
 
@@ -67,5 +66,12 @@ captured and production connectivity is reconfirmed.
   restored transactionally into an isolated Neon recovery database.
 - All nine source and restored application table counts reconciled. Production
   was not used as a restore target.
-- The tracked daily service and persistent timer still require deployment and
-  their first scheduled success before the remediation can be Verified.
+- The tracked daily service and persistent timer were deployed at `70a76d4`.
+  The first scheduled run completed successfully, and its selected recovery
+  point restored into an isolated target in 8.76 seconds.
+- All 28 representative screening results matched production exactly,
+  including material and formula ordering. Production remained healthy and the
+  temporary recovery branch, local artifacts, and connection values were
+  removed after evidence capture.
+- Residual limitation: failure review uses systemd and journald until an
+  approved existing or near-zero-cost external notification channel is added.

@@ -2,12 +2,11 @@
 
 ## Status
 
-In remediation.
+Verified on 2026-09-06.
 
-The approved remediation design and pending verification are tracked under
-[`../remediation/`](../remediation/README.md). No backup infrastructure or
-database restoration had been executed at the remediation initialization
-checkpoint.
+The deployed implementation, isolated restoration, deterministic comparison,
+and cleanup evidence are tracked under
+[`../remediation/`](../remediation/README.md).
 
 ## Assessment
 
@@ -18,7 +17,11 @@ checkpoint.
   `32bc57cc78754e061f9a2f4294d81aa39e4f9955`
 - Recovery evidence checkpoint:
   `3ee4944cfb31a6158839f74a23545286f56281f3`
-- Resolution version or commit: **Not resolved**
+- Implementation commit:
+  `ef2f158` (`Automate verified production database backups`)
+- Deployed hardening and verification checkpoint:
+  `70a76d4286b83c2f22c625ca9085bdd024a69c93`
+- Resolution status: **Verified**
 
 ## Exact evidence
 
@@ -85,3 +88,16 @@ connectivity. Do not use production as the first restore-test target.
 - The test records its source recovery point, target, duration, validation
   results, limitations, and cleanup outcome without recording credentials.
 - A subsequent operator can execute the runbook without undocumented steps.
+
+## Resolution summary
+
+MaterialGraph now creates a daily PostgreSQL custom-format backup from one
+consistent exported snapshot, uploads a checksum-bearing manifest and archive
+to private versioned SSE-S3 storage, and verifies remote size and encryption
+before success. A persistent systemd timer completed its first scheduled run.
+The selected scheduled recovery point restored into an isolated Neon database
+in 8.76 seconds; Alembic state, all nine table counts, representative record
+identifiers, and all 28 deterministic screening results and their ordering
+matched production. Production remained healthy, temporary files and
+connection values were removed, download permission was revoked, and the
+isolated branch was deleted.

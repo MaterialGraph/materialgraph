@@ -5,8 +5,8 @@
 - Final inspection commit:
   `bb888b54280fa5084fb9217335602527533be45a`.
 - Confirmed findings: **12**.
-- Active remediation: **1 (`MG-SEC-012`)**.
-- Verified remediations: **0**.
+- Active remediation: **0**.
+- Verified remediations: **1 (`MG-SEC-012`)**.
 - Closed findings: **0**.
 
 ## Status definitions
@@ -29,13 +29,13 @@
 | `MG-SEC-003` | 1 | Not started | Not opened | Not opened |
 | `MG-SEC-004` | 1 | Not started | Not opened | Not opened |
 | `MG-SEC-005` | 1 | Not started | Not opened | Not opened |
-| `MG-SEC-006` | 1 | Sequenced after `MG-SEC-012` | Not opened | Not opened |
+| `MG-SEC-006` | 1 | Sequenced next | Not opened | Not opened |
 | `MG-SEC-007` | 1 | Sequenced after `MG-SEC-006` | Not opened | Not opened |
 | `MG-SEC-008` | 2 | Not started | Not opened | Not opened |
 | `MG-SEC-009` | 2 | Not started | Not opened | Not opened |
 | `MG-SEC-010` | 3 | Not started | Not opened | Not opened |
 | `MG-SEC-011` | 3 | Not started | Not opened | Not opened |
-| `MG-SEC-012` | 0 | In progress | [`change-impact/MG-SEC-012.md`](change-impact/MG-SEC-012.md) | [`verification/MG-SEC-012.md`](verification/MG-SEC-012.md) |
+| `MG-SEC-012` | 0 | Verified | [`change-impact/MG-SEC-012.md`](change-impact/MG-SEC-012.md) | [`verification/MG-SEC-012.md`](verification/MG-SEC-012.md) |
 
 The register tracks remediation only. It does not rewrite finding evidence,
 severity, confidence, or threat classification.

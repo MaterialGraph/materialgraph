@@ -165,6 +165,37 @@ def test_backup_units_are_persistent_bounded_and_do_not_embed_secrets():
     assert "DATABASE_" not in example
 
 
+def test_stage_one_recovery_verification_records_are_consistent():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
+        encoding="utf-8"
+    )
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-012.md").read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-012.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-012`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-012` |")
+    )
+
+    assert finding_row.endswith("| Verified |")
+    assert "| 0 | Verified |" in remediation_row
+    assert "Verified on 2026-09-06" in finding
+    assert "All twelve acceptance criteria passed" in verification
+    assert "exactly, including material and formula ordering" in verification
+
+
 def test_independent_audit_closure_records_are_consistent():
     audit_root = PROJECT_ROOT / "docs/auditing/independent-audit"
     remediation_root = audit_root / "remediation"

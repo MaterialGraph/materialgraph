@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — Wave 0 remediation active
+**Status:** Inspection complete — Wave 0 recovery verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -72,12 +72,12 @@ did not meet the security finding threshold are explicitly classified in the
 observation register. Final evidence reconciliation is complete and the
 proposed remediation sequence is ready for review.
 
-The remediation sequence is approved, with `MG-SEC-012` active in Wave 0 and
-`MG-SEC-006` and `MG-SEC-007` approved as the coordinated database sequence
-that follows verified recovery. No infrastructure or database mutation is
-recorded at this initialization checkpoint. Security changes must preserve
-deterministic scientific results and ordering and must be verified in both
-tests and deployed behavior.
+Wave 0 is verified: `MG-SEC-012` now has a deployed daily backup, a successful
+scheduled run, and an isolated restore with relational and deterministic API
+reconciliation. `MG-SEC-006` and `MG-SEC-007` remain the approved coordinated
+database sequence to open next. Security changes must preserve deterministic
+scientific results and ordering and must be verified in both tests and deployed
+behavior.
 
 ## Investigation sequence
 

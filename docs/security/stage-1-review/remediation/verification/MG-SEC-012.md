@@ -2,10 +2,7 @@
 
 ## Status
 
-In progress. Initial infrastructure, backup, and isolated relational restore
-checks passed on 2026-09-05. Automation deployment, scheduled-run evidence,
-deterministic API comparison, final production-health evidence, and isolated
-branch cleanup confirmation remain pending.
+Verified on 2026-09-06. All twelve acceptance criteria passed.
 
 ## Approved targets
 
@@ -74,15 +71,28 @@ Redacted results recorded from the operator-controlled production host:
 | Isolated restore | Transactional restore completed into a separate recovery database |
 | Relational reconciliation | 9 source tables and 9 restored tables; every recorded row count matched |
 | Cleanup | Local restore archive removed; recovery connection removed from shell |
+| Repository implementation | `ef2f158` with home-isolation compatibility at deployed checkpoint `70a76d4` |
+| Automated service | Manual controlled run succeeded; owner-only workspace retained only the lock file |
+| Persistent timer | Enabled and active; first scheduled run started at 02:18:14 UTC and verified at 02:18:27 UTC |
+| Scheduled archive | Custom format; 30,967 bytes; manifest ID, size, SHA-256, and 9-table count matched |
+| Temporary recovery access | Exact-object download permission was removed; subsequent download was denied |
+| Scheduled restore | Completed transactionally in 8.76 seconds in an isolated database |
+| Manifest reconciliation | Alembic revisions, all 9 table counts, and representative identifiers matched |
+| Deterministic API comparison | 28 production and 28 recovery screening results matched exactly, including material and formula ordering |
+| Production after recovery | Application and Nginx active; health returned HTTP 200 |
+| Final cleanup | Isolated API stopped; local artifacts and shell connection values removed; temporary Neon branch deleted |
+| Repository verification | 19 focused tests and 737 complete tests passed; focused Ruff and Git whitespace checks passed |
 
-The backup identifier, bucket identifier, AWS account details, database URL,
-password, and complete object key are intentionally omitted. The exact
-repository patch, timer enablement and first scheduled run will be recorded
-after deployment.
+The bucket identifier, AWS account details, database URLs, passwords, temporary
+credentials, and complete object key are intentionally omitted. The redacted
+evidence is sufficient to reproduce the control checks without publishing
+operational identifiers.
 
 ## Conclusion
 
-The independent recovery path is proven at the database level, but the finding
-remains In remediation. Closure requires the persistent timer's scheduled
-success plus the remaining API, production-health, cleanup, complete-test, and
-second-operator evidence.
+The independent recovery path is proven from scheduled export through isolated
+application behavior. The 24-hour RPO, four-hour RTO, private retention,
+least-privilege upload boundary, scheduled execution, relational integrity,
+deterministic output, production isolation, and cleanup criteria all passed.
+`MG-SEC-012` is Verified. Quarterly and material-change restore exercises and
+daily journal review remain ongoing controls rather than closure blockers.

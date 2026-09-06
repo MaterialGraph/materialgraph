@@ -2,14 +2,14 @@
 
 ## Status and authority
 
-**Status:** Approved; Wave 0 remediation active
+**Status:** Approved; Wave 0 verified and Wave 1 ready for scoped activation
 
 This plan orders the twelve confirmed Stage 1 findings by current exploit
 impact, safe prerequisites, shared implementation boundaries, and verification
-cost. Wave 0 remediation for `MG-SEC-012` is authorized. The coordinated
-database sequence in `MG-SEC-006` and `MG-SEC-007` is approved to follow only
-after recovery verification. Other findings require their scope to be opened
-in the remediation register before implementation.
+cost. Wave 0 remediation for `MG-SEC-012` is verified. The coordinated database
+sequence in `MG-SEC-006` and `MG-SEC-007` may now be opened under separate
+records. Other findings require their scope to be opened in the remediation
+register before implementation.
 
 Each approved finding must receive separate change-impact and verification
 records. A finding remains Open until its implementation and deployed behavior

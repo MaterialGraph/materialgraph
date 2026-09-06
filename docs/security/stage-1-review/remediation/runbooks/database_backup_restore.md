@@ -2,9 +2,9 @@
 
 ## Status
 
-Initial manual backup and isolated database restore completed on 2026-09-05.
-Tracked daily automation is prepared for deployment; its first scheduled run
-remains required before closure. Runtime values must not be committed.
+Verified. Initial manual recovery completed on 2026-09-05; the first scheduled
+backup and its end-to-end isolated recovery completed on 2026-09-06. Runtime
+values must not be committed.
 
 ## Objective
 
@@ -144,6 +144,36 @@ identity rather than the public application process.
 10. Record redacted evidence and limitations.
 11. Remove the temporary restore target only after verification evidence is
     complete and no diagnostic need remains.
+
+### Operator template
+
+1. Record the selected backup ID from a successful `backup_verified` journal
+   event. Grant the recovery operator temporary `s3:GetObject` permission only
+   for that backup's `database.dump` and `manifest.json`; never grant the
+   automated role general read or delete access.
+2. Download both objects into a new owner-only directory under `/tmp`, set mode
+   `0600`, validate the archive with `pg_restore --list`, and compare its byte
+   count and SHA-256 with the manifest.
+3. Remove the temporary download permission and prove a repeated download is
+   denied before proceeding.
+4. Create a one-day Neon child branch from production with pooling disabled.
+   Supply its complete direct connection URL through a hidden shell prompt; do
+   not print or save it. Create a new empty database named
+   `materialgraph_restore_test` on that child branch.
+5. Restore with `pg_restore --exit-on-error --single-transaction --no-owner
+   --no-privileges`. Compare the restored Alembic revisions, table counts, and
+   representative identifiers with the manifest.
+6. When starting the isolated application, render the target URL with SQLAlchemy
+   driver `postgresql+psycopg`; a generic `postgresql` URL incorrectly selects
+   the uninstalled Psycopg 2 dialect. Bind Uvicorn only to `127.0.0.1` on an
+   unused local port.
+7. Submit the same bounded deterministic scientific request to production and
+   the isolated application. Compare the complete decoded JSON and explicit
+   material and formula order, recording only counts and boolean results.
+8. Stop the isolated process. Remove the owner-only download directory,
+   response files, logs, process variables, and connection variables. Confirm
+   production application, Nginx, health, and the backup timer remain active.
+   Delete only the temporary Neon child branch after evidence capture.
 
 ## Automation deployment
 

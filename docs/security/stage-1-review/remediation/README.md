@@ -2,7 +2,8 @@
 
 ## Status
 
-Wave 0 active. `MG-SEC-012` is the only finding currently in remediation.
+Wave 0 verified. `MG-SEC-012` is the first verified Stage 1 remediation; no
+other finding is active until its separate scope is opened.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -14,7 +15,7 @@ verification are recorded separately in this directory.
   `32bc57cc78754e061f9a2f4294d81aa39e4f9955`.
 - Final Stage 1 inspection commit:
   `bb888b54280fa5084fb9217335602527533be45a`.
-- Active remediation: `MG-SEC-012` recovery readiness.
+- Verified remediation: `MG-SEC-012` recovery readiness.
 - Approved next database sequence: `MG-SEC-006` database TLS, followed by
   `MG-SEC-007` runtime and migration privilege separation.
 - Other findings remain outside the active implementation scope.
