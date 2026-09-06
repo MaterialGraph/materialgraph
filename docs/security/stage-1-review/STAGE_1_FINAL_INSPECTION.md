@@ -69,6 +69,12 @@ positive safeguard, retained observation, or explicit non-finding disposition.
 
 ## Confirmed findings
 
+> **Post-inspection correction (2026-09-06):** `MG-SEC-006` is retained below
+> as part of the frozen inspection result but has been retired from the current
+> findings register. Direct client evidence disproved the proxy-derived
+> plaintext conclusion, and both deployed connection paths were hardened to
+> `sslmode=verify-full`. The current confirmed count is eleven.
+
 | ID | Severity | Finding | Primary risk |
 |---|---|---|---|
 | `MG-SEC-001` | High | Public expensive endpoints lack rate and concurrency limiting | Aggregate service exhaustion |
@@ -155,8 +161,9 @@ change.
 
 ## Final decision
 
-Stage 1 inspection is complete and evidence-consistent. The twelve findings are
-appropriate for remediation planning; none is accepted as residual risk or
-closed at this checkpoint. The next authorized action, if approved, is to open
-finding-specific remediation and verification records following
+Stage 1 inspection was completed at this checkpoint with twelve originally
+classified findings. Subsequent exact deployment revalidation retired
+`MG-SEC-006`, leaving eleven currently confirmed findings. The original table
+is preserved as the frozen inspection result; current authority resides in the
+findings and remediation registers. Remaining work follows
 [`STAGE_1_REMEDIATION_PLAN.md`](STAGE_1_REMEDIATION_PLAN.md).

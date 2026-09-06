@@ -64,7 +64,8 @@ availability scenario.
 
 ## Current phase
 
-Twelve findings are confirmed. The database, request-boundary, dependency,
+Eleven findings are confirmed and one identifier is retired after exact
+deployment revalidation. The database, request-boundary, dependency,
 CI-integrity, public operational-exposure and error-response, and backup and
 recovery evidence groups are complete. Remaining request-model,
 dependency-advisory, source-governance, and operational-hardening cases that
@@ -74,10 +75,11 @@ proposed remediation sequence is ready for review.
 
 Wave 0 is verified: `MG-SEC-012` now has a deployed daily backup, a successful
 scheduled run, and an isolated restore with relational and deterministic API
-reconciliation. `MG-SEC-006` and `MG-SEC-007` remain the approved coordinated
-database sequence to open next. Security changes must preserve deterministic
-scientific results and ordering and must be verified in both tests and deployed
-behavior.
+reconciliation. Revalidation disproved the original `MG-SEC-006` plaintext
+conclusion and the deployed connections were hardened to `verify-full` without
+additional infrastructure cost. `MG-SEC-007` is the next approved database
+finding. Security changes must preserve deterministic scientific results and
+ordering and must be verified in both tests and deployed behavior.
 
 ## Investigation sequence
 

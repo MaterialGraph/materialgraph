@@ -196,6 +196,48 @@ def test_stage_one_recovery_verification_records_are_consistent():
     assert "exactly, including material and formula ordering" in verification
 
 
+def test_stage_one_database_transport_revalidation_is_consistent():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
+        encoding="utf-8"
+    )
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-006.md").read_text(
+        encoding="utf-8"
+    )
+    verification = (
+        security_root / "remediation/verification/MG-SEC-006.md"
+    ).read_text(encoding="utf-8")
+
+    confirmed_section = findings_register.split(
+        "## Confirmed findings", maxsplit=1
+    )[1].split("## Retired finding identifiers", maxsplit=1)[0]
+    retired_section = findings_register.split(
+        "## Retired finding identifiers", maxsplit=1
+    )[1].split("## Review rule", maxsplit=1)[0]
+    confirmed_rows = [
+        line for line in confirmed_section.splitlines()
+        if line.startswith("| [`MG-SEC-")
+    ]
+    retired_rows = [
+        line for line in retired_section.splitlines()
+        if line.startswith("| [`MG-SEC-")
+    ]
+
+    assert len(confirmed_rows) == 11
+    assert len(retired_rows) == 1
+    assert "[`MG-SEC-006`]" not in confirmed_section
+    assert "[`MG-SEC-006`]" in retired_section
+    assert "| `MG-SEC-006` | 1 | Retired |" in remediation_register
+    assert "Retired after deployment revalidation" in finding
+    normalized_verification = " ".join(verification.split())
+    assert "The original finding was not supported" in normalized_verification
+    assert "`sslmode=verify-full`" in verification
+    assert "`channel_binding=require` was retained" in verification
+
+
 def test_independent_audit_closure_records_are_consistent():
     audit_root = PROJECT_ROOT / "docs/auditing/independent-audit"
     remediation_root = audit_root / "remediation"

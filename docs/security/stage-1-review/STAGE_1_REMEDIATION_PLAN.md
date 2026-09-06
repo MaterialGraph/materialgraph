@@ -2,14 +2,16 @@
 
 ## Status and authority
 
-**Status:** Approved; Wave 0 verified and Wave 1 ready for scoped activation
+**Status:** Approved; Wave 0 verified, `MG-SEC-006` retired, and Wave 1 ready
+for scoped activation
 
-This plan orders the twelve confirmed Stage 1 findings by current exploit
+This plan orders the eleven confirmed Stage 1 findings by current exploit
 impact, safe prerequisites, shared implementation boundaries, and verification
-cost. Wave 0 remediation for `MG-SEC-012` is verified. The coordinated database
-sequence in `MG-SEC-006` and `MG-SEC-007` may now be opened under separate
-records. Other findings require their scope to be opened in the remediation
-register before implementation.
+cost. Wave 0 remediation for `MG-SEC-012` is verified. `MG-SEC-006` was retired
+after direct client evidence disproved its original plaintext conclusion; both
+database URLs were nevertheless hardened to `verify-full`. `MG-SEC-007` may
+now be opened under separate records. Other findings require their scope to be
+opened in the remediation register before implementation.
 
 Each approved finding must receive separate change-impact and verification
 records. A finding remains Open until its implementation and deployed behavior
@@ -48,24 +50,24 @@ database. Production must not be the first restore-test target.
 | Order | Finding | Objective | Coordination |
 |---:|---|---|---|
 | 2 | `MG-SEC-003` | Restrict environment-file ownership and mode | Design ownership with the dedicated service identity in `MG-SEC-004` |
-| 3 | `MG-SEC-006` | Require validated TLS for runtime and Alembic database sessions | Verify encryption before rotating or separating database credentials |
-| 4 | `MG-SEC-007` | Create separate least-privilege runtime and migration roles | Rotate credentials only after TLS and grant requirements are established |
-| 5 | `MG-SEC-004` | Run under a dedicated non-administrative systemd identity with tested hardening | Coordinate file ownership, code writability, logging, and deployment authority |
-| 6 | `MG-SEC-005` | Serve public routes through HTTPS and redirect HTTP | Independent transport hardening; verify responses remain byte-for-byte equivalent where appropriate |
+| 3 | `MG-SEC-007` | Create separate least-privilege runtime and migration roles | Database transport has been revalidated and hardened; rotate credentials only after grant requirements are established |
+| 4 | `MG-SEC-004` | Run under a dedicated non-administrative systemd identity with tested hardening | Coordinate file ownership, code writability, logging, and deployment authority |
+| 5 | `MG-SEC-005` | Serve public routes through HTTPS and redirect HTTP | Independent transport hardening; verify responses remain byte-for-byte equivalent where appropriate |
 
 `MG-SEC-003` may receive an immediate owner-only mode correction after
 approval, but its final ownership verification belongs with `MG-SEC-004`.
-`MG-SEC-006` and `MG-SEC-007` should share one database rollback plan while
-remaining separate findings and verification records.
+The `MG-SEC-006` revalidation record is a prerequisite reference for
+`MG-SEC-007`; the retired identifier is not reopened or counted as a confirmed
+finding.
 
 ### Wave 2 — Bound public work and overload behavior
 
 | Order | Finding | Objective | Coordination |
 |---:|---|---|---|
-| 7 | `MG-SEC-008` | Canonicalize, deduplicate, validate, and bound research-objective collections | Establishes the maximum valid request contract used by proxy and performance controls |
-| 8 | `MG-SEC-009` | Replace verbatim user collections in logs with bounded metadata | Reuse the normalized boundary and define journal retention and monitoring |
-| 9 | `MG-SEC-001` | Add trusted-client request limits, connection limits, and expensive-route admission control | Tune against the maximum valid workloads established by `MG-SEC-008` |
-| 10 | `MG-SEC-002` | Add coordinated proxy, application, pool, lock, and statement deadlines | Tune after valid workload cost and concurrency budgets are measurable |
+| 6 | `MG-SEC-008` | Canonicalize, deduplicate, validate, and bound research-objective collections | Establishes the maximum valid request contract used by proxy and performance controls |
+| 7 | `MG-SEC-009` | Replace verbatim user collections in logs with bounded metadata | Reuse the normalized boundary and define journal retention and monitoring |
+| 8 | `MG-SEC-001` | Add trusted-client request limits, connection limits, and expensive-route admission control | Tune against the maximum valid workloads established by `MG-SEC-008` |
+| 9 | `MG-SEC-002` | Add coordinated proxy, application, pool, lock, and statement deadlines | Tune after valid workload cost and concurrency budgets are measurable |
 
 Proxy body size, rate limits, concurrency gates, and timeouts must not truncate
 or silently reinterpret successful scientific results. Rejections and timeouts
@@ -75,8 +77,8 @@ must be explicit and must never present partial results as complete.
 
 | Order | Finding | Objective | Coordination |
 |---:|---|---|---|
-| 11 | `MG-SEC-011` | Pin Actions and containers immutably and constrain the local scanner | Stabilizes the automation executing later dependency checks |
-| 12 | `MG-SEC-010` | Define the production lock/constraints contract, enforce integrity, and add vulnerability scanning | Use reviewed immutable automation and complete scientific regression testing for upgrades |
+| 10 | `MG-SEC-011` | Pin Actions and containers immutably and constrain the local scanner | Stabilizes the automation executing later dependency checks |
+| 11 | `MG-SEC-010` | Define the production lock/constraints contract, enforce integrity, and add vulnerability scanning | Use reviewed immutable automation and complete scientific regression testing for upgrades |
 
 Immutable pins must be recorded with human-readable release annotations and a
 repeatable update process. Scanner findings must be evaluated for version,
@@ -89,7 +91,7 @@ proof of exploitability.
 |---|---|---|
 | `MG-SEC-012` recovery capability | Waves 1–3 production changes | Enables tested recovery if a security change damages deployment or data |
 | `MG-SEC-004` service identity design | Final `MG-SEC-003` ownership | The secret file must be readable only by the intended runtime boundary |
-| `MG-SEC-006` database TLS | `MG-SEC-007` credential separation and rotation | New credentials must not first travel over an unencrypted session |
+| Retired `MG-SEC-006` revalidation and `verify-full` hardening | `MG-SEC-007` credential separation and rotation | Confirms authenticated encrypted transport before issuing replacement credentials |
 | `MG-SEC-008` maximum valid request contract | `MG-SEC-001`, `MG-SEC-002`, and `MG-SEC-009` tuning | Limits, deadlines, and logs require a defined valid workload |
 | `MG-SEC-011` immutable automation | `MG-SEC-010` CI vulnerability gate | The security scanner must not add a mutable execution path |
 
@@ -137,7 +139,8 @@ After each production wave:
 
 Stage 1 remediation is complete only when:
 
-- all twelve register rows are Verified or Closed with linked evidence;
+- all eleven confirmed register rows are Verified or Closed with linked
+  evidence, and the retired identifier retains linked revalidation evidence;
 - no finding-specific verification step remains pending;
 - production configuration matches the reviewed repository documentation;
 - deterministic scientific regression checks pass;

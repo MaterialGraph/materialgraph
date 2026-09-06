@@ -2,8 +2,10 @@
 
 ## Status
 
-Wave 0 verified. `MG-SEC-012` is the first verified Stage 1 remediation; no
-other finding is active until its separate scope is opened.
+Wave 0 verified. `MG-SEC-012` is the first verified Stage 1 remediation.
+`MG-SEC-006` is retired after exact deployment revalidation and completed
+certificate-validation hardening. No other finding is active until its separate
+scope is opened.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -16,8 +18,9 @@ verification are recorded separately in this directory.
 - Final Stage 1 inspection commit:
   `bb888b54280fa5084fb9217335602527533be45a`.
 - Verified remediation: `MG-SEC-012` recovery readiness.
-- Approved next database sequence: `MG-SEC-006` database TLS, followed by
-  `MG-SEC-007` runtime and migration privilege separation.
+- Retired after revalidation: `MG-SEC-006` database transport.
+- Approved next database finding: `MG-SEC-007` runtime and migration privilege
+  separation.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
@@ -60,6 +63,8 @@ or when the cost of reconstructing production data materially increases.
   observed operational impact.
 - [`verification/MG-SEC-012.md`](verification/MG-SEC-012.md) — acceptance
   criteria and evidence checklist.
+- [`verification/MG-SEC-006.md`](verification/MG-SEC-006.md) — corrected
+  database-transport classification and deployed hardening evidence.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 

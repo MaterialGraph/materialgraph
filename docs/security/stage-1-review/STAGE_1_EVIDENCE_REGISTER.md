@@ -1,7 +1,7 @@
 # Stage 1 Security Evidence Register
 
 **Status:** Stage 1 inspection evidence reconciled
-**Last updated:** 2026-09-02
+**Last updated:** 2026-09-06
 
 ## Evidence-handling rules
 
@@ -75,6 +75,11 @@
 
 ## Database session evidence
 
+> **Revalidation correction (2026-09-06):** the `pg_stat_ssl` values preserved
+> in this section describe the Neon proxy's backend session and do not establish
+> whether the originating EC2 client connection used TLS. Direct client probes
+> supersede that interpretation and are recorded below.
+
 The following values were queried through MaterialGraph's deployed SQLAlchemy
 engine without printing the connection URL, database name, role name, or secret
 values:
@@ -94,9 +99,31 @@ values:
 - `statement_timeout` is `0` and `lock_timeout` is `0`.
 - `idle_in_transaction_session_timeout` is `5min`.
 
-The same results were observed independently in the Neon SQL Editor, but the
-application-engine query is the authoritative evidence for the deployed
-MaterialGraph session.
+The same results were observed independently in the Neon SQL Editor. These
+server-side observations remain useful for the backend leg but are not
+authoritative evidence for the deployed client's transport to the proxy.
+
+## Database client-transport revalidation
+
+Redacted deployment probes on 2026-09-06 established:
+
+- runtime and migration URLs explicitly used `sslmode=require` and
+  `channel_binding=require` before hardening;
+- both paths established TLS and negotiated TLS 1.2 or newer;
+- explicit plaintext attempts failed for both paths;
+- `sslmode=verify-full` succeeded for both paths;
+- both deployed URLs were changed to `sslmode=verify-full` while retaining
+  `channel_binding=require`;
+- direct runtime and migration connections succeeded after the change;
+- MaterialGraph restarted cleanly and returned HTTP `200` from `/health`;
+- the backup service created and verified a nine-table logical backup through
+  the hardened migration path; and
+- the timer remained active and enabled, with temporary rollback material
+  removed after verification.
+
+No connection URL, password, database name, role name, or credential value was
+recorded. The evidence retires `MG-SEC-006` rather than verifying a remediation
+of the original plaintext claim.
 
 ## Confirmed positive safeguards
 

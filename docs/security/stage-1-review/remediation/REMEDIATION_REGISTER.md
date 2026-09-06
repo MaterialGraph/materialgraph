@@ -4,7 +4,8 @@
 
 - Final inspection commit:
   `bb888b54280fa5084fb9217335602527533be45a`.
-- Confirmed findings: **12**.
+- Confirmed findings: **11**.
+- Retired finding identifiers: **1 (`MG-SEC-006`)**.
 - Active remediation: **0**.
 - Verified remediations: **1 (`MG-SEC-012`)**.
 - Closed findings: **0**.
@@ -19,6 +20,8 @@
 - `Verified`: every acceptance and deployment check passed.
 - `Closed`: verification and closure evidence are reconciled.
 - `Blocked`: progress requires unavailable evidence, access, or authority.
+- `Retired`: exact revalidation disproved the original finding; linked evidence
+  preserves the disposition and any completed hardening.
 
 ## Register
 
@@ -29,8 +32,8 @@
 | `MG-SEC-003` | 1 | Not started | Not opened | Not opened |
 | `MG-SEC-004` | 1 | Not started | Not opened | Not opened |
 | `MG-SEC-005` | 1 | Not started | Not opened | Not opened |
-| `MG-SEC-006` | 1 | Sequenced next | Not opened | Not opened |
-| `MG-SEC-007` | 1 | Sequenced after `MG-SEC-006` | Not opened | Not opened |
+| `MG-SEC-006` | 1 | Retired | Deployment-only hardening | [`verification/MG-SEC-006.md`](verification/MG-SEC-006.md) |
+| `MG-SEC-007` | 1 | Sequenced next | Not opened | Not opened |
 | `MG-SEC-008` | 2 | Not started | Not opened | Not opened |
 | `MG-SEC-009` | 2 | Not started | Not opened | Not opened |
 | `MG-SEC-010` | 3 | Not started | Not opened | Not opened |

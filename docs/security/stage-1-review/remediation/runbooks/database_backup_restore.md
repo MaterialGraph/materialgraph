@@ -73,7 +73,8 @@ identity rather than the public application process.
   host, port, database, user, password, and TLS settings are passed without
   logging their values.
 - Require encrypted database transport for the backup connection. Full
-  certificate validation becomes mandatory with `MG-SEC-006`.
+  certificate and hostname validation is mandatory under the deployed
+  `verify-full` configuration recorded by the retired `MG-SEC-006` identifier.
 - Run with a restrictive umask and owner-only temporary directory.
 - Log only timestamps, result state, byte count, checksum prefix if needed, and
   non-sensitive failure category.

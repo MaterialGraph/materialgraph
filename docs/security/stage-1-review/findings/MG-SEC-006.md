@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Retired after deployment revalidation on 2026-09-06.
 
 ## Assessment
 
@@ -11,9 +11,23 @@ Open.
 - Affected component: production EC2-to-Neon database transport
 - Application evidence checkpoint:
   `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Not resolved**
+- Resolution version or commit: **Deployment configuration only; repository
+  reconciliation pending**
 
-## Exact evidence
+## Revalidation disposition
+
+The original conclusion is not supported by end-to-end client evidence. The
+`pg_stat_ssl` result below described the Neon proxy's backend session rather
+than the EC2 client's TLS session. Both deployed client paths required TLS,
+negotiated TLS 1.2 or newer, rejected plaintext, and successfully completed
+certificate and hostname validation.
+
+The identifier is retained for audit history but is no longer an actionable
+security finding. The narrower certificate-validation hardening was completed
+by changing both deployed URLs from `sslmode=require` to
+`sslmode=verify-full`, while retaining `channel_binding=require`.
+
+## Original exact evidence
 
 A read-only query executed through MaterialGraph's deployed SQLAlchemy engine
 reported:
@@ -22,13 +36,14 @@ reported:
 - TLS version is null;
 - cipher is null.
 
-The separately configured Alembic connection reports the same unencrypted
-session properties. Both production database paths are affected.
+The separately configured Alembic connection reported the same proxy-side
+session properties. The inspection originally interpreted both results as
+client transport evidence.
 
 The query did not print or record the connection URL, database name, role name,
 or credential values.
 
-## Threat scenario
+## Original threat scenario
 
 A network-positioned attacker between EC2 and Neon can observe or tamper with
 database authentication and application traffic. Exposure of the database
@@ -45,7 +60,7 @@ outputs.
 - Neon is reached through a configured connection string rather than a public
   database service hosted on the EC2 instance.
 
-## Missing safeguards
+## Original missing safeguards
 
 - TLS-required database connection policy.
 - Certificate validation policy appropriate for the Neon endpoint.
@@ -54,15 +69,33 @@ outputs.
 - Regression evidence that requires encrypted production and migration
   connections.
 
-## Recommended remediation
+## Revalidation evidence
+
+- Runtime and migration URLs both target Neon and explicitly required TLS and
+  SCRAM channel binding before remediation.
+- Independent client probes succeeded over TLS 1.2 or newer for both paths.
+- `sslmode=disable` failed for both paths.
+- `sslmode=verify-full` succeeded for both paths.
+- After deployment hardening, direct runtime and migration connections
+  succeeded with `sslmode=verify-full` and `channel_binding=require`.
+- MaterialGraph restarted successfully and returned HTTP `200` from `/health`.
+- The isolated backup service completed a verified nine-table logical backup
+  using the migration connection.
+- No URL, password, role name, database name, or credential value was recorded.
+
+Complete redacted evidence and the classification rationale are maintained in
+[`../remediation/verification/MG-SEC-006.md`](../remediation/verification/MG-SEC-006.md).
+
+## Original recommended remediation
 
 Require TLS with certificate validation in the production and migration
 database connection configuration. Fail closed when the deployed connection
 cannot establish an authenticated encrypted session.
 
-## Verification requirements
+## Original verification requirements
 
-- `pg_stat_ssl` reports `ssl=true` for the application and migration sessions.
+- Client-side transport inspection confirms TLS for application and migration
+  sessions; proxy-side `pg_stat_ssl` is not treated as end-to-end evidence.
 - A modern TLS version and negotiated cipher are present.
 - A connection that cannot validate the expected server certificate fails.
 - Application startup, migrations, and representative scientific endpoints

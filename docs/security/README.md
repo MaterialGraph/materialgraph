@@ -217,12 +217,16 @@ The independent implementation audit is closed. The formal Stage 1 security
 inspection is also complete and remains governed by this document.
 
 Current review records are maintained under [`stage-1-review/`](stage-1-review/README.md).
-The final inspection report records 12 confirmed findings, verified safeguards,
-and explicitly retained observations. The remediation sequence is approved.
+The final inspection originally recorded 12 findings. Exact deployment
+revalidation retired `MG-SEC-006`, leaving 11 confirmed findings, one retired
+identifier, verified safeguards, and explicitly retained observations. The
+remediation sequence is approved.
 Wave 0 established and verified a cost-conscious daily backup and isolated
-recovery path for `MG-SEC-012`. The prerequisite is now satisfied; database TLS
-and least-privilege work in `MG-SEC-006` and `MG-SEC-007` may be opened next
-under separate change-impact and verification records.
+recovery path for `MG-SEC-012`. Database transport was revalidated and hardened
+with certificate and hostname verification; `MG-SEC-006` was retired because
+its original plaintext conclusion was invalid. Least-privilege work in
+`MG-SEC-007` may be opened next under separate change-impact and verification
+records.
 
 The security foundation already implemented—particularly secret scanning,
 environment isolation, and credential-handling procedures—is treated as an

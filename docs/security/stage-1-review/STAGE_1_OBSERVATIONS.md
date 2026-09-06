@@ -1,7 +1,7 @@
 # Stage 1 Security Observations
 
 **Status:** Inspection complete — retained non-finding observations
-**Last updated:** 2026-09-02
+**Last updated:** 2026-09-06
 
 Observations are propositions requiring additional evidence or classification.
 They do not carry `MG-SEC-*` identifiers and are not counted as vulnerabilities.
@@ -24,6 +24,12 @@ retain an observation explicitly when new evidence does not support a finding.
 | Area | Evidence-based disposition |
 |---|---|
 | Backup and recovery | Promoted to `MG-SEC-012` after the sole six-hour history window, absence of snapshots and external backups, and absence of any restore test, runbook, RPO, or RTO were confirmed. |
+
+## Resolved database-transport classification
+
+| Area | Evidence-based disposition |
+|---|---|
+| Database TLS | `MG-SEC-006` was retired after direct client probes confirmed that runtime and migration paths required TLS, negotiated TLS 1.2 or newer, and rejected plaintext. The earlier `pg_stat_ssl` result described the Neon proxy's backend session, not the EC2 client leg. Both URLs were subsequently hardened from `sslmode=require` to `sslmode=verify-full` while retaining required channel binding. |
 
 ## Resolved operational-exposure classifications
 

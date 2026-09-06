@@ -10,6 +10,8 @@
 - `Implemented`: implementation is complete; verification is pending.
 - `Verified`: acceptance and deployment verification passed.
 - `Closed`: verified remediation and closure evidence are recorded.
+- `Retired`: revalidation disproved the original finding; the identifier and
+  original evidence remain preserved for audit history.
 
 ## Confirmed findings
 
@@ -20,13 +22,18 @@
 | [`MG-SEC-003`](findings/MG-SEC-003.md) | Production environment file is world-readable | Medium | High | EC2 filesystem | Open |
 | [`MG-SEC-004`](findings/MG-SEC-004.md) | Internet-facing service runs with passwordless root authority | High | High | systemd and EC2 account boundary | Open |
 | [`MG-SEC-005`](findings/MG-SEC-005.md) | Public API traffic is served over unencrypted HTTP | Medium | High | Nginx and EC2 network boundary | Open |
-| [`MG-SEC-006`](findings/MG-SEC-006.md) | Production database connection is unencrypted | High | High | EC2-to-Neon database transport | Open |
 | [`MG-SEC-007`](findings/MG-SEC-007.md) | Application database role has administrative capabilities | High | High | Neon role and application credential boundary | Open |
 | [`MG-SEC-008`](findings/MG-SEC-008.md) | Unbounded research-objective collections permit CPU amplification | High | High | Public research and objective-exploration requests | Open |
 | [`MG-SEC-009`](findings/MG-SEC-009.md) | Screening logs unbounded request collections verbatim | Medium | High | Screening service and system journal | Open |
 | [`MG-SEC-010`](findings/MG-SEC-010.md) | Production dependencies are neither reproducibly installed nor vulnerability-gated | Medium | High | Packaging, deployment, and dependency maintenance | Open |
 | [`MG-SEC-011`](findings/MG-SEC-011.md) | Mutable third-party automation references permit unreviewed code execution | Medium | High | Local pre-commit hook and GitHub Actions | Open |
 | [`MG-SEC-012`](findings/MG-SEC-012.md) | Production recovery is limited to an untested six-hour history window | Medium | High | Neon database and recovery process | Verified |
+
+## Retired finding identifiers
+
+| ID | Original title | Original severity | Disposition | Status |
+|---|---|---|---|---|
+| [`MG-SEC-006`](findings/MG-SEC-006.md) | Production database connection is unencrypted | High | Client-side revalidation disproved the proxy-derived plaintext conclusion; explicit `verify-full` hardening completed | Retired |
 
 ## Review rule
 
