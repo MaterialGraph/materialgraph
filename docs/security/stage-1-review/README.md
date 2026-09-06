@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — Wave 0 recovery verified
+**Status:** Inspection complete — two remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -77,8 +77,8 @@ Wave 0 is verified: `MG-SEC-012` now has a deployed daily backup, a successful
 scheduled run, and an isolated restore with relational and deterministic API
 reconciliation. Revalidation disproved the original `MG-SEC-006` plaintext
 conclusion and the deployed connections were hardened to `verify-full` without
-additional infrastructure cost. `MG-SEC-007` is active with an approved
-least-privilege runtime, backup, and migration role boundary. Security changes
+additional infrastructure cost. `MG-SEC-007` is verified with deployed
+least-privilege runtime and backup identities and an isolated migration path. Security changes
 must preserve deterministic scientific results and ordering and must be
 verified in both tests and deployed behavior.
 

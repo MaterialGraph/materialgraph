@@ -2,10 +2,10 @@
 
 ## Status
 
-Wave 0 verified. `MG-SEC-012` is the first verified Stage 1 remediation.
+Wave 0 verified. `MG-SEC-012` established recovery readiness.
 `MG-SEC-006` is retired after exact deployment revalidation and completed
-certificate-validation hardening. `MG-SEC-007` is now active with an approved
-least-privilege database-role scope.
+certificate-validation hardening. `MG-SEC-007` is verified with deployed
+least-privilege runtime and backup roles and an isolated migration path.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -19,8 +19,8 @@ verification are recorded separately in this directory.
   `bb888b54280fa5084fb9217335602527533be45a`.
 - Verified remediation: `MG-SEC-012` recovery readiness.
 - Retired after revalidation: `MG-SEC-006` database transport.
-- Active database finding: `MG-SEC-007` runtime, backup, and migration privilege
-  separation.
+- Verified database finding: `MG-SEC-007` runtime, backup, and migration
+  privilege separation.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary

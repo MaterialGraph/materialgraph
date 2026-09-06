@@ -121,6 +121,37 @@ Redacted deployment probes on 2026-09-06 established:
 - the timer remained active and enabled, with temporary rollback material
   removed after verification.
 
+## Database privilege remediation
+
+Redacted production checks on 2026-09-06 established:
+
+- deployed implementation checkpoint
+  `4cdfa87649d93e4f1c8040a94bf76328ea673a7e` requires a dedicated backup URL;
+- SQL-created runtime and backup roles have no superuser, role-creation,
+  database-creation, replication, RLS-bypass, or Neon administrative-role
+  membership capability;
+- runtime has `USAGE` and read access across all nine application tables, no
+  sequence or inspected table-write access, and cannot create database or
+  `public` schema objects;
+- safe runtime probes read application data and rejected update and DDL;
+- backup read the nine-table manifest, rejected mutation, and produced a
+  verified 30,967-byte archive under the automated service;
+- owner-scoped defaults preserve the intended future table and sequence grants;
+- runtime configuration is owner-only mode `600`; separate migration and backup
+  environments are root-owned mode `600`;
+- Alembic connected through the isolated migration environment;
+- application health returned HTTP `200`, and the persistent backup timer
+  remained active and enabled;
+- complete material, screening, and discovery JSON matched exactly across the
+  runtime identity switch; and
+- rollback copies, response captures, and shell-held credential values were
+  removed after verification.
+
+Both restricted identities retain PostgreSQL's default database `TEMP`
+privilege. This does not grant persistent database or `public` schema creation;
+the scoped residual is accepted for the current prototype rather than globally
+revoking a privilege from `PUBLIC` during this remediation.
+
 No connection URL, password, database name, role name, or credential value was
 recorded. The evidence retires `MG-SEC-006` rather than verifying a remediation
 of the original plaintext claim.

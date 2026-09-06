@@ -203,7 +203,7 @@ verticals are currently implemented or scientifically validated.
 | API and deterministic-behaviour verification | Completed for tested workflows |
 | Architecture and implementation audit (`MG-AUD-*`) | Complete: 92 remediated, 2 accepted behavior, 0 open |
 | Independent implementation audit (`MG-IA-*`) | Closed: 20 of 20 actionable findings verified; 1 post-freeze invalidation |
-| Stage 1 security review (`MG-SEC-*`) | Inspection complete; 11 confirmed findings, 1 verified, and 1 identifier retired after revalidation |
+| Stage 1 security review (`MG-SEC-*`) | Inspection complete; 11 confirmed findings, 2 verified, and 1 identifier retired after revalidation |
 | Literature-backed case studies | Not yet completed |
 | Independent materials-researcher review | Not yet completed |
 | DFT cross-validation | Not yet completed |
@@ -296,8 +296,8 @@ Materials Project import.
 
 ## Roadmap Priorities
 
-1. Review and approve the Stage 1 security remediation plan, then complete
-   evidence-backed hardening.
+1. Continue the approved Stage 1 security sequence with scoped,
+   evidence-backed hardening of the remaining findings.
 2. Harden graph-job worker ownership, lifecycle, authorization, and recovery
    before considering public route activation.
 3. Measure repository-scale graph/search cost and address evidenced bottlenecks.

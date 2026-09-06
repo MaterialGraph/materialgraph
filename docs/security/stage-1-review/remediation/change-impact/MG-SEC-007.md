@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved and in progress as of 2026-09-06.
+Completed and verified on 2026-09-06.
 
 ## Baseline
 
@@ -93,3 +93,19 @@ Approved and in progress as of 2026-09-06.
 - No database engine, Neon plan, region, or schema change.
 - No resolution of EC2 passwordless sudo or final environment-file ownership;
   those remain `MG-SEC-004` and `MG-SEC-003`.
+
+## Observed impact
+
+- Runtime, migration, and backup now authenticate with separate identities.
+- Runtime retains the exact reads required by the mounted public API and has no
+  inspected table mutation, sequence, schema-creation, database-creation, or
+  administrative capability.
+- Backup retains manifest and archive reads and produced a verified nine-table
+  archive through its dedicated credential.
+- Alembic remains functional through an isolated root-owned migration
+  environment.
+- Complete material, screening, and discovery JSON matched exactly before and
+  after the runtime switch; production health remained HTTP `200`.
+- No paid Neon feature or additional infrastructure was introduced.
+- PostgreSQL's default database `TEMP` privilege remains as a documented,
+  constrained residual because a global `PUBLIC` revocation was outside scope.

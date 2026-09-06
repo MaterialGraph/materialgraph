@@ -1,6 +1,6 @@
 # MaterialGraph Security
 
-**Status:** Stage 1 inspection complete; Wave 0 recovery remediation verified
+**Status:** Stage 1 inspection complete; two remediations verified
 **Project stage:** Deterministic scientific prototype
 **Last updated:** 2026-09-06
 
@@ -225,7 +225,8 @@ Wave 0 established and verified a cost-conscious daily backup and isolated
 recovery path for `MG-SEC-012`. Database transport was revalidated and hardened
 with certificate and hostname verification; `MG-SEC-006` was retired because
 its original plaintext conclusion was invalid. Least-privilege work in
-`MG-SEC-007` is active under separate change-impact and verification records.
+`MG-SEC-007` is verified: runtime and backup now use separate restricted roles,
+while migration retains an isolated administrative path.
 
 The security foundation already implemented—particularly secret scanning,
 environment isolation, and credential-handling procedures—is treated as an

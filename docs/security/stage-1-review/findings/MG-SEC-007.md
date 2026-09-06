@@ -2,7 +2,7 @@
 
 ## Status
 
-In remediation as of 2026-09-06.
+Verified on 2026-09-06.
 
 ## Assessment
 
@@ -13,12 +13,12 @@ In remediation as of 2026-09-06.
   `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
 - Remediation baseline:
   `95ac8659d213a45d4bccedac10acd4c2d0fca193`
-- Resolution version or commit: **Pending**
+- Implementation and deployed checkpoint:
+  `4cdfa87649d93e4f1c8040a94bf76328ea673a7e`
 
-The approved scope, rollback boundary, and acceptance criteria are maintained
-under [`../remediation/`](../remediation/README.md). No role or grant change is
-considered complete until deployed runtime, backup, migration, and scientific
-regression checks pass.
+The approved scope and completed acceptance evidence are maintained under
+[`../remediation/`](../remediation/README.md). Deployed runtime, backup,
+migration, privilege-negative, and exact scientific-regression checks passed.
 
 ## Exact evidence
 
@@ -83,3 +83,17 @@ the role boundary is established.
 - Migration commands use a separate authorized role.
 - Application startup and representative reads/writes continue to work.
 - Scientific outputs and deterministic ordering remain unchanged.
+
+## Resolution
+
+SQL-created runtime and backup roles now have scoped read access without
+administrative attributes or membership in Neon's administrative role. The
+application uses only the pooled runtime credential; Alembic and backup use
+separate root-owned mode-`600` environment files. Runtime mutation and DDL were
+rejected, a dedicated-identity backup verified nine tables, Alembic remained
+authorized, production health returned HTTP `200`, and three complete
+representative scientific responses matched exactly across the switch.
+
+See
+[`../remediation/verification/MG-SEC-007.md`](../remediation/verification/MG-SEC-007.md)
+for redacted evidence and the explicitly accepted database `TEMP` residual.
