@@ -88,6 +88,7 @@ def database_environment(database_url: str) -> dict[str, str]:
             "PGUSER": str(url.username),
             "PGPASSWORD": str(url.password),
             "PGSSLMODE": "verify-full",
+            "PGSSLROOTCERT": "/etc/ssl/certs/ca-certificates.crt",
             "PGCHANNELBINDING": "require",
             "PGCONNECT_TIMEOUT": "15",
         }
@@ -125,6 +126,7 @@ def connection_parameters(pg_environment: dict[str, str]) -> dict[str, Any]:
         "user": pg_environment["PGUSER"],
         "password": pg_environment["PGPASSWORD"],
         "sslmode": pg_environment["PGSSLMODE"],
+        "sslrootcert": pg_environment["PGSSLROOTCERT"],
         "channel_binding": "require",
         "connect_timeout": int(pg_environment["PGCONNECT_TIMEOUT"]),
     }

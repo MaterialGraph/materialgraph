@@ -2,7 +2,13 @@ from pathlib import Path
 
 import pytest
 
-from scripts.backup_database import BackupError, database_environment, safe_prefix, sha256_file
+from scripts.backup_database import (
+    BackupError,
+    connection_parameters,
+    database_environment,
+    safe_prefix,
+    sha256_file,
+)
 
 
 def test_safe_prefix_normalizes_expected_value():
@@ -26,6 +32,7 @@ def test_database_environment_keeps_credentials_out_of_command_arguments():
     assert environment["PGUSER"] == "backup-user"
     assert environment["PGPASSWORD"] == "p@ss"
     assert environment["PGSSLMODE"] == "verify-full"
+    assert environment["PGSSLROOTCERT"] == "/etc/ssl/certs/ca-certificates.crt"
     assert environment["PGCHANNELBINDING"] == "require"
 
 
@@ -36,7 +43,20 @@ def test_database_environment_cannot_downgrade_transport_security():
     )
 
     assert environment["PGSSLMODE"] == "verify-full"
+    assert environment["PGSSLROOTCERT"] == "/etc/ssl/certs/ca-certificates.crt"
     assert environment["PGCHANNELBINDING"] == "require"
+
+
+def test_connection_parameters_include_explicit_ca_bundle():
+    environment = database_environment(
+        "postgresql+psycopg://backup-user:secret@db.example/materialgraph"
+    )
+
+    parameters = connection_parameters(environment)
+
+    assert parameters["sslmode"] == "verify-full"
+    assert parameters["sslrootcert"] == "/etc/ssl/certs/ca-certificates.crt"
+    assert parameters["channel_binding"] == "require"
 
 
 def test_sha256_file(tmp_path: Path):

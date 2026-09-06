@@ -75,8 +75,11 @@ the backup helper forced `PGSSLMODE=require`, independently of the migration
 URL. The recorded backup therefore proved encrypted connectivity and backup
 integrity, but did not prove certificate and hostname validation. The helper
 has been changed to enforce `verify-full` and required channel binding even if
-an input URL requests weaker settings. Its deployed backup check must be rerun
-before the table entry above becomes Pass.
+an input URL requests weaker settings. Testing inside the systemd isolation
+showed that implicit CA discovery and `sslrootcert=system` failed, while the
+readable Ubuntu CA bundle at `/etc/ssl/certs/ca-certificates.crt` succeeded.
+The helper now supplies that explicit CA bundle to psycopg and `pg_dump`. Its
+deployed backup check must be rerun before the table entry above becomes Pass.
 
 ## Secret-handling evidence
 
