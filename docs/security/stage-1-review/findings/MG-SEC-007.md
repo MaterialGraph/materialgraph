@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+In remediation as of 2026-09-06.
 
 ## Assessment
 
@@ -11,7 +11,14 @@ Open.
 - Affected component: Neon role and production application credential boundary
 - Application evidence checkpoint:
   `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Not resolved**
+- Remediation baseline:
+  `95ac8659d213a45d4bccedac10acd4c2d0fca193`
+- Resolution version or commit: **Pending**
+
+The approved scope, rollback boundary, and acceptance criteria are maintained
+under [`../remediation/`](../remediation/README.md). No role or grant change is
+considered complete until deployed runtime, backup, migration, and scientific
+regression checks pass.
 
 ## Exact evidence
 

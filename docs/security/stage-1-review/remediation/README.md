@@ -4,8 +4,8 @@
 
 Wave 0 verified. `MG-SEC-012` is the first verified Stage 1 remediation.
 `MG-SEC-006` is retired after exact deployment revalidation and completed
-certificate-validation hardening. No other finding is active until its separate
-scope is opened.
+certificate-validation hardening. `MG-SEC-007` is now active with an approved
+least-privilege database-role scope.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -19,7 +19,7 @@ verification are recorded separately in this directory.
   `bb888b54280fa5084fb9217335602527533be45a`.
 - Verified remediation: `MG-SEC-012` recovery readiness.
 - Retired after revalidation: `MG-SEC-006` database transport.
-- Approved next database finding: `MG-SEC-007` runtime and migration privilege
+- Active database finding: `MG-SEC-007` runtime, backup, and migration privilege
   separation.
 - Other findings remain outside the active implementation scope.
 
@@ -65,6 +65,10 @@ or when the cost of reconstructing production data materially increases.
   criteria and evidence checklist.
 - [`verification/MG-SEC-006.md`](verification/MG-SEC-006.md) — corrected
   database-transport classification and deployed hardening evidence.
+- [`change-impact/MG-SEC-007.md`](change-impact/MG-SEC-007.md) — approved role,
+  credential, rollback, and scientific-impact boundaries.
+- [`verification/MG-SEC-007.md`](verification/MG-SEC-007.md) — required
+  privilege, deployment, backup, migration, and deterministic checks.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 

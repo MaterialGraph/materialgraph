@@ -238,6 +238,44 @@ def test_stage_one_database_transport_revalidation_is_consistent():
     assert "`channel_binding=require` was retained" in verification
 
 
+def test_stage_one_database_privilege_remediation_is_opened_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
+        encoding="utf-8"
+    )
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-007.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-007.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-007.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-007`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-007` |")
+    )
+
+    assert finding_row.endswith("| In remediation |")
+    assert "| 1 | In progress |" in remediation_row
+    assert "In remediation as of 2026-09-06" in finding
+    assert "No paid Neon feature" in change_impact
+    assert "SQL, not the Neon" in change_impact
+    assert "No production role or credential change" in verification
+    assert verification.count("| Pending |") == 20
+
+
 def test_independent_audit_closure_records_are_consistent():
     audit_root = PROJECT_ROOT / "docs/auditing/independent-audit"
     remediation_root = audit_root / "remediation"

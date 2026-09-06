@@ -59,7 +59,7 @@ service, certificate, key-management system, or infrastructure component.
 | Deployed migration URL uses `verify-full` | Pass |
 | Both URLs retain required channel binding | Pass |
 | Production restart and health check | Pass (`HTTP 200`) |
-| Verified backup under hardened migration path | Follow-up deployment verification required after source inspection found the backup helper forced `require` |
+| Verified backup under hardened migration path | Pass (9 tables; explicit Ubuntu CA bundle) |
 | Daily backup timer remained active and enabled | Pass |
 | Temporary protected configuration copy removed | Pass |
 
@@ -78,8 +78,9 @@ has been changed to enforce `verify-full` and required channel binding even if
 an input URL requests weaker settings. Testing inside the systemd isolation
 showed that implicit CA discovery and `sslrootcert=system` failed, while the
 readable Ubuntu CA bundle at `/etc/ssl/certs/ca-certificates.crt` succeeded.
-The helper now supplies that explicit CA bundle to psycopg and `pg_dump`. Its
-deployed backup check must be rerun before the table entry above becomes Pass.
+The helper now supplies that explicit CA bundle to psycopg and `pg_dump`. A
+deployed run completed successfully on 2026-09-06, verified a nine-table
+archive, and left the application healthy and backup timer active.
 
 ## Secret-handling evidence
 
@@ -93,8 +94,7 @@ deployed backup check must be rerun before the table entry above becomes Pass.
 
 `MG-SEC-006` remains Retired because the original plaintext conclusion was
 disproved. The original record remains available for traceability and the
-`verify-full` changes are tracked as defense-in-depth hardening; follow-up
-backup-helper deployment verification remains explicit above.
+`verify-full` changes are retained as verified defense-in-depth hardening.
 
 ## Authoritative references
 

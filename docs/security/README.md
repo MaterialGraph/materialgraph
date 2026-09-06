@@ -225,8 +225,7 @@ Wave 0 established and verified a cost-conscious daily backup and isolated
 recovery path for `MG-SEC-012`. Database transport was revalidated and hardened
 with certificate and hostname verification; `MG-SEC-006` was retired because
 its original plaintext conclusion was invalid. Least-privilege work in
-`MG-SEC-007` may be opened next under separate change-impact and verification
-records.
+`MG-SEC-007` is active under separate change-impact and verification records.
 
 The security foundation already implemented—particularly secret scanning,
 environment isolation, and credential-handling procedures—is treated as an
