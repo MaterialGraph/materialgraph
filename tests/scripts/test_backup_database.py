@@ -25,7 +25,17 @@ def test_database_environment_keeps_credentials_out_of_command_arguments():
     assert environment["PGDATABASE"] == "materialgraph"
     assert environment["PGUSER"] == "backup-user"
     assert environment["PGPASSWORD"] == "p@ss"
-    assert environment["PGSSLMODE"] == "require"
+    assert environment["PGSSLMODE"] == "verify-full"
+    assert environment["PGCHANNELBINDING"] == "require"
+
+
+def test_database_environment_cannot_downgrade_transport_security():
+    environment = database_environment(
+        "postgresql+psycopg://backup-user:secret@db.example/materialgraph"
+        "?sslmode=disable&channel_binding=disable"
+    )
+
+    assert environment["PGSSLMODE"] == "verify-full"
     assert environment["PGCHANNELBINDING"] == "require"
 
 

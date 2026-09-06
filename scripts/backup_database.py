@@ -87,7 +87,7 @@ def database_environment(database_url: str) -> dict[str, str]:
             "PGDATABASE": str(url.database),
             "PGUSER": str(url.username),
             "PGPASSWORD": str(url.password),
-            "PGSSLMODE": "require",
+            "PGSSLMODE": "verify-full",
             "PGCHANNELBINDING": "require",
             "PGCONNECT_TIMEOUT": "15",
         }

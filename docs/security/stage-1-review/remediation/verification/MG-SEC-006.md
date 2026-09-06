@@ -59,7 +59,7 @@ service, certificate, key-management system, or infrastructure component.
 | Deployed migration URL uses `verify-full` | Pass |
 | Both URLs retain required channel binding | Pass |
 | Production restart and health check | Pass (`HTTP 200`) |
-| Verified backup under hardened migration path | Pass (9 tables) |
+| Verified backup under hardened migration path | Follow-up deployment verification required after source inspection found the backup helper forced `require` |
 | Daily backup timer remained active and enabled | Pass |
 | Temporary protected configuration copy removed | Pass |
 
@@ -67,6 +67,16 @@ The first health request immediately after restart returned `502`; a repeat
 returned `200`. The systemd journal showed a clean shutdown, successful startup
 one second later, and no database or TLS error. This was classified as a
 startup-readiness race and is not evidence of transport failure.
+
+## Follow-up source correction
+
+Post-reconciliation source inspection found that `database_environment()` in
+the backup helper forced `PGSSLMODE=require`, independently of the migration
+URL. The recorded backup therefore proved encrypted connectivity and backup
+integrity, but did not prove certificate and hostname validation. The helper
+has been changed to enforce `verify-full` and required channel binding even if
+an input URL requests weaker settings. Its deployed backup check must be rerun
+before the table entry above becomes Pass.
 
 ## Secret-handling evidence
 
@@ -78,9 +88,10 @@ startup-readiness race and is not evidence of transport failure.
 
 ## Disposition
 
-`MG-SEC-006` is Retired. The original record remains available for traceability,
-the inaccurate conclusion is not counted among confirmed findings, and the
-completed `verify-full` change is retained as defense-in-depth hardening.
+`MG-SEC-006` remains Retired because the original plaintext conclusion was
+disproved. The original record remains available for traceability and the
+`verify-full` changes are tracked as defense-in-depth hardening; follow-up
+backup-helper deployment verification remains explicit above.
 
 ## Authoritative references
 
