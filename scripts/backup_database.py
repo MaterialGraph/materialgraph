@@ -17,12 +17,10 @@ from pathlib import Path
 from typing import Any, Iterator
 
 import psycopg
-from dotenv import dotenv_values
 from sqlalchemy.engine import make_url
 
 
 LOGGER = logging.getLogger("materialgraph.backup")
-DEFAULT_APPLICATION_ENV = Path("/opt/materialgraph/.env")
 DEFAULT_STATE_DIRECTORY = Path("/var/lib/materialgraph-backup")
 REQUIRED_COMMANDS = ("pg_dump", "pg_restore", "aws", "git")
 
@@ -94,15 +92,6 @@ def database_environment(database_url: str) -> dict[str, str]:
         }
     )
     return environment
-
-
-def load_database_url(path: Path) -> str:
-    values = dotenv_values(path)
-    for key in ("DATABASE_MIGRATION_URL", "DATABASE_URL"):
-        value = values.get(key)
-        if value and value.strip():
-            return value.strip()
-    raise BackupError(f"database URL is absent from {path}")
 
 
 @contextmanager
@@ -250,15 +239,12 @@ def execute_backup() -> None:
     bucket = required_setting("MATERIALGRAPH_BACKUP_BUCKET")
     region = os.environ.get("MATERIALGRAPH_BACKUP_REGION", "ap-south-1").strip()
     prefix = safe_prefix(os.environ.get("MATERIALGRAPH_BACKUP_PREFIX", "production"))
-    application_env = Path(
-        os.environ.get("MATERIALGRAPH_APPLICATION_ENV", DEFAULT_APPLICATION_ENV)
-    )
     state_directory = Path(
         os.environ.get("MATERIALGRAPH_BACKUP_STATE_DIRECTORY", DEFAULT_STATE_DIRECTORY)
     )
     project_root = Path(os.environ.get("MATERIALGRAPH_PROJECT_ROOT", "/opt/materialgraph"))
 
-    database_url = load_database_url(application_env)
+    database_url = required_setting("MATERIALGRAPH_BACKUP_DATABASE_URL")
     pg_environment = database_environment(database_url)
     created_at = datetime.now(UTC)
     backup_id = created_at.strftime("%Y%m%dT%H%M%SZ")

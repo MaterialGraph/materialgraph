@@ -182,10 +182,12 @@ The repository supplies `scripts/backup_database.py`,
 `materialgraph-backup.service`, `materialgraph-backup.timer`, and
 `materialgraph-backup.env.example`. Follow the exact installation and first-run
 checks in [`../../../../guide/DEPLOYMENT.md`](../../../../guide/DEPLOYMENT.md).
-The installed `/etc/materialgraph/backup.env` contains only the private bucket
-name, region, and prefix. Database configuration remains in the existing
-protected application environment file and AWS access comes from the instance
-role.
+The installed `/etc/materialgraph/backup.env` contains the private bucket
+settings and `MATERIALGRAPH_BACKUP_DATABASE_URL` for the dedicated SQL-created
+read-only backup role. The backup no longer consumes runtime or migration
+credentials from the application environment file. Keep the installed file
+`root:root` mode `0600`, never print its values, and continue to obtain AWS
+access from the instance role.
 
 ## Failure and escalation
 

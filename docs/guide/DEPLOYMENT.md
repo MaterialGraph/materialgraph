@@ -254,14 +254,16 @@ sudo systemctl restart materialgraph
 
 ## Daily database backup timer
 
-The reviewed backup job uses the existing direct database URL in
-`/opt/materialgraph/.env` and the EC2 instance role. Do not add database or AWS
-credentials to the backup environment file.
+The reviewed backup job uses a dedicated SQL-created, read-only database role
+through `MATERIALGRAPH_BACKUP_DATABASE_URL` in the root-owned backup
+environment file. It does not reuse the runtime or migration credential. AWS
+access continues to use the EC2 instance role; do not add AWS credentials to
+the file.
 
 Prerequisites are PostgreSQL 17 client tools, AWS CLI v2, a private versioned
 S3 bucket with the controls in the recovery runbook, and the constrained EC2
-backup role. Copy the safe example, then replace only the bucket placeholder in
-the installed file:
+backup role. Copy the safe example, then replace the bucket placeholder and
+dedicated backup-role URL only in the installed file:
 
 ```bash
 sudo install -d -o root -g root -m 0755 /etc/materialgraph
@@ -270,6 +272,10 @@ sudo install -o root -g root -m 0600 \
   /etc/materialgraph/backup.env
 sudoedit /etc/materialgraph/backup.env
 ```
+
+The dedicated URL must use the direct Neon endpoint with
+`sslmode=verify-full&channel_binding=require`. Keep the file owned by
+`root:root` with mode `0600`; never print the installed value.
 
 Install the reviewed units, check their syntax, and run one manual backup
 before enabling the timer:

@@ -144,6 +144,9 @@ def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
 def test_backup_units_are_persistent_bounded_and_do_not_embed_secrets():
     service = (PROJECT_ROOT / "materialgraph-backup.service").read_text(encoding="utf-8")
     timer = (PROJECT_ROOT / "materialgraph-backup.timer").read_text(encoding="utf-8")
+    backup_script = (PROJECT_ROOT / "scripts/backup_database.py").read_text(
+        encoding="utf-8"
+    )
     example = (PROJECT_ROOT / "materialgraph-backup.env.example").read_text(
         encoding="utf-8"
     )
@@ -162,7 +165,16 @@ def test_backup_units_are_persistent_bounded_and_do_not_embed_secrets():
     assert "RandomizedDelaySec=15min" in timer
     assert "Persistent=true" in timer
     assert "replace-with-private-backup-bucket" in example
-    assert "DATABASE_" not in example
+    assert (
+        "MATERIALGRAPH_BACKUP_DATABASE_URL="
+        "replace-with-dedicated-backup-role-url"
+    ) in example
+    assert (
+        'required_setting("MATERIALGRAPH_BACKUP_DATABASE_URL")'
+        in backup_script
+    )
+    assert "DATABASE_MIGRATION_URL" not in backup_script
+    assert "dotenv_values" not in backup_script
 
 
 def test_stage_one_recovery_verification_records_are_consistent():
