@@ -81,6 +81,8 @@ additional infrastructure cost. `MG-SEC-007` is verified with deployed
 least-privilege runtime and backup identities and an isolated migration path. Security changes
 must preserve deterministic scientific results and ordering and must be
 verified in both tests and deployed behavior.
+`MG-SEC-003` is now active with repository-controlled pre-start enforcement of
+the owner-only production environment-file boundary.
 
 ## Investigation sequence
 

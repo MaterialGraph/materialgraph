@@ -300,6 +300,46 @@ def test_stage_one_database_privilege_remediation_is_verified_consistently():
     assert "screening request, and discovery" in verification
 
 
+def test_stage_one_environment_file_remediation_is_opened_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
+        encoding="utf-8"
+    )
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-003.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-003.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-003.md"
+    ).read_text(encoding="utf-8")
+    unit = (PROJECT_ROOT / "materialgraph.service").read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-003`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-003` |")
+    )
+
+    assert finding_row.endswith("| In remediation |")
+    assert "| 1 | In progress |" in remediation_row
+    assert "In remediation as of 2026-09-10" in finding
+    assert "No paid service" in change_impact
+    assert "MG-SEC-004" in verification
+    assert verification.count("| Pending |") == 13
+    assert "ExecStartPre=" in unit
+    assert "scripts/verify_secret_file.py /opt/materialgraph/.env" in unit
+
+
 def test_independent_audit_closure_records_are_consistent():
     audit_root = PROJECT_ROOT / "docs/auditing/independent-audit"
     remediation_root = audit_root / "remediation"

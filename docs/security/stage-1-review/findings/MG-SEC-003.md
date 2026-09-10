@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+In remediation as of 2026-09-10.
 
 ## Assessment
 
@@ -10,7 +10,9 @@ Open.
 - Confidence: **High**
 - Affected component: production EC2 filesystem and secret storage
 - Deployment checkpoint: `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Not resolved**
+- Remediation baseline:
+  `28d205db60467a949a74f6e38135c20825b55502`
+- Resolution version or commit: **Pending deployment verification**
 
 ## Exact evidence
 
@@ -20,6 +22,11 @@ Open.
   documented to contain application credentials.
 
 No secret value or environment-file content was inspected or recorded.
+
+The deployed mode was subsequently corrected to `600` during approved
+MG-SEC-007 work. MG-SEC-003 now adds fail-closed pre-start enforcement and
+independent deployment verification; the original evidence remains preserved
+above for audit history.
 
 ## Threat scenario
 
@@ -54,3 +61,7 @@ group, and mode without printing file contents.
 - systemd can still load the environment and start MaterialGraph.
 - Database and external integrations remain functional.
 - No secret value appears in test, command, or log output.
+
+Current implementation and acceptance evidence are maintained in
+[`../remediation/`](../remediation/README.md). The administrative authority of
+the current service account remains separate MG-SEC-004 scope.

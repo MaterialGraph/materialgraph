@@ -85,6 +85,11 @@ Production environment file:
 
 /opt/materialgraph/.env
 
+The file must be a regular file owned by the MaterialGraph service user, have
+exactly one hard link, and use mode `600`. `materialgraph.service` verifies
+these metadata before every start without reading or logging file contents. An
+unsafe file causes startup to fail closed.
+
 Application variables:
 
 DATABASE_URL=
@@ -105,6 +110,8 @@ Important:
 
 * Do not commit `.env` files or other files containing credentials.
 * Production secrets are managed directly on EC2.
+* Install the production environment file with mode `600`; do not use a
+  group-readable or world-readable mode.
 * Local development and production use separate environment files.
 * `.env.example` may contain variable names and safe placeholders only.
 * Never store a production database password, API key, token, or complete credential-bearing connection string in a tracked repository file.

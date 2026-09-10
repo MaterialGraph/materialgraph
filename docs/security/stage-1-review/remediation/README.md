@@ -6,6 +6,8 @@ Wave 0 verified. `MG-SEC-012` established recovery readiness.
 `MG-SEC-006` is retired after exact deployment revalidation and completed
 certificate-validation hardening. `MG-SEC-007` is verified with deployed
 least-privilege runtime and backup roles and an isolated migration path.
+`MG-SEC-003` is active with an owner-only environment-file boundary and
+fail-closed pre-start enforcement pending deployment verification.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -21,6 +23,7 @@ verification are recorded separately in this directory.
 - Retired after revalidation: `MG-SEC-006` database transport.
 - Verified database finding: `MG-SEC-007` runtime, backup, and migration
   privilege separation.
+- Active filesystem finding: `MG-SEC-003` production environment-file access.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
@@ -69,6 +72,10 @@ or when the cost of reconstructing production data materially increases.
   credential, rollback, and scientific-impact boundaries.
 - [`verification/MG-SEC-007.md`](verification/MG-SEC-007.md) — required
   privilege, deployment, backup, migration, and deterministic checks.
+- [`change-impact/MG-SEC-003.md`](change-impact/MG-SEC-003.md) — approved
+  environment-file metadata and rollback boundary.
+- [`verification/MG-SEC-003.md`](verification/MG-SEC-003.md) — permission,
+  pre-start enforcement, restart, and secret-safe evidence checklist.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 
