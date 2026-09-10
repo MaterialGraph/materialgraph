@@ -1,7 +1,7 @@
 # Stage 1 Security Evidence Register
 
 **Status:** Stage 1 inspection evidence reconciled
-**Last updated:** 2026-09-06
+**Last updated:** 2026-09-10
 
 ## Evidence-handling rules
 
@@ -62,6 +62,33 @@
   `lxd`.
 - Sudo policy grants the runtime account passwordless execution as any user,
   including root.
+
+### Environment-file remediation
+
+Redacted production verification on 2026-09-10 superseded the original file
+mode evidence without altering the separate account-authority evidence:
+
+- `/opt/materialgraph/.env` is a regular, single-link file owned by the
+  effective `ubuntu:ubuntu` service identity with mode exactly `600`;
+- the ordinary permission display has no extended-ACL marker, and a read as the
+  unprivileged `nobody` identity is rejected;
+- a repository-controlled metadata checker accepts the production boundary and
+  rejects unsafe-mode and symbolic-link temporary fixtures;
+- systemd runs that checker before MaterialGraph startup and recorded
+  `0/SUCCESS` at deployed checkpoint
+  `cb8e3b711b74ec0f7fe1158e7b2f6f18d03309f3`;
+- the effective unit matches the repository unit, MaterialGraph restarted
+  without traceback, and health plus a database-backed material read returned
+  HTTP `200`;
+- 25 focused and 752 complete tests passed with one expected Windows POSIX
+  integration skip; focused Ruff, whitespace, and GitHub Secret Scan run 66
+  passed; and
+- temporary unsafe fixtures and the deployment rollback unit were removed.
+
+No file contents, URLs, credentials, public addresses, or secret values were
+inspected or recorded. The `ubuntu` account's administrative group membership,
+passwordless sudo, and writable application checkout remain open MG-SEC-004
+evidence rather than being silently resolved by MG-SEC-003.
 
 ## EC2 network evidence
 

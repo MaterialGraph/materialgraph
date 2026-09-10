@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — two remediations verified
+**Status:** Inspection complete — three remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -81,7 +81,7 @@ additional infrastructure cost. `MG-SEC-007` is verified with deployed
 least-privilege runtime and backup identities and an isolated migration path. Security changes
 must preserve deterministic scientific results and ordering and must be
 verified in both tests and deployed behavior.
-`MG-SEC-003` is now active with repository-controlled pre-start enforcement of
+`MG-SEC-003` is verified with repository-controlled pre-start enforcement of
 the owner-only production environment-file boundary.
 
 ## Investigation sequence

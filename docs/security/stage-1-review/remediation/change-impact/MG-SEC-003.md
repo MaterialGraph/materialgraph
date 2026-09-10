@@ -2,7 +2,10 @@
 
 ## Status
 
-Approved and in progress as of 2026-09-10.
+Completed and verified on 2026-09-10.
+
+Implementation and deployed checkpoint:
+`cb8e3b711b74ec0f7fe1158e7b2f6f18d03309f3`.
 
 ## Baseline
 

@@ -1,7 +1,7 @@
 # Stage 1 Security Findings Register
 
-**Status:** Inspection complete — two remediations verified
-**Last reconciled:** 2026-09-06
+**Status:** Inspection complete — three remediations verified
+**Last reconciled:** 2026-09-10
 
 ## Status definitions
 
@@ -19,7 +19,7 @@
 |---|---|---|---|---|---|
 | [`MG-SEC-001`](findings/MG-SEC-001.md) | Public expensive endpoints lack rate and concurrency limiting | High | High | Application and Nginx | Open |
 | [`MG-SEC-002`](findings/MG-SEC-002.md) | Scientific requests lack an enforced deadline and timeout hierarchy | Medium | High | Application, Nginx, and database client | Open |
-| [`MG-SEC-003`](findings/MG-SEC-003.md) | Production environment file is world-readable | Medium | High | EC2 filesystem | In remediation |
+| [`MG-SEC-003`](findings/MG-SEC-003.md) | Production environment file is world-readable | Medium | High | EC2 filesystem | Verified |
 | [`MG-SEC-004`](findings/MG-SEC-004.md) | Internet-facing service runs with passwordless root authority | High | High | systemd and EC2 account boundary | Open |
 | [`MG-SEC-005`](findings/MG-SEC-005.md) | Public API traffic is served over unencrypted HTTP | Medium | High | Nginx and EC2 network boundary | Open |
 | [`MG-SEC-007`](findings/MG-SEC-007.md) | Application database role has administrative capabilities | High | High | Neon role and application credential boundary | Verified |

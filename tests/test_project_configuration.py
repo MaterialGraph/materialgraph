@@ -300,7 +300,7 @@ def test_stage_one_database_privilege_remediation_is_verified_consistently():
     assert "screening request, and discovery" in verification
 
 
-def test_stage_one_environment_file_remediation_is_opened_consistently():
+def test_stage_one_environment_file_remediation_is_verified_consistently():
     security_root = PROJECT_ROOT / "docs/security/stage-1-review"
     findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
         encoding="utf-8"
@@ -330,12 +330,20 @@ def test_stage_one_environment_file_remediation_is_opened_consistently():
         if line.startswith("| `MG-SEC-003` |")
     )
 
-    assert finding_row.endswith("| In remediation |")
-    assert "| 1 | In progress |" in remediation_row
-    assert "In remediation as of 2026-09-10" in finding
+    assert finding_row.endswith("| Verified |")
+    assert "| 1 | Verified |" in remediation_row
+    assert "Verified on 2026-09-10" in finding
     assert "No paid service" in change_impact
     assert "MG-SEC-004" in verification
-    assert verification.count("| Pending |") == 13
+    acceptance_rows = [
+        line
+        for line in verification.splitlines()
+        if line.startswith("| ") and line.endswith("| Pass |")
+    ]
+    assert len(acceptance_rows) == 13
+    assert "All thirteen acceptance criteria passed" in verification
+    assert "GitHub Secret Scan run 66 completed successfully" in verification
+    assert "cb8e3b711b74ec0f7fe1158e7b2f6f18d03309f3" in verification
     assert "ExecStartPre=" in unit
     assert "scripts/verify_secret_file.py /opt/materialgraph/.env" in unit
 

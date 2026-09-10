@@ -1,8 +1,8 @@
 # MaterialGraph Security
 
-**Status:** Stage 1 inspection complete; two remediations verified
+**Status:** Stage 1 inspection complete; three remediations verified
 **Project stage:** Deterministic scientific prototype
-**Last updated:** 2026-09-06
+**Last updated:** 2026-09-10
 
 ## Purpose
 
@@ -227,8 +227,8 @@ with certificate and hostname verification; `MG-SEC-006` was retired because
 its original plaintext conclusion was invalid. Least-privilege work in
 `MG-SEC-007` is verified: runtime and backup now use separate restricted roles,
 while migration retains an isolated administrative path.
-`MG-SEC-003` is active with fail-closed enforcement of the deployed owner-only
-runtime environment-file boundary.
+`MG-SEC-003` is verified with fail-closed enforcement of the deployed
+owner-only runtime environment-file boundary.
 
 The security foundation already implemented—particularly secret scanning,
 environment isolation, and credential-handling procedures—is treated as an

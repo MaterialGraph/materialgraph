@@ -2,7 +2,7 @@
 
 ## Status
 
-In remediation as of 2026-09-10.
+Verified on 2026-09-10.
 
 ## Assessment
 
@@ -12,7 +12,8 @@ In remediation as of 2026-09-10.
 - Deployment checkpoint: `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
 - Remediation baseline:
   `28d205db60467a949a74f6e38135c20825b55502`
-- Resolution version or commit: **Pending deployment verification**
+- Implementation and deployed checkpoint:
+  `cb8e3b711b74ec0f7fe1158e7b2f6f18d03309f3`
 
 ## Exact evidence
 
@@ -65,3 +66,14 @@ group, and mode without printing file contents.
 Current implementation and acceptance evidence are maintained in
 [`../remediation/`](../remediation/README.md). The administrative authority of
 the current service account remains separate MG-SEC-004 scope.
+
+## Resolution
+
+The deployed environment is now a regular, single-link file owned by the
+effective service user with mode exactly `600`; an unprivileged read is
+rejected. A repository-controlled metadata checker runs before every service
+start and fails closed on unsafe type, ownership, mode, or hard-link count.
+MaterialGraph restarted successfully under the guard, retained HTTP `200`
+health and database access, and disclosed no secret material during
+verification. See
+[`../remediation/verification/MG-SEC-003.md`](../remediation/verification/MG-SEC-003.md).
