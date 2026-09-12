@@ -34,7 +34,9 @@ Repository and deployed baseline:
 5. Extend the existing metadata checker to verify an explicit owner, the
    runtime group, exact mode, regular-file type, and one-hard-link boundary
    without reading contents.
-6. Enable systemd protections that preserve only Unix, IPv4, and IPv6 network
+6. Disable the development-time Pydantic dotenv reader after systemd loads the
+   protected production environment, avoiding a second read from the checkout.
+7. Enable systemd protections that preserve only Unix, IPv4, and IPv6 network
    access and do not require a writable application checkout.
 
 ## Expected impact

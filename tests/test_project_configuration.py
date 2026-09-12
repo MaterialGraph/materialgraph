@@ -2,7 +2,7 @@ import re
 from importlib import metadata
 from pathlib import Path
 
-from app.core.config import Settings
+from app.core.config import Settings, resolve_settings_env_file
 from app.main import app
 from app.version import PROJECT_VERSION, UNKNOWN_VERSION, get_project_version
 
@@ -51,6 +51,17 @@ def test_every_advertised_environment_key_maps_to_settings_field():
 
     assert advertised_keys <= set(Settings.model_fields)
     assert "MP_API_URL=" not in env_example
+
+
+def test_settings_dotenv_source_can_be_disabled_after_systemd_loads_it():
+    assert resolve_settings_env_file({}) == ".env"
+    assert resolve_settings_env_file({"MATERIALGRAPH_ENV_FILE": ""}) is None
+    assert (
+        resolve_settings_env_file(
+            {"MATERIALGRAPH_ENV_FILE": "/etc/materialgraph/runtime.env"}
+        )
+        == "/etc/materialgraph/runtime.env"
+    )
 
 
 def test_runtime_version_uses_installed_package_metadata(monkeypatch):
@@ -121,6 +132,7 @@ def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
 
     assert "WorkingDirectory=/opt/materialgraph" in unit
     assert "EnvironmentFile=/etc/materialgraph/runtime.env" in unit
+    assert "Environment=MATERIALGRAPH_ENV_FILE=" in unit
     assert "User=materialgraph" in unit
     assert "Group=materialgraph" in unit
     assert "NoNewPrivileges=true" in unit

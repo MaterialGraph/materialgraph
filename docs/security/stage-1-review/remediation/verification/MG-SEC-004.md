@@ -17,17 +17,18 @@ Baseline: `97aa170b3418afc38570a14bcc93523d6ce98392`.
 | 5 | Runtime identity can read but cannot modify the environment file | Pending |
 | 6 | Runtime identity cannot write the repository, application code, scripts, or virtual environment | Pending |
 | 7 | Pre-start metadata validation succeeds for the protected runtime environment | Pending |
-| 8 | Unsafe mode, owner, group, symlink, and hard-link fixtures fail closed | Pending |
-| 9 | `NoNewPrivileges`, private temporary storage/devices, filesystem, kernel, and control-group protections are effective | Pending |
-| 10 | Effective capability bounding and ambient capability sets are empty | Pending |
-| 11 | Runtime identity cannot invoke passwordless sudo or access LXD | Pending |
-| 12 | Application starts and restarts without permission or sandbox violations | Pending |
-| 13 | Uvicorn remains bound only to `127.0.0.1:8000` and Nginx remains active | Pending |
-| 14 | Health and database-backed endpoints return HTTP `200` | Pending |
-| 15 | Representative material, screening, and discovery JSON responses match the pre-change baseline exactly | Pending |
-| 16 | Backup timer and isolated migration path remain operational | Pending |
-| 17 | Focused tests, complete suite, Ruff, diff check, and GitHub secret scan pass | Pending |
-| 18 | Rollback artifacts and superseded runtime secret are removed only after successful verification | Pending |
+| 8 | Production disables the second Pydantic dotenv read while local development retains its `.env` default | Pending |
+| 9 | Unsafe mode, owner, group, symlink, and hard-link fixtures fail closed | Pending |
+| 10 | `NoNewPrivileges`, private temporary storage/devices, filesystem, kernel, and control-group protections are effective | Pending |
+| 11 | Effective capability bounding and ambient capability sets are empty | Pending |
+| 12 | Runtime identity cannot invoke passwordless sudo or access LXD | Pending |
+| 13 | Application starts and restarts without permission or sandbox violations | Pending |
+| 14 | Uvicorn remains bound only to `127.0.0.1:8000` and Nginx remains active | Pending |
+| 15 | Health and database-backed endpoints return HTTP `200` | Pending |
+| 16 | Representative material, screening, and discovery JSON responses match the pre-change baseline exactly | Pending |
+| 17 | Backup timer and isolated migration path remain operational | Pending |
+| 18 | Focused tests, complete suite, Ruff, diff check, and GitHub secret scan pass | Pending |
+| 19 | Rollback artifacts and superseded runtime secret are removed only after successful verification | Pending |
 
 The finding remains **In remediation** until every row is supported by recorded
 production evidence.

@@ -256,6 +256,11 @@ after process failures. The tracked unit contains no credential values and
 enables systemd privilege, filesystem, device, temporary-directory, kernel,
 control-group, capability, and address-family restrictions.
 
+The unit sets `MATERIALGRAPH_ENV_FILE` to an empty value after systemd loads the
+protected `EnvironmentFile`. This disables Pydantic's development-time `.env`
+reader in production and prevents a second read from the deployment checkout.
+Local development continues to use `.env` by default.
+
 Install the unit with root ownership and read-only system permissions:
 
 sudo install -o root -g root -m 0644 \

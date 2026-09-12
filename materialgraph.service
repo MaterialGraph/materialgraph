@@ -9,6 +9,7 @@ User=materialgraph
 Group=materialgraph
 WorkingDirectory=/opt/materialgraph
 EnvironmentFile=/etc/materialgraph/runtime.env
+Environment=MATERIALGRAPH_ENV_FILE=
 ExecStartPre=/opt/materialgraph/.venv/bin/python /opt/materialgraph/scripts/verify_secret_file.py --owner-uid 0 --mode 0640 /etc/materialgraph/runtime.env
 ExecStart=/opt/materialgraph/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
 Restart=on-failure
