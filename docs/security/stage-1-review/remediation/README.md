@@ -10,6 +10,9 @@ least-privilege runtime and backup roles and an isolated migration path.
 deployed fail-closed pre-start enforcement.
 `MG-SEC-004` is verified with a dedicated non-login public runtime identity,
 root-owned configuration, non-writable code, and tested systemd isolation.
+`MG-SEC-005` is verified with trusted HTTPS for both public hostnames,
+plaintext redirects, modern TLS, exercised renewal, and unchanged scientific
+responses.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -27,6 +30,8 @@ verification are recorded separately in this directory.
   privilege separation.
 - Verified filesystem finding: `MG-SEC-003` production environment-file access.
 - Verified host-boundary remediation: `MG-SEC-004` dedicated runtime identity.
+- Verified public-transport remediation: `MG-SEC-005` trusted HTTPS and HTTP
+  redirection.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
@@ -83,6 +88,10 @@ or when the cost of reconstructing production data materially increases.
   runtime-identity, filesystem, sandbox, rollout, and rollback boundary.
 - [`verification/MG-SEC-004.md`](verification/MG-SEC-004.md) — required
   identity, privilege, systemd, endpoint, and scientific-integrity checks.
+- [`change-impact/MG-SEC-005.md`](change-impact/MG-SEC-005.md) — approved DNS,
+  certificate, proxy, rollback, and scientific-impact boundaries.
+- [`verification/MG-SEC-005.md`](verification/MG-SEC-005.md) — public TLS,
+  redirect, renewal, header, endpoint, and scientific-integrity checks.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 

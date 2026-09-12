@@ -127,11 +127,35 @@ Neither correction exposed secret contents or weakened the runtime boundary.
 
 - SSH ingress is restricted to one IPv4 `/32` source.
 - HTTP port 80 is permitted from all IPv4 addresses.
-- HTTPS port 443 is permitted from all IPv4 addresses, but no deployed service
-  listens on that port.
+- At initial inspection, HTTPS port 443 was permitted from all IPv4 addresses,
+  but no deployed service listened on that port.
 - Port 8000 has no inbound security-group rule.
 - No other inbound ports were present in the inspected group.
 - Outbound traffic is permitted to all IPv4 destinations.
+
+## Public HTTPS remediation
+
+Redacted production and independent-client checks on 2026-09-12 established:
+
+- `materialgraph.org` and `www.materialgraph.org` resolved directly to the
+  approved EC2 IPv4 address through DNS-only Cloudflare records;
+- one Let's Encrypt certificate covered both DNS names and was valid from
+  2026-09-12 through 2026-12-11;
+- Nginx validation succeeded and listeners were active on ports 80 and 443;
+- HTTP requests to both names returned `301` to the same path over HTTPS;
+- HTTPS health returned HTTP `200` for both names from EC2 and an independent
+  Windows client;
+- TLS 1.0 and 1.1 were rejected while TLS 1.2 and 1.3 succeeded;
+- HTTPS responses consistently returned a one-year HSTS policy and did not
+  disclose the Nginx version;
+- the enabled and active Certbot timer completed a simulated renewal for both
+  names;
+- complete parsed material, screening, and discovery JSON matched the
+  pre-change captures exactly; and
+- MaterialGraph, Nginx, and the verified-backup timer remained active.
+
+No certificate private key, domain-registration contact data, or secret value
+was inspected or recorded.
 
 ## Database session evidence
 
@@ -334,8 +358,10 @@ of the original plaintext claim.
   environment name. The API health route returned a generic service-status
   response. Neither response demonstrated database readiness.
 - The OpenAPI response was 134,046 bytes at the evidence checkpoint.
-- Nginx response headers disclosed `nginx/1.24.0 (Ubuntu)`. Its default `405`
-  response body disclosed the same version and operating-system label.
+- At initial inspection, Nginx response headers disclosed
+  `nginx/1.24.0 (Ubuntu)`. Its default `405` response body disclosed the same
+  version and operating-system label. MG-SEC-005 hardening subsequently
+  suppressed the version.
 - An unknown route returned a generic 22-byte `404` JSON response. Malformed
   JSON returned a structured 125-byte `422` response. Neither response exposed
   a stack trace, source path, secret, or internal exception.

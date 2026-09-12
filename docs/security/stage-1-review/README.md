@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — four remediations verified
+**Status:** Inspection complete — five remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -86,6 +86,9 @@ the owner-only production environment-file boundary.
 `MG-SEC-004` is verified with a dedicated non-login runtime identity,
 root-owned configuration, non-writable code, empty capability sets, and tested
 systemd isolation.
+`MG-SEC-005` is verified with trusted HTTPS on the apex and `www` hostnames,
+HTTP redirection, modern TLS, automated renewal, and unchanged scientific
+responses.
 
 ## Investigation sequence
 

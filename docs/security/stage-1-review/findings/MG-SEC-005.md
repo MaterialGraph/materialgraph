@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Verified on 2026-09-12.
 
 ## Assessment
 
@@ -10,7 +10,8 @@ Open.
 - Confidence: **High**
 - Affected component: public Nginx and EC2 network boundary
 - Deployment checkpoint: `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Not resolved**
+- Remediation baseline:
+  `602538d5d439a90230a67ea0425fc376a54972b9`
 
 ## Exact evidence
 
@@ -54,3 +55,14 @@ active TLS policy.
 - Obsolete TLS versions are rejected.
 - Certificate renewal is tested or monitored.
 - Scientific responses are unchanged after transport hardening.
+
+## Resolution
+
+The project registered `materialgraph.org`, configured the apex and `www`
+names directly to the production EC2 host, and deployed one trusted certificate
+covering both names. Nginx now redirects HTTP to HTTPS, rejects TLS 1.0 and 1.1,
+serves TLS 1.2 and 1.3, returns a one-year HSTS policy, and omits its version.
+Automated renewal is enabled and a simulated renewal succeeded. Independent
+public health checks and complete parsed material, screening, and discovery
+responses passed without scientific change. See
+[`../remediation/verification/MG-SEC-005.md`](../remediation/verification/MG-SEC-005.md).

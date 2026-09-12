@@ -352,44 +352,55 @@ through an approved low-cost channel.
 
 # Nginx Configuration
 
-Site file:
+Production uses `materialgraph.org` and `www.materialgraph.org`. Keep their A
+and CNAME records in DNS-only mode during direct-origin validation. Both names
+must resolve to the EC2 address before certificate issuance.
 
-/etc/nginx/sites-available/materialgraph
+Install Certbot and obtain the initial certificate through the existing HTTP
+site:
 
-Configuration:
-
-server {
-listen 80 default_server;
-server_name _;
-
-```
-location / {
-    proxy_pass http://127.0.0.1:8000;
-
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
+```bash
+sudo apt-get update
+sudo apt-get install -y certbot python3-certbot-nginx
+sudo certbot --nginx --non-interactive --agree-tos --no-eff-email \
+  --email hello.materialgraph@gmail.com --redirect \
+  -d materialgraph.org -d www.materialgraph.org
 ```
 
-}
+After issuance, install the reviewed final site configuration:
 
-Enable:
-
-sudo ln -s /etc/nginx/sites-available/materialgraph /etc/nginx/sites-enabled/materialgraph
-
-Disable default site:
-
-sudo rm /etc/nginx/sites-enabled/default
-
-Validate:
-
+```bash
+sudo install -o root -g root -m 0644 \
+  /opt/materialgraph/materialgraph.nginx \
+  /etc/nginx/sites-available/materialgraph
+sudo ln -sfn /etc/nginx/sites-available/materialgraph \
+  /etc/nginx/sites-enabled/materialgraph
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
-
-Reload:
-
 sudo systemctl reload nginx
+```
+
+The tracked site terminates TLS with Certbot-managed material, accepts modern
+protocols through Certbot's maintained options, redirects HTTP before proxying,
+returns one-year HSTS without preload or `includeSubDomains`, suppresses the
+Nginx version, and keeps Uvicorn on loopback.
+
+Verify transport and automated renewal:
+
+```bash
+curl -fsS -o /dev/null -w '%{http_code}\n' \
+  https://materialgraph.org/health
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' \
+  http://materialgraph.org/health
+systemctl is-enabled certbot.timer
+systemctl is-active certbot.timer
+sudo certbot renew --dry-run
+```
+
+Before modifying the deployed site, preserve root-owned mode-`600` copies of
+the active Nginx files. If validation, certificate issuance, reload, or health
+checks fail, restore those copies, run `nginx -t`, reload Nginx, and verify the
+previous endpoint before removing rollback material.
 
 ---
 
@@ -414,15 +425,15 @@ Port 8000 is not publicly exposed.
 
 API Root:
 
-http://35.154.84.47
+https://materialgraph.org
 
 Swagger UI:
 
-http://35.154.84.47/docs
+https://materialgraph.org/docs
 
 Health Check:
 
-http://35.154.84.47/health
+https://materialgraph.org/health
 
 ---
 

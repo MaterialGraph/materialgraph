@@ -217,6 +217,76 @@ def test_stage_one_runtime_identity_remediation_is_verified_consistently():
     assert "Verified on 2026-09-12" in finding
 
 
+def test_public_https_configuration_is_bounded_and_reproducible():
+    nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
+    deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "listen 443 ssl;" in nginx
+    assert "server_name materialgraph.org www.materialgraph.org;" in nginx
+    assert "return 301 https://$host$request_uri;" in nginx
+    assert 'Strict-Transport-Security "max-age=31536000" always' in nginx
+    assert "includeSubDomains" not in nginx
+    assert "preload" not in nginx
+    assert "server_tokens off;" in nginx
+    assert "proxy_pass http://127.0.0.1:8000;" in nginx
+    assert "ssl_certificate /etc/letsencrypt/live/materialgraph.org/" in nginx
+    assert "privkey.pem" in nginx
+    assert "BEGIN PRIVATE KEY" not in nginx
+
+    assert "python3-certbot-nginx" in deployment
+    assert "sudo certbot renew --dry-run" in deployment
+    assert "/opt/materialgraph/materialgraph.nginx" in deployment
+    assert "https://materialgraph.org/health" in deployment
+
+
+def test_stage_one_public_https_remediation_is_verified_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
+        encoding="utf-8"
+    )
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-005.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-005.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-005.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-005`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-005` |")
+    )
+    acceptance_rows = [
+        line
+        for line in verification.splitlines()
+        if line.startswith("| ") and line.endswith("| Pass |")
+    ]
+
+    assert finding_row.endswith("| Verified |")
+    assert "| 1 | Verified |" in remediation_row
+    assert "Verified on 2026-09-12" in finding
+    assert "Completed and verified on 2026-09-12" in change_impact
+    assert "All sixteen acceptance criteria passed" in verification
+    assert len(acceptance_rows) == 16
+    assert "602538d5d439a90230a67ea0425fc376a54972b9" in verification
+    assert "TLS 1.0 and 1.1" in verification
+    assert "simulated renewal" in verification
+    assert "complete parsed pre-change JSON exactly" in verification
+
+
 def test_backup_units_are_persistent_bounded_and_do_not_embed_secrets():
     service = (PROJECT_ROOT / "materialgraph-backup.service").read_text(encoding="utf-8")
     timer = (PROJECT_ROOT / "materialgraph-backup.timer").read_text(encoding="utf-8")

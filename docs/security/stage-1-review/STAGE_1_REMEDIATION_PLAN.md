@@ -2,18 +2,17 @@
 
 ## Status and authority
 
-**Status:** Approved; `MG-SEC-012`, `MG-SEC-003`, `MG-SEC-004`, and
-`MG-SEC-007` verified, `MG-SEC-006` retired, and remaining Wave 1 work ready
-for scoped activation
+**Status:** Approved; Wave 0 and Wave 1 verified, `MG-SEC-006` retired, and
+Wave 2 ready for scoped activation
 
 This plan orders the eleven confirmed Stage 1 findings by current exploit
 impact, safe prerequisites, shared implementation boundaries, and verification
 cost. Wave 0 remediation for `MG-SEC-012` is verified. `MG-SEC-006` was retired
 after direct client evidence disproved its original plaintext conclusion; both
 database URLs were nevertheless hardened to `verify-full`. `MG-SEC-003`,
-`MG-SEC-004`, and `MG-SEC-007` are verified under separate records. Other
-findings require their scope to be opened in the remediation register before
-implementation.
+`MG-SEC-004`, `MG-SEC-005`, and `MG-SEC-007` are verified under separate
+records. Other findings require their scope to be opened in the remediation
+register before implementation.
 
 Each approved finding must receive separate change-impact and verification
 records. A finding remains Open until its implementation and deployed behavior
