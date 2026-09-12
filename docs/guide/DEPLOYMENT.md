@@ -169,6 +169,13 @@ Enter project:
 
 cd /opt/materialgraph
 
+Use a normal deployment mask before Git operations so public tracked source
+remains readable by the separate runtime identity:
+
+```bash
+umask 022
+```
+
 Create virtual environment:
 
 python3 -m venv .venv

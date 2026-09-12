@@ -8,8 +8,8 @@ certificate-validation hardening. `MG-SEC-007` is verified with deployed
 least-privilege runtime and backup roles and an isolated migration path.
 `MG-SEC-003` is verified with an owner-only environment-file boundary and
 deployed fail-closed pre-start enforcement.
-`MG-SEC-004` is in progress to separate the public runtime from the
-administrative deployment identity and add systemd isolation.
+`MG-SEC-004` is verified with a dedicated non-login public runtime identity,
+root-owned configuration, non-writable code, and tested systemd isolation.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -26,7 +26,7 @@ verification are recorded separately in this directory.
 - Verified database finding: `MG-SEC-007` runtime, backup, and migration
   privilege separation.
 - Verified filesystem finding: `MG-SEC-003` production environment-file access.
-- Active host-boundary remediation: `MG-SEC-004` dedicated runtime identity.
+- Verified host-boundary remediation: `MG-SEC-004` dedicated runtime identity.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary

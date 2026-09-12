@@ -61,11 +61,11 @@ and secret values were neither inspected nor recorded.
 
 ## Residual boundary
 
-The current service and file owner remains the administratively capable
-`ubuntu` account. MG-SEC-003 verifies that other local identities cannot read
-the file and that unsafe metadata fails startup; it does not claim the service
-identity itself is least-privileged. Dedicated account, checkout-writability,
-and passwordless-root remediation remain independently open as MG-SEC-004.
+At the MG-SEC-003 verification checkpoint, the service and file owner remained
+the administratively capable `ubuntu` account. MG-SEC-003 established the
+metadata guard without claiming a least-privilege service identity. MG-SEC-004
+subsequently replaced that boundary with a dedicated non-administrative account
+and root-owned runtime configuration.
 
 ## Conclusion
 

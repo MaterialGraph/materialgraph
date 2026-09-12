@@ -2,7 +2,7 @@
 
 ## Status
 
-In remediation as of 2026-09-12.
+Verified on 2026-09-12.
 
 ## Assessment
 
@@ -10,7 +10,8 @@ In remediation as of 2026-09-12.
 - Confidence: **High**
 - Affected component: systemd runtime identity and EC2 privilege boundary
 - Deployment checkpoint: `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Implementation pending**
+- Resolution version or commit:
+  `b2747f67fcdf78568891525e66814b5de2adfb83`
 
 ## Exact evidence
 

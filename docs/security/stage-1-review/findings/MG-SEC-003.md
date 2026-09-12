@@ -65,14 +65,18 @@ group, and mode without printing file contents.
 
 Current implementation and acceptance evidence are maintained in
 [`../remediation/`](../remediation/README.md). The administrative authority of
-the current service account remains separate MG-SEC-004 scope.
+the service account was addressed separately and is now verified under
+MG-SEC-004.
 
 ## Resolution
 
-The deployed environment is now a regular, single-link file owned by the
-effective service user with mode exactly `600`; an unprivileged read is
-rejected. A repository-controlled metadata checker runs before every service
-start and fails closed on unsafe type, ownership, mode, or hard-link count.
+At the MG-SEC-003 checkpoint, the deployed environment became a regular,
+single-link file owned by the effective service user with mode exactly `600`;
+an unprivileged read was rejected. MG-SEC-004 subsequently moved it to a
+root-owned, runtime-group-readable, non-writable boundary at mode `640`. The
+repository-controlled metadata checker continues to run before every service
+start and fails closed on unsafe type, ownership, group, mode, or hard-link
+count.
 MaterialGraph restarted successfully under the guard, retained HTTP `200`
 health and database access, and disclosed no secret material during
 verification. See

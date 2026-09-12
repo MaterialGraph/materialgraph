@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — three remediations verified; one active
+**Status:** Inspection complete — four remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -83,6 +83,9 @@ must preserve deterministic scientific results and ordering and must be
 verified in both tests and deployed behavior.
 `MG-SEC-003` is verified with repository-controlled pre-start enforcement of
 the owner-only production environment-file boundary.
+`MG-SEC-004` is verified with a dedicated non-login runtime identity,
+root-owned configuration, non-writable code, empty capability sets, and tested
+systemd isolation.
 
 ## Investigation sequence
 

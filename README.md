@@ -203,7 +203,7 @@ verticals are currently implemented or scientifically validated.
 | API and deterministic-behaviour verification | Completed for tested workflows |
 | Architecture and implementation audit (`MG-AUD-*`) | Complete: 92 remediated, 2 accepted behavior, 0 open |
 | Independent implementation audit (`MG-IA-*`) | Closed: 20 of 20 actionable findings verified; 1 post-freeze invalidation |
-| Stage 1 security review (`MG-SEC-*`) | Inspection complete; 11 confirmed findings, 3 verified, and 1 identifier retired after revalidation |
+| Stage 1 security review (`MG-SEC-*`) | Inspection complete; 11 confirmed findings, 4 verified, and 1 identifier retired after revalidation |
 | Literature-backed case studies | Not yet completed |
 | Independent materials-researcher review | Not yet completed |
 | DFT cross-validation | Not yet completed |

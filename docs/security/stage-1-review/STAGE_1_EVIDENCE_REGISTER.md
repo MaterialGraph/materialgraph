@@ -1,7 +1,7 @@
 # Stage 1 Security Evidence Register
 
 **Status:** Stage 1 inspection evidence reconciled
-**Last updated:** 2026-09-10
+**Last updated:** 2026-09-12
 
 ## Evidence-handling rules
 
@@ -89,6 +89,39 @@ No file contents, URLs, credentials, public addresses, or secret values were
 inspected or recorded. The `ubuntu` account's administrative group membership,
 passwordless sudo, and writable application checkout remain open MG-SEC-004
 evidence rather than being silently resolved by MG-SEC-003.
+
+### Runtime-identity remediation
+
+Redacted production verification on 2026-09-12 superseded the original process
+and account boundary:
+
+- deployed implementation checkpoint
+  `b2747f67fcdf78568891525e66814b5de2adfb83` runs MaterialGraph as the
+  dedicated `materialgraph` system identity;
+- the identity uses a nologin shell and nonexistent home path, has no
+  supplementary groups, and has neither sudo nor LXD access;
+- `/etc/materialgraph/runtime.env` is root-owned, group-readable only by the
+  runtime identity, mode `640`, single-link, readable but not writable by the
+  service, and protected by a successful pre-start metadata check;
+- `/opt/materialgraph`, application code, scripts, the virtual environment,
+  and runtime configuration are not writable by the service identity;
+- the effective process has `NoNewPrivs=1`, empty inherited, permitted,
+  effective, bounding, and ambient capability sets, private temporary and
+  device namespaces, protected home, system, kernel, and control-group
+  boundaries, and only Unix, IPv4, and IPv6 address families;
+- health and database-backed reads returned HTTP `200`; material, screening,
+  and discovery responses matched complete parsed pre-change JSON exactly;
+- isolated migration access, verified backup execution, Nginx, the application,
+  and the persistent backup timer remained operational; and
+- the superseded checkout environment file, rollout copies, and response
+  captures were removed after a successful restart without the old file.
+
+The first rollout attempt was rolled back after Pydantic attempted a duplicate
+read of the checkout `.env`. The corrected unit disables that development-time
+reader after systemd loads the protected file. A tracked source file created
+under a retained `umask 077` was also normalized to public-source mode `644`;
+the deployment procedure now establishes `umask 022` before Git operations.
+Neither correction exposed secret contents or weakened the runtime boundary.
 
 ## EC2 network evidence
 
