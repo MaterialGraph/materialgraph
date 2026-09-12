@@ -213,7 +213,7 @@ def test_stage_one_runtime_identity_remediation_is_verified_consistently():
         "the pre-change captures exactly."
         in normalized_verification
     )
-    assert "Pydantic attempted a duplicate" in verification
+    assert "Pydantic independently attempted to" in verification
     assert "Verified on 2026-09-12" in finding
 
 
