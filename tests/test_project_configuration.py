@@ -120,9 +120,21 @@ def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
     deployment = deployment_path.read_text(encoding="utf-8")
 
     assert "WorkingDirectory=/opt/materialgraph" in unit
-    assert "EnvironmentFile=/opt/materialgraph/.env" in unit
-    assert "User=ubuntu" in unit
-    assert "Group=ubuntu" in unit
+    assert "EnvironmentFile=/etc/materialgraph/runtime.env" in unit
+    assert "User=materialgraph" in unit
+    assert "Group=materialgraph" in unit
+    assert "NoNewPrivileges=true" in unit
+    assert "PrivateDevices=true" in unit
+    assert "PrivateTmp=true" in unit
+    assert "ProtectControlGroups=true" in unit
+    assert "ProtectHome=true" in unit
+    assert "ProtectKernelModules=true" in unit
+    assert "ProtectKernelTunables=true" in unit
+    assert "ProtectSystem=strict" in unit
+    assert "RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6" in unit
+    assert "RestrictSUIDSGID=true" in unit
+    assert "CapabilityBoundingSet=" in unit
+    assert "AmbientCapabilities=" in unit
     assert "--host 127.0.0.1 --port 8000" in unit
     assert "Restart=on-failure" in unit
     assert "DATABASE_URL=" not in unit
@@ -139,6 +151,43 @@ def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
     assert clone_command in deployment
     assert "cd /opt/materialgraph/materialgraph" not in deployment
     assert "docs/guide/DEPLOYMENT.md" in readme
+
+
+def test_stage_one_runtime_identity_remediation_is_in_progress_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
+        encoding="utf-8"
+    )
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-004.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-004.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-004.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-004`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-004` |")
+    )
+
+    assert finding_row.endswith("| In remediation |")
+    assert "| 1 | In progress |" in remediation_row
+    assert "Approved and in progress on 2026-09-12" in change_impact
+    assert "passwordless sudo and belongs to `lxd`" in change_impact
+    assert "Pending production implementation and verification" in verification
+    assert "In remediation as of 2026-09-12" in finding
 
 
 def test_backup_units_are_persistent_bounded_and_do_not_embed_secrets():
@@ -345,7 +394,8 @@ def test_stage_one_environment_file_remediation_is_verified_consistently():
     assert "GitHub Secret Scan run 66 completed successfully" in verification
     assert "cb8e3b711b74ec0f7fe1158e7b2f6f18d03309f3" in verification
     assert "ExecStartPre=" in unit
-    assert "scripts/verify_secret_file.py /opt/materialgraph/.env" in unit
+    assert "scripts/verify_secret_file.py --owner-uid 0 --mode 0640" in unit
+    assert "/etc/materialgraph/runtime.env" in unit
 
 
 def test_independent_audit_closure_records_are_consistent():

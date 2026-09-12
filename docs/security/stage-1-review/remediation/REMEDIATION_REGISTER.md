@@ -6,7 +6,7 @@
   `bb888b54280fa5084fb9217335602527533be45a`.
 - Confirmed findings: **11**.
 - Retired finding identifiers: **1 (`MG-SEC-006`)**.
-- Active remediation: **0**.
+- Active remediation: **1 (`MG-SEC-004`)**.
 - Verified remediations: **3 (`MG-SEC-003`, `MG-SEC-007`, `MG-SEC-012`)**.
 - Closed findings: **0**.
 
@@ -30,7 +30,7 @@
 | `MG-SEC-001` | 2 | Not started | Not opened | Not opened |
 | `MG-SEC-002` | 2 | Not started | Not opened | Not opened |
 | `MG-SEC-003` | 1 | Verified | [`change-impact/MG-SEC-003.md`](change-impact/MG-SEC-003.md) | [`verification/MG-SEC-003.md`](verification/MG-SEC-003.md) |
-| `MG-SEC-004` | 1 | Not started | Not opened | Not opened |
+| `MG-SEC-004` | 1 | In progress | [`change-impact/MG-SEC-004.md`](change-impact/MG-SEC-004.md) | [`verification/MG-SEC-004.md`](verification/MG-SEC-004.md) |
 | `MG-SEC-005` | 1 | Not started | Not opened | Not opened |
 | `MG-SEC-006` | 1 | Retired | Deployment-only hardening | [`verification/MG-SEC-006.md`](verification/MG-SEC-006.md) |
 | `MG-SEC-007` | 1 | Verified | [`change-impact/MG-SEC-007.md`](change-impact/MG-SEC-007.md) | [`verification/MG-SEC-007.md`](verification/MG-SEC-007.md) |

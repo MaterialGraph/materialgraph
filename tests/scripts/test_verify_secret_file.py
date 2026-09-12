@@ -16,11 +16,12 @@ from scripts.verify_secret_file import (
 class Metadata:
     st_mode: int = stat.S_IFREG | 0o600
     st_uid: int = 1000
+    st_gid: int = 1000
     st_nlink: int = 1
 
 
 def test_accepts_valid_metadata():
-    verify_secret_metadata(Metadata(), effective_uid=1000)
+    verify_secret_metadata(Metadata(), expected_uid=1000, expected_gid=1000)
 
 
 @pytest.mark.skipif(os.name == "nt", reason="POSIX mode integration")
@@ -37,7 +38,8 @@ def test_rejects_mode_other_than_600(mode: int):
     with pytest.raises(SecretFileError, match="mode must be exactly 600"):
         verify_secret_metadata(
             Metadata(st_mode=stat.S_IFREG | mode),
-            effective_uid=1000,
+            expected_uid=1000,
+            expected_gid=1000,
         )
 
 
@@ -45,15 +47,36 @@ def test_rejects_non_regular_metadata():
     with pytest.raises(SecretFileError, match="regular file"):
         verify_secret_metadata(
             Metadata(st_mode=stat.S_IFLNK | 0o600),
-            effective_uid=1000,
+            expected_uid=1000,
+            expected_gid=1000,
         )
 
 
 def test_rejects_wrong_owner():
-    with pytest.raises(SecretFileError, match="owned by the service user"):
-        verify_secret_metadata(Metadata(st_uid=1001), effective_uid=1000)
+    with pytest.raises(SecretFileError, match="unexpected owner"):
+        verify_secret_metadata(
+            Metadata(st_uid=1001), expected_uid=1000, expected_gid=1000
+        )
+
+
+def test_rejects_wrong_group():
+    with pytest.raises(SecretFileError, match="unexpected group"):
+        verify_secret_metadata(
+            Metadata(st_gid=1001), expected_uid=1000, expected_gid=1000
+        )
+
+
+def test_accepts_root_owned_group_readable_metadata():
+    verify_secret_metadata(
+        Metadata(st_mode=stat.S_IFREG | 0o640, st_uid=0),
+        expected_uid=0,
+        expected_gid=1000,
+        expected_mode=0o640,
+    )
 
 
 def test_rejects_multiple_hard_links():
     with pytest.raises(SecretFileError, match="exactly one hard link"):
-        verify_secret_metadata(Metadata(st_nlink=2), effective_uid=1000)
+        verify_secret_metadata(
+            Metadata(st_nlink=2), expected_uid=1000, expected_gid=1000
+        )

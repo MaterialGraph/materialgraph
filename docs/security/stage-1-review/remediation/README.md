@@ -8,6 +8,8 @@ certificate-validation hardening. `MG-SEC-007` is verified with deployed
 least-privilege runtime and backup roles and an isolated migration path.
 `MG-SEC-003` is verified with an owner-only environment-file boundary and
 deployed fail-closed pre-start enforcement.
+`MG-SEC-004` is in progress to separate the public runtime from the
+administrative deployment identity and add systemd isolation.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -24,6 +26,7 @@ verification are recorded separately in this directory.
 - Verified database finding: `MG-SEC-007` runtime, backup, and migration
   privilege separation.
 - Verified filesystem finding: `MG-SEC-003` production environment-file access.
+- Active host-boundary remediation: `MG-SEC-004` dedicated runtime identity.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
@@ -76,6 +79,10 @@ or when the cost of reconstructing production data materially increases.
   environment-file metadata and rollback boundary.
 - [`verification/MG-SEC-003.md`](verification/MG-SEC-003.md) — permission,
   pre-start enforcement, restart, and secret-safe evidence checklist.
+- [`change-impact/MG-SEC-004.md`](change-impact/MG-SEC-004.md) — approved
+  runtime-identity, filesystem, sandbox, rollout, and rollback boundary.
+- [`verification/MG-SEC-004.md`](verification/MG-SEC-004.md) — required
+  identity, privilege, systemd, endpoint, and scientific-integrity checks.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 

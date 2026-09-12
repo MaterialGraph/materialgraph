@@ -5,14 +5,29 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=ubuntu
-Group=ubuntu
+User=materialgraph
+Group=materialgraph
 WorkingDirectory=/opt/materialgraph
-EnvironmentFile=/opt/materialgraph/.env
-ExecStartPre=/opt/materialgraph/.venv/bin/python /opt/materialgraph/scripts/verify_secret_file.py /opt/materialgraph/.env
+EnvironmentFile=/etc/materialgraph/runtime.env
+ExecStartPre=/opt/materialgraph/.venv/bin/python /opt/materialgraph/scripts/verify_secret_file.py --owner-uid 0 --mode 0640 /etc/materialgraph/runtime.env
 ExecStart=/opt/materialgraph/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
 Restart=on-failure
 RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+LockPersonality=true
+SystemCallArchitectures=native
 
 [Install]
 WantedBy=multi-user.target

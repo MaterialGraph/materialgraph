@@ -81,14 +81,15 @@ Used for Alembic migrations
 
 # Environment Variables
 
-Production environment file:
+Production runtime environment file:
 
-/opt/materialgraph/.env
+/etc/materialgraph/runtime.env
 
-The file must be a regular file owned by the MaterialGraph service user, have
-exactly one hard link, and use mode `600`. `materialgraph.service` verifies
-these metadata before every start without reading or logging file contents. An
-unsafe file causes startup to fail closed.
+The file must be a regular file owned by `root:materialgraph`, have exactly one
+hard link, and use mode `640`. The dedicated service identity can read but
+cannot modify it. `materialgraph.service` verifies these metadata before every
+start without reading or logging file contents. An unsafe file causes startup
+to fail closed.
 
 Application variables:
 
@@ -110,8 +111,8 @@ Important:
 
 * Do not commit `.env` files or other files containing credentials.
 * Production secrets are managed directly on EC2.
-* Install the production environment file with mode `600`; do not use a
-  group-readable or world-readable mode.
+* Install the production runtime environment with owner `root`, group
+  `materialgraph`, and mode `640`; do not make it readable by other users.
 * Local development and production use separate environment files.
 * `.env.example` may contain variable names and safe placeholders only.
 * Never store a production database password, API key, token, or complete credential-bearing connection string in a tracked repository file.
@@ -123,7 +124,8 @@ Important:
 If a production credential is exposed or suspected to be exposed:
 
 1. Rotate or revoke the credential at the provider first.
-2. Update `/opt/materialgraph/.env` with the replacement credential.
+2. Update `/etc/materialgraph/runtime.env` with the replacement credential,
+   preserving `root:materialgraph` ownership and mode `640`.
 3. Restart the MaterialGraph service.
 4. Verify service health before performing repository cleanup.
 5. Remove the exposed credential from tracked files and Git history where necessary.
@@ -223,13 +225,36 @@ Expected:
 
 # systemd Service
 
+Create the dedicated non-login runtime identity once:
+
+```bash
+sudo useradd --system --user-group --home-dir /nonexistent \
+  --shell /usr/sbin/nologin materialgraph
+```
+
+Install the runtime environment without displaying its contents. During an
+existing deployment migration, use the current protected file as the source:
+
+```bash
+sudo install -d -o root -g materialgraph -m 0710 /etc/materialgraph
+sudo install -o root -g materialgraph -m 0640 \
+  /opt/materialgraph/.env /etc/materialgraph/runtime.env
+```
+
+For a new deployment, create the destination directly through a root-only
+editor or secret-delivery mechanism, then apply the same ownership and mode.
+Do not place credential values in shell history.
+
 The repository supplies the reviewed unit definition at its root:
 
 materialgraph.service
 
-It runs Uvicorn as the `ubuntu` user from `/opt/materialgraph`, loads secrets
-from `/opt/materialgraph/.env`, binds only to `127.0.0.1:8000`, and restarts
-after process failures. The tracked unit contains no credential values.
+It runs Uvicorn as the non-login `materialgraph` user from the deployment-owned
+`/opt/materialgraph` checkout, loads the root-owned runtime environment from
+`/etc/materialgraph/runtime.env`, binds only to `127.0.0.1:8000`, and restarts
+after process failures. The tracked unit contains no credential values and
+enables systemd privilege, filesystem, device, temporary-directory, kernel,
+control-group, capability, and address-family restrictions.
 
 Install the unit with root ownership and read-only system permissions:
 
