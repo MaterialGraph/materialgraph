@@ -77,6 +77,48 @@ def test_secret_scanners_are_immutable_and_locally_contained():
     assert "blocks the commit" in policy
 
 
+def test_production_dependencies_are_locked_audited_and_reconcilable():
+    workflow = (
+        PROJECT_ROOT / ".github/workflows/dependency-security.yml"
+    ).read_text(encoding="utf-8")
+    production_input = (
+        PROJECT_ROOT / "requirements-production.in"
+    ).read_text(encoding="utf-8")
+    production_lock = (
+        PROJECT_ROOT / "requirements-production.lock"
+    ).read_text(encoding="utf-8")
+    audit_lock = (PROJECT_ROOT / "requirements-audit.lock").read_text(
+        encoding="utf-8"
+    )
+    deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(
+        encoding="utf-8"
+    )
+    policy = (PROJECT_ROOT / "docs/security/DEPENDENCY_MANAGEMENT.md").read_text(
+        encoding="utf-8"
+    )
+
+    image = (
+        "python:3.12.3-slim@sha256:"
+        "fd3817f3a855f6c2ada16ac9468e5ee93e361005bd226fd5a5ee1a504e038c84"
+    )
+    assert image in workflow
+    assert image in policy
+    assert 'cron: "17 4 * * 1"' in workflow
+    assert "--require-hashes" in workflow
+    assert "python -m pip_audit --require-hashes --no-deps" in workflow
+    assert "--no-index" in workflow
+    assert "--check-installed" in workflow
+    assert "pip-audit==2.10.1" in audit_lock
+    assert "pillow==12.3.0" in production_input
+    assert "pydantic-settings==2.14.2" in production_input
+    assert "starlette==1.3.1" in production_input
+    assert production_lock.count("--hash=sha256:") > 2_000
+    assert audit_lock.count("--hash=sha256:") > 300
+    assert "requirements-production.lock" in deployment
+    assert "requirements.txt` or" in deployment
+    assert "time-bounded, identifier-specific exception" in policy
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(

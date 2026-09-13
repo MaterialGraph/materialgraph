@@ -2,6 +2,7 @@ from scripts.check_automation_pins import (
     configured_gitleaks_images,
     validate_action_references,
     validate_gitleaks_images,
+    validate_workflow_container_images,
     workflow_action_references,
 )
 
@@ -22,3 +23,7 @@ def test_ci_and_local_hook_share_one_immutable_gitleaks_image():
         "@sha256:75bdb2b2f4db213cde0b8295f13a88d6b333091bbfbf3012a4e083d00d31caba"
     )
     assert validate_gitleaks_images() == []
+
+
+def test_every_workflow_container_uses_an_immutable_digest():
+    assert validate_workflow_container_images() == []

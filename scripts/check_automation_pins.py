@@ -11,6 +11,8 @@ GITLEAKS_IMAGE = re.compile(
     r"ghcr\.io/gitleaks/gitleaks:v[0-9]+\.[0-9]+\.[0-9]+"
     r"@sha256:[0-9a-f]{64}"
 )
+WORKFLOW_CONTAINER_IMAGE = re.compile(r"^\s*image:\s*([^\s#]+)", re.MULTILINE)
+IMAGE_DIGEST = re.compile(r"^[^\s@]+@sha256:[0-9a-f]{64}$")
 
 
 def workflow_action_references() -> list[tuple[Path, int, str]]:
@@ -58,8 +60,25 @@ def validate_gitleaks_images() -> list[str]:
     return []
 
 
+def validate_workflow_container_images() -> list[str]:
+    errors = []
+    for workflow in sorted(WORKFLOW_ROOT.glob("*.y*ml")):
+        text = workflow.read_text(encoding="utf-8")
+        for image in WORKFLOW_CONTAINER_IMAGE.findall(text):
+            if not IMAGE_DIGEST.fullmatch(image):
+                relative = workflow.relative_to(PROJECT_ROOT)
+                errors.append(
+                    f"{relative}: workflow container is not digest-pinned"
+                )
+    return errors
+
+
 def main() -> int:
-    errors = validate_action_references() + validate_gitleaks_images()
+    errors = (
+        validate_action_references()
+        + validate_gitleaks_images()
+        + validate_workflow_container_images()
+    )
     for error in errors:
         print(f"automation_pin_error: {error}")
     if errors:

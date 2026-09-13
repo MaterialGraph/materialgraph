@@ -189,13 +189,27 @@ source .venv/bin/activate
 
 Install dependencies:
 
-pip install --upgrade pip
+python -m pip install \
+  --disable-pip-version-check \
+  --require-hashes \
+  -r requirements-production.lock
 
-pip install -e .
+python -m pip check
 
-The editable install uses the current checkout and exposes its canonical
-`pyproject.toml` package version to the running API. Do not install a second
-VCS checkout of MaterialGraph through `requirements.txt`.
+python -m pip install \
+  --disable-pip-version-check \
+  --no-index \
+  --no-deps \
+  --no-build-isolation \
+  -e .
+
+python scripts/check_dependency_contract.py --check-installed
+
+The hash lock is the authoritative Linux/Python 3.12 production dependency
+contract. The final editable application install performs no dependency or
+build-tool resolution; it exposes the current checkout and its canonical
+`pyproject.toml` version to the running API. Do not use `requirements.txt` or
+install a second VCS checkout of MaterialGraph in production.
 
 ---
 
@@ -542,6 +556,22 @@ cd /opt/materialgraph
 git pull origin main
 
 source .venv/bin/activate
+
+python -m pip install \
+  --disable-pip-version-check \
+  --require-hashes \
+  -r requirements-production.lock
+
+python -m pip check
+
+python -m pip install \
+  --disable-pip-version-check \
+  --no-index \
+  --no-deps \
+  --no-build-isolation \
+  -e .
+
+python scripts/check_dependency_contract.py --check-installed
 
 Run migrations:
 
