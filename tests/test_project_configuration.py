@@ -105,7 +105,7 @@ def test_production_dependencies_are_locked_audited_and_reconcilable():
     assert image in policy
     assert 'cron: "17 4 * * 1"' in workflow
     assert "--require-hashes" in workflow
-    assert "python -m pip_audit --require-hashes --no-deps" in workflow
+    assert "python -m pip_audit --require-hashes -r" in workflow
     assert "--no-index" in workflow
     assert "--check-installed" in workflow
     assert "pip-audit==2.10.1" in audit_lock
