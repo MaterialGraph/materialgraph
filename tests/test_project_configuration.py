@@ -744,6 +744,58 @@ def test_stage_one_public_admission_is_verified_consistently():
     assert "matched their pre-change production captures exactly" in verification
 
 
+def test_stage_one_automation_pinning_is_verified_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (
+        security_root / "STAGE_1_FINDINGS_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-011.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-011.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-011.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-011`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-011` |")
+    )
+
+    assert finding_row.endswith("| Verified |")
+    assert "| 3 | Verified |" in remediation_row
+    assert "Verified on 2026-09-13" in finding
+    assert "Reverting to mutable references is not an approved rollback" in (
+        change_impact
+    )
+    assert "All eighteen acceptance criteria passed" in verification
+    acceptance_rows = [
+        line
+        for line in verification.splitlines()
+        if line.startswith("| ") and line.endswith("| Pass |")
+    ]
+    assert len(acceptance_rows) == 18
+    assert "2c43193c0a31f355f0658afeeb97cf12266e0f1c" in verification
+    assert "full-history scan of 269 commits" in verification
+    assert "produced a redacted finding" in verification
+    assert "exit code 127" in verification
+    assert "run 86 attempt 2 succeeded" in verification
+    assert (
+        "immutable references rather than a publisher allowlist" in verification
+    )
+
+
 def test_stage_one_environment_file_remediation_is_verified_consistently():
     security_root = PROJECT_ROOT / "docs/security/stage-1-review"
     findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(

@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — nine remediations verified
+**Status:** Inspection complete — ten remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 

@@ -472,3 +472,30 @@ MG-SEC-002 remediation evidence recorded on 2026-09-13:
 - Safe non-production evidence for unexpected application exceptions and
   correlation behavior, if structured exception handling is introduced or
   separately evaluated.
+
+## MG-SEC-011 immutable automation verification — 2026-09-13
+
+- GitHub Actions checkout uses the reviewed full commit
+  `08c6903cd8c0fde910a37f88322edcfb5dd907a8`, corresponding to the upstream
+  `v5.0.0` tag inspected with `git ls-remote`.
+- CI and the repository-local pre-commit hook use the same reviewed Gitleaks
+  image reference: `v8.18.4` at multi-platform OCI digest
+  `sha256:75bdb2b2f4db213cde0b8295f13a88d6b333091bbfbf3012a4e083d00d31caba`.
+- The first-party automation-pin validator passed, and its focused suite passed
+  30 tests. Ruff and `git diff --check` passed; the complete suite passed with
+  816 tests and one platform skip.
+- The digest-pinned, network-disabled scanner inspected all 269 repository
+  commits in 4.63 seconds and reported no leaks.
+- A staged synthetic AWS access-key pattern was detected with the value
+  redacted. The hook exited nonzero and blocked the commit.
+- A controlled write through the scanner's `/repo` mount failed with a
+  read-only-filesystem error, returned exit code 1, and created no probe file.
+- With the scanner executable unavailable, the local hook exited 127 and
+  blocked the commit, confirming fail-closed behavior.
+- Repository Actions policy was changed to require third-party actions to be
+  pinned to full-length commit SHAs. This enforces reference immutability but
+  does not constitute an action allowlist.
+- Secret Scan run 85 succeeded after the checkout runtime update. After the
+  repository policy was enabled, run 86 attempt 2 succeeded in 13 seconds; its
+  Gitleaks job succeeded in 8 seconds without a policy rejection or Node.js
+  deprecation annotation.

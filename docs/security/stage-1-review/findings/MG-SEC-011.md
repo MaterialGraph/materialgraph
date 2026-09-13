@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Verified on 2026-09-13.
 
 ## Assessment
 
@@ -14,7 +14,8 @@ Open.
   `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
 - Repository-policy evidence checkpoint:
   `5bf859ae70444d223a147018c48f80bee1d90e21`
-- Resolution version or commit: **Not resolved**
+- Resolution version or commit:
+  `2c43193c0a31f355f0658afeeb97cf12266e0f1c`
 
 ## Exact evidence
 

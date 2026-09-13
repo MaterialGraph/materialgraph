@@ -22,6 +22,9 @@ global expensive-request admission control, and explicit overload responses.
 `MG-SEC-002` is verified with pool, lock, statement, application, and proxy
 deadlines; structured timeout responses; rollback; and retained admission
 capacity for synchronous work that outlives its response deadline.
+`MG-SEC-011` is verified with full-commit Action pinning, digest-pinned and
+contained Gitleaks execution, fail-closed local scanning, and enforced
+repository SHA-pinning policy.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -49,6 +52,8 @@ verification are recorded separately in this directory.
   application admission control for expensive public work.
 - Verified timeout remediation: `MG-SEC-002` coordinated database,
   application, and proxy deadlines with safe abandonment behavior.
+- Verified automation remediation: `MG-SEC-011` immutable third-party
+  references, contained scanner execution, and repository SHA enforcement.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
