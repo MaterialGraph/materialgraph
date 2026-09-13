@@ -8,9 +8,9 @@ from app.core.logging import logger
 
 
 class ExpensiveRequestDeadlineMiddleware:
-    def __init__(self, app: ASGIApp, timeout_seconds: int):
-        if timeout_seconds < 1:
-            raise ValueError("timeout_seconds must be at least one")
+    def __init__(self, app: ASGIApp, timeout_seconds: float):
+        if timeout_seconds <= 0:
+            raise ValueError("timeout_seconds must be positive")
         self.app = app
         self.timeout_seconds = timeout_seconds
 

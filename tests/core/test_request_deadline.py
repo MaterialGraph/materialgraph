@@ -71,5 +71,5 @@ def test_ordinary_request_is_not_subject_to_expensive_deadline():
 
 
 def test_deadline_rejects_invalid_timeout():
-    with pytest.raises(ValueError, match="timeout_seconds must be at least one"):
+    with pytest.raises(ValueError, match="timeout_seconds must be positive"):
         ExpensiveRequestDeadlineMiddleware(lambda scope, receive, send: None, 0)
