@@ -165,6 +165,34 @@ def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
     assert "docs/guide/DEPLOYMENT.md" in readme
 
 
+def test_journal_limits_and_monitoring_are_repository_controlled():
+    unit = (PROJECT_ROOT / "materialgraph.service").read_text(encoding="utf-8")
+    journal = (PROJECT_ROOT / "materialgraph-journald.conf").read_text(
+        encoding="utf-8"
+    )
+    monitor = (
+        PROJECT_ROOT / "materialgraph-journal-monitor.service"
+    ).read_text(encoding="utf-8")
+    timer = (PROJECT_ROOT / "materialgraph-journal-monitor.timer").read_text(
+        encoding="utf-8"
+    )
+    deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "LogRateLimitIntervalSec=30s" in unit
+    assert "LogRateLimitBurst=200" in unit
+    assert "SystemMaxUse=256M" in journal
+    assert "SystemKeepFree=1G" in journal
+    assert "MaxRetentionSec=14day" in journal
+    assert "RateLimitIntervalSec=30s" in journal
+    assert "RateLimitBurst=1000" in journal
+    assert "scripts/check_journal_usage.py" in monitor
+    assert "OnCalendar=*-*-* 03:00:00 UTC" in timer
+    assert "journal use reaches 230 MiB" in deployment
+    assert "root-filesystem use reaches 80%" in deployment
+
+
 def test_stage_one_runtime_identity_remediation_is_verified_consistently():
     security_root = PROJECT_ROOT / "docs/security/stage-1-review"
     findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(

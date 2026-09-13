@@ -299,6 +299,41 @@ Restart:
 
 sudo systemctl restart materialgraph
 
+## Journal bounds and monitoring
+
+The application service permits at most 200 log records per 30-second interval.
+The tracked journald policy retains persistent logs for at most 14 days, caps
+aggregate journal storage at 256 MiB, and preserves at least 1 GiB of free
+filesystem space. These are host-wide journald controls; review their impact
+before colocating another service on this prototype host.
+
+Install the policy and daily monitor:
+
+```bash
+sudo install -d -o root -g root -m 0755 /etc/systemd/journald.conf.d
+sudo install -o root -g root -m 0644 materialgraph-journald.conf \
+  /etc/systemd/journald.conf.d/materialgraph.conf
+sudo install -o root -g root -m 0644 \
+  materialgraph-journal-monitor.service \
+  materialgraph-journal-monitor.timer /etc/systemd/system/
+sudo systemctl restart systemd-journald
+sudo systemctl daemon-reload
+sudo systemctl enable --now materialgraph-journal-monitor.timer
+sudo systemctl start materialgraph-journal-monitor.service
+```
+
+The monitor returns a failed oneshot result and writes one bounded warning when
+journal use reaches 230 MiB or root-filesystem use reaches 80%. Review its
+latest result daily until external operational notification is introduced:
+
+```bash
+systemctl show materialgraph-journal-monitor.service -p Result
+systemctl list-timers materialgraph-journal-monitor.timer --all --no-pager
+journalctl -u materialgraph-journal-monitor.service -n 10 --no-pager
+journalctl --disk-usage
+df -h /
+```
+
 ## Daily database backup timer
 
 The reviewed backup job uses a dedicated SQL-created, read-only database role

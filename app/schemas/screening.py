@@ -1,13 +1,47 @@
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.domain.periodic_table import normalize_element_symbol
+
+
+MAX_SCREENING_ELEMENTS = 32
+ScreeningElementSymbol = Annotated[str, Field(min_length=1, max_length=2)]
 
 
 class CandidateScreeningRequest(BaseModel):
-    scarce_elements: list[str] = Field(default_factory=list)
-    avoid_elements: list[str] = Field(default_factory=list)
+    scarce_elements: list[ScreeningElementSymbol] = Field(
+        default_factory=list,
+        max_length=MAX_SCREENING_ELEMENTS,
+    )
+    avoid_elements: list[ScreeningElementSymbol] = Field(
+        default_factory=list,
+        max_length=MAX_SCREENING_ELEMENTS,
+    )
     require_stable: bool = True
     max_energy_above_hull: float | None = None
+
+    @field_validator("scarce_elements", "avoid_elements", mode="before")
+    @classmethod
+    def normalize_element_collection(cls, value: object) -> object:
+        if not isinstance(value, (list, tuple)):
+            return value
+        if len(value) > MAX_SCREENING_ELEMENTS:
+            raise ValueError(
+                "element collection must contain at most "
+                f"{MAX_SCREENING_ELEMENTS} entries"
+            )
+
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for item in value:
+            if not isinstance(item, str):
+                return value
+            symbol = normalize_element_symbol(item)
+            if symbol not in seen:
+                normalized.append(symbol)
+                seen.add(symbol)
+        return normalized
 
 
 class CandidateScreeningResult(BaseModel):

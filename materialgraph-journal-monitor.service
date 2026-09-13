@@ -1,0 +1,23 @@
+[Unit]
+Description=Monitor MaterialGraph journal and filesystem usage
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/opt/materialgraph
+ExecStart=/opt/materialgraph/.venv/bin/python /opt/materialgraph/scripts/check_journal_usage.py
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+LockPersonality=true
+SystemCallArchitectures=native

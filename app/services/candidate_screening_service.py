@@ -41,11 +41,15 @@ class CandidateScreeningService:
         )
 
         logger.info(
-            "Screened {} candidate materials with scarce_elements={} "
-            "avoid_elements={}",
+            "candidate_screening_completed outcome=success "
+            "screened_count={} scarce_element_count={} "
+            "avoid_element_count={} require_stable={} "
+            "energy_limit_configured={}",
             len(results),
-            request.scarce_elements,
-            request.avoid_elements,
+            len(request.scarce_elements),
+            len(request.avoid_elements),
+            request.require_stable,
+            request.max_energy_above_hull is not None,
         )
 
         return results
