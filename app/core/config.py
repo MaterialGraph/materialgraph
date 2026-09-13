@@ -1,6 +1,7 @@
 import os
 from collections.abc import Mapping
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,6 +24,8 @@ class Settings(BaseSettings):
     materials_project_api_key: str | None = None
 
     log_level: str = "INFO"
+
+    expensive_request_concurrency: int = Field(default=2, ge=1, le=32)
 
     model_config = SettingsConfigDict(
         env_file=resolve_settings_env_file(),

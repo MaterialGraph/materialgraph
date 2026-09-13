@@ -426,6 +426,29 @@ The body limit is intentionally larger than every valid bounded research
 objective and rejects unexpectedly large public requests with HTTP `413`
 before application service work.
 
+The tracked site also applies coordinated overload controls for screening,
+comparison, scenario, sensitivity, substitution, discovery, and research
+routes. Expensive requests are limited per source address to a base rate of two
+requests per second with a four-request burst and two concurrent connections.
+Each source address is limited to 20 concurrent connections across the HTTPS
+site. Nginx returns HTTP `429` when a proxy rate or connection limit rejects a
+request.
+
+Nginx derives these controls from `$binary_remote_addr`. It overwrites both
+`X-Real-IP` and `X-Forwarded-For` with `$remote_addr` before proxying, so a
+public caller cannot select the identity used by application access logging by
+supplying a forwarding header. This policy assumes the current DNS-only,
+direct-origin deployment. Reassess trusted proxy ranges and client identity
+before enabling Cloudflare proxying or adding another load balancer.
+
+The application independently admits at most two expensive requests at once.
+Excess work fails immediately with structured HTTP `503`, code
+`expensive_request_capacity_exceeded`, and `Retry-After: 1`. Health and ordinary
+read routes remain outside this gate so monitoring retains application-level
+capacity during an expensive-route overload. Configure
+`EXPENSIVE_REQUEST_CONCURRENCY` only within its validated range of 1 through 32;
+the two-request default is sized for the current two-vCPU, sub-1-GiB prototype.
+
 Verify transport and automated renewal:
 
 ```bash

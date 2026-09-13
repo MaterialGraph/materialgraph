@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.api.v1.api import api_router
+from app.core.admission_control import ExpensiveRequestAdmissionMiddleware
 from app.core.config import settings
 from app.core.logging import logger
 from app.version import PROJECT_VERSION
@@ -23,6 +24,11 @@ app = FastAPI(
     version=PROJECT_VERSION,
     description="Graph-based material intelligence platform",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    ExpensiveRequestAdmissionMiddleware,
+    max_concurrency=settings.expensive_request_concurrency,
 )
 
 app.include_router(api_router, prefix="/api/v1")

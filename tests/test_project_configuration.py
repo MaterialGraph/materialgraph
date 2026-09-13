@@ -269,6 +269,34 @@ def test_public_https_configuration_is_bounded_and_reproducible():
     assert "https://materialgraph.org/health" in deployment
 
 
+def test_public_expensive_request_controls_are_repository_controlled():
+    nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
+    application = (PROJECT_ROOT / "app/main.py").read_text(encoding="utf-8")
+    admission = (PROJECT_ROOT / "app/core/admission_control.py").read_text(
+        encoding="utf-8"
+    )
+    deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "limit_req_zone $binary_remote_addr" in nginx
+    assert "rate=2r/s" in nginx
+    assert "limit_conn_zone $binary_remote_addr" in nginx
+    assert "limit_req zone=materialgraph_expensive burst=4 nodelay" in nginx
+    assert "limit_conn materialgraph_client 2" in nginx
+    assert "limit_req_status 429" in nginx
+    assert "limit_conn_status 429" in nginx
+    assert "$proxy_add_x_forwarded_for" not in nginx
+    assert nginx.count("proxy_set_header X-Forwarded-For $remote_addr;") == 3
+    assert "ExpensiveRequestAdmissionMiddleware" in application
+    assert "expensive_request_capacity_exceeded" in admission
+    assert 'headers={"Retry-After": "1"}' in admission
+    assert '"/health"' not in admission
+    assert "DNS-only" in deployment
+    assert "HTTP `429`" in deployment
+    assert "structured HTTP `503`" in deployment
+
+
 def test_stage_one_public_https_remediation_is_verified_consistently():
     security_root = PROJECT_ROOT / "docs/security/stage-1-review"
     findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(
