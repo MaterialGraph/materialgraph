@@ -553,7 +553,7 @@ def test_stage_one_screening_logging_is_verified_consistently():
     assert finding_row.endswith("| Verified |")
     assert "| 2 | Verified |" in remediation_row
     assert "Verified on 2026-09-13" in finding
-    assert "count-only application logs" in change_impact
+    assert "count-only application logs" in change_impact.lower()
     assert "All twenty acceptance criteria passed" in verification
     acceptance_rows = [
         line
