@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Verified on 2026-09-13.
 
 ## Assessment
 
@@ -11,7 +11,8 @@ Open.
 - Affected component: public FastAPI scientific routes and Nginx proxy
 - Code baseline: `32bc57cc78754e061f9a2f4294d81aa39e4f9955`
 - Deployment checkpoint: `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Not resolved**
+- Resolution version or commit:
+  `8a1d2b8b5608cad41a7dba6ceb280dc22ada719b`
 
 ## Exact evidence
 

@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — seven remediations verified
+**Status:** Inspection complete — eight remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -94,6 +94,9 @@ collections, proxy body-size enforcement, and unchanged scientific responses.
 `MG-SEC-009` is verified with bounded screening collections, count-only
 application logs, explicit journal retention and rate policies, and scheduled
 disk-usage monitoring.
+`MG-SEC-001` is verified with spoof-resistant per-client proxy limits, a global
+expensive-request admission gate, explicit overload responses, and preserved
+health capacity.
 
 ## Investigation sequence
 

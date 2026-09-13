@@ -1,6 +1,6 @@
 # MaterialGraph Security
 
-**Status:** Stage 1 inspection complete; seven remediations verified
+**Status:** Stage 1 inspection complete; eight remediations verified
 **Project stage:** Deterministic scientific prototype
 **Last updated:** 2026-09-13
 

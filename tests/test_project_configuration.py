@@ -600,6 +600,53 @@ def test_stage_one_screening_logging_is_verified_consistently():
     )
 
 
+def test_stage_one_public_admission_is_verified_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (
+        security_root / "STAGE_1_FINDINGS_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-001.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-001.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-001.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-001`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-001` |")
+    )
+
+    assert finding_row.endswith("| Verified |")
+    assert "| 2 | Verified |" in remediation_row
+    assert "Verified on 2026-09-13" in finding
+    assert "two requests per second" in change_impact
+    assert "All twenty acceptance criteria passed" in verification
+    acceptance_rows = [
+        line
+        for line in verification.splitlines()
+        if line.startswith("| ") and line.endswith("| Pass |")
+    ]
+    assert len(acceptance_rows) == 20
+    assert "8a1d2b8b5608cad41a7dba6ceb280dc22ada719b" in verification
+    assert "seven proxy rejections (`429`)" in verification
+    assert "expensive_request_capacity_exceeded" in verification
+    assert "Retry-After: 1" in verification
+    assert "matched their pre-change production captures exactly" in verification
+
+
 def test_stage_one_environment_file_remediation_is_verified_consistently():
     security_root = PROJECT_ROOT / "docs/security/stage-1-review"
     findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(

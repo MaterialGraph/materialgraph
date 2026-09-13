@@ -7,7 +7,7 @@
 - Confirmed findings: **11**.
 - Retired finding identifiers: **1 (`MG-SEC-006`)**.
 - Active remediation: **0**.
-- Verified remediations: **7 (`MG-SEC-003`, `MG-SEC-004`, `MG-SEC-005`,
+- Verified remediations: **8 (`MG-SEC-001`, `MG-SEC-003`, `MG-SEC-004`, `MG-SEC-005`,
   `MG-SEC-007`, `MG-SEC-008`, `MG-SEC-009`, `MG-SEC-012`)**.
 - Closed findings: **0**.
 
@@ -28,7 +28,7 @@
 
 | Finding | Wave | Status | Change-impact record | Verification record |
 |---|---:|---|---|---|
-| `MG-SEC-001` | 2 | Not started | Not opened | Not opened |
+| `MG-SEC-001` | 2 | Verified | [`change-impact/MG-SEC-001.md`](change-impact/MG-SEC-001.md) | [`verification/MG-SEC-001.md`](verification/MG-SEC-001.md) |
 | `MG-SEC-002` | 2 | Not started | Not opened | Not opened |
 | `MG-SEC-003` | 1 | Verified | [`change-impact/MG-SEC-003.md`](change-impact/MG-SEC-003.md) | [`verification/MG-SEC-003.md`](verification/MG-SEC-003.md) |
 | `MG-SEC-004` | 1 | Verified | [`change-impact/MG-SEC-004.md`](change-impact/MG-SEC-004.md) | [`verification/MG-SEC-004.md`](verification/MG-SEC-004.md) |

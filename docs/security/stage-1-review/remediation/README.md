@@ -17,6 +17,8 @@ responses.
 32-entry limit per objective collection, and a 32 KiB proxy body limit.
 `MG-SEC-009` is verified with bounded screening inputs, count-only logs,
 explicit journal storage and rate policies, and scheduled usage monitoring.
+`MG-SEC-001` is verified with per-client proxy limits, trusted forwarding,
+global expensive-request admission control, and explicit overload responses.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -40,6 +42,8 @@ verification are recorded separately in this directory.
   research-objective collections.
 - Verified logging remediation: `MG-SEC-009` bounded screening logs and journal
   storage monitoring.
+- Verified availability remediation: `MG-SEC-001` coordinated proxy and
+  application admission control for expensive public work.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
@@ -104,6 +108,10 @@ or when the cost of reconstructing production data materially increases.
   validation, logging, journal-policy, monitoring, and rollback boundaries.
 - [`verification/MG-SEC-009.md`](verification/MG-SEC-009.md) — request,
   logging, journal, monitor, and deterministic-response evidence.
+- [`change-impact/MG-SEC-001.md`](change-impact/MG-SEC-001.md) — proxy identity,
+  rate, connection, application admission, and rollback boundaries.
+- [`verification/MG-SEC-001.md`](verification/MG-SEC-001.md) — throttling,
+  concurrency, spoofing, health, and scientific-integrity evidence.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 

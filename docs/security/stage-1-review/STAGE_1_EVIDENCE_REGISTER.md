@@ -372,6 +372,22 @@ MG-SEC-009 remediation evidence recorded on 2026-09-13:
 - journal allocation fell from 191.1 MiB to 48.0 MiB after policy activation,
   while the application remained healthy over trusted HTTPS.
 
+MG-SEC-001 remediation evidence recorded on 2026-09-13:
+
+- Nginx keys expensive-route rate and connection limits to the direct source
+  address, overwrites forwarded client headers, and returns `429` on rejection;
+- a 12-request screening burst produced five structured application `422`
+  responses and seven observed proxy `429` responses;
+- spoofed forwarding test addresses did not appear in application client
+  identity, which retained the actual connection address;
+- two incomplete loopback bodies held both application admission slots, the
+  next expensive request returned structured `503` with `Retry-After: 1`, and
+  health concurrently returned `200`;
+- the capacity-rejection entry contained bounded metadata and no request body;
+  and
+- complete parsed screening, objective-exploration, and scientific-pathway JSON
+  matched the pre-change production captures exactly.
+
 - `CandidateScreeningService` logs complete `scarce_elements` and
   `avoid_elements` collections at `INFO` after screening completes.
 - MaterialGraph standard output is routed to the system journal; standard error
