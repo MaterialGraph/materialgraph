@@ -25,6 +25,9 @@ capacity for synchronous work that outlives its response deadline.
 `MG-SEC-011` is verified with full-commit Action pinning, digest-pinned and
 contained Gitleaks execution, fail-closed local scanning, and enforced
 repository SHA-pinning policy.
+`MG-SEC-010` is verified with hash-locked production and audit environments,
+automated vulnerability gating, exact installed-environment reconciliation,
+patched dependencies, and unchanged deterministic scientific responses.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -54,7 +57,9 @@ verification are recorded separately in this directory.
   application, and proxy deadlines with safe abandonment behavior.
 - Verified automation remediation: `MG-SEC-011` immutable third-party
   references, contained scanner execution, and repository SHA enforcement.
-- Other findings remain outside the active implementation scope.
+- Verified dependency remediation: `MG-SEC-010` reproducible production
+  installation and vulnerability gating.
+- All eleven confirmed Stage 1 findings are verified.
 
 ## Cost and reliability boundary
 

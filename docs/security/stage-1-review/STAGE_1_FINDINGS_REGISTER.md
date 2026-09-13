@@ -1,6 +1,6 @@
 # Stage 1 Security Findings Register
 
-**Status:** Inspection complete — ten remediations verified
+**Status:** Inspection complete — all eleven confirmed findings verified
 **Last reconciled:** 2026-09-13
 
 ## Status definitions
@@ -25,7 +25,7 @@
 | [`MG-SEC-007`](findings/MG-SEC-007.md) | Application database role has administrative capabilities | High | High | Neon role and application credential boundary | Verified |
 | [`MG-SEC-008`](findings/MG-SEC-008.md) | Unbounded research-objective collections permit CPU amplification | High | High | Public research and objective-exploration requests | Verified |
 | [`MG-SEC-009`](findings/MG-SEC-009.md) | Screening logs unbounded request collections verbatim | Medium | High | Screening service and system journal | Verified |
-| [`MG-SEC-010`](findings/MG-SEC-010.md) | Production dependencies are neither reproducibly installed nor vulnerability-gated | Medium | High | Packaging, deployment, and dependency maintenance | Open |
+| [`MG-SEC-010`](findings/MG-SEC-010.md) | Production dependencies are neither reproducibly installed nor vulnerability-gated | Medium | High | Packaging, deployment, and dependency maintenance | Verified |
 | [`MG-SEC-011`](findings/MG-SEC-011.md) | Mutable third-party automation references permit unreviewed code execution | Medium | High | Local pre-commit hook and GitHub Actions | Verified |
 | [`MG-SEC-012`](findings/MG-SEC-012.md) | Production recovery is limited to an untested six-hour history window | Medium | High | Neon database and recovery process | Verified |
 

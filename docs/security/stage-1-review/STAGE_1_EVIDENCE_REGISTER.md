@@ -499,3 +499,31 @@ MG-SEC-002 remediation evidence recorded on 2026-09-13:
   repository policy was enabled, run 86 attempt 2 succeeded in 13 seconds; its
   Gitleaks job succeeded in 8 seconds without a policy rejection or Node.js
   deprecation annotation.
+
+## MG-SEC-010 dependency verification — 2026-09-13
+
+- The initial production audit found 17 unique known vulnerabilities across
+  Pillow `12.2.0`, pip `26.1.2`, pydantic-settings `2.14.1`, and Starlette
+  `1.2.1`; the documented snapshot also differed from the deployed environment
+  in 16 evaluated requirements.
+- Reviewed, hash-bearing production and audit locks were generated with Python
+  3.12.3 and pip-tools 7.6.1. The production lock contains exact direct and
+  transitive versions and the deployment path enforces their hashes.
+- Dependency Security run 1 passed its push gate, and Secret Scan run 88 also
+  passed for implementation checkpoint
+  `d06b8259d52fab65f31d7039448e44d05742f508`.
+- A clean candidate environment passed `pip check`, exact installed-versus-lock
+  reconciliation, application import, and a database `SELECT 1` under the
+  production service identity and redacted runtime configuration.
+- The first directory-rename activation was automatically rolled back because
+  virtual-environment console-script shebangs retained their original absolute
+  path. Activation through the stable `.venv` symlink then succeeded while the
+  versioned candidate path remained intact.
+- The active environment reports pip `26.2.1`, Pillow `12.3.0`,
+  pydantic-settings `2.14.2`, and Starlette `1.3.1`. A fresh audit inspected 87
+  distributions and found zero affected distributions and zero known
+  vulnerabilities.
+- MaterialGraph, Nginx, backup, and journal-monitor services remained active;
+  public health and a database-backed material read returned HTTP `200`.
+- Complete parsed screening, objective-exploration, and scientific-pathway JSON
+  matched their pre-change production captures exactly.

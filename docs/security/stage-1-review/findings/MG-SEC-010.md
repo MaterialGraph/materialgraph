@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Verified on 2026-09-13.
 
 ## Assessment
 
@@ -14,7 +14,8 @@ Open.
   `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
 - Deployment evidence checkpoint:
   `b2df9b0fcbf0c4a84430f5511b0391ea414eb9bc`
-- Resolution version or commit: **Not resolved**
+- Resolution version or commit:
+  `d06b8259d52fab65f31d7039448e44d05742f508`
 
 ## Exact evidence
 

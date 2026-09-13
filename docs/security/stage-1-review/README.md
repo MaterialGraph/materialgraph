@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — ten remediations verified
+**Status:** Inspection complete — all eleven confirmed findings verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -64,14 +64,14 @@ availability scenario.
 
 ## Current phase
 
-Eleven findings are confirmed and one identifier is retired after exact
-deployment revalidation. The database, request-boundary, dependency,
-CI-integrity, public operational-exposure and error-response, and backup and
-recovery evidence groups are complete. Remaining request-model,
-dependency-advisory, source-governance, and operational-hardening cases that
-did not meet the security finding threshold are explicitly classified in the
-observation register. Final evidence reconciliation is complete and the
-proposed remediation sequence is ready for review.
+Eleven findings are confirmed, all eleven are verified, and one additional
+identifier is retired after exact deployment revalidation. The database,
+request-boundary, dependency, CI-integrity, public operational-exposure and
+error-response, and backup and recovery evidence groups are complete. Remaining
+request-model, dependency-advisory, source-governance, and operational-hardening
+cases that did not meet the security finding threshold are explicitly
+classified in the observation register. Stage 1 implementation and evidence
+reconciliation are complete.
 
 Wave 0 is verified: `MG-SEC-012` now has a deployed daily backup, a successful
 scheduled run, and an isolated restore with relational and deterministic API
@@ -100,6 +100,9 @@ health capacity.
 `MG-SEC-002` is verified with transaction-scoped database limits, an explicit
 application deadline, coordinated proxy timeouts, safe rollback, retained
 capacity for abandoned synchronous work, and unchanged scientific responses.
+`MG-SEC-010` is verified with hash-locked production dependencies, automated
+push, pull-request, and scheduled vulnerability gates, exact deployed-version
+reconciliation, patched dependencies, and unchanged scientific responses.
 
 ## Investigation sequence
 
