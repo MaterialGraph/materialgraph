@@ -1,0 +1,4 @@
+# Isolated vulnerability-scanner input. The generated lock supplies hashes for
+# the scanner and all of its dependencies.
+
+pip-audit==2.10.1

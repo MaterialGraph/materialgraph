@@ -1,0 +1,24 @@
+# Authoritative direct and build requirements for the Linux production lock.
+#
+# Regenerate requirements-production.lock only through the reviewed lock-build
+# procedure. Transitive fixes are constrained here when a direct package does
+# not yet require a safe minimum.
+
+pip==26.2.1
+setuptools==84.0.0
+wheel==0.48.0
+
+alembic==1.18.4
+fastapi==0.136.3
+uvicorn[standard]==0.48.0
+sqlalchemy==2.0.50
+psycopg[binary]==3.3.4
+pydantic-settings==2.14.2
+python-dotenv==1.2.2
+networkx==3.6.1
+loguru==0.7.3
+mp-api==0.46.1
+
+# Security floors for currently transitive production dependencies.
+pillow==12.3.0
+starlette==1.3.1
