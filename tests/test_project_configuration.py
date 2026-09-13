@@ -74,6 +74,7 @@ def test_request_timeout_hierarchy_is_bounded_and_documented():
     assert nginx.count("proxy_read_timeout 25s;") == 2
     assert nginx.count("proxy_read_timeout 20s;") == 1
     assert "database statement < application deadline" in deployment
+    assert "compatible with the Neon pooled endpoint" in deployment
     assert "Database dependency failures explicitly roll back" in deployment
 
 

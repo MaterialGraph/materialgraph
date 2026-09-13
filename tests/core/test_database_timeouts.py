@@ -1,5 +1,9 @@
 from app.core.config import settings
-from app.core.database import build_engine_options, get_db
+from app.core.database import (
+    apply_postgresql_transaction_timeouts,
+    build_engine_options,
+    get_db,
+)
 from app.core.database_timeout import is_database_operation_timeout
 
 
@@ -9,8 +13,7 @@ def test_postgresql_engine_has_bounded_waits():
     assert options["pool_pre_ping"] is True
     assert options["pool_timeout"] == settings.database_pool_timeout_seconds
     assert options["connect_args"]["connect_timeout"] == 3
-    assert "lock_timeout=3000" in options["connect_args"]["options"]
-    assert "statement_timeout=15000" in options["connect_args"]["options"]
+    assert "options" not in options["connect_args"]
 
 
 def test_non_postgresql_engine_does_not_receive_postgresql_options():
@@ -40,6 +43,21 @@ def test_database_dependency_rolls_back_and_closes_after_failure(monkeypatch):
         pass
 
     assert events == ["rollback", "close"]
+
+
+def test_postgresql_timeouts_are_applied_locally_to_each_transaction():
+    statements = []
+
+    class FakeConnection:
+        def exec_driver_sql(self, statement):
+            statements.append(statement)
+
+    apply_postgresql_transaction_timeouts(FakeConnection())
+
+    assert statements == [
+        "SET LOCAL lock_timeout = '3000ms'",
+        "SET LOCAL statement_timeout = '15000ms'",
+    ]
 
 
 def test_postgresql_cancellation_and_lock_timeout_are_classified():

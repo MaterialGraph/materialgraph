@@ -453,7 +453,7 @@ Scientific request deadlines use an inside-out hierarchy so the layer owning
 the work stops it before an outer proxy gives up:
 
 * PostgreSQL lock and pool-acquisition waits are limited to 3 seconds.
-* PostgreSQL statements are limited to 15 seconds.
+* Each PostgreSQL transaction applies a 15-second statement limit.
 * Expensive application requests are limited to 20 seconds.
 * Nginx allows 25 seconds for an expensive upstream response.
 
@@ -462,8 +462,10 @@ timeout. Ordinary routes use a 20-second upstream response timeout. An
 application deadline returns structured HTTP `504` with code
 `expensive_request_deadline_exceeded`; a PostgreSQL statement or lock timeout
 returns structured HTTP `504`, while pool-acquisition exhaustion returns HTTP
-`503` with `Retry-After: 1`. Database dependency failures explicitly roll back
-before returning their connection to the pool.
+`503` with `Retry-After: 1`. PostgreSQL limits are applied with transaction-local
+statements after connecting, which is compatible with the Neon pooled endpoint.
+Database dependency failures explicitly roll back before returning their
+connection to the pool.
 
 The defaults can be tuned through `EXPENSIVE_REQUEST_TIMEOUT_SECONDS`,
 `DATABASE_POOL_TIMEOUT_SECONDS`, `DATABASE_LOCK_TIMEOUT_MS`, and
