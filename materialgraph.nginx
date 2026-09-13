@@ -3,6 +3,7 @@ server {
     server_name materialgraph.org www.materialgraph.org;
 
     server_tokens off;
+    client_max_body_size 32k;
     add_header Strict-Transport-Security "max-age=31536000" always;
 
     ssl_certificate /etc/letsencrypt/live/materialgraph.org/fullchain.pem;

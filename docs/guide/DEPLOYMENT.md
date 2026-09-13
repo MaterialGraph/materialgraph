@@ -383,7 +383,10 @@ sudo systemctl reload nginx
 The tracked site terminates TLS with Certbot-managed material, accepts modern
 protocols through Certbot's maintained options, redirects HTTP before proxying,
 returns one-year HSTS without preload or `includeSubDomains`, suppresses the
-Nginx version, and keeps Uvicorn on loopback.
+Nginx version, limits request bodies to 32 KiB, and keeps Uvicorn on loopback.
+The body limit is intentionally larger than every valid bounded research
+objective and rejects unexpectedly large public requests with HTTP `413`
+before application service work.
 
 Verify transport and automated renewal:
 

@@ -1,6 +1,12 @@
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.domain.periodic_table import normalize_element_symbol
+
+
+MAX_RESEARCH_OBJECTIVE_ELEMENTS = 32
+ElementSymbol = Annotated[str, Field(min_length=1, max_length=2)]
 
 
 class DiscoveryGoal(BaseModel):
@@ -116,14 +122,50 @@ class DiscoveryChainsResponse(BaseModel):
     chains: list[DiscoveryChain]
 
 class ResearchObjective(BaseModel):
-    avoid_elements: list[str] = []
-    prefer_elements: list[str] = []
-    preserve_elements: list[str] = []
+    avoid_elements: list[ElementSymbol] = Field(
+        default_factory=list,
+        max_length=MAX_RESEARCH_OBJECTIVE_ELEMENTS,
+    )
+    prefer_elements: list[ElementSymbol] = Field(
+        default_factory=list,
+        max_length=MAX_RESEARCH_OBJECTIVE_ELEMENTS,
+    )
+    preserve_elements: list[ElementSymbol] = Field(
+        default_factory=list,
+        max_length=MAX_RESEARCH_OBJECTIVE_ELEMENTS,
+    )
     target_family: str | None = None
     max_hops: int = Field(default=2, ge=1, le=3)
     limit: int = Field(default=5, ge=1, le=20)
     prefer_lower_criticality: bool = True
     require_stable_materials: bool = False
+
+    @field_validator(
+        "avoid_elements",
+        "prefer_elements",
+        "preserve_elements",
+        mode="before",
+    )
+    @classmethod
+    def normalize_element_collection(cls, value: object) -> object:
+        if not isinstance(value, (list, tuple)):
+            return value
+        if len(value) > MAX_RESEARCH_OBJECTIVE_ELEMENTS:
+            raise ValueError(
+                "element collection must contain at most "
+                f"{MAX_RESEARCH_OBJECTIVE_ELEMENTS} entries"
+            )
+
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for item in value:
+            if not isinstance(item, str):
+                return value
+            symbol = normalize_element_symbol(item)
+            if symbol not in seen:
+                normalized.append(symbol)
+                seen.add(symbol)
+        return normalized
 
 
 class ResearchObjectiveChainRequest(BaseModel):

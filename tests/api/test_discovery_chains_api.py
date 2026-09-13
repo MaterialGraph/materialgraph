@@ -1,3 +1,31 @@
+import pytest
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/api/v1/materials/5/discovery/objective/chains",
+        "/api/v1/materials/5/discovery/objective/explore",
+        "/api/v1/materials/5/research/scientific-pathways",
+    ],
+)
+@pytest.mark.parametrize(
+    "elements",
+    [["Li"] * 33, ["Lithium"], ["Xx"]],
+)
+def test_objective_endpoints_reject_invalid_element_collections(
+    client,
+    path,
+    elements,
+):
+    response = client.post(
+        path,
+        json={"objective": {"avoid_elements": elements}},
+    )
+
+    assert response.status_code == 422
+
+
 def test_get_discovery_chains(client):
     response = client.get(
         "/api/v1/materials/5/discovery/chains"
