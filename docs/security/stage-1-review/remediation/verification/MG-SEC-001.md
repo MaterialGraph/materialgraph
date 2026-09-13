@@ -68,8 +68,8 @@ running scientific work.
 
 ## Repository evidence
 
-- Focused admission and project-configuration verification passed with 31 tests.
-- The complete suite passed with 801 tests and one platform skip.
+- Focused admission and project-configuration verification passed with 32 tests.
+- The complete suite passed with 802 tests and one platform skip.
 - Ruff and `git diff --check` passed.
 
 ## Conclusion
