@@ -76,6 +76,7 @@ def test_request_timeout_hierarchy_is_bounded_and_documented():
     assert "database statement < application deadline" in deployment
     assert "compatible with the Neon pooled endpoint" in deployment
     assert "Database dependency failures explicitly roll back" in deployment
+    assert "admission slot remains occupied" in deployment
 
 
 def test_settings_dotenv_source_can_be_disabled_after_systemd_loads_it():

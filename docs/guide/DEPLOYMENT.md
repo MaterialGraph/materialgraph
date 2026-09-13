@@ -467,6 +467,13 @@ statements after connecting, which is compatible with the Neon pooled endpoint.
 Database dependency failures explicitly roll back before returning their
 connection to the pool.
 
+Python worker threads cannot be forcibly terminated safely. If synchronous
+scientific work outlives the application response deadline, its eventual
+response is discarded and its admission slot remains occupied until that work
+actually exits. This prevents repeated timed-out requests from bypassing the
+two-request capacity boundary. PostgreSQL work still stops at its earlier
+server-enforced statement deadline.
+
 The defaults can be tuned through `EXPENSIVE_REQUEST_TIMEOUT_SECONDS`,
 `DATABASE_POOL_TIMEOUT_SECONDS`, `DATABASE_LOCK_TIMEOUT_MS`, and
 `DATABASE_STATEMENT_TIMEOUT_MS`. Preserve the ordering

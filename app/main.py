@@ -33,12 +33,12 @@ app = FastAPI(
 )
 
 app.add_middleware(
-    ExpensiveRequestDeadlineMiddleware,
-    timeout_seconds=settings.expensive_request_timeout_seconds,
-)
-app.add_middleware(
     ExpensiveRequestAdmissionMiddleware,
     max_concurrency=settings.expensive_request_concurrency,
+)
+app.add_middleware(
+    ExpensiveRequestDeadlineMiddleware,
+    timeout_seconds=settings.expensive_request_timeout_seconds,
 )
 app.add_exception_handler(SQLAlchemyTimeoutError, database_pool_timeout_handler)
 app.add_exception_handler(DBAPIError, database_operation_timeout_handler)

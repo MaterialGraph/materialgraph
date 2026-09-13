@@ -55,6 +55,49 @@ def test_expensive_request_timeout_is_structured_and_recovers():
     asyncio.run(exercise())
 
 
+def test_timed_out_work_retains_admission_capacity_until_exit():
+    from app.core.admission_control import ExpensiveRequestAdmissionMiddleware
+
+    async def exercise() -> None:
+        release = asyncio.Event()
+
+        async def downstream(scope, receive, send):
+            await release.wait()
+            await send({"type": "http.response.start", "status": 200, "headers": []})
+            await send({"type": "http.response.body", "body": b'{}'})
+
+        admission = ExpensiveRequestAdmissionMiddleware(downstream, max_concurrency=1)
+        middleware = ExpensiveRequestDeadlineMiddleware(admission, timeout_seconds=0.01)
+
+        messages = []
+
+        async def send(message):
+            messages.append(message)
+
+        await middleware(
+            _scope("/api/v1/screening/candidates"),
+            _receive,
+            send,
+        )
+        assert messages[0]["status"] == 504
+        assert admission.gate._active == 1
+
+        messages = []
+        await middleware(
+            _scope("/api/v1/screening/candidates"),
+            _receive,
+            send,
+        )
+        assert messages[0]["status"] == 503
+
+        release.set()
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        assert admission.gate._active == 0
+
+    asyncio.run(exercise())
+
+
 def test_ordinary_request_is_not_subject_to_expensive_deadline():
     async def exercise() -> None:
         called = False
