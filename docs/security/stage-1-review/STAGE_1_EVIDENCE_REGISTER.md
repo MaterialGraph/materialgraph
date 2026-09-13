@@ -351,6 +351,27 @@ MG-SEC-008 remediation evidence recorded on 2026-09-13:
 - normal and normalized-equivalent requests retained complete deterministic
   response equality.
 
+MG-SEC-009 remediation evidence recorded on 2026-09-13:
+
+- each screening element collection is limited to 32 raw entries, and symbols
+  are canonicalized, validated, and deduplicated before service work;
+- oversized, overlong, and unknown-symbol requests returned structured `422`
+  responses and produced no screening-service completion entry;
+- normal screening output matched complete parsed pre-change JSON, while a
+  duplicate mixed-case request produced the same complete response;
+- a maximum valid request with 32 scarce and 32 avoided elements returned
+  `200` in 0.418 seconds, and its completion entry was 255 bytes;
+- completion logs contain bounded counts and boolean metadata rather than
+  submitted collections;
+- effective service properties declare a 30-second/200-message base rate
+  policy, and effective journald configuration declares persistent storage, a
+  256 MiB maximum, 1 GiB free-space reserve, 14-day retention, and a
+  30-second/1,000-message base rate policy;
+- the daily monitor passed with 50,339,840 allocated journal bytes and 70.55%
+  filesystem use; and
+- journal allocation fell from 191.1 MiB to 48.0 MiB after policy activation,
+  while the application remained healthy over trusted HTTPS.
+
 - `CandidateScreeningService` logs complete `scarce_elements` and
   `avoid_elements` collections at `INFO` after screening completes.
 - MaterialGraph standard output is routed to the system journal; standard error

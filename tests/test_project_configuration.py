@@ -521,6 +521,53 @@ def test_stage_one_objective_bounds_are_verified_consistently():
     assert "client_max_body_size 32k;" in nginx
 
 
+def test_stage_one_screening_logging_is_verified_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (
+        security_root / "STAGE_1_FINDINGS_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-009.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-009.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-009.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-009`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-009` |")
+    )
+
+    assert finding_row.endswith("| Verified |")
+    assert "| 2 | Verified |" in remediation_row
+    assert "Verified on 2026-09-13" in finding
+    assert "count-only application logs" in change_impact
+    assert "All twenty acceptance criteria passed" in verification
+    acceptance_rows = [
+        line
+        for line in verification.splitlines()
+        if line.startswith("| ") and line.endswith("| Pass |")
+    ]
+    assert len(acceptance_rows) == 20
+    assert "34bb5e44ffaab4afcbe00aa71f3ac053486ee561" in verification
+    assert "complete parsed pre-change JSON" in verification
+    assert "largest measured completion entry was 255" in verification
+    assert "does not misstate `200` as a strict observed ceiling" in verification
+    assert "journal allocation fell from 191.1 MiB to 48.0 MiB" in verification
+
+
 def test_stage_one_environment_file_remediation_is_verified_consistently():
     security_root = PROJECT_ROOT / "docs/security/stage-1-review"
     findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(

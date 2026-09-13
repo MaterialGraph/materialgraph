@@ -7,8 +7,8 @@
 - Confirmed findings: **11**.
 - Retired finding identifiers: **1 (`MG-SEC-006`)**.
 - Active remediation: **0**.
-- Verified remediations: **6 (`MG-SEC-003`, `MG-SEC-004`, `MG-SEC-005`,
-  `MG-SEC-007`, `MG-SEC-008`, `MG-SEC-012`)**.
+- Verified remediations: **7 (`MG-SEC-003`, `MG-SEC-004`, `MG-SEC-005`,
+  `MG-SEC-007`, `MG-SEC-008`, `MG-SEC-009`, `MG-SEC-012`)**.
 - Closed findings: **0**.
 
 ## Status definitions
@@ -36,7 +36,7 @@
 | `MG-SEC-006` | 1 | Retired | Deployment-only hardening | [`verification/MG-SEC-006.md`](verification/MG-SEC-006.md) |
 | `MG-SEC-007` | 1 | Verified | [`change-impact/MG-SEC-007.md`](change-impact/MG-SEC-007.md) | [`verification/MG-SEC-007.md`](verification/MG-SEC-007.md) |
 | `MG-SEC-008` | 2 | Verified | [`change-impact/MG-SEC-008.md`](change-impact/MG-SEC-008.md) | [`verification/MG-SEC-008.md`](verification/MG-SEC-008.md) |
-| `MG-SEC-009` | 2 | Not started | Not opened | Not opened |
+| `MG-SEC-009` | 2 | Verified | [`change-impact/MG-SEC-009.md`](change-impact/MG-SEC-009.md) | [`verification/MG-SEC-009.md`](verification/MG-SEC-009.md) |
 | `MG-SEC-010` | 3 | Not started | Not opened | Not opened |
 | `MG-SEC-011` | 3 | Not started | Not opened | Not opened |
 | `MG-SEC-012` | 0 | Verified | [`change-impact/MG-SEC-012.md`](change-impact/MG-SEC-012.md) | [`verification/MG-SEC-012.md`](verification/MG-SEC-012.md) |

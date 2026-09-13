@@ -15,6 +15,8 @@ plaintext redirects, modern TLS, exercised renewal, and unchanged scientific
 responses.
 `MG-SEC-008` is verified with canonical, deduplicated element symbols, a
 32-entry limit per objective collection, and a 32 KiB proxy body limit.
+`MG-SEC-009` is verified with bounded screening inputs, count-only logs,
+explicit journal storage and rate policies, and scheduled usage monitoring.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -36,6 +38,8 @@ verification are recorded separately in this directory.
   redirection.
 - Verified request-boundary remediation: `MG-SEC-008` bounded and canonical
   research-objective collections.
+- Verified logging remediation: `MG-SEC-009` bounded screening logs and journal
+  storage monitoring.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
@@ -96,6 +100,10 @@ or when the cost of reconstructing production data materially increases.
   certificate, proxy, rollback, and scientific-impact boundaries.
 - [`verification/MG-SEC-005.md`](verification/MG-SEC-005.md) — public TLS,
   redirect, renewal, header, endpoint, and scientific-integrity checks.
+- [`change-impact/MG-SEC-009.md`](change-impact/MG-SEC-009.md) — screening
+  validation, logging, journal-policy, monitoring, and rollback boundaries.
+- [`verification/MG-SEC-009.md`](verification/MG-SEC-009.md) — request,
+  logging, journal, monitor, and deterministic-response evidence.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 

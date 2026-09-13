@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — six remediations verified
+**Status:** Inspection complete — seven remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -91,6 +91,9 @@ HTTP redirection, modern TLS, automated renewal, and unchanged scientific
 responses.
 `MG-SEC-008` is verified with bounded, canonical research-objective element
 collections, proxy body-size enforcement, and unchanged scientific responses.
+`MG-SEC-009` is verified with bounded screening collections, count-only
+application logs, explicit journal retention and rate policies, and scheduled
+disk-usage monitoring.
 
 ## Investigation sequence
 
