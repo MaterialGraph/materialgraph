@@ -8,7 +8,7 @@ A human-readable version comment or tag may accompany the immutable identity.
 
 The current Gitleaks release is `v8.18.4`, pinned to the multi-platform manifest
 digest recorded identically in `.github/workflows/secret-scan.yml` and
-`.githooks/pre-commit`. The checkout action uses the signed `v4.2.2` release
+`.githooks/pre-commit`. The checkout action uses the `v5.0.0` release
 commit.
 
 ## Updating a pin

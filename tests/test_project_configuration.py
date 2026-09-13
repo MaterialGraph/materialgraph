@@ -65,7 +65,7 @@ def test_secret_scanners_are_immutable_and_locally_contained():
         "sha256:75bdb2b2f4db213cde0b8295f13a88d6b333091bbfbf3012a4e083d00d31caba"
     )
 
-    assert "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" in workflow
+    assert "actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8" in workflow
     assert workflow.count(digest) == 1
     assert hook.count(digest) == 1
     assert '--volume "$PWD:/repo:ro"' in workflow
