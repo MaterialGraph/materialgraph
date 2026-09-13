@@ -388,6 +388,27 @@ MG-SEC-001 remediation evidence recorded on 2026-09-13:
 - complete parsed screening, objective-exploration, and scientific-pathway JSON
   matched the pre-change production captures exactly.
 
+MG-SEC-002 remediation evidence recorded on 2026-09-13:
+
+- the original production baseline had no explicit Nginx proxy timeouts and
+  reported PostgreSQL `statement_timeout=0` and `lock_timeout=0`;
+- representative screening, objective-exploration, and scientific-pathway
+  requests completed in 0.949, 7.431, and 7.033 seconds before activation;
+- effective PostgreSQL transactions reported a 15-second statement timeout and
+  a 3-second lock timeout through the Neon pooled endpoint;
+- an artificial 20-second SQL sleep was cancelled with SQLSTATE `57014` in
+  15.251 seconds, after which both the same connection and a fresh pooled
+  connection successfully executed `SELECT 1`;
+- two artificial application delays returned structured `504` responses and a
+  subsequent normal execution returned `200`;
+- a timed-out synchronous boundary returned `504` in 0.051 seconds, retained
+  its admission slot, rejected concurrent work with `503`, and released the
+  slot only after the abandoned work exited;
+- effective Nginx configuration uses 3-second connect, 10-second send,
+  25-second expensive-read, and 20-second ordinary-read timeouts; and
+- complete parsed screening, objective-exploration, and scientific-pathway JSON
+  matched their pre-change captures exactly after activation.
+
 - `CandidateScreeningService` logs complete `scarce_elements` and
   `avoid_elements` collections at `INFO` after screening completes.
 - MaterialGraph standard output is routed to the system journal; standard error

@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — eight remediations verified
+**Status:** Inspection complete — nine remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -97,6 +97,9 @@ disk-usage monitoring.
 `MG-SEC-001` is verified with spoof-resistant per-client proxy limits, a global
 expensive-request admission gate, explicit overload responses, and preserved
 health capacity.
+`MG-SEC-002` is verified with transaction-scoped database limits, an explicit
+application deadline, coordinated proxy timeouts, safe rollback, retained
+capacity for abandoned synchronous work, and unchanged scientific responses.
 
 ## Investigation sequence
 

@@ -1,6 +1,6 @@
 # MaterialGraph Security
 
-**Status:** Stage 1 inspection complete; eight remediations verified
+**Status:** Stage 1 inspection complete; nine remediations verified
 **Project stage:** Deterministic scientific prototype
 **Last updated:** 2026-09-13
 
@@ -229,6 +229,9 @@ its original plaintext conclusion was invalid. Least-privilege work in
 while migration retains an isolated administrative path.
 `MG-SEC-003` is verified with fail-closed enforcement of the deployed
 owner-only runtime environment-file boundary.
+`MG-SEC-002` is verified with an inside-out database, application, and proxy
+timeout hierarchy, structured failure responses, safe database recovery, and
+retained admission capacity for abandoned synchronous work.
 
 The security foundation already implemented—particularly secret scanning,
 environment isolation, and credential-handling procedures—is treated as an

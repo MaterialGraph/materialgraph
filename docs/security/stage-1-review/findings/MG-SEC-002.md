@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Verified on 2026-09-13.
 
 ## Assessment
 
@@ -12,7 +12,8 @@ Open.
   Nginx proxy, and SQLAlchemy database access
 - Code baseline: `32bc57cc78754e061f9a2f4294d81aa39e4f9955`
 - Deployment checkpoint: `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Not resolved**
+- Resolution version or commit:
+  `4869e39edb97c5c8c48c63b1819bb692f02f57b3`
 
 ## Exact evidence
 

@@ -19,6 +19,9 @@ responses.
 explicit journal storage and rate policies, and scheduled usage monitoring.
 `MG-SEC-001` is verified with per-client proxy limits, trusted forwarding,
 global expensive-request admission control, and explicit overload responses.
+`MG-SEC-002` is verified with pool, lock, statement, application, and proxy
+deadlines; structured timeout responses; rollback; and retained admission
+capacity for synchronous work that outlives its response deadline.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -44,6 +47,8 @@ verification are recorded separately in this directory.
   storage monitoring.
 - Verified availability remediation: `MG-SEC-001` coordinated proxy and
   application admission control for expensive public work.
+- Verified timeout remediation: `MG-SEC-002` coordinated database,
+  application, and proxy deadlines with safe abandonment behavior.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary
@@ -112,6 +117,10 @@ or when the cost of reconstructing production data materially increases.
   rate, connection, application admission, and rollback boundaries.
 - [`verification/MG-SEC-001.md`](verification/MG-SEC-001.md) — throttling,
   concurrency, spoofing, health, and scientific-integrity evidence.
+- [`change-impact/MG-SEC-002.md`](change-impact/MG-SEC-002.md) — timeout
+  hierarchy, rollback, compatibility, and residual execution boundaries.
+- [`verification/MG-SEC-002.md`](verification/MG-SEC-002.md) — database,
+  application, proxy, recovery, and scientific-integrity evidence.
 - [`runbooks/database_backup_restore.md`](runbooks/database_backup_restore.md) —
   cost-conscious backup and isolated restore procedure.
 

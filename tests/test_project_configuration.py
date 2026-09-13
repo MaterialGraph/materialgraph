@@ -79,6 +79,53 @@ def test_request_timeout_hierarchy_is_bounded_and_documented():
     assert "admission slot remains occupied" in deployment
 
 
+def test_stage_one_request_timeout_is_verified_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (
+        security_root / "STAGE_1_FINDINGS_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-002.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-002.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-002.md"
+    ).read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-002`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-002` |")
+    )
+    acceptance_rows = [
+        line
+        for line in verification.splitlines()
+        if line.startswith("| ") and line.endswith("| Pass |")
+    ]
+
+    assert finding_row.endswith("| Verified |")
+    assert "| 2 | Verified |" in remediation_row
+    assert "Verified on 2026-09-13" in finding
+    assert "Neon rejected those options" in change_impact
+    assert "Python cannot safely terminate a running worker thread" in change_impact
+    assert "All twenty acceptance criteria passed" in verification
+    assert len(acceptance_rows) == 20
+    assert "15.251 seconds" in verification
+    assert "returned structured `504` in 0.051 seconds" in verification
+    assert "Complete parsed JSON matched baseline" in verification
+    assert "4869e39edb97c5c8c48c63b1819bb692f02f57b3" in verification
+
+
 def test_settings_dotenv_source_can_be_disabled_after_systemd_loads_it():
     assert resolve_settings_env_file({}) == ".env"
     assert resolve_settings_env_file({"MATERIALGRAPH_ENV_FILE": ""}) is None
