@@ -337,6 +337,20 @@ of the original plaintext claim.
 
 ## Request logging and proxy-bound evidence
 
+MG-SEC-008 remediation evidence recorded on 2026-09-13:
+
+- each research-objective element collection is limited to 32 raw entries;
+- valid symbols are canonicalized and duplicates are removed in first-seen
+  order before scientific service work;
+- all three affected endpoints returned structured `422` responses for
+  oversized, overlong, and unknown-symbol collections;
+- Nginx explicitly limits request bodies to 32 KiB and rejected a 40,056-byte
+  request with `413`;
+- a maximum-cardinality valid exploration request returned `200` in 2.076870
+  seconds; and
+- normal and normalized-equivalent requests retained complete deterministic
+  response equality.
+
 - `CandidateScreeningService` logs complete `scarce_elements` and
   `avoid_elements` collections at `INFO` after screening completes.
 - MaterialGraph standard output is routed to the system journal; standard error

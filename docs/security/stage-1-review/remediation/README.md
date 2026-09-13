@@ -13,6 +13,8 @@ root-owned configuration, non-writable code, and tested systemd isolation.
 `MG-SEC-005` is verified with trusted HTTPS for both public hostnames,
 plaintext redirects, modern TLS, exercised renewal, and unchanged scientific
 responses.
+`MG-SEC-008` is verified with canonical, deduplicated element symbols, a
+32-entry limit per objective collection, and a 32 KiB proxy body limit.
 
 The governing inspection remains frozen. Finding records retain their original
 evidence and severity; remediation status, change impact, implementation, and
@@ -32,6 +34,8 @@ verification are recorded separately in this directory.
 - Verified host-boundary remediation: `MG-SEC-004` dedicated runtime identity.
 - Verified public-transport remediation: `MG-SEC-005` trusted HTTPS and HTTP
   redirection.
+- Verified request-boundary remediation: `MG-SEC-008` bounded and canonical
+  research-objective collections.
 - Other findings remain outside the active implementation scope.
 
 ## Cost and reliability boundary

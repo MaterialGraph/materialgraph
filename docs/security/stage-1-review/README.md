@@ -1,6 +1,6 @@
 # MaterialGraph Stage 1 Security Review
 
-**Status:** Inspection complete — five remediations verified
+**Status:** Inspection complete — six remediations verified
 **Governing baseline:** [`../README.md`](../README.md)
 **Review opened:** 2026-08-28
 
@@ -89,6 +89,8 @@ systemd isolation.
 `MG-SEC-005` is verified with trusted HTTPS on the apex and `www` hostnames,
 HTTP redirection, modern TLS, automated renewal, and unchanged scientific
 responses.
+`MG-SEC-008` is verified with bounded, canonical research-objective element
+collections, proxy body-size enforcement, and unchanged scientific responses.
 
 ## Investigation sequence
 

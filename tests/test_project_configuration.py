@@ -446,6 +446,53 @@ def test_stage_one_database_privilege_remediation_is_verified_consistently():
     assert "screening request, and discovery" in verification
 
 
+def test_stage_one_objective_bounds_are_verified_consistently():
+    security_root = PROJECT_ROOT / "docs/security/stage-1-review"
+    findings_register = (
+        security_root / "STAGE_1_FINDINGS_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    remediation_register = (
+        security_root / "remediation/REMEDIATION_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    finding = (security_root / "findings/MG-SEC-008.md").read_text(
+        encoding="utf-8"
+    )
+    change_impact = (
+        security_root / "remediation/change-impact/MG-SEC-008.md"
+    ).read_text(encoding="utf-8")
+    verification = (
+        security_root / "remediation/verification/MG-SEC-008.md"
+    ).read_text(encoding="utf-8")
+    nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
+
+    finding_row = next(
+        line
+        for line in findings_register.splitlines()
+        if line.startswith("| [`MG-SEC-008`]")
+    )
+    remediation_row = next(
+        line
+        for line in remediation_register.splitlines()
+        if line.startswith("| `MG-SEC-008` |")
+    )
+
+    assert finding_row.endswith("| Verified |")
+    assert "| 2 | Verified |" in remediation_row
+    assert "Verified on 2026-09-13" in finding
+    assert "32 entries" in change_impact
+    assert "All twenty acceptance criteria passed" in verification
+    acceptance_rows = [
+        line
+        for line in verification.splitlines()
+        if line.startswith("| ") and line.endswith("| Pass |")
+    ]
+    assert len(acceptance_rows) == 20
+    assert "96d7f577c08c3bfb439b94bfbabc3f4d6a437f4d" in verification
+    assert "2.076870 seconds" in verification
+    assert "complete parsed chain response" in verification
+    assert "client_max_body_size 32k;" in nginx
+
+
 def test_stage_one_environment_file_remediation_is_verified_consistently():
     security_root = PROJECT_ROOT / "docs/security/stage-1-review"
     findings_register = (security_root / "STAGE_1_FINDINGS_REGISTER.md").read_text(

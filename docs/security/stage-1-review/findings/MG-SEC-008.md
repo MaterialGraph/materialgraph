@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Verified on 2026-09-13.
 
 ## Assessment
 
@@ -12,7 +12,8 @@ Open.
   scientific-pathway requests
 - Application evidence checkpoint:
   `60c06651c75aaf839a90ded90bf3ce3aad6e8e8d`
-- Resolution version or commit: **Not resolved**
+- Resolution version or commit:
+  `96d7f577c08c3bfb439b94bfbabc3f4d6a437f4d`
 
 ## Exact evidence
 
