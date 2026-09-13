@@ -3,8 +3,9 @@
 echo "Running Gitleaks on staged changes..."
 
 MSYS_NO_PATHCONV=1 docker run --rm \
-  -v "$(pwd):/repo" \
-  ghcr.io/gitleaks/gitleaks:v8.18.4 \
+  --network none \
+  --volume "$(pwd):/repo:ro" \
+  ghcr.io/gitleaks/gitleaks:v8.18.4@sha256:75bdb2b2f4db213cde0b8295f13a88d6b333091bbfbf3012a4e083d00d31caba \
   protect --source /repo --staged --redact --verbose
 
 status=$?

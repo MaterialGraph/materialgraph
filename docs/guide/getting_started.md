@@ -82,6 +82,10 @@ Expected:
 
 The pre-commit hook scans staged changes with Gitleaks before Git creates a commit. A detected potential secret, or a failed scan, blocks the commit.
 
+The scanner image is pinned by immutable digest, receives a read-only repository
+mount, and runs without container networking. The reviewed update procedure is
+documented in [`../security/AUTOMATION_PINNING.md`](../security/AUTOMATION_PINNING.md).
+
 The hook currently runs Gitleaks through Docker, so Docker must be available when committing from a development environment.
 
 Secret scanning also runs independently in GitHub Actions on pushes and pull requests. The CI scan provides a second layer of protection and does not replace the local pre-commit check.

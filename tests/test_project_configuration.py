@@ -53,6 +53,30 @@ def test_every_advertised_environment_key_maps_to_settings_field():
     assert "MP_API_URL=" not in env_example
 
 
+def test_secret_scanners_are_immutable_and_locally_contained():
+    workflow = (
+        PROJECT_ROOT / ".github/workflows/secret-scan.yml"
+    ).read_text(encoding="utf-8")
+    hook = (PROJECT_ROOT / ".githooks/pre-commit").read_text(encoding="utf-8")
+    policy = (PROJECT_ROOT / "docs/security/AUTOMATION_PINNING.md").read_text(
+        encoding="utf-8"
+    )
+    digest = (
+        "sha256:75bdb2b2f4db213cde0b8295f13a88d6b333091bbfbf3012a4e083d00d31caba"
+    )
+
+    assert "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" in workflow
+    assert workflow.count(digest) == 1
+    assert hook.count(digest) == 1
+    assert '--volume "$PWD:/repo:ro"' in workflow
+    assert '--volume "$(pwd):/repo:ro"' in hook
+    assert "--network none" in workflow
+    assert "--network none" in hook
+    assert "python scripts/check_automation_pins.py" in workflow
+    assert "full 40-character commit SHA" in policy
+    assert "blocks the commit" in policy
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(
