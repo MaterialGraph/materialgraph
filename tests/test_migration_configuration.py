@@ -2,7 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from app.core.migration_config import resolve_migration_database_url
+from app.core.migration_config import (
+    prepare_migration_database_environment,
+    resolve_migration_database_url,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -40,6 +43,29 @@ def test_blank_migration_override_uses_application_value():
     })
 
     assert result == "postgresql://application/database"
+
+
+def test_migration_url_supports_model_import_settings():
+    environment = {
+        "DATABASE_MIGRATION_URL": "postgresql://direct/database",
+    }
+
+    result = prepare_migration_database_environment(environment)
+
+    assert result == "postgresql://direct/database"
+    assert environment["DATABASE_URL"] == result
+
+
+def test_existing_application_url_is_not_replaced_for_model_imports():
+    environment = {
+        "DATABASE_MIGRATION_URL": "postgresql://direct/database",
+        "DATABASE_URL": "postgresql://pooled/database",
+    }
+
+    result = prepare_migration_database_environment(environment)
+
+    assert result == "postgresql://direct/database"
+    assert environment["DATABASE_URL"] == "postgresql://pooled/database"
 
 
 def test_alembic_ini_has_no_executable_database_fallback():

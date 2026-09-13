@@ -1,5 +1,5 @@
 import os
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping
 
 
 def resolve_migration_database_url(
@@ -16,3 +16,17 @@ def resolve_migration_database_url(
         "Alembic requires DATABASE_MIGRATION_URL or DATABASE_URL; "
         "no migration database target is configured."
     )
+
+
+def prepare_migration_database_environment(
+    environ: MutableMapping[str, str] | None = None,
+) -> str:
+    environment = os.environ if environ is None else environ
+    database_url = resolve_migration_database_url(environment)
+
+    if not environment.get("DATABASE_URL", "").strip():
+        # Model imports construct application settings. Give that import the
+        # already selected migration URL only inside the Alembic process.
+        environment["DATABASE_URL"] = database_url
+
+    return database_url

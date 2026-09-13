@@ -105,7 +105,10 @@ DATABASE_MIGRATION_URL=
 Alembic prefers `DATABASE_MIGRATION_URL` when it is configured and otherwise
 uses `DATABASE_URL`. The migration-specific value is useful when pooled and
 direct database connections differ. If neither variable is configured,
-Alembic fails without connecting to a fallback database.
+Alembic fails without connecting to a fallback database. When only the
+migration-specific value is present, Alembic also makes that selected URL
+available to model-import settings inside the migration process; it does not
+persist or expose the migration credential to the application service.
 
 Important:
 
