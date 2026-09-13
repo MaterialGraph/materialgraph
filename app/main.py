@@ -1,11 +1,17 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from sqlalchemy.exc import DBAPIError, TimeoutError as SQLAlchemyTimeoutError
 
 from app.api.v1.api import api_router
 from app.core.admission_control import ExpensiveRequestAdmissionMiddleware
 from app.core.config import settings
+from app.core.database_timeout import (
+    database_operation_timeout_handler,
+    database_pool_timeout_handler,
+)
 from app.core.logging import logger
+from app.core.request_deadline import ExpensiveRequestDeadlineMiddleware
 from app.version import PROJECT_VERSION
 
 
@@ -27,9 +33,15 @@ app = FastAPI(
 )
 
 app.add_middleware(
+    ExpensiveRequestDeadlineMiddleware,
+    timeout_seconds=settings.expensive_request_timeout_seconds,
+)
+app.add_middleware(
     ExpensiveRequestAdmissionMiddleware,
     max_concurrency=settings.expensive_request_concurrency,
 )
+app.add_exception_handler(SQLAlchemyTimeoutError, database_pool_timeout_handler)
+app.add_exception_handler(DBAPIError, database_operation_timeout_handler)
 
 app.include_router(api_router, prefix="/api/v1")
 

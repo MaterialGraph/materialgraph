@@ -53,6 +53,30 @@ def test_every_advertised_environment_key_maps_to_settings_field():
     assert "MP_API_URL=" not in env_example
 
 
+def test_request_timeout_hierarchy_is_bounded_and_documented():
+    nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
+    deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert Settings.model_fields["database_pool_timeout_seconds"].default == 3
+    assert Settings.model_fields["database_lock_timeout_ms"].default == 3_000
+    assert (
+        Settings.model_fields["database_statement_timeout_ms"].default
+        == 15_000
+    )
+    assert (
+        Settings.model_fields["expensive_request_timeout_seconds"].default
+        == 20
+    )
+    assert nginx.count("proxy_connect_timeout 3s;") == 3
+    assert nginx.count("proxy_send_timeout 10s;") == 3
+    assert nginx.count("proxy_read_timeout 25s;") == 2
+    assert nginx.count("proxy_read_timeout 20s;") == 1
+    assert "database statement < application deadline" in deployment
+    assert "Database dependency failures explicitly roll back" in deployment
+
+
 def test_settings_dotenv_source_can_be_disabled_after_systemd_loads_it():
     assert resolve_settings_env_file({}) == ".env"
     assert resolve_settings_env_file({"MATERIALGRAPH_ENV_FILE": ""}) is None
