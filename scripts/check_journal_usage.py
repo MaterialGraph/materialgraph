@@ -10,13 +10,21 @@ DEFAULT_FILESYSTEM_WARNING_PERCENT = 80.0
 
 
 def journal_usage_bytes(paths: list[Path]) -> int:
-    return sum(
-        entry.stat().st_size
-        for path in paths
-        if path.exists()
-        for entry in path.rglob("*")
-        if entry.is_file()
-    )
+    total = 0
+    for path in paths:
+        if not path.exists():
+            continue
+        for entry in path.rglob("*"):
+            if not entry.is_file():
+                continue
+            file_stat = entry.stat()
+            allocated_blocks = getattr(file_stat, "st_blocks", None)
+            total += (
+                allocated_blocks * 512
+                if allocated_blocks is not None
+                else file_stat.st_size
+            )
+    return total
 
 
 def filesystem_used_percent(path: Path) -> float:
