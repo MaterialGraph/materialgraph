@@ -565,7 +565,11 @@ def test_stage_one_screening_logging_is_verified_consistently():
     assert "complete parsed pre-change JSON" in verification
     assert "largest measured completion entry was 255" in verification
     assert "does not misstate `200` as a strict observed ceiling" in verification
-    assert "journal allocation fell from 191.1 MiB to 48.0 MiB" in verification
+    normalized_verification = " ".join(verification.split())
+    assert (
+        "fell from 191.1 MiB before policy activation to 48.0 MiB afterward"
+        in normalized_verification
+    )
 
 
 def test_stage_one_environment_file_remediation_is_verified_consistently():
