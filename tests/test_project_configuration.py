@@ -276,6 +276,24 @@ def test_readme_quick_start_documents_required_configuration():
     )
 
 
+def test_material_import_documentation_is_manifest_first_and_test_safe():
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    getting_started = (
+        PROJECT_ROOT / "docs/guide/getting_started.md"
+    ).read_text(encoding="utf-8")
+    script = (
+        PROJECT_ROOT / "scripts/import_materials_project.py"
+    ).read_text(encoding="utf-8")
+
+    assert "python -m scripts.import_materials_project" in readme
+    assert "--manifest ./materials-manifest.json" in readme
+    assert "--checkpoint ./materials-checkpoint.json" in getting_started
+    assert "--expected-database-name materialgraph_test" in getting_started
+    assert "--allow-non-test-database" in getting_started
+    assert "--expected-database-name" in script
+    assert "refusing to apply to a non-test database" in script
+
+
 def test_deployment_guide_installs_reviewed_systemd_unit_before_startup():
     unit_path = PROJECT_ROOT / "materialgraph.service"
     deployment_path = PROJECT_ROOT / "docs/guide/DEPLOYMENT.md"

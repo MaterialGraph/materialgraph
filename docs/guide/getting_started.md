@@ -144,13 +144,36 @@ alembic upgrade head
 
 ---
 
-### Import Battery Material Candidates
+### Build and Apply a Material Import Manifest
 
-MaterialGraph imports a curated set of battery-relevant candidates from Materials Project.
+MaterialGraph separates source acquisition from database writes. First build a
+deterministic manifest. This requires `MATERIALS_PROJECT_API_KEY` but does not
+write to the database:
 
 ```bash
-python scripts/import_materials_project.py
+python -m scripts.import_materials_project \
+  --manifest ./materials-manifest.json
 ```
+
+Inspect and retain the reported manifest digest and counts. To apply the
+validated manifest to a test database in atomic chunks, provide a separate
+checkpoint path and the exact configured database name:
+
+```bash
+python -m scripts.import_materials_project \
+  --manifest ./materials-manifest.json \
+  --checkpoint ./materials-checkpoint.json \
+  --expected-database-name materialgraph_test \
+  --apply
+```
+
+If a chunk fails, rerun the same apply command. The validated checkpoint resumes
+at the last completed chunk. Existing `mp_id` values are skipped; source refresh
+and conflict semantics remain governed by `MG-DE-002`.
+
+The command refuses an unconfirmed database name and refuses a non-test database
+unless `--allow-non-test-database` is supplied explicitly. Do not use that flag
+without an approved production import procedure, backup, and rollback evidence.
 
 Verify import:
 

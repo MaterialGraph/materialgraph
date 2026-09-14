@@ -27,6 +27,18 @@ class MaterialCandidate:
     composition_fractions: dict[str, float] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class MaterialCandidateRejection:
+    source_id: str | None
+    reason: str
+
+
+@dataclass(frozen=True)
+class MaterialFetchPage:
+    candidates: list[MaterialCandidate]
+    rejections: list[MaterialCandidateRejection]
+
+
 class MaterialsProjectService:
     def __init__(self, api_key: str):
         if not api_key:
@@ -39,6 +51,26 @@ class MaterialsProjectService:
         chemsys: str,
         limit: int = 25,
     ) -> list[MaterialCandidate]:
+        return self.fetch_materials_page(
+            chemsys=chemsys,
+            page=1,
+            page_size=limit,
+            stable_only=True,
+        ).candidates
+
+    def fetch_materials_page(
+        self,
+        *,
+        chemsys: str,
+        page: int,
+        page_size: int,
+        stable_only: bool,
+    ) -> MaterialFetchPage:
+        if page < 1:
+            raise ValueError("page must be at least 1")
+        if not 1 <= page_size <= 1_000:
+            raise ValueError("page_size must be between 1 and 1000")
+
         fields = [
             "material_id",
             "formula_pretty",
@@ -54,13 +86,33 @@ class MaterialsProjectService:
         with MPRester(self.api_key) as mpr:
             docs = mpr.materials.summary.search(
                 chemsys=chemsys,
-                is_stable=True,
+                is_stable=True if stable_only else None,
                 fields=fields,
                 num_chunks=1,
-                chunk_size=limit,
+                chunk_size=page_size,
+                _page=page,
+                _sort_fields="material_id",
             )
 
-        return [self._normalize_doc(doc) for doc in docs]
+        candidates: list[MaterialCandidate] = []
+        rejections: list[MaterialCandidateRejection] = []
+
+        for doc in docs:
+            try:
+                candidates.append(self._normalize_doc(doc))
+            except (AttributeError, TypeError, ValueError):
+                source_id = getattr(doc, "material_id", None)
+                rejections.append(
+                    MaterialCandidateRejection(
+                        source_id=str(source_id) if source_id is not None else None,
+                        reason="normalization_error",
+                    )
+                )
+
+        return MaterialFetchPage(
+            candidates=candidates,
+            rejections=rejections,
+        )
 
     def _normalize_doc(self, doc: Any) -> MaterialCandidate:
         return MaterialCandidate(

@@ -1,6 +1,6 @@
 # MG-DE-001: Import lifecycle is not expandable or resumable
 
-**Status:** Open
+**Status:** Ready for independent test-database verification
 **Priority:** First implementation wave
 **Initial expansion blocker:** Yes
 
@@ -36,3 +36,13 @@ Automated tests and a representative test-database run must demonstrate clean
 import, identical rerun, controlled interruption, resume, failed-chunk behavior,
 and reconciled counts. No production import is required to close the
 implementation portion of this finding.
+
+## Implementation checkpoint
+
+The repository now contains deterministic source paging, a bounded manifest
+builder, atomic chunk application, checkpoint/resume behavior, bulk per-chunk
+identity lookup, sanitized rejection records, and final identity/count
+reconciliation. See the [implementation record](../implementation/MG-DE-001.md).
+
+The finding is not closed. Focused PostgreSQL tests, the complete suite, and a
+bounded test-database lifecycle must be independently reproduced first.

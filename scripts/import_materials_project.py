@@ -1,63 +1,151 @@
-from app.core.config import settings
-from app.core.database import SessionLocal
-from app.services.material.import_service import MaterialImportService
+import argparse
+import json
+import os
+from dataclasses import asdict
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+from app.services.material.import_pipeline import (
+    MaterialImportPipeline,
+    MaterialImportScope,
+)
 from app.services.material.project_service import MaterialsProjectService
 
 
-BATTERY_CHEMICAL_SYSTEMS = [
+DEFAULT_CHEMICAL_SYSTEMS = (
     "Li-Fe-P-O",
     "Na-Fe-P-O",
     "Na-Mn-O",
     "Mg-Mn-O",
     "Li-Mn-O",
-]
+)
 
 
-def main() -> None:
-    if not settings.materials_project_api_key:
-        raise ValueError(
-            "MATERIALS_PROJECT_API_KEY is not configured"
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Build or apply a deterministic Materials Project import manifest. "
+            "Building is the default and never writes to the database."
         )
-
-    mp_service = MaterialsProjectService(
-        api_key=settings.materials_project_api_key,
     )
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Apply an existing validated manifest in resumable chunks.",
+    )
+    parser.add_argument(
+        "--checkpoint",
+        type=Path,
+        help="Checkpoint path; required with --apply.",
+    )
+    parser.add_argument(
+        "--expected-database-name",
+        help="Exact database name required before manifest application.",
+    )
+    parser.add_argument(
+        "--allow-non-test-database",
+        action="store_true",
+        help="Explicitly permit application outside a database named as test.",
+    )
+    parser.add_argument(
+        "--chemical-system",
+        action="append",
+        dest="chemical_systems",
+        help="Repeat to set build scope; defaults to the curated systems.",
+    )
+    parser.add_argument("--page-size", type=int, default=100)
+    parser.add_argument("--chunk-size", type=int, default=100)
+    parser.add_argument("--max-materials", type=int, default=1_000)
+    parser.add_argument("--max-source-records", type=int, default=2_000)
+    parser.add_argument("--max-pages-per-system", type=int, default=25)
+    parser.add_argument("--max-fetch-attempts", type=int, default=3)
+    parser.add_argument("--include-unstable", action="store_true")
+    return parser
 
-    db = SessionLocal()
 
-    try:
-        importer = MaterialImportService(db)
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
 
-        total_imported = 0
+    if args.apply:
+        if args.checkpoint is None:
+            raise ValueError("--checkpoint is required with --apply")
+        if not args.expected_database_name:
+            raise ValueError("--expected-database-name is required with --apply")
+        if not args.manifest.is_file():
+            raise ValueError("--apply requires an existing manifest file")
 
-        for chemsys in BATTERY_CHEMICAL_SYSTEMS:
-            print(f"\nFetching {chemsys} ...")
+        from app.core.database import SessionLocal, engine
+        from app.services.material.import_service import MaterialImportService
 
-            candidates = mp_service.fetch_materials(
-                chemsys=chemsys,
-                limit=25,
+        actual_database_name = engine.url.database or ""
+        if args.expected_database_name != actual_database_name:
+            raise ValueError(
+                "configured database does not match --expected-database-name"
+            )
+        if "test" not in actual_database_name.lower() and not args.allow_non_test_database:
+            raise ValueError(
+                "refusing to apply to a non-test database without explicit permission"
             )
 
-            imported = importer.import_materials(
-                candidates
+        db = SessionLocal()
+        try:
+            result = MaterialImportPipeline.apply_manifest(
+                manifest_path=args.manifest,
+                checkpoint_path=args.checkpoint,
+                importer=MaterialImportService(db),
             )
+        finally:
+            db.close()
 
-            total_imported += imported
+        print(json.dumps(asdict(result), sort_keys=True))
+        return 0
 
-            print(
-                f"{chemsys}: "
-                f"{len(candidates)} fetched, "
-                f"{imported} imported"
+    if args.checkpoint is not None:
+        raise ValueError("--checkpoint is only valid with --apply")
+    if args.expected_database_name is not None or args.allow_non_test_database:
+        raise ValueError("database confirmation options are only valid with --apply")
+    if args.manifest.exists():
+        raise ValueError("refusing to overwrite an existing manifest")
+    configured_env_file = os.getenv("MATERIALGRAPH_ENV_FILE")
+    if configured_env_file != "":
+        load_dotenv(configured_env_file or ".env")
+    api_key = os.getenv("MATERIALS_PROJECT_API_KEY")
+    if not api_key:
+        raise ValueError("MATERIALS_PROJECT_API_KEY is not configured")
+
+    scope = MaterialImportScope(
+        chemical_systems=tuple(args.chemical_systems or DEFAULT_CHEMICAL_SYSTEMS),
+        page_size=args.page_size,
+        chunk_size=args.chunk_size,
+        max_materials=args.max_materials,
+        max_source_records=args.max_source_records,
+        max_pages_per_system=args.max_pages_per_system,
+        max_fetch_attempts=args.max_fetch_attempts,
+        stable_only=not args.include_unstable,
+    )
+    pipeline = MaterialImportPipeline(
+        MaterialsProjectService(api_key=api_key),
+        on_fetch_retry=lambda chemsys, page, attempt: print(
+            json.dumps(
+                {
+                    "event": "fetch_retry",
+                    "chemical_system": chemsys,
+                    "page": page,
+                    "failed_attempt": attempt,
+                },
+                sort_keys=True,
             )
-
-        print(
-            f"\nCompleted. "
-            f"Total imported: {total_imported}"
-        )
-
-    finally:
-        db.close()
+        ),
+    )
+    result = pipeline.build_manifest(
+        scope=scope,
+        manifest_path=args.manifest,
+    )
+    print(json.dumps({**asdict(result), "path": str(result.path)}, sort_keys=True))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -88,6 +88,19 @@ def test_import_materials_skips_duplicate_mp_id(db_session):
     assert material_count == 1
 
 
+def test_import_materials_reports_reconciled_counts(db_session):
+    service = MaterialImportService(db_session)
+    existing = make_candidate()
+    new = make_candidate()
+    service.import_materials([existing])
+
+    result = service.import_materials_with_result([existing, new, new])
+
+    assert result.processed == 3
+    assert result.imported == 1
+    assert result.skipped == 2
+
+
 def test_import_materials_creates_elements(db_session):
     service = MaterialImportService(db_session)
     candidate = make_candidate()
@@ -337,7 +350,7 @@ def test_database_failure_rolls_back_and_reuses_session(
     existing_candidate = make_candidate()
     service.import_materials([existing_candidate])
 
-    monkeypatch.setattr(service, "_material_exists", lambda _mp_id: False)
+    monkeypatch.setattr(service, "_find_existing_mp_ids", lambda _mp_ids: set())
 
     with pytest.raises(IntegrityError):
         service.import_materials([existing_candidate])

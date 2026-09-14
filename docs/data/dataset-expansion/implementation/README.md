@@ -1,6 +1,8 @@
 # MG-DE Implementation Records
 
-No implementation has started.
+| Finding | Record | Status |
+|---|---|---|
+| MG-DE-001 | [Manifest-first resumable import](MG-DE-001.md) | Ready for independent test-database verification |
 
 Each approved change must receive a focused record describing:
 

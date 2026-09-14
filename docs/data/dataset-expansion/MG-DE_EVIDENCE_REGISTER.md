@@ -19,6 +19,11 @@
 | MG-DE-E-013 | `docs/performance_baseline.md` records existing small-dataset timings | Repository documentation | MG-DE-004 | Explicitly not representative of the expansion target |
 | MG-DE-E-014 | Production deployment documentation identifies a small EC2 instance and Neon PostgreSQL | Deployment documentation | Operational qualification | Documentation is not a resource-utilization measurement |
 | MG-DE-E-015 | Stage 1 records document daily backup, retention, verification, and recovery controls | Repository documentation and prior production evidence | Operational foundation | Expanded-dataset backup duration and recovery objectives are unmeasured |
+| MG-DE-E-016 | `import_pipeline.py` builds canonical SHA-256 manifests from deterministic bounded pages | Repository implementation and unit tests | MG-DE-001 | No real source request was made during implementation verification |
+| MG-DE-E-017 | Manifest application commits configured chunks and atomically checkpoints each completed boundary | Repository implementation and unit tests | MG-DE-001 | PostgreSQL lifecycle reproduction remains pending |
+| MG-DE-E-018 | Import service bulk-loads existing material and element identities per chunk and returns reconciled counts | Repository implementation | MG-DE-001 | Focused PostgreSQL test execution remains pending |
+| MG-DE-E-019 | CLI separates manifest building from application and requires exact database-name confirmation | Repository implementation and CLI tests | MG-DE-001 | Non-test application is deliberately not exercised or authorized |
+| MG-DE-E-020 | [Materials Project `SummaryRester.search` documentation](https://materialsproject.github.io/api/_autosummary/mp_api.client.routes.materials.summary.SummaryRester.html) documents chemical-system filters, projected fields, `num_chunks`, `chunk_size`, `_page`, and `_sort_fields` | Primary upstream documentation and pinned client inspection | MG-DE-001 | Dataset release and licensing validation remain MG-DE-002 work |
 
 ## Evidence still required
 

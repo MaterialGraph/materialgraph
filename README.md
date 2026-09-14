@@ -267,8 +267,9 @@ pip install -r requirements.txt
 
 alembic upgrade head
 
-# Optional data import; first set MATERIALS_PROJECT_API_KEY in .env.
-# python scripts/import_materials_project.py
+# Optional manifest build; first set MATERIALS_PROJECT_API_KEY in .env.
+# This fetches source data but does not write to the database.
+# python -m scripts.import_materials_project --manifest ./materials-manifest.json
 
 uvicorn app.main:app --reload
 ```
@@ -288,6 +289,7 @@ Materials Project import.
 | [Scientific Principles](docs/architecture/scientific_principles.md) | Governing scientific and evidence boundaries |
 | [Research Architecture](docs/architecture/research_architecture.md) | Researcher workflow and validation responsibilities |
 | [Roadmap](docs/product/roadmap.md) | Validation, product, and future milestones |
+| [Dataset Expansion](docs/data/dataset-expansion/README.md) | Controlled dataset-growth readiness, evidence, and implementation |
 | [Known Issues](docs/guide/technical_notes.md) | Current limitations and tracked issues |
 | [Deployment Guide](docs/guide/DEPLOYMENT.md) | AWS EC2, Neon PostgreSQL, systemd, and Nginx deployment |
 | [Security Documentation](docs/security/README.md) | Security architecture and implementation plan |

@@ -1,5 +1,6 @@
 import pytest
 
+from app.services.material import project_service
 from app.services.material.project_service import MaterialsProjectService
 
 
@@ -64,3 +65,72 @@ def test_normalize_doc_preserves_normalized_composition():
     )
 
     assert sum(candidate.composition_fractions.values()) == pytest.approx(1.0)
+
+
+def test_fetch_page_uses_deterministic_source_paging(monkeypatch):
+    captured = {}
+
+    class FakeSummary:
+        def search(self, **kwargs):
+            captured.update(kwargs)
+            return [FakeDocument()]
+
+    class FakeMPRester:
+        def __init__(self, api_key):
+            assert api_key == "test-api-key"
+            self.materials = type("Materials", (), {"summary": FakeSummary()})()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    monkeypatch.setattr(project_service, "MPRester", FakeMPRester)
+
+    result = make_service().fetch_materials_page(
+        chemsys="Li-Fe-P-O",
+        page=3,
+        page_size=50,
+        stable_only=True,
+    )
+
+    assert len(result.candidates) == 1
+    assert result.rejections == []
+    assert captured["num_chunks"] == 1
+    assert captured["chunk_size"] == 50
+    assert captured["_page"] == 3
+    assert captured["_sort_fields"] == "material_id"
+    assert captured["is_stable"] is True
+
+
+def test_fetch_page_records_sanitized_normalization_rejection(monkeypatch):
+    invalid = type("InvalidDocument", (), {"material_id": "mp-invalid"})()
+
+    class FakeSummary:
+        def search(self, **_kwargs):
+            return [invalid]
+
+    class FakeMPRester:
+        def __init__(self, _api_key):
+            self.materials = type("Materials", (), {"summary": FakeSummary()})()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    monkeypatch.setattr(project_service, "MPRester", FakeMPRester)
+
+    result = make_service().fetch_materials_page(
+        chemsys="Li-O",
+        page=1,
+        page_size=10,
+        stable_only=True,
+    )
+
+    assert result.candidates == []
+    assert len(result.rejections) == 1
+    assert result.rejections[0].source_id == "mp-invalid"
+    assert result.rejections[0].reason == "normalization_error"

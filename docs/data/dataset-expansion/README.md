@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** Readiness baseline complete; implementation not started
+**Status:** MG-DE-001 implemented; independent test-database verification pending
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 

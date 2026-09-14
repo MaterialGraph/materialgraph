@@ -7,11 +7,11 @@
 | Storage engine | PostgreSQL/Neon; normalized material-element relationships | Suitable in principle for approximately 1,000 materials | Record test and production sizing evidence |
 | Material identity | Unique `materials.mp_id`; source stored as a string | Partial | Approve canonical identity, polymorph, alias, and source-ID rules |
 | Provenance | `source` and `raw_data` retained | Not sufficient for a reproducible dataset release | Persist source release, retrieval time, normalization version, and import identity |
-| Source acquisition | Five hard-coded chemical systems, one 25-record chunk each | Not expandable as an authoritative pipeline | Configurable scope, deterministic pagination, manifest, and source validation |
-| Import transaction | Entire candidate list imported in one transaction | Not operationally bounded | Chunk transactions with an explicit atomicity contract |
+| Source acquisition | Configurable deterministic paging, bounds, retries, rejections, and manifest implemented | Ready for test-database verification | Reproduce focused tests and bounded lifecycle evidence |
+| Import transaction | Configurable chunks commit independently and checkpoint after success | Ready for test-database verification | Demonstrate failure and resume against PostgreSQL test database |
 | Idempotency | Existing `mp_id` values are skipped | Prevents duplicates but does not define refresh correctness | Deterministic insert/update/unchanged/conflict policy |
-| Recovery | Transaction rollback is tested | Insufficient for interrupted multi-page work | Checkpoint/resume and safe rerun evidence |
-| Validation | Composition and membership validation exist | Sound foundation | Add source-record rejection and manifest reconciliation |
+| Recovery | Atomic checkpoint/resume and idempotent chunk replay implemented | Ready for test-database verification | Reproduce interruption, replay, and completion evidence |
+| Validation | Composition validation, sanitized rejection records, manifest digest, counts, and final identity reconciliation exist | Ready for test-database verification | Execute complete bounded lifecycle |
 | Candidate screening | Unscoped screening loads all materials | Scale-sensitive | SQL narrowing and benchmark evidence |
 | Substitution analysis | Loads all materials other than the source | Scale-sensitive | SQL narrowing and bounded candidate generation |
 | Discovery graph | Builds a complete material-element map | Scale-sensitive | Load only the active candidate/subgraph scope |
