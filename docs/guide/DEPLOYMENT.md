@@ -159,6 +159,26 @@ nginx -v
 
 # Application Deployment
 
+## Pre-deployment security evidence
+
+Select the exact commit intended for production before changing the deployed
+checkout. In GitHub Actions, confirm that both workflows below completed
+successfully for that same SHA:
+
+* `Dependency Security` (`.github/workflows/dependency-security.yml`)
+* `Secret Scan` (`.github/workflows/secret-scan.yml`)
+
+Inspect the jobs as well as the overall conclusions: the dependency contract,
+clean hash-locked install, `pip check`, installed-version reconciliation,
+`pip-audit`, automation-pin validation, and Gitleaks scan must have executed
+rather than been skipped. Record the candidate SHA and workflow run URLs or run
+identifiers in the deployment evidence. Do not deploy when either run is
+missing, skipped, cancelled, or failing.
+
+This is a manual operator precondition. The current `main` branch does not have
+a branch protection rule or ruleset that requires these checks, so workflow
+success must not be described as a GitHub-enforced merge gate.
+
 Create deployment directory:
 
 sudo mkdir -p /opt/materialgraph

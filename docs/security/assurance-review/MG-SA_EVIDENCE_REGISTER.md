@@ -30,6 +30,7 @@
 | `MG-SA-E-024` | Production route and proxy policy | Direct classifier check and effective Nginx directives | Six corrected route families plus `+5` classified expensive; effective configuration contained the site zone, three aggregate directives, and two expensive client directives | Aggregate cap was not deliberately saturated |
 | `MG-SA-E-025` | Production scientific regression | Six complete before/after parsed responses plus raw hashes and sizes | Criticality, neighborhood, neighbors, recommendations, scenario recommendations, and similarity matched exactly; alternate `+5` response matched canonical material 5 | Current production dataset and request set only |
 | `MG-SA-E-026` | Production bounded bypass probe | Eight sequential invalid-ID recommendation requests | Five application `422` and three proxy `429`; proxy classification active; health remained `200` | Proves route/rate classification, not 20-connection aggregate saturation |
+| `MG-SA-E-027` | `MG-SA-002` repository remediation | Live dependency policy, deployment guide, finding, and cumulative assurance records | Automated audit and protected-branch enforcement are distinguished; exact-SHA successful Dependency Security and Secret Scan runs are a documented manual deployment precondition | Repository evidence; maintainer validation, accepted-commit workflows, and fresh GitHub branch/ruleset evidence pending |
 
 ## Primary technical references
 

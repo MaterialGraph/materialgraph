@@ -4,7 +4,7 @@
 **Commit:** `5e794292eb7e712d1840095254cd72217d553cb5`
 **Accepted assurance baseline:** `154fd53fd0d1f7fdb195fb6e15e623d8ce0ba84a`
 **Deployed remediation:** `9a7fb1115e00d4e3a1864bf86e1423f522af2af1`
-**Phase:** `MG-SA-001` verified and closed; `MG-SA-002` remains open
+**Phase:** `MG-SA-001` verified and closed; `MG-SA-002` correction implemented, verification pending
 
 ## Executive conclusion
 
@@ -35,9 +35,11 @@ production activation, direct classifier check, effective configuration,
 bounded proxy probe, health checks, and complete scientific-response
 comparisons passed. `MG-SA-001` is verified and closed.
 
-`MG-SA-002` remains the only open assurance defect. It concerns whether
-successful workflows are enforced, not the security result of the current
-dependency or secret scans.
+The `MG-SA-002` repository correction now states that successful workflows are
+exact-commit audit evidence rather than an enforced branch gate. The deployment
+guide requires successful Dependency Security and Secret Scan evidence for the
+candidate SHA before production synchronization. Acceptance verification is
+still pending.
 
 ## Controls confirmed sound
 
@@ -67,9 +69,9 @@ dependency or secret scans.
 ## Controls needing correction
 
 No remaining application or deployment correction is required for
-`MG-SA-001`. `MG-SA-002` still requires either accurately qualified
-automated-check language or an independently verified branch/deployment
-enforcement policy.
+`MG-SA-001`. The `MG-SA-002` automated-check language and manual deployment
+precondition are corrected in the repository; validation and exact-commit
+GitHub evidence remain before closure.
 
 ## Verification claims needing qualification
 
@@ -79,7 +81,8 @@ enforcement policy.
 - At the original reviewed commit, `MG-SEC-002` application-deadline coverage
   had the same route-scope gap. Repository and deployed coverage are corrected.
 - `MG-SEC-010` proves successful automated audit runs, not an enforced gate on
-  `main` or deployment.
+  `main`. Current live guidance states this boundary and treats workflow
+  success as a manual production precondition.
 - The original complete-suite result (`823 passed, 1 skipped`) remains
   historical evidence for its checkpoint. The remediation suite was
   independently run against the prepared PostgreSQL test database and passed
@@ -92,7 +95,7 @@ enforcement policy.
 ## Accepted residual risks
 
 - solo-maintainer source governance without signed commits or branch
-  protection, subject to the separate gate wording defect;
+  protection, with explicit manual exact-SHA checks before deployment;
 - database `TEMP` privilege for restricted roles;
 - unrestricted EC2 egress under the current no-account/no-private-data/no-LLM
   boundary;
@@ -114,12 +117,13 @@ enforcement policy.
 ## Stage 1 validity
 
 Stage 1 remains valid as the governing security baseline and as evidence that
-the original eleven findings were materially addressed. Its assurance status
-is **valid with one verification exception**: `MG-SEC-010` must distinguish an
-automated audit from an enforced gate unless a branch or deployment rule is
-independently verified. The `MG-SEC-001/002` assurance exception is closed.
-The frozen MG-SEC history remains unchanged; assurance corrections belong in
-this MG-SA workstream.
+the original eleven findings were materially addressed. The `MG-SA-002`
+repository correction explicitly distinguishes an automated audit from an
+enforced branch gate and documents the accepted manual deployment boundary.
+Its final assurance exception remains open only until that correction passes
+maintainer and exact-commit GitHub verification. The `MG-SEC-001/002` assurance
+exception is closed. The frozen MG-SEC history remains unchanged; assurance
+corrections belong in this MG-SA workstream.
 
 ## Frontend/UI readiness
 
@@ -130,11 +134,12 @@ private-data boundary by itself.
 The project is ready to proceed with frontend/UI development and controlled
 dataset expansion within the present product boundary. The resource controls
 that matter before UI-driven traffic growth are now deployed and verified.
-`MG-SA-002` should still be resolved or explicitly accepted before describing
-the CI checks as mandatory gates.
+The project must continue to describe the CI checks as automated audits and a
+manual deployment precondition, not as mandatory protected-branch gates.
 
 ## Next decision
 
-Record and integrate this `MG-SA-001` closure evidence, remove temporary
-rollback artifacts only after acceptance, and then address the separate
-`MG-SA-002` GitHub enforcement/claim decision.
+Validate and integrate the `MG-SA-002` documentation correction, confirm both
+security workflows on its exact accepted commit, recheck current branch/ruleset
+state, and record closure evidence. No production synchronization is required
+for this documentation-only correction.

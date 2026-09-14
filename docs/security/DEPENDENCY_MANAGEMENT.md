@@ -14,7 +14,7 @@ their generated hash locks:
 `requirements.txt` remains the cross-platform developer snapshot. It is not a
 production installation source.
 
-## Enforcement policy
+## Workflow behavior and enforcement boundary
 
 Every lock entry must use an exact version and at least one SHA-256 distribution
 hash. Editable, VCS, direct URL, and trusted-host entries are prohibited. CI
@@ -27,6 +27,22 @@ Monday at 04:17 UTC. `pip-audit` returning a vulnerability makes the job fail.
 The schedule reassesses an unchanged lock against advisories published after
 installation. A scanner result establishes affected installed code, not
 application-path exploitability; reachability is assessed separately.
+
+The workflow is an automated audit, not a GitHub-enforced merge gate. At the
+current solo-maintainer prototype boundary, `main` has no branch protection or
+ruleset requiring the Dependency Security or Secret Scan checks. A direct push
+or a commit-message skip instruction can therefore reach `main` without a
+successful run. A passing result proves only that the identified commit passed
+that workflow execution.
+
+Before a production deployment, the operator must identify the exact candidate
+commit and confirm that both Dependency Security and Secret Scan completed
+successfully for that SHA with their substantive audit/scan steps executed.
+Missing, skipped, cancelled, or failing evidence stops the deployment. Record
+the commit and workflow run URLs or run identifiers with the deployment
+evidence. This is an explicit operator precondition, not a protected-branch
+control. Reconsider a required-check ruleset when more maintainers, automated
+deployment, or protected release branches are introduced.
 
 ## Reviewed lock generation
 

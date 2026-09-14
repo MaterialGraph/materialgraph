@@ -3,7 +3,7 @@
 **Classification:** Verification defect
 **Priority:** Medium
 **Affected Stage 1 controls:** `MG-SEC-010` and, secondarily, `MG-SEC-011`
-**Status:** Confirmed during read-only assessment; not remediated
+**Status:** Remediation implemented in repository; verification pending
 
 ## Assurance claim
 
@@ -42,3 +42,16 @@ At minimum, future records must say “automated checks run and alert” unless 
 enforced rule or deployment precondition is independently verified. If the
 project chooses an enforced gate, its bypass policy and deployment coupling
 must be tested. This assessment makes no GitHub setting change.
+
+## Remediation disposition
+
+The live dependency and deployment guidance now explicitly identifies the
+workflows as automated audits rather than protected-branch gates. Production
+deployment requires successful Dependency Security and Secret Scan evidence
+for the exact candidate SHA, including confirmation that substantive steps were
+not skipped. The current solo-maintainer lack of protected-branch enforcement
+remains an accepted residual risk and is not presented as a verified control.
+
+See [`../remediation/MG-SA-002.md`](../remediation/MG-SA-002.md). Closure remains
+pending maintainer validation, successful workflows on the accepted correction
+commit, and a fresh read-only branch/ruleset check.

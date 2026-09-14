@@ -119,6 +119,20 @@ def test_production_dependencies_are_locked_audited_and_reconcilable():
     assert "time-bounded, identifier-specific exception" in policy
 
 
+def test_dependency_security_docs_do_not_overstate_branch_enforcement():
+    deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(
+        encoding="utf-8"
+    )
+    policy = (PROJECT_ROOT / "docs/security/DEPENDENCY_MANAGEMENT.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "automated audit, not a GitHub-enforced merge gate" in policy
+    assert "A passing result proves only" in policy
+    assert "Do not deploy when either run is" in deployment
+    assert "This is a manual operator precondition" in deployment
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(

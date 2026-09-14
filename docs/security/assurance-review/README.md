@@ -2,7 +2,7 @@
 
 **Namespace:** `MG-SA-*`
 **Assessment date:** 2026-09-14
-**Status:** `MG-SA-001` verified and closed; `MG-SA-002` remains open
+**Status:** `MG-SA-001` verified and closed; `MG-SA-002` correction implemented, verification pending
 **Implementation under review:** `5e794292eb7e712d1840095254cd72217d553cb5`
 **Accepted assurance baseline:** `154fd53fd0d1f7fdb195fb6e15e623d8ce0ba84a`
 
@@ -100,8 +100,9 @@ Two defects are confirmed:
   material-intelligence routes bypass admission/deadline controls, and the
   documented Nginx site-wide connection cap is actually keyed per client.
 - [`MG-SA-002`](findings/MG-SA-002.md) — Verification defect: successful GitHub
-  workflows are described as a gate although `main` has no rule requiring
-  them.
+  workflows were described as a gate although `main` has no rule requiring
+  them; the repository wording and manual deployment precondition are now
+  corrected, with acceptance verification pending.
 
 No regression and no separate new current vulnerability outside the Stage 1
 control set was confirmed. Most Stage 1 controls are sound in repository
@@ -113,9 +114,12 @@ and separates per-client from aggregate connection keys. The authoritative
 suite, GitHub workflows, deployment, bounded proxy probe, health checks, and
 six complete scientific-response comparisons passed. `MG-SA-001` is closed.
 
-`MG-SA-002` remains the only open assurance defect. Successful automated checks
-continue to be evidence for individual commits rather than an enforced branch
-or deployment gate.
+The `MG-SA-002` repository correction now describes successful automated checks
+as evidence for individual commits rather than an enforced branch gate. It
+also requires an operator to verify both security workflows for the exact
+candidate SHA before production deployment. Closure remains pending maintainer
+validation, exact-commit GitHub workflow evidence, and a fresh branch/ruleset
+check.
 
 ## Registers and reports
 
