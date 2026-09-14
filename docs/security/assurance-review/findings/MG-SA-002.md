@@ -3,7 +3,7 @@
 **Classification:** Verification defect
 **Priority:** Medium
 **Affected Stage 1 controls:** `MG-SEC-010` and, secondarily, `MG-SEC-011`
-**Status:** Remediation implemented in repository; verification pending
+**Status:** Verified and closed on 2026-09-14
 
 ## Assurance claim
 
@@ -52,6 +52,28 @@ for the exact candidate SHA, including confirmation that substantive steps were
 not skipped. The current solo-maintainer lack of protected-branch enforcement
 remains an accepted residual risk and is not presented as a verified control.
 
-See [`../remediation/MG-SA-002.md`](../remediation/MG-SA-002.md). Closure remains
-pending maintainer validation, successful workflows on the accepted correction
-commit, and a fresh read-only branch/ruleset check.
+See [`../remediation/MG-SA-002.md`](../remediation/MG-SA-002.md). Closure is
+supported by maintainer validation, successful workflows on the accepted
+correction commit, and fresh read-only branch/ruleset evidence.
+
+## Closure evidence
+
+- Accepted correction commit:
+  `7786aa954fd1c83d49900dd03dad02924a3d8111`.
+- The focused configuration suite passed with `32 passed`; the authoritative
+  complete suite passed with `841 passed, 1 skipped`; both repository
+  validators, Ruff, whitespace, and worktree checks passed.
+- Fresh GitHub Settings evidence showed no repository rulesets and no classic
+  branch protection, confirming rather than contradicting the corrected manual
+  enforcement boundary.
+- Secret Scan run `34831604742`, job `103935983896`, passed on attempt one for
+  the exact correction SHA; automation-pin validation and Gitleaks both ran and
+  succeeded.
+- Dependency Security run `34831604715`, job `103935983504`, passed on attempt
+  one for the exact correction SHA; pin and contract validation, hash-locked
+  tooling installation, production-lock audit, clean environment build,
+  `pip check`, and installed-version reconciliation all ran and succeeded.
+
+The verification defect is closed because the live claims now match the actual
+control boundary. This closure does not claim that GitHub blocks unchecked
+updates to `main`.

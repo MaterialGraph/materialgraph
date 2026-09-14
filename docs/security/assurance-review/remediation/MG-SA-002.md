@@ -2,8 +2,8 @@
 
 **Classification:** Verification defect
 **Finding:** [`../findings/MG-SA-002.md`](../findings/MG-SA-002.md)
-**Status:** Repository correction implemented; maintainer and GitHub verification pending
-**Remediation checkpoint:** Pending accepted commit
+**Status:** Verified and closed on 2026-09-14
+**Remediation checkpoint:** `7786aa954fd1c83d49900dd03dad02924a3d8111`
 
 ## Decision
 
@@ -98,3 +98,31 @@ Before integration, rollback is deletion of the review branch. After a
 fast-forward integration but before push, reset `main` only through the retained
 backup branch. After push, prefer a reviewed revert of the documentation commit
 rather than rewriting published history.
+
+## Closure verification
+
+- The remediation commit is the direct descendant of accepted checkpoint
+  `0023ea9cd9dec25608ba5887e1f61cfee111da3c` and was fast-forwarded to `main`.
+- Maintainer validation against the prepared PostgreSQL test database passed:
+  configuration `32 passed`; complete suite `841 passed, 1 skipped`;
+  automation-pin and dependency-contract validators passed; Ruff and
+  `git diff --check` passed; the worktree was clean.
+- Fresh GitHub Settings evidence confirmed there were no repository rulesets
+  and no classic branch protection or required status checks on `main`.
+- Secret Scan run `34831604742`, job `103935983896`, completed successfully on
+  attempt one for the exact remediation SHA. Checkout, immutable-reference
+  validation, and Gitleaks scanning all succeeded.
+- Dependency Security run `34831604715`, job `103935983504`, completed
+  successfully on attempt one for the exact remediation SHA. Checkout,
+  immutable-reference validation, dependency-contract validation, hash-locked
+  audit-tool installation, production-lock audit, and clean production
+  environment construction all succeeded.
+
+## Closure conclusion
+
+The live documentation no longer overstates workflow execution as protected
+branch enforcement. Exact-commit workflow evidence is required before
+production deployment, while the operator-trust limitation and absence of
+GitHub enforcement remain explicit. The verification defect is therefore
+remediated, verified, and closed without expanding the current prototype into
+mandatory pull-request governance.

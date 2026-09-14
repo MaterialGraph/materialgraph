@@ -6,7 +6,7 @@ independent assurance review.
 | ID | Classification | Status |
 |---|---|---|
 | [`MG-SA-001`](MG-SA-001.md) | Implementation defect | Verified and closed |
-| [`MG-SA-002`](MG-SA-002.md) | Verification defect | Repository correction implemented; verification pending |
+| [`MG-SA-002`](MG-SA-002.md) | Verification defect | Verified and closed |
 
 Historical `MG-SEC-*` findings remain under
 [`../../stage-1-review/findings/`](../../stage-1-review/findings/) and are not

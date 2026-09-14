@@ -4,7 +4,7 @@
 **Commit:** `5e794292eb7e712d1840095254cd72217d553cb5`
 **Accepted assurance baseline:** `154fd53fd0d1f7fdb195fb6e15e623d8ce0ba84a`
 **Deployed remediation:** `9a7fb1115e00d4e3a1864bf86e1423f522af2af1`
-**Phase:** `MG-SA-001` verified and closed; `MG-SA-002` correction implemented, verification pending
+**Phase:** Both confirmed assurance defects verified and closed
 
 ## Executive conclusion
 
@@ -35,11 +35,12 @@ production activation, direct classifier check, effective configuration,
 bounded proxy probe, health checks, and complete scientific-response
 comparisons passed. `MG-SA-001` is verified and closed.
 
-The `MG-SA-002` repository correction now states that successful workflows are
-exact-commit audit evidence rather than an enforced branch gate. The deployment
-guide requires successful Dependency Security and Secret Scan evidence for the
-candidate SHA before production synchronization. Acceptance verification is
-still pending.
+The `MG-SA-002` correction states that successful workflows are exact-commit
+audit evidence rather than an enforced branch gate. The deployment guide
+requires successful Dependency Security and Secret Scan evidence for the
+candidate SHA before production synchronization. The authoritative suite,
+static validation, fresh GitHub governance inspection, and both exact-commit
+workflow jobs passed. `MG-SA-002` is verified and closed.
 
 ## Controls confirmed sound
 
@@ -70,8 +71,8 @@ still pending.
 
 No remaining application or deployment correction is required for
 `MG-SA-001`. The `MG-SA-002` automated-check language and manual deployment
-precondition are corrected in the repository; validation and exact-commit
-GitHub evidence remain before closure.
+precondition are corrected and verified. No confirmed assurance defect remains
+open.
 
 ## Verification claims needing qualification
 
@@ -120,10 +121,10 @@ Stage 1 remains valid as the governing security baseline and as evidence that
 the original eleven findings were materially addressed. The `MG-SA-002`
 repository correction explicitly distinguishes an automated audit from an
 enforced branch gate and documents the accepted manual deployment boundary.
-Its final assurance exception remains open only until that correction passes
-maintainer and exact-commit GitHub verification. The `MG-SEC-001/002` assurance
-exception is closed. The frozen MG-SEC history remains unchanged; assurance
-corrections belong in this MG-SA workstream.
+Maintainer and exact-commit GitHub verification passed, so the final assurance
+exception is closed. The `MG-SEC-001/002` assurance exception is also closed.
+The frozen MG-SEC history remains unchanged; assurance corrections belong in
+this MG-SA workstream.
 
 ## Frontend/UI readiness
 
@@ -139,7 +140,7 @@ manual deployment precondition, not as mandatory protected-branch gates.
 
 ## Next decision
 
-Validate and integrate the `MG-SA-002` documentation correction, confirm both
-security workflows on its exact accepted commit, recheck current branch/ruleset
-state, and record closure evidence. No production synchronization is required
-for this documentation-only correction.
+Integrate this documentation-only closure record after validation. Continue
+applying the exact-SHA manual security-workflow precondition to future
+production deployments, and revisit protected-branch enforcement when the
+project adds maintainers or automated deployment.

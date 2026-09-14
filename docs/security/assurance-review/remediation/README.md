@@ -1,6 +1,6 @@
 # MG-SA Remediation
 
-**Status:** `MG-SA-001` verified and closed; `MG-SA-002` repository correction implemented, verification pending
+**Status:** Both confirmed assurance defects verified and closed
 
 Remediation will proceed in risk and dependency order after the assurance
 baseline is committed and independently accepted:
@@ -9,8 +9,9 @@ baseline is committed and independently accepted:
    GitHub, production activation, bypass, and scientific-regression evidence
    passed; closed on 2026-09-14.
 2. [`MG-SA-002`](MG-SA-002.md): automated-check claims and the manual
-   deployment precondition are corrected; maintainer and GitHub verification
-   remain pending.
+   deployment precondition were corrected; authoritative local validation,
+   fresh GitHub governance evidence, and exact-commit workflows passed; closed
+   on 2026-09-14.
 3. Final cross-control, scientific-regression, deployment, and closure
    verification.
 
