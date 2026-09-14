@@ -5,7 +5,7 @@ as defects have separate finding records; other items remain observations.
 
 | ID | Area | Observation | Classification | Disposition |
 |---|---|---|---|---|
-| `MG-SA-O-001` | Resource containment | Mounted graph/intelligence routes were absent from admission and deadline classification, and the documented Nginx site-wide connection cap was client-keyed | **Implementation defect** | Repository correction implemented under `MG-SA-001`; production verification pending |
+| `MG-SA-O-001` | Resource containment | Mounted graph/intelligence routes were absent from admission and deadline classification, and the documented Nginx site-wide connection cap was client-keyed | **Implementation defect** | Remediated, deployed, independently verified, and closed under `MG-SA-001` |
 | `MG-SA-O-002` | CI governance | Passing workflows are not enforced by branch protection/rulesets and push checks may be skipped | **Verification defect** | Confirmed as `MG-SA-002` |
 | `MG-SA-O-003` | HTTPS redirect | Port-80 default server redirects to `https://$host$request_uri`, accepting a syntactically valid unrecognized Host | **Future hardening** | Use a canonical-name redirect and reject unknown hosts before accounts/private state or stronger anti-phishing requirements |
 | `MG-SA-O-004` | Recovery identity | Backup manifest records Git `HEAD` but does not require a clean deployment worktree | **Future hardening** | Record dirty state or fail closed before recovery claims depend on code/data pairing |

@@ -3,7 +3,8 @@
 **Review date:** 2026-09-14
 **Commit:** `5e794292eb7e712d1840095254cd72217d553cb5`
 **Accepted assurance baseline:** `154fd53fd0d1f7fdb195fb6e15e623d8ce0ba84a`
-**Phase:** `MG-SA-001` repository remediation implemented; production verification pending
+**Deployed remediation:** `9a7fb1115e00d4e3a1864bf86e1423f522af2af1`
+**Phase:** `MG-SA-001` verified and closed; `MG-SA-002` remains open
 
 ## Executive conclusion
 
@@ -26,12 +27,17 @@ conclusion at the reviewed implementation:
 No regression and no separate new current vulnerability outside the original
 Stage 1 control set was confirmed.
 
-The `MG-SA-001` repository correction has since expanded application and proxy
-coverage to all identified expensive material-intelligence routes, introduced
-an independent complete mounted-route cost policy, and implemented distinct
-per-client and aggregate Nginx connection zones. Focused bypass tests pass.
-The finding remains open until the authoritative complete suite, GitHub runs,
-and deployed application/Nginx/scientific evidence pass.
+The `MG-SA-001` correction expanded application and proxy coverage to all
+identified expensive material-intelligence routes, introduced an independent
+complete mounted-route cost policy, and implemented distinct per-client and
+aggregate Nginx connection zones. The authoritative suite, GitHub workflows,
+production activation, direct classifier check, effective configuration,
+bounded proxy probe, health checks, and complete scientific-response
+comparisons passed. `MG-SA-001` is verified and closed.
+
+`MG-SA-002` remains the only open assurance defect. It concerns whether
+successful workflows are enforced, not the security result of the current
+dependency or secret scans.
 
 ## Controls confirmed sound
 
@@ -60,29 +66,25 @@ and deployed application/Nginx/scientific evidence pass.
 
 ## Controls needing correction
 
-The `MG-SA-001` repository correction is implemented. Production must not be
-treated as corrected until the accepted commit is deployed after `nginx -t`,
-the application is restarted, Nginx is reloaded, and bounded control and
-scientific-response verification succeeds.
+No remaining application or deployment correction is required for
+`MG-SA-001`. `MG-SA-002` still requires either accurately qualified
+automated-check language or an independently verified branch/deployment
+enforcement policy.
 
 ## Verification claims needing qualification
 
 - At the original reviewed commit, `MG-SEC-001` criteria “every mounted
   expensive scientific route” and “site-wide concurrency is 20” were false.
-  The repository correction addresses both claims, but deployed verification
-  remains pending.
+  The deployed correction now supports both claims.
 - At the original reviewed commit, `MG-SEC-002` application-deadline coverage
-  had the same route-scope gap. Repository coverage is corrected; deployed
-  verification remains pending.
+  had the same route-scope gap. Repository and deployed coverage are corrected.
 - `MG-SEC-010` proves successful automated audit runs, not an enforced gate on
   `main` or deployment.
-- The local complete-suite result (`823 passed, 1 skipped`) and all effective
-  production state claims remain historical evidence until independently
-  reproduced. The focused security/configuration subset was reproduced with
-  `91 passed`. A complete-suite invocation against an unseeded disposable
-  SQLite database produced `747 passed, 72 failed, 5 skipped`; the failures
-  consistently reflected missing seeded scientific data, so this is recorded
-  as an environment limitation rather than contradictory product evidence.
+- The original complete-suite result (`823 passed, 1 skipped`) remains
+  historical evidence for its checkpoint. The remediation suite was
+  independently run against the prepared PostgreSQL test database and passed
+  with `840 passed, 1 skipped`. Isolated SQLite failures remain recorded as
+  environment limitations rather than contradictory product evidence.
 - The GitHub setting requiring full Action SHA pins could not be independently
   read through the available interface; repository references themselves are
   correctly pinned.
@@ -113,10 +115,10 @@ scientific-response verification succeeds.
 
 Stage 1 remains valid as the governing security baseline and as evidence that
 the original eleven findings were materially addressed. Its assurance status
-is **valid with two exceptions**: the `MG-SEC-001/002` repository correction
-must still pass authoritative and deployed verification before `MG-SA-001`
-closes, and `MG-SEC-010` must distinguish an automated audit from an enforced
-gate. The frozen MG-SEC history remains unchanged; these exceptions belong in
+is **valid with one verification exception**: `MG-SEC-010` must distinguish an
+automated audit from an enforced gate unless a branch or deployment rule is
+independently verified. The `MG-SEC-001/002` assurance exception is closed.
+The frozen MG-SEC history remains unchanged; assurance corrections belong in
 this MG-SA workstream.
 
 ## Frontend/UI readiness
@@ -125,14 +127,14 @@ The project is ready to proceed with frontend/UI development in a controlled
 development environment. Frontend work does not add the excluded account or
 private-data boundary by itself.
 
-It is not yet advisable to treat Stage 1 as fully assured for increased public
-traffic or dataset expansion. Validate and deploy the `MG-SA-001` repository
-correction before UI launch materially increases traffic to the affected
-intelligence routes. Complete the production evidence before claiming deployed
-controls are reconciled.
+The project is ready to proceed with frontend/UI development and controlled
+dataset expansion within the present product boundary. The resource controls
+that matter before UI-driven traffic growth are now deployed and verified.
+`MG-SA-002` should still be resolved or explicitly accepted before describing
+the CI checks as mandatory gates.
 
 ## Next decision
 
-Complete local maintainer validation and bundle acceptance for `MG-SA-001`,
-then collect its bounded deployment and scientific-regression evidence. After
-that, address the separate `MG-SA-002` GitHub enforcement/claim decision.
+Record and integrate this `MG-SA-001` closure evidence, remove temporary
+rollback artifacts only after acceptance, and then address the separate
+`MG-SA-002` GitHub enforcement/claim decision.

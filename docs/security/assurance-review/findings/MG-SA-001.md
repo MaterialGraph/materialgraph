@@ -3,7 +3,7 @@
 **Classification:** Implementation defect
 **Priority:** High for correction; Medium present risk
 **Affected Stage 1 controls:** `MG-SEC-001`, `MG-SEC-002`
-**Status:** Repository correction implemented; production verification pending
+**Status:** Verified and closed on 2026-09-14
 
 ## Threat scenario
 
@@ -96,7 +96,8 @@ project should:
 
 ## Remediation status
 
-The repository implementation and focused bypass tests are recorded in
-[`../remediation/MG-SA-001.md`](../remediation/MG-SA-001.md). The finding is not
-closed: authoritative complete-suite, GitHub, deployed Nginx/application, and
-complete scientific-response evidence remain required.
+The repository implementation, authoritative complete suite, GitHub workflows,
+deployed Nginx/application evidence, bounded proxy probe, and complete
+scientific-response comparisons are recorded in
+[`../remediation/MG-SA-001.md`](../remediation/MG-SA-001.md). All closure
+criteria passed without load testing or database mutation.

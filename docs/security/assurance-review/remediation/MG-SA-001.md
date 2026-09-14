@@ -2,7 +2,8 @@
 
 **Classification:** Implementation defect
 **Base checkpoint:** `154fd53fd0d1f7fdb195fb6e15e623d8ce0ba84a`
-**Status:** Repository implementation complete; production verification pending
+**Status:** Verified and closed on 2026-09-14
+**Implemented and deployed commit:** `9a7fb1115e00d4e3a1864bf86e1423f522af2af1`
 
 ## Objective
 
@@ -59,14 +60,15 @@ one in each expensive location.
 | Check | Result |
 |---|---|
 | Admission, deadline, and project-configuration tests | `59 passed` |
+| Authoritative PostgreSQL-backed complete suite | `840 passed, 1 skipped` |
 | Complete canonical JSON for all six newly covered endpoints | Baseline and remediation outputs identical; SHA-256 `571981c82166b6df1da16972f732c66262aca4ca869a881963d1aa322a28380b` |
 | Expanded affected-route API subset | `77 passed`, two fixture-data failures caused by absent risk-profile seed rows |
 | Ruff for application and tests | Passed |
 | `git diff --check` | Passed |
 | Primary Nginx semantics | Confirmed against `ngx_http_limit_conn_module` documentation |
-| Nginx syntax/effective configuration | Pending production candidate validation |
-| Complete PostgreSQL-backed suite | Pending authoritative maintainer run |
-| Representative complete scientific JSON comparison | Pending deployment verification |
+| GitHub Secret Scan and Dependency Security | Passed for the exact deployed commit |
+| Nginx syntax/effective configuration | Passed before and after activation |
+| Complete production scientific JSON comparison | Six of six responses matched |
 
 The focused security tests used a disposable SQLite database only for the
 GraphJob cleanup fixture. The expanded subset and JSON comparison used the
@@ -86,24 +88,35 @@ to run 841 tests in total.
 Primary semantics reference:
 <https://nginx.org/en/docs/http/ngx_http_limit_conn_module.html>.
 
-## Production activation plan
+## Production activation evidence
 
-Production is intentionally unchanged by the repository remediation. After the
-bundle is independently accepted and `main` is pushed:
+Production was safely fast-forwarded from
+`5e794292eb7e712d1840095254cd72217d553cb5` through the accepted assurance
+baseline to `9a7fb1115e00d4e3a1864bf86e1423f522af2af1`.
 
-1. confirm the production worktree is clean and record its current commit;
-2. fetch and fast-forward to the accepted remediation commit;
-3. install the tracked Nginx file as the candidate site configuration;
-4. run `sudo nginx -t` before any reload;
-5. restart MaterialGraph for the Python classifier change and reload Nginx for
-   the proxy change;
-6. confirm both services, timers, HTTPS health, and the deployed commit;
-7. run only bounded admission/deadline probes; and
-8. compare representative screening, exploration, pathway, and newly covered
-   material-intelligence responses with complete pre-change JSON.
+- The pre-change tracked and active Nginx files matched SHA-256
+  `7d7a5ff66f35d3afe796da3883c2ee64831b0a182fc17f5e68d5136a45e265ae`.
+- A root-owned mode-`0600` rollback copy and a Git rollback branch were created
+  before changing the worktree or active configuration.
+- The corrected tracked and active Nginx files matched SHA-256
+  `475298cba7ff3b2736e3cf8fabbf2ff8ec59efaffc1d7e5b555172b3d7a4816f`.
+- `nginx -t` passed before reload. The effective configuration contained one
+  `$server_name` site zone, three `materialgraph_site 20` directives, and two
+  `materialgraph_client 2` directives.
+- MaterialGraph restarted successfully, a direct deployed classifier check
+  covered all six route families plus the `+5` alternate identifier, and Nginx
+  reloaded successfully.
+- All six post-change API responses matched complete parsed pre-change JSON.
+  Raw response hashes and byte sizes also matched.
+- The `+5` recommendation response matched the canonical material-5 response.
+- Eight bounded invalid-ID recommendation requests produced five application
+  `422` responses and three proxy `429` responses, demonstrating that the new
+  proxy route class is active without executing scientific work.
+- HTTPS health remained `200`; MaterialGraph, Nginx, backup scheduling, and
+  journal monitoring remained active; the deployed worktree was clean.
 
 No migration, dependency installation, database write, load test, or restore
-operation is required.
+operation was performed.
 
 ## Rollback and failure handling
 
@@ -118,13 +131,16 @@ operation is required.
 
 The changes are code/configuration-only and do not require data rollback.
 
-## Closure criteria
+## Closure decision
 
-`MG-SA-001` remains open until all of the following are recorded:
+All closure criteria passed: authoritative complete-suite success against
+`materialgraph_test`; accepted commit and successful relevant GitHub workflows;
+production Nginx syntax and effective-configuration evidence; deployed route
+classification and bounded proxy rejection evidence; complete scientific JSON
+preservation; and healthy, clean, rollback-ready production state.
 
-- authoritative complete-suite success against `materialgraph_test`;
-- accepted commit and successful relevant GitHub workflows;
-- production Nginx syntax and effective configuration evidence;
-- deployed route admission/deadline and aggregate/per-client limit evidence;
-- complete scientific JSON preservation; and
-- healthy post-change and rollback-ready production state.
+The site-wide limit was not saturated with 21 concurrent requests because that
+would be a prohibited production load probe. Its assurance rests on the
+effective configuration, distinct key, explicit inheritance-safe placement,
+repository tests, and primary Nginx semantics. This is sufficient and
+proportionate for the current prototype.
