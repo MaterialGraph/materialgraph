@@ -1,12 +1,12 @@
 # MG-SA Control Matrix
 
 **Checkpoint:** `5e794292eb7e712d1840095254cd72217d553cb5`
-**Assessment status:** Repository and GitHub phase complete; production state pending
+**Assessment status:** `MG-SA-001` repository correction implemented; production state pending
 
 | MG-SEC control | Threat and implementation | Test quality | Deployment evidence | Bypass analysis | Assurance result |
 |---|---|---|---|---|---|
-| `MG-SEC-001` | Aggregate exhaustion; Nginx per-IP rate/connection limits plus application concurrency gate | Gate behavior and overload response are behavioral; route-completeness test is a manual positive list | Historical burst, trusted-header, config-match, health, and JSON evidence only; not live-reproduced | Material neighborhood, similarity, criticality, and recommendation routes are omitted from both proxy expensive locations and `is_expensive_request`. The claimed site-wide Nginx limit uses the per-client `$binary_remote_addr` zone and is not site-wide. | **Implementation defect**; see `MG-SA-001` |
-| `MG-SEC-002` | Long scientific work; 3 s connection/pool, 3 s lock, 15 s statement, 20 s app, 25 s expensive-proxy hierarchy | Behavioral tests cover timeout response, recovery, retained slot, DB event configuration, rollback, and exception mapping | Historical Neon cancellation and effective Nginx evidence; not live-reproduced | Omitted material-intelligence routes receive no application deadline and only the ordinary 20 s proxy read timeout; individual DB statements remain bounded | **Implementation defect** through `MG-SA-001`; covered routes are sound |
+| `MG-SEC-001` | Aggregate exhaustion; Nginx per-IP rate/connection limits plus application concurrency gate | Every mounted route now has an independent ordinary/expensive policy; tests enforce application/Nginx parity and behavioral `503` rejection for newly covered paths | Historical burst, trusted-header, health, and JSON evidence; corrected effective configuration not yet deployed | Repository classifier covers all identified expensive routes; distinct `$binary_remote_addr` and `$server_name` zones implement per-client and aggregate limits, including explicit dual directives in expensive locations | **Implementation defect corrected in repository** through `MG-SA-001`; production verification pending |
+| `MG-SEC-002` | Long scientific work; 3 s connection/pool, 3 s lock, 15 s statement, 20 s app, 25 s expensive-proxy hierarchy | Behavioral tests cover timeout response, recovery, retained slot, DB event configuration, rollback, exception mapping, and `504` behavior for newly covered paths | Historical Neon cancellation and original effective Nginx evidence; corrected deployment not live-reproduced | All policy-expensive material-intelligence routes now receive the application deadline and expensive proxy timeout; individual DB statements remain bounded | **Implementation defect corrected in repository** through `MG-SA-001`; production verification pending |
 | `MG-SEC-003` | Local secret disclosure; pre-start metadata validator and protected environment file | Behavioral metadata tests cover mode, owner/group, file type, hard links, and fail-closed startup configuration | Historical mode/read-denial/effective-unit evidence; not live-reproduced | Symlink and hard-link paths are checked; contents are not exposed; systemd loads the root-controlled file | **No issue** in repository; live state pending |
 | `MG-SEC-004` | Host takeover after runtime compromise; dedicated identity and systemd sandbox | Mostly structural configuration assertions plus behavioral secret-file tests | Detailed historical effective-property and negative privilege evidence; not live-reproduced | Empty capabilities, no supplementary groups, protected filesystem, loopback bind; unrestricted egress remains accepted | **No issue** in repository; live state pending |
 | `MG-SEC-005` | HTTP observation/modification; TLS, redirect, HSTS, protocol policy, renewal | Mostly structural assertions; TLS behavior requires deployed testing | Detailed historical certificate, protocol, redirect, renewal, and client evidence; not live-reproduced | Port-80 default host uses `$host` in redirect; retained as future hardening because no credentials/private state exist | **No issue** for current TLS control; live state pending |
@@ -20,7 +20,7 @@
 
 ## Cross-control conclusions
 
-- The timeout ordering is internally consistent for classified routes:
+- The timeout ordering is internally consistent for all policy-expensive routes:
   database statement timeout < application deadline < expensive proxy read
   timeout.
 - A timed-out synchronous task retains its admission slot until it exits, which
@@ -28,10 +28,10 @@
 - Trusted forwarding headers are overwritten with Nginx `$remote_addr`, so the
   per-client key is not derived from caller-supplied `X-Forwarded-For` in the
   committed topology.
-- The existing Nginx zone is keyed by `$binary_remote_addr`; applying it at
-  server scope changes where the limit is enforced, not the fact that the
-  counter is per client. A separate site-keyed zone is required for a true
-  site-wide connection cap.
+- Nginx uses a client-address zone for per-client controls and a separate
+  `$server_name` zone for the aggregate cap. Expensive locations repeat the
+  aggregate directive because their client directive prevents server-level
+  `limit_conn` inheritance.
 - Proxy body bounds and Pydantic collection bounds are complementary and do not
   rely on one another.
 - systemd identity, environment-file checks, and read-only database privilege

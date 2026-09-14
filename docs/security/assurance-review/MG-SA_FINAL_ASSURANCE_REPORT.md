@@ -2,7 +2,8 @@
 
 **Review date:** 2026-09-14
 **Commit:** `5e794292eb7e712d1840095254cd72217d553cb5`
-**Phase:** Read-only repository and GitHub assessment complete; remediation not started
+**Accepted assurance baseline:** `154fd53fd0d1f7fdb195fb6e15e623d8ce0ba84a`
+**Phase:** `MG-SA-001` repository remediation implemented; production verification pending
 
 ## Executive conclusion
 
@@ -12,7 +13,8 @@ stronger than the frozen pre-remediation baseline. Nine of eleven Verified
 controls are sound in repository implementation, and the reasoning that
 retired `MG-SEC-006` is correct.
 
-Two assurance defects prevent an unqualified all-controls-confirmed conclusion:
+Two assurance defects prevented an unqualified all-controls-confirmed
+conclusion at the reviewed implementation:
 
 1. `MG-SA-001` is an implementation defect in `MG-SEC-001/002`: mounted
    material-intelligence routes that scale with graph/data size bypass both the
@@ -23,6 +25,13 @@ Two assurance defects prevent an unqualified all-controls-confirmed conclusion:
 
 No regression and no separate new current vulnerability outside the original
 Stage 1 control set was confirmed.
+
+The `MG-SA-001` repository correction has since expanded application and proxy
+coverage to all identified expensive material-intelligence routes, introduced
+an independent complete mounted-route cost policy, and implemented distinct
+per-client and aggregate Nginx connection zones. Focused bypass tests pass.
+The finding remains open until the authoritative complete suite, GitHub runs,
+and deployed application/Nginx/scientific evidence pass.
 
 ## Controls confirmed sound
 
@@ -51,19 +60,20 @@ Stage 1 control set was confirmed.
 
 ## Controls needing correction
 
-`MG-SA-001` should be corrected before dataset expansion or increased public UI
-traffic. It is already a current control bypass, although the small dataset and
-remaining proxy/database bounds reduce current severity.
-
-No application or deployment remediation was performed during the assessment.
+The `MG-SA-001` repository correction is implemented. Production must not be
+treated as corrected until the accepted commit is deployed after `nginx -t`,
+the application is restarted, Nginx is reloaded, and bounded control and
+scientific-response verification succeeds.
 
 ## Verification claims needing qualification
 
-- `MG-SEC-001` criterion “every mounted expensive scientific route” is false at
-  the reviewed commit.
-- `MG-SEC-001` criterion “site-wide concurrency is 20” is false because its
-  connection zone is keyed by client address.
-- `MG-SEC-002` application-deadline coverage has the same route-scope gap.
+- At the original reviewed commit, `MG-SEC-001` criteria “every mounted
+  expensive scientific route” and “site-wide concurrency is 20” were false.
+  The repository correction addresses both claims, but deployed verification
+  remains pending.
+- At the original reviewed commit, `MG-SEC-002` application-deadline coverage
+  had the same route-scope gap. Repository coverage is corrected; deployed
+  verification remains pending.
 - `MG-SEC-010` proves successful automated audit runs, not an enforced gate on
   `main` or deployment.
 - The local complete-suite result (`823 passed, 1 skipped`) and all effective
@@ -103,10 +113,11 @@ No application or deployment remediation was performed during the assessment.
 
 Stage 1 remains valid as the governing security baseline and as evidence that
 the original eleven findings were materially addressed. Its assurance status
-is **valid with two exceptions**: `MG-SEC-001/002` should not remain
-unqualified as fully verified until `MG-SA-001` is fixed, and `MG-SEC-010` must
-distinguish an automated audit from an enforced gate. The frozen MG-SEC history
-should remain unchanged; these exceptions belong in this MG-SA workstream.
+is **valid with two exceptions**: the `MG-SEC-001/002` repository correction
+must still pass authoritative and deployed verification before `MG-SA-001`
+closes, and `MG-SEC-010` must distinguish an automated audit from an enforced
+gate. The frozen MG-SEC history remains unchanged; these exceptions belong in
+this MG-SA workstream.
 
 ## Frontend/UI readiness
 
@@ -115,13 +126,13 @@ development environment. Frontend work does not add the excluded account or
 private-data boundary by itself.
 
 It is not yet advisable to treat Stage 1 as fully assured for increased public
-traffic or dataset expansion. Correct `MG-SA-001` before UI launch materially
-increases traffic to the affected intelligence routes. Complete approved
-read-only production evidence before claiming deployed controls are currently
-reconciled.
+traffic or dataset expansion. Validate and deploy the `MG-SA-001` repository
+correction before UI launch materially increases traffic to the affected
+intelligence routes. Complete the production evidence before claiming deployed
+controls are reconciled.
 
 ## Next decision
 
-The next remediation step is `MG-SA-001`. It requires a separately approved,
-focused implementation change and must not be treated as resolved until local,
-deployment, bypass, and scientific-regression evidence pass.
+Complete local maintainer validation and bundle acceptance for `MG-SA-001`,
+then collect its bounded deployment and scientific-regression evidence. After
+that, address the separate `MG-SA-002` GitHub enforcement/claim decision.

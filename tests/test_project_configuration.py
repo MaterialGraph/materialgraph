@@ -420,9 +420,16 @@ def test_public_expensive_request_controls_are_repository_controlled():
 
     assert "limit_req_zone $binary_remote_addr" in nginx
     assert "rate=2r/s" in nginx
-    assert "limit_conn_zone $binary_remote_addr" in nginx
-    assert "limit_req zone=materialgraph_expensive burst=4 nodelay" in nginx
-    assert "limit_conn materialgraph_client 2" in nginx
+    assert (
+        "limit_conn_zone $binary_remote_addr zone=materialgraph_client:10m;"
+        in nginx
+    )
+    assert "limit_conn_zone $server_name zone=materialgraph_site:10m;" in nginx
+    assert nginx.count(
+        "limit_req zone=materialgraph_expensive burst=4 nodelay;"
+    ) == 2
+    assert nginx.count("limit_conn materialgraph_client 2;") == 2
+    assert nginx.count("limit_conn materialgraph_site 20;") == 3
     assert "limit_req_status 429" in nginx
     assert "limit_conn_status 429" in nginx
     assert "$proxy_add_x_forwarded_for" not in nginx

@@ -55,6 +55,43 @@ def test_expensive_request_timeout_is_structured_and_recovers():
     asyncio.run(exercise())
 
 
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/api/v1/materials/5/neighbors",
+        "/api/v1/materials/5/similar",
+        "/api/v1/materials/5/neighborhood",
+        "/api/v1/materials/5/criticality",
+        "/api/v1/materials/5/recommendations",
+        "/api/v1/materials/5/recommendations/scenario",
+    ],
+)
+def test_material_intelligence_routes_receive_deadline(path):
+    async def exercise() -> None:
+        release = asyncio.Event()
+
+        async def downstream(scope, receive, send):
+            await release.wait()
+            await send({"type": "http.response.start", "status": 200, "headers": []})
+            await send({"type": "http.response.body", "body": b"{}"})
+
+        middleware = ExpensiveRequestDeadlineMiddleware(downstream, timeout_seconds=0.01)
+        messages = []
+
+        async def send(message):
+            messages.append(message)
+
+        await middleware(_scope(path), _receive, send)
+        assert messages[0]["status"] == 504
+        assert b"expensive_request_deadline_exceeded" in messages[1]["body"]
+
+        release.set()
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+
+    asyncio.run(exercise())
+
+
 def test_timed_out_work_retains_admission_capacity_until_exit():
     from app.core.admission_control import ExpensiveRequestAdmissionMiddleware
 

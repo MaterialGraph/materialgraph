@@ -441,19 +441,24 @@ objective and rejects unexpectedly large public requests with HTTP `413`
 before application service work.
 
 The tracked site also applies coordinated overload controls for screening,
-comparison, scenario, sensitivity, substitution, discovery, and research
+comparison, scenario, sensitivity, substitution, discovery, research, and the
+material neighbor, similarity, neighborhood, criticality, and recommendation
 routes. Expensive requests are limited per source address to a base rate of two
 requests per second with a four-request burst and two concurrent connections.
-Each source address is limited to 20 concurrent connections across the HTTPS
-site. Nginx returns HTTP `429` when a proxy rate or connection limit rejects a
-request.
+A distinct `$server_name` zone limits the HTTPS site to 20 concurrent
+connections in aggregate. Expensive locations explicitly apply both limits
+because a location-level `limit_conn` directive does not inherit the
+server-level directive. Nginx returns HTTP `429` when a proxy rate or connection
+limit rejects a request.
 
-Nginx derives these controls from `$binary_remote_addr`. It overwrites both
-`X-Real-IP` and `X-Forwarded-For` with `$remote_addr` before proxying, so a
-public caller cannot select the identity used by application access logging by
-supplying a forwarding header. This policy assumes the current DNS-only,
-direct-origin deployment. Reassess trusted proxy ranges and client identity
-before enabling Cloudflare proxying or adding another load balancer.
+Nginx derives the per-client rate and connection controls from
+`$binary_remote_addr`; the aggregate connection control uses `$server_name`.
+It overwrites both `X-Real-IP` and `X-Forwarded-For` with `$remote_addr` before
+proxying, so a public caller cannot select the identity used by application
+access logging by supplying a forwarding header. This policy assumes the
+current DNS-only, direct-origin deployment. Reassess trusted proxy ranges and
+client identity before enabling Cloudflare proxying or adding another load
+balancer.
 
 The application independently admits at most two expensive requests at once.
 Excess work fails immediately with structured HTTP `503`, code

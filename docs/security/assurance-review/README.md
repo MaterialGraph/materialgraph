@@ -2,8 +2,9 @@
 
 **Namespace:** `MG-SA-*`
 **Assessment date:** 2026-09-14
-**Status:** Read-only repository and GitHub assessment complete; remediation not started
+**Status:** `MG-SA-001` repository remediation implemented; production verification pending
 **Implementation under review:** `5e794292eb7e712d1840095254cd72217d553cb5`
+**Accepted assurance baseline:** `154fd53fd0d1f7fdb195fb6e15e623d8ce0ba84a`
 
 ## Purpose and separation
 
@@ -105,6 +106,11 @@ Two defects are confirmed:
 No regression and no separate new current vulnerability outside the Stage 1
 control set was confirmed. Most Stage 1 controls are sound in repository
 design; deployed state remains pending read-only live confirmation.
+
+The `MG-SA-001` repository correction now covers every mounted route through an
+independent cost-policy inventory, aligns the Nginx and application expensive
+route sets, and separates per-client from aggregate connection keys. It remains
+open until authoritative complete-suite, GitHub, and production evidence pass.
 
 ## Registers and reports
 

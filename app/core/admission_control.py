@@ -17,7 +17,9 @@ _EXPENSIVE_EXACT_PATHS = frozenset(
     }
 )
 _EXPENSIVE_MATERIAL_PATH = re.compile(
-    r"^/api/v1/materials/[0-9]+/(?:discovery|research)(?:/|$)"
+    r"^/api/v1/materials/[^/]+/"
+    r"(?:criticality|discovery|neighborhood|neighbors|recommendations|research|similar)"
+    r"(?:/|$)"
 )
 
 

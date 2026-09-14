@@ -3,7 +3,7 @@
 **Classification:** Implementation defect
 **Priority:** High for correction; Medium present risk
 **Affected Stage 1 controls:** `MG-SEC-001`, `MG-SEC-002`
-**Status:** Confirmed during read-only assessment; not remediated
+**Status:** Repository correction implemented; production verification pending
 
 ## Threat scenario
 
@@ -93,3 +93,10 @@ project should:
 - implement separately keyed per-client and site-wide proxy limits;
 - verify deadline/admission behavior for affected endpoints; and
 - preserve complete scientific JSON and ordering.
+
+## Remediation status
+
+The repository implementation and focused bypass tests are recorded in
+[`../remediation/MG-SA-001.md`](../remediation/MG-SA-001.md). The finding is not
+closed: authoritative complete-suite, GitHub, deployed Nginx/application, and
+complete scientific-response evidence remain required.
