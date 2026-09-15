@@ -287,10 +287,14 @@ def test_material_import_documentation_is_manifest_first_and_test_safe():
 
     assert "python -m scripts.import_materials_project" in readme
     assert "--manifest ./materials-manifest.json" in readme
+    assert "--source-release" in readme
+    assert "--retrieved-at" in readme
     assert "--checkpoint ./materials-checkpoint.json" in getting_started
     assert "--expected-database-name materialgraph_test" in getting_started
     assert "--allow-non-test-database" in getting_started
     assert "--expected-database-name" in script
+    assert "--source-release" in script
+    assert "--retrieved-at" in script
     assert "refusing to apply to a non-test database" in script
 
 

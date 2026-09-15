@@ -269,7 +269,9 @@ alembic upgrade head
 
 # Optional manifest build; first set MATERIALS_PROJECT_API_KEY in .env.
 # This fetches source data but does not write to the database.
-# python -m scripts.import_materials_project --manifest ./materials-manifest.json
+# python -m scripts.import_materials_project --manifest ./materials-manifest.json \
+#   --source-release 2026.09.01 \
+#   --retrieved-at 2026-09-15T00:00:00+00:00
 
 uvicorn app.main:app --reload
 ```

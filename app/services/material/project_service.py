@@ -40,11 +40,12 @@ class MaterialFetchPage:
 
 
 class MaterialsProjectService:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, *, database_version: str | None = None):
         if not api_key:
             raise ValueError("Materials Project API key is required")
 
         self.api_key = api_key
+        self.database_version = database_version
 
     def fetch_materials(
         self,
@@ -84,6 +85,14 @@ class MaterialsProjectService:
         ]
 
         with MPRester(self.api_key) as mpr:
+            if (
+                self.database_version is not None
+                and mpr.get_database_version() != self.database_version
+            ):
+                raise ValueError(
+                    "Materials Project database version does not match "
+                    "the declared source release"
+                )
             docs = mpr.materials.summary.search(
                 chemsys=chemsys,
                 is_stable=True if stable_only else None,

@@ -104,6 +104,72 @@ def test_fetch_page_uses_deterministic_source_paging(monkeypatch):
     assert captured["is_stable"] is True
 
 
+def test_fetch_page_verifies_the_declared_database_release(monkeypatch):
+
+    class FakeSummary:
+        def search(self, **_kwargs):
+            return []
+
+    class FakeMPRester:
+        def __init__(self, api_key):
+            assert api_key == "test-api-key"
+            self.materials = type("Materials", (), {"summary": FakeSummary()})()
+
+        @staticmethod
+        def get_database_version():
+            return "2026.09.01"
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    monkeypatch.setattr(project_service, "MPRester", FakeMPRester)
+    service = MaterialsProjectService(
+        api_key="test-api-key",
+        database_version="2026.09.01",
+    )
+
+    service.fetch_materials_page(
+        chemsys="Li-O",
+        page=1,
+        page_size=10,
+        stable_only=True,
+    )
+
+
+
+def test_fetch_page_rejects_a_database_release_mismatch(monkeypatch):
+    class FakeMPRester:
+        def __init__(self, _api_key):
+            self.materials = type("Materials", (), {})()
+
+        @staticmethod
+        def get_database_version():
+            return "2026.09.02"
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    monkeypatch.setattr(project_service, "MPRester", FakeMPRester)
+    service = MaterialsProjectService(
+        api_key="test-api-key",
+        database_version="2026.09.01",
+    )
+
+    with pytest.raises(ValueError, match="does not match"):
+        service.fetch_materials_page(
+            chemsys="Li-O",
+            page=1,
+            page_size=10,
+            stable_only=True,
+        )
+
+
 def test_fetch_page_records_sanitized_normalization_rejection(monkeypatch):
     invalid = type("InvalidDocument", (), {"material_id": "mp-invalid"})()
 

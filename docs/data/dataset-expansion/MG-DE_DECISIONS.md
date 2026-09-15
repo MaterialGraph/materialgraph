@@ -6,9 +6,10 @@
 | MG-DE-D-002 | Use approximately 1,000 representative materials as the first scale target | Large enough to expose density and query behavior while remaining operationally bounded | Approved |
 | MG-DE-D-003 | Do not import into production during readiness or implementation discovery | Production data changes require completed gates and explicit authorization | Approved |
 | MG-DE-D-004 | Preserve current curated materials as a deterministic regression cohort | Expansion must not silently alter established scientific behavior | Approved |
-| MG-DE-D-005 | Treat source records, normalized records, and derived intelligence as distinct evidence layers | Supports provenance, reproducibility, and honest uncertainty | Proposed |
+| MG-DE-D-005 | Treat source records, normalized records, and derived intelligence as distinct evidence layers | Supports provenance, reproducibility, and honest uncertainty | Approved |
 | MG-DE-D-006 | Prefer measured SQL narrowing over speculative indexing | Indexes should follow representative query plans | Proposed |
 | MG-DE-D-007 | Use a manifest-first, resumable, chunked import lifecycle | Makes scope, reruns, failures, and reconciliation inspectable | Verified |
-| MG-DE-D-008 | Require explicit refresh and conflict semantics before updating existing materials | `mp_id` duplicate skipping alone cannot establish dataset correctness | Proposed |
+| MG-DE-D-008 | Require explicit refresh and conflict semantics before updating existing materials | `mp_id` duplicate skipping alone cannot establish dataset correctness | Implemented; verification pending |
+| MG-DE-D-009 | Treat retirement as an inactive provenance state, not automatic material deletion | Preserves audit history and avoids destructive deletion before publication semantics are measured | Approved |
 
 Proposed decisions become approved only through a reviewed repository change.

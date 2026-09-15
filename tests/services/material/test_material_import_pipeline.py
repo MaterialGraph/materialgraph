@@ -5,17 +5,25 @@ from uuid import uuid4
 import pytest
 
 from app.services.material.import_pipeline import (
+    MaterialDatasetContract,
     MaterialImportPipeline,
     MaterialImportScope,
 )
 from app.services.material.import_service import (
-    MaterialImportResult,
+    DatasetImportCompletion,
+    MaterialRefreshResult,
     MaterialImportService,
 )
 from app.services.material.project_service import (
     MaterialCandidate,
     MaterialCandidateRejection,
     MaterialFetchPage,
+)
+
+
+TEST_DATASET = MaterialDatasetContract(
+    source_release="test-release-2026-09-15",
+    retrieved_at="2026-09-15T00:00:00+00:00",
 )
 
 
@@ -59,19 +67,45 @@ class FakeImporter:
         self.present = present if present is not None else set()
         self.calls: list[list[str]] = []
 
-    def import_materials_with_result(self, candidates):
+    def begin_import_run(self, *, spec, rejections):
+        self.spec = spec
+        self.rejections = rejections
+
+    def refresh_materials(self, candidates, *, import_run_id):
+        assert import_run_id == self.spec.import_run_id
         self.calls.append([candidate.mp_id for candidate in candidates])
         if len(self.calls) == self.fail_on_call:
             raise RuntimeError("controlled chunk failure")
+        previously_present = sum(
+            candidate.mp_id in self.present for candidate in candidates
+        )
         self.present.update(candidate.mp_id for candidate in candidates)
-        return MaterialImportResult(
+        return MaterialRefreshResult(
             processed=len(candidates),
-            imported=len(candidates),
-            skipped=0,
+            inserted=len(candidates) - previously_present,
+            updated=0,
+            unchanged=previously_present,
+            conflicted=0,
         )
 
-    def count_existing_materials(self, mp_ids):
-        return len(mp_ids & self.present)
+    def count_active_source_records(self, *, source, source_ids, **_scope):
+        assert source == "materials_project"
+        return len(source_ids & self.present)
+
+    def complete_import_run(
+        self,
+        *,
+        import_run_id,
+        manifest_source_ids,
+        outcome_counts,
+        allow_retirement,
+    ):
+        assert import_run_id == self.spec.import_run_id
+        assert manifest_source_ids == self.present
+        assert sum(outcome_counts.values()) == len(self.present) + len(self.rejections)
+        assert isinstance(allow_retirement, bool)
+        self.allow_retirement = allow_retirement
+        return DatasetImportCompletion(retired=0)
 
 
 def build_manifest(tmp_path: Path, *, chunk_size: int = 2) -> Path:
@@ -94,6 +128,7 @@ def build_manifest(tmp_path: Path, *, chunk_size: int = 2) -> Path:
             page_size=2,
             chunk_size=chunk_size,
         ),
+        dataset=TEST_DATASET,
         manifest_path=path,
     )
     return path
@@ -114,6 +149,21 @@ def test_scope_is_normalized_and_bounded():
 
     with pytest.raises(ValueError, match="hyphen-separated element symbols"):
         MaterialImportScope(chemical_systems=("not-a-system",))
+
+
+def test_dataset_contract_requires_timezone_and_supported_license():
+    with pytest.raises(ValueError, match="include a timezone"):
+        MaterialDatasetContract(
+            source_release="test-release",
+            retrieved_at="2026-09-15T00:00:00",
+        )
+
+    with pytest.raises(ValueError, match="license identifier"):
+        MaterialDatasetContract(
+            source_release="test-release",
+            retrieved_at="2026-09-15T00:00:00+00:00",
+            license_identifier="unknown",
+        )
 
 
 def test_build_manifest_paginates_deduplicates_and_records_rejections(tmp_path):
@@ -146,6 +196,7 @@ def test_build_manifest_paginates_deduplicates_and_records_rejections(tmp_path):
             page_size=2,
             max_materials=10,
         ),
+        dataset=TEST_DATASET,
         manifest_path=path,
     )
     document = json.loads(path.read_text(encoding="utf-8"))
@@ -154,6 +205,14 @@ def test_build_manifest_paginates_deduplicates_and_records_rejections(tmp_path):
     assert result.rejected == 1
     assert result.duplicate_source_ids == 1
     assert result.pages_fetched == 3
+    assert document["dataset"] == {
+        "license_identifier": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "normalization_version": "materials-project-summary-v1",
+        "retrieved_at": "2026-09-15T00:00:00+00:00",
+        "selection_contract_version": "materials-project-selection-v1",
+        "source_release": "test-release-2026-09-15",
+    }
     assert [item["mp_id"] for item in document["candidates"]] == ["mp-1", "mp-2"]
     assert document["duplicate_source_ids"] == ["mp-2"]
     assert document["rejections"] == [
@@ -189,10 +248,12 @@ def test_manifest_is_byte_deterministic_for_equivalent_source_order(tmp_path):
 
     first = MaterialImportPipeline(first_source).build_manifest(
         scope=scope,
+        dataset=TEST_DATASET,
         manifest_path=first_path,
     )
     second = MaterialImportPipeline(second_source).build_manifest(
         scope=scope,
+        dataset=TEST_DATASET,
         manifest_path=second_path,
     )
 
@@ -209,7 +270,7 @@ def test_build_manifest_retries_a_page_with_a_fixed_bound(tmp_path):
             self.attempts += 1
             if self.attempts < 3:
                 raise RuntimeError("temporary source failure")
-            return MaterialFetchPage([], [])
+            return MaterialFetchPage([make_candidate("mp-retry")], [])
 
     source = RetryingSource()
     retries = []
@@ -226,6 +287,7 @@ def test_build_manifest_retries_a_page_with_a_fixed_bound(tmp_path):
             chemical_systems=("Li-O",),
             max_fetch_attempts=3,
         ),
+        dataset=TEST_DATASET,
         manifest_path=tmp_path / "manifest.json",
     )
 
@@ -251,6 +313,7 @@ def test_build_manifest_fails_closed_at_page_bound(tmp_path):
                 max_materials=10,
                 max_pages_per_system=1,
             ),
+            dataset=TEST_DATASET,
             manifest_path=tmp_path / "manifest.json",
         )
 
@@ -275,8 +338,50 @@ def test_build_manifest_fails_closed_at_source_record_bound(tmp_path):
                 max_materials=1,
                 max_source_records=1,
             ),
+            dataset=TEST_DATASET,
             manifest_path=tmp_path / "manifest.json",
         )
+
+
+def test_build_manifest_rejects_an_empty_source_scope(tmp_path):
+    with pytest.raises(ValueError, match="no accepted materials"):
+        MaterialImportPipeline(FakeSource({})).build_manifest(
+            scope=MaterialImportScope(chemical_systems=("Li-O",)),
+            dataset=TEST_DATASET,
+            manifest_path=tmp_path / "manifest.json",
+        )
+
+
+def test_truncated_manifest_cannot_infer_retirement(tmp_path):
+    source = FakeSource(
+        {
+            ("Li-O", 1): MaterialFetchPage(
+                candidates=[make_candidate("mp-1"), make_candidate("mp-2")],
+                rejections=[],
+            )
+        }
+    )
+    manifest_path = tmp_path / "manifest.json"
+    MaterialImportPipeline(source).build_manifest(
+        scope=MaterialImportScope(
+            chemical_systems=("Li-O",),
+            page_size=2,
+            max_materials=1,
+            max_source_records=2,
+        ),
+        dataset=TEST_DATASET,
+        manifest_path=manifest_path,
+    )
+    importer = FakeImporter()
+
+    result = MaterialImportPipeline.apply_manifest(
+        manifest_path=manifest_path,
+        checkpoint_path=tmp_path / "checkpoint.json",
+        importer=importer,
+    )
+
+    assert result.inserted == 1
+    assert importer.allow_retirement is False
 
 
 def test_apply_manifest_checkpoints_each_committed_chunk_and_resumes(tmp_path):
@@ -341,6 +446,7 @@ def test_postgresql_manifest_lifecycle_interrupts_resumes_and_reruns(
             page_size=2,
             chunk_size=2,
         ),
+        dataset=TEST_DATASET,
         manifest_path=manifest_path,
     )
 
@@ -350,14 +456,23 @@ def test_postgresql_manifest_lifecycle_interrupts_resumes_and_reruns(
         def __init__(self):
             self.calls = 0
 
-        def import_materials_with_result(self, chunk):
+        def begin_import_run(self, **kwargs):
+            return delegate.begin_import_run(**kwargs)
+
+        def refresh_materials(self, chunk, *, import_run_id):
             self.calls += 1
             if self.calls == 2:
                 raise RuntimeError("controlled PostgreSQL lifecycle interruption")
-            return delegate.import_materials_with_result(chunk)
+            return delegate.refresh_materials(
+                chunk,
+                import_run_id=import_run_id,
+            )
 
-        def count_existing_materials(self, mp_ids):
-            return delegate.count_existing_materials(mp_ids)
+        def count_active_source_records(self, **kwargs):
+            return delegate.count_active_source_records(**kwargs)
+
+        def complete_import_run(self, **kwargs):
+            return delegate.complete_import_run(**kwargs)
 
     with pytest.raises(
         RuntimeError,
@@ -421,7 +536,7 @@ def test_apply_manifest_fails_if_database_does_not_reconcile(tmp_path):
     manifest_path = build_manifest(tmp_path)
 
     class NonPersistingImporter(FakeImporter):
-        def count_existing_materials(self, _mp_ids):
+        def count_active_source_records(self, **_kwargs):
             return 0
 
     with pytest.raises(ValueError, match="database identities do not reconcile"):
@@ -438,12 +553,15 @@ def test_apply_manifest_rejects_checkpoint_for_another_manifest(tmp_path):
     checkpoint_path.write_text(
         json.dumps(
             {
-                "schema_version": 1,
+                "schema_version": 2,
                 "manifest_sha256": "wrong",
+                "import_run_id": str(uuid4()),
                 "next_index": 0,
                 "processed": 0,
-                "imported": 0,
-                "skipped": 0,
+                "inserted": 0,
+                "updated": 0,
+                "unchanged": 0,
+                "conflicted": 0,
                 "completed": False,
             }
         ),

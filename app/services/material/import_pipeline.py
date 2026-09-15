@@ -7,8 +7,10 @@ import re
 import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
+from uuid import UUID, uuid4
 
 from app.services.material.project_service import (
     MaterialCandidate,
@@ -16,11 +18,21 @@ from app.services.material.project_service import (
 )
 
 if TYPE_CHECKING:
-    from app.services.material.import_service import MaterialImportResult
+    from app.services.material.import_service import (
+        DatasetImportCompletion,
+        DatasetImportRunSpec,
+        MaterialRefreshResult,
+    )
 
 
-MANIFEST_SCHEMA_VERSION = 1
-CHECKPOINT_SCHEMA_VERSION = 1
+MANIFEST_SCHEMA_VERSION = 2
+CHECKPOINT_SCHEMA_VERSION = 2
+MATERIALS_PROJECT_LICENSE = "CC-BY-4.0"
+MATERIALS_PROJECT_LICENSE_URL = (
+    "https://creativecommons.org/licenses/by/4.0/"
+)
+NORMALIZATION_VERSION = "materials-project-summary-v1"
+SELECTION_CONTRACT_VERSION = "materials-project-selection-v1"
 
 
 class MaterialPageSource(Protocol):
@@ -35,12 +47,37 @@ class MaterialPageSource(Protocol):
 
 
 class MaterialBatchImporter(Protocol):
-    def import_materials_with_result(
+    def begin_import_run(
+        self,
+        *,
+        spec: DatasetImportRunSpec,
+        rejections: list[dict],
+    ) -> None: ...
+
+    def refresh_materials(
         self,
         candidates: list[MaterialCandidate],
-    ) -> MaterialImportResult: ...
+        *,
+        import_run_id: str,
+    ) -> MaterialRefreshResult: ...
 
-    def count_existing_materials(self, mp_ids: set[str]) -> int: ...
+    def complete_import_run(
+        self,
+        *,
+        import_run_id: str,
+        manifest_source_ids: set[str],
+        outcome_counts: dict[str, int],
+        allow_retirement: bool,
+    ) -> DatasetImportCompletion: ...
+
+    def count_active_source_records(
+        self,
+        *,
+        source: str,
+        source_ids: set[str],
+        selection_contract_version: str,
+        selection_scope_sha256: str,
+    ) -> int: ...
 
 
 @dataclass(frozen=True)
@@ -85,6 +122,45 @@ class MaterialImportScope:
 
 
 @dataclass(frozen=True)
+class MaterialDatasetContract:
+    source_release: str
+    retrieved_at: str
+    normalization_version: str = NORMALIZATION_VERSION
+    selection_contract_version: str = SELECTION_CONTRACT_VERSION
+    license_identifier: str = MATERIALS_PROJECT_LICENSE
+    license_url: str = MATERIALS_PROJECT_LICENSE_URL
+
+    def __post_init__(self) -> None:
+        values = {
+            "source_release": (self.source_release, 100),
+            "normalization_version": (self.normalization_version, 100),
+            "selection_contract_version": (self.selection_contract_version, 100),
+            "license_identifier": (self.license_identifier, 100),
+            "license_url": (self.license_url, 500),
+        }
+        for name, (value, maximum) in values.items():
+            if (
+                not isinstance(value, str)
+                or not value
+                or value.strip() != value
+                or len(value) > maximum
+            ):
+                raise ValueError(f"{name} is invalid")
+        if not isinstance(self.retrieved_at, str):
+            raise ValueError("retrieved_at must be an ISO-8601 timestamp")
+        try:
+            retrieved_at = datetime.fromisoformat(self.retrieved_at)
+        except ValueError as error:
+            raise ValueError("retrieved_at must be an ISO-8601 timestamp") from error
+        if retrieved_at.tzinfo is None or retrieved_at.utcoffset() is None:
+            raise ValueError("retrieved_at must include a timezone")
+        if self.license_identifier != MATERIALS_PROJECT_LICENSE:
+            raise ValueError("unsupported Materials Project license identifier")
+        if self.license_url != MATERIALS_PROJECT_LICENSE_URL:
+            raise ValueError("unsupported Materials Project license URL")
+
+
+@dataclass(frozen=True)
 class ManifestBuildResult:
     path: Path
     digest: str
@@ -98,10 +174,24 @@ class ManifestBuildResult:
 class ManifestApplyResult:
     manifest_digest: str
     processed: int
-    imported: int
-    skipped: int
+    inserted: int
+    updated: int
+    unchanged: int
+    conflicted: int
+    rejected: int
+    retired: int
     verified_present: int
     completed: bool
+
+    @property
+    def imported(self) -> int:
+        """Compatibility count for newly inserted material rows."""
+        return self.inserted
+
+    @property
+    def skipped(self) -> int:
+        """Compatibility count for unchanged and conflicted rows."""
+        return self.unchanged + self.conflicted
 
 
 class MaterialImportPipeline:
@@ -120,6 +210,7 @@ class MaterialImportPipeline:
         self,
         *,
         scope: MaterialImportScope,
+        dataset: MaterialDatasetContract,
         manifest_path: Path,
     ) -> ManifestBuildResult:
         candidates_by_id: dict[str, MaterialCandidate] = {}
@@ -185,9 +276,12 @@ class MaterialImportPipeline:
                 item["source_id"] or "",
             ),
         )
+        if not ordered_candidates:
+            raise ValueError("source traversal produced no accepted materials")
         payload: dict[str, Any] = {
             "schema_version": MANIFEST_SCHEMA_VERSION,
             "source": "materials_project",
+            "dataset": asdict(dataset),
             "scope": asdict(scope),
             "counts": {
                 "accepted": len(ordered_candidates),
@@ -195,6 +289,7 @@ class MaterialImportPipeline:
                 "duplicate_source_ids": len(duplicate_source_ids),
                 "pages_fetched": pages_fetched,
                 "source_records_seen": source_records_seen,
+                "source_complete": not limit_reached,
             },
             "duplicate_source_ids": sorted(duplicate_source_ids),
             "rejections": ordered_rejections,
@@ -249,6 +344,8 @@ class MaterialImportPipeline:
         importer: MaterialBatchImporter,
     ) -> ManifestApplyResult:
         manifest, digest = MaterialImportPipeline._load_manifest(manifest_path)
+        from app.services.material.import_service import DatasetImportRunSpec
+
         candidates = [
             MaterialImportPipeline._candidate_from_dict(item)
             for item in manifest["candidates"]
@@ -260,30 +357,76 @@ class MaterialImportPipeline:
             candidate_count=len(candidates),
         )
         MaterialImportPipeline._write_json_atomic(checkpoint_path, checkpoint)
+        dataset = manifest["dataset"]
+        selection_scope_sha256 = MaterialImportPipeline._payload_digest(
+            manifest["scope"]
+        )
+        importer.begin_import_run(
+            spec=DatasetImportRunSpec(
+                import_run_id=checkpoint["import_run_id"],
+                source=manifest["source"],
+                source_release=dataset["source_release"],
+                retrieved_at=datetime.fromisoformat(dataset["retrieved_at"]),
+                manifest_sha256=digest,
+                normalization_version=dataset["normalization_version"],
+                selection_contract_version=dataset["selection_contract_version"],
+                selection_scope_sha256=selection_scope_sha256,
+                license_identifier=dataset["license_identifier"],
+                license_url=dataset["license_url"],
+            ),
+            rejections=manifest["rejections"],
+        )
 
         while checkpoint["next_index"] < len(candidates):
             start = checkpoint["next_index"]
             chunk = candidates[start : start + chunk_size]
-            result = importer.import_materials_with_result(chunk)
+            result = importer.refresh_materials(
+                chunk,
+                import_run_id=checkpoint["import_run_id"],
+            )
             MaterialImportPipeline._validate_batch_result(result, len(chunk))
 
             checkpoint["next_index"] += result.processed
             checkpoint["processed"] += result.processed
-            checkpoint["imported"] += result.imported
-            checkpoint["skipped"] += result.skipped
+            checkpoint["inserted"] += result.inserted
+            checkpoint["updated"] += result.updated
+            checkpoint["unchanged"] += result.unchanged
+            checkpoint["conflicted"] += result.conflicted
             checkpoint["completed"] = checkpoint["next_index"] == len(candidates)
             MaterialImportPipeline._write_json_atomic(checkpoint_path, checkpoint)
 
         manifest_mp_ids = {candidate.mp_id for candidate in candidates}
-        verified_present = importer.count_existing_materials(manifest_mp_ids)
-        if verified_present != len(candidates):
+        accepted_without_conflict = len(candidates) - checkpoint["conflicted"]
+        verified_present = importer.count_active_source_records(
+            source=manifest["source"],
+            source_ids=manifest_mp_ids,
+            selection_contract_version=dataset["selection_contract_version"],
+            selection_scope_sha256=selection_scope_sha256,
+        )
+        if verified_present != accepted_without_conflict:
             raise ValueError("database identities do not reconcile to the manifest")
+        completion = importer.complete_import_run(
+            import_run_id=checkpoint["import_run_id"],
+            manifest_source_ids=manifest_mp_ids,
+            outcome_counts={
+                "inserted": checkpoint["inserted"],
+                "updated": checkpoint["updated"],
+                "unchanged": checkpoint["unchanged"],
+                "conflicted": checkpoint["conflicted"],
+                "rejected": len(manifest["rejections"]),
+            },
+            allow_retirement=bool(manifest["counts"]["source_complete"]),
+        )
 
         return ManifestApplyResult(
             manifest_digest=digest,
             processed=checkpoint["processed"],
-            imported=checkpoint["imported"],
-            skipped=checkpoint["skipped"],
+            inserted=checkpoint["inserted"],
+            updated=checkpoint["updated"],
+            unchanged=checkpoint["unchanged"],
+            conflicted=checkpoint["conflicted"],
+            rejected=len(manifest["rejections"]),
+            retired=completion.retired,
             verified_present=verified_present,
             completed=checkpoint["completed"],
         )
@@ -296,6 +439,7 @@ class MaterialImportPipeline:
             raise ValueError("unsupported manifest schema version")
         if document.get("source") != "materials_project":
             raise ValueError("unsupported manifest source")
+        MaterialDatasetContract(**document.get("dataset", {}))
         if (
             not isinstance(digest, str)
             or digest != MaterialImportPipeline._payload_digest(document)
@@ -309,6 +453,10 @@ class MaterialImportPipeline:
             document["duplicate_source_ids"]
         ):
             raise ValueError("manifest duplicate count does not reconcile")
+        if not document["candidates"]:
+            raise ValueError("manifest contains no accepted materials")
+        if not isinstance(document["counts"].get("source_complete"), bool):
+            raise ValueError("manifest source completion state is invalid")
         return document, digest
 
     @staticmethod
@@ -322,10 +470,13 @@ class MaterialImportPipeline:
             return {
                 "schema_version": CHECKPOINT_SCHEMA_VERSION,
                 "manifest_sha256": manifest_digest,
+                "import_run_id": str(uuid4()),
                 "next_index": 0,
                 "processed": 0,
-                "imported": 0,
-                "skipped": 0,
+                "inserted": 0,
+                "updated": 0,
+                "unchanged": 0,
+                "conflicted": 0,
                 "completed": candidate_count == 0,
             }
 
@@ -334,22 +485,38 @@ class MaterialImportPipeline:
             raise ValueError("unsupported checkpoint schema version")
         if checkpoint.get("manifest_sha256") != manifest_digest:
             raise ValueError("checkpoint does not match the manifest")
+        try:
+            import_run_id = checkpoint["import_run_id"]
+            if str(UUID(import_run_id)) != import_run_id:
+                raise ValueError
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError("checkpoint import_run_id is invalid") from error
         next_index = checkpoint.get("next_index")
         if not isinstance(next_index, int) or not 0 <= next_index <= candidate_count:
             raise ValueError("checkpoint next_index is invalid")
         if checkpoint.get("processed") != next_index:
             raise ValueError("checkpoint processed count does not reconcile")
-        if checkpoint.get("imported", 0) + checkpoint.get("skipped", 0) != next_index:
+        outcome_total = sum(
+            checkpoint.get(name, 0)
+            for name in ("inserted", "updated", "unchanged", "conflicted")
+        )
+        if outcome_total != next_index:
             raise ValueError("checkpoint result counts do not reconcile")
         if checkpoint.get("completed") != (next_index == candidate_count):
             raise ValueError("checkpoint completion state does not reconcile")
         return checkpoint
 
     @staticmethod
-    def _validate_batch_result(result: MaterialImportResult, expected: int) -> None:
+    def _validate_batch_result(result: MaterialRefreshResult, expected: int) -> None:
         if result.processed != expected:
             raise ValueError("importer processed count does not match chunk size")
-        if result.imported + result.skipped != result.processed:
+        if (
+            result.inserted
+            + result.updated
+            + result.unchanged
+            + result.conflicted
+            != result.processed
+        ):
             raise ValueError("importer result counts do not reconcile")
 
     @staticmethod

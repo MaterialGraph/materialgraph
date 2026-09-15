@@ -10,7 +10,16 @@ def test_build_mode_refuses_to_overwrite_manifest(tmp_path: Path):
     manifest.write_text("existing", encoding="utf-8")
 
     with pytest.raises(ValueError, match="refusing to overwrite"):
-        import_materials_project.main(["--manifest", str(manifest)])
+        import_materials_project.main(
+            [
+                "--manifest",
+                str(manifest),
+                "--source-release",
+                "test-release",
+                "--retrieved-at",
+                "2026-09-15T00:00:00+00:00",
+            ]
+        )
 
 
 def test_apply_mode_requires_checkpoint(tmp_path: Path):
@@ -44,6 +53,20 @@ def test_build_mode_requires_source_api_key(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("MATERIALGRAPH_ENV_FILE", "")
 
     with pytest.raises(ValueError, match="MATERIALS_PROJECT_API_KEY"):
+        import_materials_project.main(
+            [
+                "--manifest",
+                str(tmp_path / "manifest.json"),
+                "--source-release",
+                "test-release",
+                "--retrieved-at",
+                "2026-09-15T00:00:00+00:00",
+            ]
+        )
+
+
+def test_build_mode_requires_explicit_source_provenance(tmp_path: Path):
+    with pytest.raises(ValueError, match="--source-release and --retrieved-at"):
         import_materials_project.main(
             ["--manifest", str(tmp_path / "manifest.json")]
         )

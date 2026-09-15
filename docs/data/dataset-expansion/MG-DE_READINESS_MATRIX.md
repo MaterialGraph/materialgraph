@@ -5,11 +5,11 @@
 | Area | Repository evidence | Initial result | Required gate |
 |---|---|---|---|
 | Storage engine | PostgreSQL/Neon; normalized material-element relationships | Suitable in principle for approximately 1,000 materials | Record test and production sizing evidence |
-| Material identity | Unique `materials.mp_id`; source stored as a string | Partial | Approve canonical identity, polymorph, alias, and source-ID rules |
-| Provenance | `source` and `raw_data` retained | Not sufficient for a reproducible dataset release | Persist source release, retrieval time, normalization version, and import identity |
+| Material identity | Source identity mapping and conservative polymorph/alias rules implemented | Ready for PostgreSQL verification | Verify conflicts cannot silently adopt legacy or ambiguous identities |
+| Provenance | Immutable run, source-record, and event models plus source and normalized digests implemented | Ready for migration and PostgreSQL verification | Reproduce persistence and run reconciliation against PostgreSQL |
 | Source acquisition | Configurable deterministic paging, bounds, retries, rejections, and manifest implemented | Verified for MG-DE-001 | Approve source authority, licensing, release, and selection contract under MG-DE-002 |
 | Import transaction | Configurable chunks commit independently and checkpoint after success | Verified against PostgreSQL test database | Retain the lifecycle test as a regression gate |
-| Idempotency | Existing `mp_id` values are skipped | Prevents duplicates but does not define refresh correctness | Deterministic insert/update/unchanged/conflict policy |
+| Idempotency | Per-run event replay and deterministic insert/update/unchanged/conflict outcomes implemented | Ready for PostgreSQL verification | Reproduce same-run crash-window replay and fresh-run refresh |
 | Recovery | Atomic checkpoint/resume and idempotent chunk replay implemented | Verified against PostgreSQL test database | Define production dataset-version rollback under MG-DE-002 |
 | Validation | Composition validation, sanitized rejection records, manifest digest, counts, and final identity reconciliation exist | Verified for the bounded lifecycle | Extend to the approved representative fixture under MG-DE-004 |
 | Candidate screening | Unscoped screening loads all materials | Scale-sensitive | SQL narrowing and benchmark evidence |

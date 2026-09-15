@@ -150,9 +150,18 @@ MaterialGraph separates source acquisition from database writes. First build a
 deterministic manifest. This requires `MATERIALS_PROJECT_API_KEY` but does not
 write to the database:
 
+Read the current source release before choosing the expected value (this makes
+one metadata request and does not fetch material records):
+
+```bash
+python -c "import os; from dotenv import load_dotenv; from mp_api.client import MPRester; load_dotenv(); print(MPRester(os.environ['MATERIALS_PROJECT_API_KEY']).get_database_version())"
+```
+
 ```bash
 python -m scripts.import_materials_project \
-  --manifest ./materials-manifest.json
+  --manifest ./materials-manifest.json \
+  --source-release 2026.09.01 \
+  --retrieved-at 2026-09-15T00:00:00+00:00
 ```
 
 Inspect and retain the reported manifest digest and counts. To apply the
@@ -167,9 +176,16 @@ python -m scripts.import_materials_project \
   --apply
 ```
 
+Use the actual Materials Project database version and retrieval start time;
+the example values are illustrative. The declared version is verified against
+the API heartbeat before each page, and both values are protected by the
+manifest digest.
+
 If a chunk fails, rerun the same apply command. The validated checkpoint resumes
-at the last completed chunk. Existing `mp_id` values are skipped; source refresh
-and conflict semantics remain governed by `MG-DE-002`.
+at the last completed chunk and import-run identity. Proven source identities
+are classified as inserted, updated, or unchanged. Ambiguous identities fail
+safe as conflicts, and completed identical scopes record retirements without
+destructive material deletion.
 
 The command refuses an unconfirmed database name and refuses a non-test database
 unless `--allow-non-test-database` is supplied explicitly. Do not use that flag

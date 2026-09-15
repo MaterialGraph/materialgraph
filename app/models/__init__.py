@@ -1,4 +1,10 @@
 from app.models.application import Application
+from app.models.dataset_import import (
+    DatasetImportRun,
+    MaterialImportEvent,
+    MaterialSourceMembership,
+    MaterialSourceRecord,
+)
 from app.models.element import Element
 from app.models.element_risk_profile import ElementRiskProfile
 from app.models.graph_job import GraphJob, JobStatus
@@ -9,12 +15,16 @@ from app.models.risk_factor import RiskFactor
 
 __all__ = [
     "Application",
+    "DatasetImportRun",
     "Element",
     "ElementRiskProfile",
     "GraphJob",
     "JobStatus",
     "Material",
+    "MaterialImportEvent",
     "MaterialApplication",
     "MaterialElement",
+    "MaterialSourceRecord",
+    "MaterialSourceMembership",
     "RiskFactor",
 ]

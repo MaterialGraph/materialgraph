@@ -7,6 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from app.services.material.import_pipeline import (
+    MaterialDatasetContract,
     MaterialImportPipeline,
     MaterialImportScope,
 )
@@ -30,6 +31,14 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument(
+        "--source-release",
+        help="Authoritative Materials Project database release identifier.",
+    )
+    parser.add_argument(
+        "--retrieved-at",
+        help="Timezone-aware ISO-8601 start time for this source retrieval.",
+    )
     parser.add_argument(
         "--apply",
         action="store_true",
@@ -69,6 +78,8 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
 
     if args.apply:
+        if args.source_release is not None or args.retrieved_at is not None:
+            raise ValueError("source provenance options are only valid when building")
         if args.checkpoint is None:
             raise ValueError("--checkpoint is required with --apply")
         if not args.expected_database_name:
@@ -100,12 +111,14 @@ def main(argv: list[str] | None = None) -> int:
             db.close()
 
         print(json.dumps(asdict(result), sort_keys=True))
-        return 0
+        return 2 if result.conflicted else 0
 
     if args.checkpoint is not None:
         raise ValueError("--checkpoint is only valid with --apply")
     if args.expected_database_name is not None or args.allow_non_test_database:
         raise ValueError("database confirmation options are only valid with --apply")
+    if not args.source_release or not args.retrieved_at:
+        raise ValueError("--source-release and --retrieved-at are required when building")
     if args.manifest.exists():
         raise ValueError("refusing to overwrite an existing manifest")
     configured_env_file = os.getenv("MATERIALGRAPH_ENV_FILE")
@@ -126,7 +139,10 @@ def main(argv: list[str] | None = None) -> int:
         stable_only=not args.include_unstable,
     )
     pipeline = MaterialImportPipeline(
-        MaterialsProjectService(api_key=api_key),
+        MaterialsProjectService(
+            api_key=api_key,
+            database_version=args.source_release,
+        ),
         on_fetch_retry=lambda chemsys, page, attempt: print(
             json.dumps(
                 {
@@ -141,6 +157,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     result = pipeline.build_manifest(
         scope=scope,
+        dataset=MaterialDatasetContract(
+            source_release=args.source_release,
+            retrieved_at=args.retrieved_at,
+        ),
         manifest_path=args.manifest,
     )
     print(json.dumps({**asdict(result), "path": str(result.path)}, sort_keys=True))

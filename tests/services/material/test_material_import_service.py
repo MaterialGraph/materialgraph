@@ -1,12 +1,24 @@
+from dataclasses import replace
+from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from app.models.element import Element
+from app.models.dataset_import import (
+    DatasetImportRun,
+    MaterialImportEvent,
+    MaterialSourceMembership,
+    MaterialSourceRecord,
+)
 from app.models.material import Material
 from app.models.material_element import MaterialElement
-from app.services.material.import_service import MaterialImportService
+from app.services.material.import_service import (
+    DatasetImportRunSpec,
+    MaterialImportService,
+)
 from app.services.material.project_service import MaterialCandidate
 
 
@@ -48,6 +60,221 @@ def make_candidate(
         },
         composition_fractions=composition_fractions,
     )
+
+
+def make_run_spec(
+    *,
+    run_id: str,
+    release: str,
+    scope_digest: str = "a" * 64,
+) -> DatasetImportRunSpec:
+    return DatasetImportRunSpec(
+        import_run_id=run_id,
+        source="materials_project",
+        source_release=release,
+        retrieved_at=datetime(2026, 9, 15, tzinfo=timezone.utc),
+        manifest_sha256="b" * 64,
+        normalization_version="materials-project-summary-v1",
+        selection_contract_version="materials-project-selection-v1",
+        selection_scope_sha256=scope_digest,
+        license_identifier="CC-BY-4.0",
+        license_url="https://creativecommons.org/licenses/by/4.0/",
+    )
+
+
+def test_provenance_refresh_records_all_outcomes(db_session):
+    service = MaterialImportService(db_session)
+    prefix = f"mp-rf-{uuid4().hex[:12]}"
+    first_candidates = [
+        make_candidate(mp_id=f"{prefix}-{suffix}")
+        for suffix in ("a", "b", "c")
+    ]
+    first_run_id = str(uuid4())
+    service.begin_import_run(
+        spec=make_run_spec(run_id=first_run_id, release="release-1"),
+        rejections=[{"source_id": f"{prefix}-bad", "reason": "normalization_error"}],
+    )
+
+    first_result = service.refresh_materials(
+        first_candidates,
+        import_run_id=first_run_id,
+    )
+    replayed_first_result = service.refresh_materials(
+        first_candidates,
+        import_run_id=first_run_id,
+    )
+    first_completion = service.complete_import_run(
+        import_run_id=first_run_id,
+        manifest_source_ids={item.mp_id for item in first_candidates},
+        outcome_counts={
+            "inserted": 3,
+            "updated": 0,
+            "unchanged": 0,
+            "conflicted": 0,
+            "rejected": 1,
+        },
+        allow_retirement=True,
+    )
+
+    assert first_result.inserted == 3
+    assert replayed_first_result == first_result
+    assert first_completion.retired == 0
+
+    legacy = make_candidate(mp_id=f"{prefix}-legacy")
+    db_session.add(
+        Material(
+            mp_id=legacy.mp_id,
+            formula=legacy.formula,
+            pretty_formula=legacy.pretty_formula,
+            band_gap=legacy.band_gap,
+            energy_above_hull=legacy.energy_above_hull,
+            formation_energy_per_atom=legacy.formation_energy_per_atom,
+            density=legacy.density,
+            is_stable=legacy.is_stable,
+            source="legacy_unknown",
+            raw_data=legacy.raw_data,
+        )
+    )
+    db_session.commit()
+
+    updated = replace(
+        first_candidates[1],
+        band_gap=None,
+        raw_data={"material_id": first_candidates[1].mp_id, "band_gap": None},
+    )
+    inserted = make_candidate(mp_id=f"{prefix}-d")
+    second_candidates = [first_candidates[0], updated, inserted, legacy]
+    second_run_id = str(uuid4())
+    service.begin_import_run(
+        spec=make_run_spec(run_id=second_run_id, release="release-2"),
+        rejections=[],
+    )
+    second_result = service.refresh_materials(
+        second_candidates,
+        import_run_id=second_run_id,
+    )
+    second_completion = service.complete_import_run(
+        import_run_id=second_run_id,
+        manifest_source_ids={item.mp_id for item in second_candidates},
+        outcome_counts={
+            "inserted": second_result.inserted,
+            "updated": second_result.updated,
+            "unchanged": second_result.unchanged,
+            "conflicted": second_result.conflicted,
+            "rejected": 0,
+        },
+        allow_retirement=True,
+    )
+
+    assert second_result.inserted == 1
+    assert second_result.updated == 1
+    assert second_result.unchanged == 1
+    assert second_result.conflicted == 1
+    assert second_completion.retired == 1
+
+    outcomes = {
+        outcome: count
+        for outcome, count in db_session.query(
+            MaterialImportEvent.outcome,
+            func.count(MaterialImportEvent.id),
+        )
+        .filter(
+            MaterialImportEvent.import_run_id.in_([first_run_id, second_run_id])
+        )
+        .group_by(MaterialImportEvent.outcome)
+        .all()
+    }
+    assert outcomes == {
+        "conflicted": 1,
+        "inserted": 4,
+        "rejected": 1,
+        "retired": 1,
+        "unchanged": 1,
+        "updated": 1,
+    }
+
+    changed_material = (
+        db_session.query(Material)
+        .filter(Material.mp_id == updated.mp_id)
+        .one()
+    )
+    assert changed_material.band_gap is None
+    retired_record = (
+        db_session.query(MaterialSourceRecord)
+        .filter(MaterialSourceRecord.source_id == first_candidates[2].mp_id)
+        .one()
+    )
+    assert retired_record.active is False
+    second_run = db_session.get(DatasetImportRun, second_run_id)
+    assert second_run.status == "completed_with_conflicts"
+    assert second_run.outcome_counts["retired"] == 1
+
+
+def test_retirement_preserves_membership_in_an_overlapping_scope(db_session):
+    service = MaterialImportService(db_session)
+    candidate = make_candidate(mp_id=f"mp-scope-{uuid4().hex[:12]}")
+    scope_a = "a" * 64
+    scope_b = "c" * 64
+
+    for scope_digest in (scope_a, scope_b):
+        run_id = str(uuid4())
+        service.begin_import_run(
+            spec=make_run_spec(
+                run_id=run_id,
+                release="release-1",
+                scope_digest=scope_digest,
+            ),
+            rejections=[],
+        )
+        result = service.refresh_materials([candidate], import_run_id=run_id)
+        service.complete_import_run(
+            import_run_id=run_id,
+            manifest_source_ids={candidate.mp_id},
+            outcome_counts={
+                "inserted": result.inserted,
+                "updated": result.updated,
+                "unchanged": result.unchanged,
+                "conflicted": result.conflicted,
+                "rejected": 0,
+            },
+            allow_retirement=True,
+        )
+
+    retirement_run_id = str(uuid4())
+    service.begin_import_run(
+        spec=make_run_spec(
+            run_id=retirement_run_id,
+            release="release-2",
+            scope_digest=scope_a,
+        ),
+        rejections=[],
+    )
+    completion = service.complete_import_run(
+        import_run_id=retirement_run_id,
+        manifest_source_ids=set(),
+        outcome_counts={
+            "inserted": 0,
+            "updated": 0,
+            "unchanged": 0,
+            "conflicted": 0,
+            "rejected": 0,
+        },
+        allow_retirement=True,
+    )
+
+    record = (
+        db_session.query(MaterialSourceRecord)
+        .filter(MaterialSourceRecord.source_id == candidate.mp_id)
+        .one()
+    )
+    memberships = (
+        db_session.query(MaterialSourceMembership)
+        .filter(MaterialSourceMembership.source_record_id == record.id)
+        .all()
+    )
+    assert completion.retired == 1
+    assert record.active is True
+    assert sorted(membership.active for membership in memberships) == [False, True]
 
 
 def test_import_materials_creates_material(db_session):
