@@ -24,6 +24,7 @@
 | MG-DE-E-018 | Import service bulk-loads existing material and element identities per chunk and returns reconciled counts | Repository implementation | MG-DE-001 | Focused PostgreSQL test execution remains pending |
 | MG-DE-E-019 | CLI separates manifest building from application and requires exact database-name confirmation | Repository implementation and CLI tests | MG-DE-001 | Non-test application is deliberately not exercised or authorized |
 | MG-DE-E-020 | [Materials Project `SummaryRester.search` documentation](https://materialsproject.github.io/api/_autosummary/mp_api.client.routes.materials.summary.SummaryRester.html) documents chemical-system filters, projected fields, `num_chunks`, `chunk_size`, `_page`, and `_sort_fields` | Primary upstream documentation and pinned client inspection | MG-DE-001 | Dataset release and licensing validation remain MG-DE-002 work |
+| MG-DE-E-021 | `test_postgresql_manifest_lifecycle_interrupts_resumes_and_reruns` composes the manifest pipeline with the real SQLAlchemy importer and guarded PostgreSQL test session | Repository integration test | MG-DE-001 | Independent PostgreSQL execution is pending |
 
 ## Evidence still required
 

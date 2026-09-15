@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 
@@ -7,7 +8,10 @@ from app.services.material.import_pipeline import (
     MaterialImportPipeline,
     MaterialImportScope,
 )
-from app.services.material.import_service import MaterialImportResult
+from app.services.material.import_service import (
+    MaterialImportResult,
+    MaterialImportService,
+)
 from app.services.material.project_service import (
     MaterialCandidate,
     MaterialCandidateRejection,
@@ -305,6 +309,97 @@ def test_apply_manifest_checkpoints_each_committed_chunk_and_resumes(tmp_path):
     assert result.imported == 3
     assert result.skipped == 0
     assert result.verified_present == 3
+
+
+def test_postgresql_manifest_lifecycle_interrupts_resumes_and_reruns(
+    db_session,
+    tmp_path,
+):
+    prefix = f"mp-test-lifecycle-{uuid4()}"
+    candidates = [
+        make_candidate(f"{prefix}-{suffix}")
+        for suffix in ("a", "b", "c")
+    ]
+    source = FakeSource(
+        {
+            ("Li-O", 1): MaterialFetchPage(
+                candidates=candidates[:2],
+                rejections=[],
+            ),
+            ("Li-O", 2): MaterialFetchPage(
+                candidates=candidates[2:],
+                rejections=[],
+            ),
+        }
+    )
+    manifest_path = tmp_path / "postgres-manifest.json"
+    checkpoint_path = tmp_path / "postgres-checkpoint.json"
+    MaterialImportPipeline(source).build_manifest(
+        scope=MaterialImportScope(
+            chemical_systems=("Li-O",),
+            page_size=2,
+            chunk_size=2,
+        ),
+        manifest_path=manifest_path,
+    )
+
+    delegate = MaterialImportService(db_session)
+
+    class InterruptBeforeSecondChunk:
+        def __init__(self):
+            self.calls = 0
+
+        def import_materials_with_result(self, chunk):
+            self.calls += 1
+            if self.calls == 2:
+                raise RuntimeError("controlled PostgreSQL lifecycle interruption")
+            return delegate.import_materials_with_result(chunk)
+
+        def count_existing_materials(self, mp_ids):
+            return delegate.count_existing_materials(mp_ids)
+
+    with pytest.raises(
+        RuntimeError,
+        match="controlled PostgreSQL lifecycle interruption",
+    ):
+        MaterialImportPipeline.apply_manifest(
+            manifest_path=manifest_path,
+            checkpoint_path=checkpoint_path,
+            importer=InterruptBeforeSecondChunk(),
+        )
+
+    all_mp_ids = {candidate.mp_id for candidate in candidates}
+    first_chunk_mp_ids = {candidate.mp_id for candidate in candidates[:2]}
+    interrupted_checkpoint = json.loads(
+        checkpoint_path.read_text(encoding="utf-8")
+    )
+    assert interrupted_checkpoint["next_index"] == 2
+    assert delegate.count_existing_materials(first_chunk_mp_ids) == 2
+    assert delegate.count_existing_materials(all_mp_ids) == 2
+
+    resumed = MaterialImportPipeline.apply_manifest(
+        manifest_path=manifest_path,
+        checkpoint_path=checkpoint_path,
+        importer=delegate,
+    )
+    assert resumed.completed is True
+    assert resumed.processed == 3
+    assert resumed.imported == 3
+    assert resumed.skipped == 0
+    assert resumed.verified_present == 3
+    assert delegate.count_existing_materials(all_mp_ids) == 3
+
+    clean_rerun = MaterialImportPipeline.apply_manifest(
+        manifest_path=manifest_path,
+        checkpoint_path=tmp_path / "postgres-rerun-checkpoint.json",
+        importer=delegate,
+    )
+    assert clean_rerun.completed is True
+    assert clean_rerun.processed == 3
+    assert clean_rerun.imported == 0
+    assert clean_rerun.skipped == 3
+    assert clean_rerun.verified_present == 3
+    assert delegate.count_existing_materials(all_mp_ids) == 3
 
 
 def test_apply_manifest_rejects_tampering(tmp_path):

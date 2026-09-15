@@ -46,3 +46,8 @@ reconciliation. See the [implementation record](../implementation/MG-DE-001.md).
 
 The finding is not closed. Focused PostgreSQL tests, the complete suite, and a
 bounded test-database lifecycle must be independently reproduced first.
+
+The repository now includes a composed PostgreSQL lifecycle test covering a
+first committed chunk, controlled interruption before the second chunk,
+checkpoint inspection, resume, final identity reconciliation, and a clean
+idempotent rerun. Independent execution of that test remains the closure gate.

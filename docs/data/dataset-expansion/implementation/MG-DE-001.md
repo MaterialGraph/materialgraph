@@ -73,6 +73,12 @@ The isolated workspace has no configured PostgreSQL test database. Focused
 database tests, the complete suite, and an actual bounded test-database lifecycle
 remain required before integration.
 
+A composed PostgreSQL lifecycle test is now included. It uses generated
+`mp-test-lifecycle-*` identities, the real `MaterialImportService`, the guarded
+test session, a controlled failure before the second chunk, checkpoint/resume,
+final identity reconciliation, and a second application with a fresh checkpoint
+to prove idempotent skipping. It has not been executed in the isolated workspace.
+
 ## Required integration verification
 
 1. Confirm both runtime and migration URLs name a test database.
@@ -80,8 +86,8 @@ remain required before integration.
    configuration tests.
 3. Run the complete suite, Ruff, automation-pin check, dependency-contract
    check, and `git diff --check`.
-4. Build a synthetic or mocked bounded manifest; apply it to the test database,
-   rerun it, interrupt between chunks, resume it, and reconcile database IDs.
+4. Confirm the composed PostgreSQL lifecycle test passes, including interruption,
+   resume, clean rerun, and database-ID reconciliation.
 5. Do not use a real source API key or production database for repository
    integration validation.
 
