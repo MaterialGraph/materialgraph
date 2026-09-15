@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app.core.logging import logger
 
@@ -33,7 +34,7 @@ class CandidateScreeningService:
         self,
         request: CandidateScreeningRequest,
     ) -> list[CandidateScreeningResult]:
-        materials = self.db.query(Material).all()
+        materials = self._get_eligible_materials(request)
 
         results = self._screen_materials(
             materials=materials,
@@ -53,6 +54,26 @@ class CandidateScreeningService:
         )
 
         return results
+
+    def _get_eligible_materials(
+        self,
+        request: CandidateScreeningRequest,
+    ) -> list[Material]:
+        query = self.db.query(Material)
+
+        if request.require_stable:
+            query = query.filter(Material.is_stable.is_(True))
+
+        if request.max_energy_above_hull is not None:
+            query = query.filter(
+                or_(
+                    Material.energy_above_hull.is_(None),
+                    Material.energy_above_hull
+                    <= request.max_energy_above_hull,
+                )
+            )
+
+        return query.order_by(Material.id).all()
 
     def evaluate_candidate_ids(
         self,

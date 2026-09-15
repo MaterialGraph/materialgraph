@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from sqlalchemy import func, select, union
 from sqlalchemy.orm import Session
 
 from app.domain.element_groups import ALKALI_METALS
@@ -53,19 +54,14 @@ class MaterialFamilyService:
             .filter(MaterialElement.material_id == material_id)
             .all()
         )
-        base_element_ids = [row[0] for row in base_element_rows]
-
-        candidate_id_rows = []
-        if base_element_ids:
-            candidate_id_rows = (
-                self.db.query(MaterialElement.material_id)
-                .filter(MaterialElement.element_id.in_(base_element_ids))
-                .filter(MaterialElement.material_id != material_id)
-                .distinct()
-                .all()
-            )
-
-        candidate_ids = [row[0] for row in candidate_id_rows]
+        base_elements_by_id = {
+            element_id: symbol
+            for element_id, symbol in base_element_rows
+        }
+        candidate_ids = self._get_strong_candidate_ids(
+            material_id=material_id,
+            base_elements_by_id=base_elements_by_id,
+        )
         scoped_material_ids = [material_id, *candidate_ids]
         elements_map = self._get_material_elements_map(scoped_material_ids)
         base_elements = elements_map.get(material_id, [])
@@ -129,6 +125,62 @@ class MaterialFamilyService:
             "related_materials": related_materials,
         }
         return result, elements_map
+
+    def _get_strong_candidate_ids(
+        self,
+        *,
+        material_id: int,
+        base_elements_by_id: dict[int, str],
+    ) -> list[int]:
+        if not base_elements_by_id:
+            return []
+
+        base_element_ids = list(base_elements_by_id)
+        candidate_queries = [
+            select(MaterialElement.material_id)
+            .where(
+                MaterialElement.material_id != material_id,
+                MaterialElement.element_id.in_(base_element_ids),
+            )
+            .group_by(MaterialElement.material_id)
+            .having(
+                func.count(func.distinct(MaterialElement.element_id))
+                >= self.MIN_SHARED_ELEMENTS
+            )
+        ]
+
+        shared_transition_ids = [
+            element_id
+            for element_id, symbol in base_elements_by_id.items()
+            if symbol in self.TRANSITION_METALS
+        ]
+        if shared_transition_ids:
+            candidate_queries.append(
+                select(MaterialElement.material_id).where(
+                    MaterialElement.material_id != material_id,
+                    MaterialElement.element_id.in_(shared_transition_ids),
+                )
+            )
+
+        if "P" in base_elements_by_id.values():
+            candidate_queries.append(
+                select(MaterialElement.material_id)
+                .join(Element, MaterialElement.element_id == Element.id)
+                .where(
+                    MaterialElement.material_id != material_id,
+                    Element.symbol.in_(("O", "P")),
+                )
+                .group_by(MaterialElement.material_id)
+                .having(func.count(func.distinct(Element.symbol)) == 2)
+            )
+
+        candidate_ids = union(*candidate_queries).subquery()
+        rows = self.db.execute(
+            select(candidate_ids.c.material_id).order_by(
+                candidate_ids.c.material_id
+            )
+        ).all()
+        return [material_id for (material_id,) in rows]
 
     @staticmethod
     def _related_material_sort_key(item: dict) -> tuple[int, int]:

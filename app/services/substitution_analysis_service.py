@@ -1,8 +1,10 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.logging import logger
 
 from app.models.material import Material
+from app.models.material_element import MaterialElement
 
 
 from app.schemas.substitution import (
@@ -38,10 +40,8 @@ class SubstitutionAnalysisService:
         if source is None:
             return None
 
-        candidate_materials = (
-            self.db.query(Material)
-            .filter(Material.id != source.id)
-            .all()
+        candidate_materials = self._get_overlapping_candidate_materials(
+            source.id
         )
 
         material_ids = [
@@ -228,6 +228,27 @@ class SubstitutionAnalysisService:
                 [],
             ),
             substitutes=top_substitutes,
+        )
+
+    def _get_overlapping_candidate_materials(
+        self,
+        source_material_id: int,
+    ) -> list[Material]:
+        source_element_ids = (
+            select(MaterialElement.element_id)
+            .where(MaterialElement.material_id == source_material_id)
+        )
+        overlapping_material_ids = (
+            select(MaterialElement.material_id)
+            .where(MaterialElement.element_id.in_(source_element_ids))
+            .where(MaterialElement.material_id != source_material_id)
+            .distinct()
+        )
+        return (
+            self.db.query(Material)
+            .filter(Material.id.in_(overlapping_material_ids))
+            .order_by(Material.id)
+            .all()
         )
 
     def _known_risk_score(self, risk_signal: dict) -> float | None:

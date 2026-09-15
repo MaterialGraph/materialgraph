@@ -12,10 +12,10 @@
 | Idempotency | Per-run event replay and deterministic insert/update/unchanged/conflict outcomes implemented | Same-run replay and fresh-run refresh independently verified | Retain composed lifecycle coverage as a regression gate |
 | Recovery | Atomic checkpoint/resume and idempotent chunk replay implemented | Verified against PostgreSQL test database | Define production dataset-version rollback before an authorized canary |
 | Validation | Composition validation, sanitized rejection records, manifest digest, counts, and final identity reconciliation exist | Verified for the bounded lifecycle | Extend to the approved representative fixture under MG-DE-004 |
-| Candidate screening | Unscoped screening loads all materials | Scale-sensitive | SQL narrowing and benchmark evidence |
-| Substitution analysis | Loads all materials other than the source | Scale-sensitive | SQL narrowing and bounded candidate generation |
-| Discovery graph | Builds a complete material-element map | Scale-sensitive | Load only the active candidate/subgraph scope |
-| Material families | Broad shared-element set classified in Python | Scale-sensitive for common elements | Candidate cap or ranked SQL narrowing with scientific semantics preserved |
+| Candidate screening | Stable and energy constraints are applied in SQL before scoring | Ready for PostgreSQL verification | Confirm preserved results and measure the bounded representative fixture |
+| Substitution analysis | SQL loads only materials sharing at least one source element | Ready for PostgreSQL verification | Confirm zero-similarity exclusion is semantics-preserving and measure the representative fixture |
+| Discovery graph | Composition is loaded incrementally for the bounded active frontier | Ready for PostgreSQL verification | Confirm scoped query behavior through graph modes and dense neighborhoods |
+| Material families | SQL prefilter encodes the existing strong relationship predicates before material and composition loading | Ready for PostgreSQL verification | Confirm equivalence to exhaustive classification and measure dense common-element cases |
 | API listing | Limit/offset; maximum response limit 100 | Suitable for initial target | Verify stable ordering and query plans |
 | Graph traversal | Existing depth, branching, and result bounds | Suitable foundation | Verify with dense representative neighborhoods |
 | Indexes | Identity and relationship foreign-key indexes exist | Partial | Add indexes only from observed query plans |

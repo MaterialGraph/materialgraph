@@ -162,3 +162,42 @@ def test_family_lookup_scopes_composition_loading_to_overlap_candidates(
     assert requested_scopes[0][0] == 5
     assert set(elements_map) <= set(requested_scopes[0])
     assert result["material_id"] == 5
+
+
+def test_family_sql_prefilter_preserves_strong_relationship_semantics(
+    db_session,
+):
+    from app.models.material import Material
+    from app.services.material.family_service import MaterialFamilyService
+
+    service = MaterialFamilyService(db_session)
+    result, scoped_elements = service.get_material_families_with_elements(5)
+
+    all_material_ids = [
+        material_id
+        for (material_id,) in db_session.query(Material.id)
+        .filter(Material.id != 5)
+        .filter(~Material.mp_id.like(f"{service.TEST_MP_PREFIX}%"))
+        .all()
+    ]
+    exhaustive_elements = service._get_material_elements_map(
+        [5, *all_material_ids]
+    )
+    base_elements = exhaustive_elements[5]
+    expected_ids = {
+        material_id
+        for material_id in all_material_ids
+        if service._has_strong_relationship(
+            service._classify_relationships(
+                base_elements,
+                exhaustive_elements.get(material_id, []),
+            )
+        )
+    }
+    actual_ids = {
+        item["material_id"]
+        for item in result["related_materials"]
+    }
+
+    assert actual_ids == expected_ids
+    assert set(scoped_elements) <= {5, *expected_ids}

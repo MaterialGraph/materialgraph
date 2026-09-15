@@ -89,7 +89,9 @@ class DiscoveryGraphBuilder:
                 }
 
             with timed_block("DiscoveryGraphBuilder.elements_map"):
-                elements_map = self._get_material_elements_map()
+                elements_map = self._get_material_elements_map(
+                    [base_material.id]
+                )
 
             nodes_by_id: dict[int, dict] = {
                 base_material.id: self._material_to_node(
@@ -140,6 +142,11 @@ class DiscoveryGraphBuilder:
                         prefer_element=prefer_element,
                         limit=candidate_limit,
                     )
+
+                self._extend_material_elements_map(
+                    elements_map,
+                    [candidate["material_id"] for candidate in candidates],
+                )
 
                 with timed_block(
                     f"DiscoveryGraphBuilder.preload_quality material_id={material_id} count={len(candidates)}"
@@ -231,7 +238,9 @@ class DiscoveryGraphBuilder:
         adjacency: dict[int, list[dict]] = {}
         visited: set[int] = set()
         frontier = deque([(start_material_id, 0)])
-        elements_map = self._get_material_elements_map()
+        elements_map = self._get_material_elements_map(
+            [start_material_id]
+        )
 
         while frontier:
             material_id, depth = frontier.popleft()
@@ -263,6 +272,11 @@ class DiscoveryGraphBuilder:
                 material_id=material_id,
                 avoid_element=avoid_element,
                 prefer_element=prefer_element,
+            )
+
+            self._extend_material_elements_map(
+                elements_map,
+                [candidate["material_id"] for candidate in candidates],
             )
 
             validated_candidates = []
@@ -454,13 +468,36 @@ class DiscoveryGraphBuilder:
         self._relationship_cache[cache_key] = relationships
         return relationships
 
-    def _get_material_elements_map(self) -> dict[int, list[str]]:
+    def _extend_material_elements_map(
+        self,
+        elements_map: dict[int, list[str]],
+        material_ids: list[int],
+    ) -> None:
+        missing_ids = [
+            material_id
+            for material_id in dict.fromkeys(material_ids)
+            if material_id not in elements_map
+        ]
+        elements_map.update(
+            self._get_material_elements_map(missing_ids)
+        )
+        for material_id in missing_ids:
+            elements_map.setdefault(material_id, [])
+
+    def _get_material_elements_map(
+        self,
+        material_ids: list[int],
+    ) -> dict[int, list[str]]:
+        if not material_ids:
+            return {}
+
         rows = (
             self.db.query(
                 MaterialElement.material_id,
                 Element.symbol,
             )
             .join(Element, MaterialElement.element_id == Element.id)
+            .filter(MaterialElement.material_id.in_(material_ids))
             .all()
         )
 

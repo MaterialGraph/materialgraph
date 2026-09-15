@@ -117,6 +117,31 @@ def test_discovery_graph_nodes_include_canonical_elements(db_session):
         assert nodes_by_id[6]["elements"] == ["Fe", "Na", "O", "P"]
 
 
+def test_graph_builder_loads_elements_for_only_bounded_frontier(db_session):
+    builder = DiscoveryGraphBuilder(db_session)
+    original_loader = builder._get_material_elements_map
+    requested_scopes = []
+
+    def recording_loader(material_ids):
+        requested_scopes.append(list(material_ids))
+        return original_loader(material_ids)
+
+    builder._get_material_elements_map = recording_loader
+
+    builder.build_graph(
+        start_material_id=5,
+        avoid_element="Li",
+        prefer_element="Na",
+        max_depth=1,
+    )
+
+    assert requested_scopes[0] == [5]
+    assert all(
+        len(scope) <= builder.EXPANSION_LIMIT
+        for scope in requested_scopes[1:]
+    )
+
+
 def test_build_adjacency_excludes_invalid_transitions(
     db_session,
     monkeypatch,

@@ -14,6 +14,12 @@ class FakeMaterialQuery:
     def filter(self, *args):
         return self
 
+    def distinct(self):
+        return self
+
+    def order_by(self, *args):
+        return self
+
     def first(self):
         return self.source
 
@@ -140,6 +146,32 @@ def test_substitution_analysis_returns_none_for_missing_material(
     )
 
     assert result is None
+
+
+def test_substitution_sql_scope_contains_only_element_overlaps(db_session):
+    from app.models.material_element import MaterialElement
+
+    service = SubstitutionAnalysisService(db_session)
+    candidates = service._get_overlapping_candidate_materials(6)
+    candidate_ids = [material.id for material in candidates]
+
+    source_element_ids = {
+        element_id
+        for (element_id,) in db_session.query(MaterialElement.element_id)
+        .filter(MaterialElement.material_id == 6)
+        .all()
+    }
+
+    assert candidate_ids == sorted(candidate_ids)
+    assert candidates
+    for candidate_id in candidate_ids:
+        candidate_element_ids = {
+            element_id
+            for (element_id,) in db_session.query(MaterialElement.element_id)
+            .filter(MaterialElement.material_id == candidate_id)
+            .all()
+        }
+        assert source_element_ids & candidate_element_ids
 
 
 def test_unknown_risk_is_nullable_and_receives_no_low_risk_component():

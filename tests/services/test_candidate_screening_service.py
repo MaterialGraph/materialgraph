@@ -13,6 +13,12 @@ class FakeMaterialQuery:
     def all(self):
         return self.materials
 
+    def filter(self, *args):
+        return self
+
+    def order_by(self, *args):
+        return self
+
 
 class FakeDB:
     def __init__(self, materials):
@@ -285,3 +291,24 @@ def test_screening_bulk_loads_elements_and_risk_once():
 
     assert element_calls == [[1, 2]]
     assert risk_calls == [[1, 2]]
+
+
+def test_screening_pushes_hard_eligibility_filters_into_sql(db_session):
+    service = CandidateScreeningService(db_session)
+    request = CandidateScreeningRequest(
+        require_stable=True,
+        max_energy_above_hull=0.05,
+    )
+
+    materials = service._get_eligible_materials(request)
+
+    assert materials
+    assert [material.id for material in materials] == sorted(
+        material.id for material in materials
+    )
+    assert all(material.is_stable is True for material in materials)
+    assert all(
+        material.energy_above_hull is None
+        or material.energy_above_hull <= 0.05
+        for material in materials
+    )

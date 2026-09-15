@@ -1,6 +1,6 @@
 # MG-DE-003: Request paths contain scale-sensitive broad loading
 
-**Status:** Open
+**Status:** Ready for independent PostgreSQL verification
 **Priority:** Second implementation wave
 **Initial expansion blocker:** Yes
 
@@ -39,3 +39,22 @@ instance.
 Focused tests must prove preserved semantics. The representative fixture must
 record query counts, significant query plans, latency, and memory for each
 affected path, including dense common-element cases.
+
+## Implementation checkpoint
+
+Candidate screening now pushes its existing stability and energy eligibility
+constraints into SQL before bulk scoring. Substitution analysis selects only
+materials sharing a source element, which excludes exactly the candidates whose
+Jaccard similarity would be zero. Discovery graph construction loads element
+composition incrementally for the source and the already bounded active
+candidate frontier rather than for the complete dataset.
+
+Material-family candidate selection now expresses the existing strong
+relationship rules as a SQL union before loading material rows and full
+composition: at least three shared elements, a shared transition metal, or
+phosphate co-membership when the base contains phosphorus. Python
+classification remains authoritative, preserving explanations and ordering.
+
+No index was added without representative PostgreSQL query-plan evidence. The
+finding is not closed: focused result-equivalence tests, PostgreSQL execution,
+the complete suite, and the representative MG-DE-004 benchmark remain required.
