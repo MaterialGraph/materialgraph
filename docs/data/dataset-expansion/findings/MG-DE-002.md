@@ -1,6 +1,6 @@
 # MG-DE-002: Dataset provenance and refresh semantics are incomplete
 
-**Status:** Ready for independent PostgreSQL verification
+**Status:** Closed
 **Priority:** First implementation wave
 **Initial expansion blocker:** Yes
 
@@ -49,7 +49,18 @@ inserted, updated, unchanged, conflicted, rejected, and retired records; same-ru
 chunk replay reuses recorded outcomes. Missing optional values remain null, and
 ambiguous pre-existing identities are preserved as conflicts.
 
-The finding is not closed. The migration, composed refresh lifecycle, complete
-suite, and deterministic manifest behavior must be independently reproduced
-against the PostgreSQL test database first. No source request, production
-migration, or production import is authorized by this checkpoint.
+## Closure evidence
+
+Independent verification at commit
+`3e8eb2975a679594b73dcc86c6ebe99d415864fd` confirmed the single Alembic head
+`c8f3a2d7e901` against `materialgraph_test`. The PostgreSQL migration test, all
+18 refresh-service tests, and the PostgreSQL interruption/resume lifecycle test
+passed. The complete focused suite reported 76 passed, and the complete suite
+reported 869 passed with 1 skipped. Automation-pin, dependency-contract, Ruff,
+and diff-hygiene checks also passed.
+
+GitHub Dependency Security run 13 and Secret Scan run 99 passed for the same
+commit. This closes the provenance and refresh-semantics implementation gap for
+the initial expansion gate. It does not qualify representative-scale behavior
+under MG-DE-004 and does not authorize a source request, production migration,
+or production import.

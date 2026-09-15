@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 closed; MG-DE-002 implemented and awaiting independent PostgreSQL verification; MG-DE-003 and MG-DE-004 open
+**Status:** MG-DE-001 and MG-DE-002 closed; MG-DE-003 and MG-DE-004 open
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -19,12 +19,10 @@ any substantially larger collection is attempted.
 
 ## Current conclusion
 
-The resumable import lifecycle is implemented and independently verified
-against the PostgreSQL test database. Dataset provenance and conservative
-refresh semantics are implemented but still require independent migration and
-PostgreSQL lifecycle verification. Several request-time query paths and
-representative-scale behavior also remain unqualified. No production import is
-authorized.
+The resumable import lifecycle, dataset provenance, and conservative refresh
+semantics are implemented and independently verified against the PostgreSQL
+test database. Several request-time query paths and representative-scale
+behavior remain unqualified. No production migration or import is authorized.
 
 ## Scope
 

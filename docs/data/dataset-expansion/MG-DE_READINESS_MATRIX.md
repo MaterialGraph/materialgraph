@@ -5,12 +5,12 @@
 | Area | Repository evidence | Initial result | Required gate |
 |---|---|---|---|
 | Storage engine | PostgreSQL/Neon; normalized material-element relationships | Suitable in principle for approximately 1,000 materials | Record test and production sizing evidence |
-| Material identity | Source identity mapping and conservative polymorph/alias rules implemented | Ready for PostgreSQL verification | Verify conflicts cannot silently adopt legacy or ambiguous identities |
-| Provenance | Immutable run, source-record, and event models plus source and normalized digests implemented | Ready for migration and PostgreSQL verification | Reproduce persistence and run reconciliation against PostgreSQL |
-| Source acquisition | Configurable deterministic paging, bounds, retries, rejections, and manifest implemented | Verified for MG-DE-001 | Approve source authority, licensing, release, and selection contract under MG-DE-002 |
+| Material identity | Source identity mapping and conservative polymorph/alias rules implemented | Verified against the PostgreSQL test database | Retain conflict and legacy-identity tests as regression gates |
+| Provenance | Immutable run, source-record, and event models plus source and normalized digests implemented | Migration and lifecycle verified against PostgreSQL | Retain persistence and run-reconciliation tests as regression gates |
+| Source acquisition | Configurable deterministic paging, bounds, retries, rejections, and manifest implemented | Source, licensing, release, and selection contract approved under MG-DE-002 | Capture an authorized representative-source manifest under MG-DE-004 |
 | Import transaction | Configurable chunks commit independently and checkpoint after success | Verified against PostgreSQL test database | Retain the lifecycle test as a regression gate |
-| Idempotency | Per-run event replay and deterministic insert/update/unchanged/conflict outcomes implemented | Ready for PostgreSQL verification | Reproduce same-run crash-window replay and fresh-run refresh |
-| Recovery | Atomic checkpoint/resume and idempotent chunk replay implemented | Verified against PostgreSQL test database | Define production dataset-version rollback under MG-DE-002 |
+| Idempotency | Per-run event replay and deterministic insert/update/unchanged/conflict outcomes implemented | Same-run replay and fresh-run refresh independently verified | Retain composed lifecycle coverage as a regression gate |
+| Recovery | Atomic checkpoint/resume and idempotent chunk replay implemented | Verified against PostgreSQL test database | Define production dataset-version rollback before an authorized canary |
 | Validation | Composition validation, sanitized rejection records, manifest digest, counts, and final identity reconciliation exist | Verified for the bounded lifecycle | Extend to the approved representative fixture under MG-DE-004 |
 | Candidate screening | Unscoped screening loads all materials | Scale-sensitive | SQL narrowing and benchmark evidence |
 | Substitution analysis | Loads all materials other than the source | Scale-sensitive | SQL narrowing and bounded candidate generation |

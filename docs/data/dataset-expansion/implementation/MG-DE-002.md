@@ -1,7 +1,7 @@
 # MG-DE-002 Implementation Record
 
 **Baseline:** `527ed03f6482806b8cf4879566d828679a9aab59`
-**Status:** Ready for independent PostgreSQL verification
+**Status:** Verified and closed
 **Production migration authorized:** No
 **Production import authorized:** No
 
@@ -90,6 +90,28 @@ not authorized by this record.
   documentation-link validation, and `git diff --check`: passed.
 - No PostgreSQL migration, complete suite, external source request, or
   production operation was performed in the isolated workspace.
+
+## Independent closure validation
+
+At commit `3e8eb2975a679594b73dcc86c6ebe99d415864fd`, independent
+verification on 2026-09-15 reported:
+
+- both configured database URLs resolved to `materialgraph_test`;
+- Alembic used PostgreSQL and reported the single head `c8f3a2d7e901` before
+  and after `alembic upgrade head`;
+- the PostgreSQL migration test passed without a skip;
+- all 18 refresh-service tests passed;
+- the PostgreSQL interruption/resume lifecycle test passed;
+- the complete focused suite reported 76 passed;
+- the complete repository suite reported 869 passed, 1 skipped;
+- automation pins, dependency contract, Ruff, and `git diff --check` passed;
+- GitHub Dependency Security run 13 and Secret Scan run 99 passed for the same
+  commit.
+
+The evidence closes MG-DE-002 for the initial expansion gate. No real source
+request, production migration, production import, or production restart was
+performed or authorized. Representative-scale qualification remains governed
+by MG-DE-004.
 
 ## Rollback
 

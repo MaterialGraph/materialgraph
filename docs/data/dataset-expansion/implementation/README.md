@@ -3,7 +3,7 @@
 | Finding | Record | Status |
 |---|---|---|
 | MG-DE-001 | [Manifest-first resumable import](MG-DE-001.md) | Verified and closed |
-| MG-DE-002 | [Dataset provenance and refresh semantics](MG-DE-002.md) | Ready for independent PostgreSQL verification |
+| MG-DE-002 | [Dataset provenance and refresh semantics](MG-DE-002.md) | Verified and closed |
 
 Each approved change must receive a focused record describing:
 

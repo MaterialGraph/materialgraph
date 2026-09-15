@@ -34,11 +34,13 @@
 | MG-DE-E-028 | Refresh service implements inserted, updated, unchanged, conflicted, rejected, and retired outcomes with per-run replay safety | Repository implementation and tests | MG-DE-002 | Independent PostgreSQL composed lifecycle pending |
 | MG-DE-E-029 | [MG-DE source contract](MG-DE_SOURCE_CONTRACT.md) defines inclusion, license, identity, polymorph, alias, missingness, refresh, and retirement boundaries | Governing dataset documentation | MG-DE-002 | Production publication remains unauthorized |
 | MG-DE-E-030 | Isolated validation reported 56 non-PostgreSQL focused tests passed with 1 PostgreSQL lifecycle test deselected; two provenance/overlapping-scope service scenarios passed against a disposable SQLite subset; 870 tests collected; Ruff, automation pins, dependency contract, Python compilation, Alembic single-head, PostgreSQL DDL compilation, documentation links, and diff checks passed | Local implementation validation, 2026-09-15 | MG-DE-002 implementation | SQLite smoke checks are not closure evidence; PostgreSQL execution and complete suite remain required |
+| MG-DE-E-031 | At commit `3e8eb2975a679594b73dcc86c6ebe99d415864fd`, independent execution against `materialgraph_test` confirmed Alembic at the single head `c8f3a2d7e901`; the PostgreSQL migration test passed; all 18 refresh-service tests passed; and the interruption/resume lifecycle test passed | Independent PostgreSQL test-database validation, 2026-09-15 | MG-DE-002 closure | Test database only; no external source request, production migration, or production import |
+| MG-DE-E-032 | The complete MG-DE-002 focused suite reported 76 passed; the complete repository suite reported 869 passed, 1 skipped; automation pins, dependency contract, Ruff, and `git diff --check` passed on commit `3e8eb2975a679594b73dcc86c6ebe99d415864fd` | Independent local validation, 2026-09-15 | MG-DE-002 closure | Does not qualify representative-scale performance or production operation |
+| MG-DE-E-033 | GitHub Dependency Security run 13 and Secret Scan run 99 passed for commit `3e8eb2975a679594b73dcc86c6ebe99d415864fd` | GitHub workflow evidence, 2026-09-15 | MG-DE-002 closure | These workflows do not replace functional or PostgreSQL verification |
 
 ## Evidence still required
 
-- authoritative source API, licensing, and dataset-release documentation;
-- approved selection and identity contract;
+- authorized representative-source acquisition and manifest evidence;
 - deterministic representative fixture manifest;
 - representative-fixture import dry-run, completion, rerun, interruption, and resume records;
 - representative-fixture row-count and manifest reconciliation;
