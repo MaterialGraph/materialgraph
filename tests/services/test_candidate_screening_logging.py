@@ -4,6 +4,9 @@ from app.services.candidate_screening_service import CandidateScreeningService
 
 
 class EmptyQuery:
+    def order_by(self, *args):
+        return self
+
     def all(self):
         return []
 
