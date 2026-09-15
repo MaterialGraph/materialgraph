@@ -315,11 +315,12 @@ def test_postgresql_manifest_lifecycle_interrupts_resumes_and_reruns(
     db_session,
     tmp_path,
 ):
-    prefix = f"mp-test-lifecycle-{uuid4()}"
+    prefix = f"mp-tl-{uuid4().hex[:16]}"
     candidates = [
         make_candidate(f"{prefix}-{suffix}")
         for suffix in ("a", "b", "c")
     ]
+    assert all(len(candidate.mp_id) <= 50 for candidate in candidates)
     source = FakeSource(
         {
             ("Li-O", 1): MaterialFetchPage(

@@ -79,6 +79,12 @@ test session, a controlled failure before the second chunk, checkpoint/resume,
 final identity reconciliation, and a second application with a fresh checkpoint
 to prove idempotent skipping. It has not been executed in the isolated workspace.
 
+The first independent execution reached the PostgreSQL insert but stopped before
+the lifecycle assertions because the generated UUID-based fixture identity was
+longer than the existing `materials.mp_id` 50-character limit. The fixture now
+uses a bounded 24-character `mp-tl-*` identity. This was a test-fixture defect;
+no importer, schema, production, or source-data change was required.
+
 ## Required integration verification
 
 1. Confirm both runtime and migration URLs name a test database.
