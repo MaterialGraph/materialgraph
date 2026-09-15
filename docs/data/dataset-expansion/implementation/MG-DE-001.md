@@ -1,7 +1,7 @@
 # MG-DE-001 Implementation Record
 
 **Baseline:** `80201f92546261f7fa78492e2771ad1966d5c780`
-**Status:** Ready for independent test-database verification
+**Status:** Verified and closed
 **Production import authorized:** No
 
 ## Implemented controls
@@ -69,15 +69,11 @@ configuration change, or production data change.
 - No external Materials Project request was made.
 - No database manifest application was made.
 
-The isolated workspace has no configured PostgreSQL test database. Focused
-database tests, the complete suite, and an actual bounded test-database lifecycle
-remain required before integration.
-
 A composed PostgreSQL lifecycle test is now included. It uses generated
-`mp-test-lifecycle-*` identities, the real `MaterialImportService`, the guarded
+`mp-tl-*` identities, the real `MaterialImportService`, the guarded
 test session, a controlled failure before the second chunk, checkpoint/resume,
 final identity reconciliation, and a second application with a fresh checkpoint
-to prove idempotent skipping. It has not been executed in the isolated workspace.
+to prove idempotent skipping.
 
 The first independent execution reached the PostgreSQL insert but stopped before
 the lifecycle assertions because the generated UUID-based fixture identity was
@@ -85,15 +81,32 @@ longer than the existing `materials.mp_id` 50-character limit. The fixture now
 uses a bounded 24-character `mp-tl-*` identity. This was a test-fixture defect;
 no importer, schema, production, or source-data change was required.
 
-## Required integration verification
+## Independent closure verification
+
+At commit `6dfe67d817b8ac848bb41d2783e27c7ed6b27d27`, the corrected composed
+lifecycle test passed against the guarded `materialgraph_test` PostgreSQL
+database. It verified the committed-chunk boundary, controlled interruption,
+checkpoint value 2, resume, three-identity reconciliation, and a clean rerun
+reporting zero imported and three skipped.
+
+- PostgreSQL lifecycle test: 1 passed, 10 deselected.
+- Focused importer and configuration suite: 67 passed.
+- Complete suite: 860 passed, 1 skipped.
+- Ruff, automation pins, dependency contract, and `git diff --check`: passed.
+- GitHub Dependency Security run 11 and Secret Scan run 97: passed for the same
+  commit.
+- No external source request, production database operation, schema migration,
+  deployment change, or production import occurred.
+
+## Retained regression verification
 
 1. Confirm both runtime and migration URLs name a test database.
 2. Run the focused importer, pipeline, source-service, script, and project-
    configuration tests.
 3. Run the complete suite, Ruff, automation-pin check, dependency-contract
    check, and `git diff --check`.
-4. Confirm the composed PostgreSQL lifecycle test passes, including interruption,
-   resume, clean rerun, and database-ID reconciliation.
+4. Confirm the composed PostgreSQL lifecycle test continues to pass, including
+   interruption, resume, clean rerun, and database-ID reconciliation.
 5. Do not use a real source API key or production database for repository
    integration validation.
 

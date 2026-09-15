@@ -1,6 +1,6 @@
 # MG-DE-001: Import lifecycle is not expandable or resumable
 
-**Status:** Ready for independent test-database verification
+**Status:** Closed
 **Priority:** First implementation wave
 **Initial expansion blocker:** Yes
 
@@ -44,10 +44,24 @@ builder, atomic chunk application, checkpoint/resume behavior, bulk per-chunk
 identity lookup, sanitized rejection records, and final identity/count
 reconciliation. See the [implementation record](../implementation/MG-DE-001.md).
 
-The finding is not closed. Focused PostgreSQL tests, the complete suite, and a
-bounded test-database lifecycle must be independently reproduced first.
-
 The repository now includes a composed PostgreSQL lifecycle test covering a
 first committed chunk, controlled interruption before the second chunk,
 checkpoint inspection, resume, final identity reconciliation, and a clean
-idempotent rerun. Independent execution of that test remains the closure gate.
+idempotent rerun.
+
+## Closure
+
+Independent execution against the guarded `materialgraph_test` PostgreSQL
+database passed at commit
+`6dfe67d817b8ac848bb41d2783e27c7ed6b27d27`. The test demonstrated a committed
+first chunk, a controlled interruption before the next chunk, checkpoint value
+2, resumed completion, reconciliation of all three manifest identities, and a
+fresh-checkpoint rerun with zero imports and three deterministic skips.
+
+The focused import suite reported 67 passed; the complete suite reported 860
+passed and 1 skipped. Ruff, automation-pin, dependency-contract, and diff checks
+passed. GitHub Dependency Security run 11 and Secret Scan run 97 passed for the
+same commit.
+
+This closes the import-lifecycle defect only. It does not authorize production
+import or close MG-DE-002, MG-DE-003, or MG-DE-004.

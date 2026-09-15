@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 implemented; independent test-database verification pending
+**Status:** MG-DE-001 closed; MG-DE-002 through MG-DE-004 open
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -19,10 +19,11 @@ any substantially larger collection is attempted.
 
 ## Current conclusion
 
-PostgreSQL and the existing relational model can store the first target, but
-the current import lifecycle and several request-time query paths are not yet
+The resumable import lifecycle is implemented and independently verified
+against the PostgreSQL test database. Dataset provenance and refresh semantics,
+several request-time query paths, and representative-scale behavior are not yet
 qualified for a controlled production expansion. No production import is
-authorized by this baseline.
+authorized.
 
 ## Scope
 
