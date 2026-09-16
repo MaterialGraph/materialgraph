@@ -19,7 +19,7 @@
 | API listing | Limit/offset; maximum response limit 100 | Suitable for initial target | Verify stable ordering and query plans |
 | Graph traversal | Existing depth, branching, and result bounds | Suitable foundation | Verify with dense representative neighborhoods |
 | Indexes | Identity and relationship foreign-key indexes exist | Partial | Add indexes only from observed query plans |
-| Scale tests | Existing suite exercises current small dataset | Evidence gap | Deterministic 1,000-material fixture and recorded benchmarks |
+| Scale tests | Deterministic 1,000-material synthetic fixture and bounded sequential qualification harness implemented | Ready for independent execution | Record PostgreSQL import, query, memory, regression, and backup evidence |
 | Scientific regression | Existing deterministic tests and response comparisons | Suitable foundation | Complete pre/post JSON comparison for curated reference paths |
 | Backup/recovery | Daily production backup controls exist | Unqualified for expanded data | Measure backup size/duration and review recovery objectives |
 | Compute capacity | Production uses a small EC2 instance and managed PostgreSQL | Unqualified, not proven inadequate | Measure canary resource use before production expansion |

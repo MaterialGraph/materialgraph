@@ -5,6 +5,7 @@
 | MG-DE-001 | [Manifest-first resumable import](MG-DE-001.md) | Verified and closed |
 | MG-DE-002 | [Dataset provenance and refresh semantics](MG-DE-002.md) | Verified and closed |
 | MG-DE-003 | [Scale-sensitive request-path narrowing](MG-DE-003.md) | Ready for independent PostgreSQL verification |
+| MG-DE-004 | [Representative-scale qualification framework](MG-DE-004.md) | Ready for independent execution |
 
 Each approved change must receive a focused record describing:
 

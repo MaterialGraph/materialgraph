@@ -31,6 +31,12 @@ MATERIALS_PROJECT_LICENSE = "CC-BY-4.0"
 MATERIALS_PROJECT_LICENSE_URL = (
     "https://creativecommons.org/licenses/by/4.0/"
 )
+MATERIALS_PROJECT_SOURCE = "materials_project"
+SYNTHETIC_BENCHMARK_SOURCE = "synthetic_benchmark"
+SYNTHETIC_BENCHMARK_LICENSE = "CC0-1.0"
+SYNTHETIC_BENCHMARK_LICENSE_URL = (
+    "https://creativecommons.org/publicdomain/zero/1.0/"
+)
 NORMALIZATION_VERSION = "materials-project-summary-v1"
 SELECTION_CONTRACT_VERSION = "materials-project-selection-v1"
 
@@ -129,9 +135,11 @@ class MaterialDatasetContract:
     selection_contract_version: str = SELECTION_CONTRACT_VERSION
     license_identifier: str = MATERIALS_PROJECT_LICENSE
     license_url: str = MATERIALS_PROJECT_LICENSE_URL
+    source: str = MATERIALS_PROJECT_SOURCE
 
     def __post_init__(self) -> None:
         values = {
+            "source": (self.source, 100),
             "source_release": (self.source_release, 100),
             "normalization_version": (self.normalization_version, 100),
             "selection_contract_version": (self.selection_contract_version, 100),
@@ -154,10 +162,21 @@ class MaterialDatasetContract:
             raise ValueError("retrieved_at must be an ISO-8601 timestamp") from error
         if retrieved_at.tzinfo is None or retrieved_at.utcoffset() is None:
             raise ValueError("retrieved_at must include a timezone")
-        if self.license_identifier != MATERIALS_PROJECT_LICENSE:
-            raise ValueError("unsupported Materials Project license identifier")
-        if self.license_url != MATERIALS_PROJECT_LICENSE_URL:
-            raise ValueError("unsupported Materials Project license URL")
+        supported_provenance = {
+            MATERIALS_PROJECT_SOURCE: (
+                MATERIALS_PROJECT_LICENSE,
+                MATERIALS_PROJECT_LICENSE_URL,
+            ),
+            SYNTHETIC_BENCHMARK_SOURCE: (
+                SYNTHETIC_BENCHMARK_LICENSE,
+                SYNTHETIC_BENCHMARK_LICENSE_URL,
+            ),
+        }
+        expected_license = supported_provenance.get(self.source)
+        if expected_license is None:
+            raise ValueError("unsupported dataset source")
+        if (self.license_identifier, self.license_url) != expected_license:
+            raise ValueError("dataset source and license contract do not match")
 
 
 @dataclass(frozen=True)
@@ -280,7 +299,7 @@ class MaterialImportPipeline:
             raise ValueError("source traversal produced no accepted materials")
         payload: dict[str, Any] = {
             "schema_version": MANIFEST_SCHEMA_VERSION,
-            "source": "materials_project",
+            "source": dataset.source,
             "dataset": asdict(dataset),
             "scope": asdict(scope),
             "counts": {
@@ -437,9 +456,9 @@ class MaterialImportPipeline:
         digest = document.pop("manifest_sha256", None)
         if document.get("schema_version") != MANIFEST_SCHEMA_VERSION:
             raise ValueError("unsupported manifest schema version")
-        if document.get("source") != "materials_project":
-            raise ValueError("unsupported manifest source")
-        MaterialDatasetContract(**document.get("dataset", {}))
+        dataset = MaterialDatasetContract(**document.get("dataset", {}))
+        if document.get("source") != dataset.source:
+            raise ValueError("manifest source does not match dataset contract")
         if (
             not isinstance(digest, str)
             or digest != MaterialImportPipeline._payload_digest(document)

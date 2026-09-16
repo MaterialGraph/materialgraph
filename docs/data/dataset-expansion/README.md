@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 and MG-DE-002 closed; MG-DE-003 implemented and awaiting independent PostgreSQL verification; MG-DE-004 open
+**Status:** MG-DE-001 and MG-DE-002 closed; MG-DE-003 implemented; MG-DE-004 qualification framework ready for independent execution
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -22,8 +22,9 @@ any substantially larger collection is attempted.
 The resumable import lifecycle, dataset provenance, and conservative refresh
 semantics are implemented and independently verified against the PostgreSQL
 test database. Exact SQL and active-frontier narrowing is implemented for the
-identified scale-sensitive request paths, but independent PostgreSQL and
-representative-scale verification remain outstanding. No production migration
+identified scale-sensitive request paths. A deterministic 1,000-material
+synthetic fixture and bounded qualification harness are implemented, but their
+independent PostgreSQL execution remains outstanding. No production migration
 or import is authorized.
 
 ## Scope

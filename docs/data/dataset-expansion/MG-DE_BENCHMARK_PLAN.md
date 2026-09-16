@@ -79,3 +79,39 @@ Each result must record:
 
 No concurrency or load test is authorized by this plan. Any such test requires
 a separate bounded procedure and explicit approval.
+
+## Execution boundary
+
+The reviewed implementation uses a disposable PostgreSQL database whose exact
+name contains both `test` and `mg_de_004`. The qualification CLI fails closed
+for another database name or engine. Synthetic benchmark records must not be
+loaded into the general development/test database or production.
+
+The standard fixture is generated offline with:
+
+```text
+python scripts/generate_dataset_expansion_fixture.py \
+  --manifest <new-path>/mg-de-004-manifest.json
+```
+
+The bounded measurement is run only after the manifest has been applied and
+reconciled:
+
+```text
+python scripts/qualify_dataset_expansion.py \
+  --manifest <path>/mg-de-004-manifest.json \
+  --output-directory <new-output-directory> \
+  --expected-database-name materialgraph_test_mg_de_004
+```
+
+The output directory and files are created with owner-only permissions. It is
+evidence, not a repository input, and may contain complete scientific API
+responses. Review and sanitize it before sharing.
+
+## Backup measurement
+
+Use the same disposable database and the locally installed PostgreSQL client.
+Record UTC start/end time, `pg_dump --format=custom` duration, file byte count,
+SHA-256, client/server versions, and the result of `pg_restore --list`. Do not
+perform a restore under this plan. Never place a database URL or credential in
+the evidence record.

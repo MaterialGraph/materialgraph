@@ -133,6 +133,31 @@ def test_dependency_security_docs_do_not_overstate_branch_enforcement():
     assert "This is a manual operator precondition" in deployment
 
 
+def test_dataset_expansion_qualification_is_isolated_and_bounded():
+    qualifier = (
+        PROJECT_ROOT / "scripts/qualify_dataset_expansion.py"
+    ).read_text(encoding="utf-8")
+    generator = (
+        PROJECT_ROOT / "scripts/generate_dataset_expansion_fixture.py"
+    ).read_text(encoding="utf-8")
+    reference = (
+        PROJECT_ROOT / "scripts/capture_curated_dataset_reference.py"
+    ).read_text(encoding="utf-8")
+    plan = (
+        PROJECT_ROOT
+        / "docs/data/dataset-expansion/MG-DE_BENCHMARK_PLAN.md"
+    ).read_text(encoding="utf-8")
+
+    assert '"test" not in lowered or "mg_de_004" not in lowered' in qualifier
+    assert 'engine.dialect.name != "postgresql"' in qualifier
+    assert "1 <= args.warm_runs <= 5" in qualifier
+    assert "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)" in qualifier
+    assert "build_representative_fixture_manifest" in generator
+    assert '"test" not in actual.lower()' in reference
+    assert "No concurrency or load test is authorized" in plan
+    assert "Do not perform a restore under this plan" in plan
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(

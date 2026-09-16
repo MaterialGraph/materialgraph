@@ -67,10 +67,11 @@ def make_run_spec(
     run_id: str,
     release: str,
     scope_digest: str = "a" * 64,
+    source: str = "materials_project",
 ) -> DatasetImportRunSpec:
     return DatasetImportRunSpec(
         import_run_id=run_id,
-        source="materials_project",
+        source=source,
         source_release=release,
         retrieved_at=datetime(2026, 9, 15, tzinfo=timezone.utc),
         manifest_sha256="b" * 64,
@@ -80,6 +81,30 @@ def make_run_spec(
         license_identifier="CC-BY-4.0",
         license_url="https://creativecommons.org/licenses/by/4.0/",
     )
+
+
+def test_refresh_persists_the_declared_synthetic_source(db_session):
+    service = MaterialImportService(db_session)
+    candidate = make_candidate(mp_id=f"mgde004-{uuid4().hex[:12]}")
+    run_id = str(uuid4())
+    service.begin_import_run(
+        spec=make_run_spec(
+            run_id=run_id,
+            release="mg-de-004-synthetic-v1",
+            source="synthetic_benchmark",
+        ),
+        rejections=[],
+    )
+
+    result = service.refresh_materials([candidate], import_run_id=run_id)
+
+    material = (
+        db_session.query(Material)
+        .filter(Material.mp_id == candidate.mp_id)
+        .one()
+    )
+    assert result.inserted == 1
+    assert material.source == "synthetic_benchmark"
 
 
 def test_provenance_refresh_records_all_outcomes(db_session):

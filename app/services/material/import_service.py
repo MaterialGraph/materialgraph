@@ -297,7 +297,10 @@ class MaterialImportService:
                     continue
 
                 if record is None:
-                    material = self._create_material(candidate)
+                    material = self._create_material(
+                        candidate,
+                        source=run.source,
+                    )
                     self.db.flush()
                     self._replace_element_links(
                         material=material,
@@ -684,6 +687,8 @@ class MaterialImportService:
     def _create_material(
         self,
         candidate: MaterialCandidate,
+        *,
+        source: str = "materials_project",
     ) -> Material:
         material = Material(
             mp_id=candidate.mp_id,
@@ -695,7 +700,7 @@ class MaterialImportService:
             density=candidate.density,
             is_stable=candidate.is_stable,
             raw_data=candidate.raw_data,
-            source="materials_project",
+            source=source,
         )
 
         self.db.add(material)

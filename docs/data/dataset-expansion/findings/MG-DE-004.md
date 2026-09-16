@@ -1,6 +1,6 @@
 # MG-DE-004: Representative scale evidence is absent
 
-**Status:** Open
+**Status:** Ready for independent execution
 **Priority:** Cross-cutting verification
 **Initial expansion blocker:** Yes
 
@@ -30,3 +30,11 @@ fitness at approximately 1,000 materials.
 The benchmark plan must be executed in an isolated test environment against the
 reviewed commit. Results must distinguish measured facts from estimates. A
 production canary remains separately authorized work.
+
+## Implementation status
+
+The deterministic synthetic fixture, strict disposable-database guard,
+sequential measurement harness, complete-response capture, and comparison
+tools are implemented in the MG-DE-004 change. This finding is not closed:
+independent PostgreSQL import, benchmark, curated regression, and backup
+measurements remain required.

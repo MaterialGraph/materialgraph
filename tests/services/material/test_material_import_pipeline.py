@@ -8,6 +8,9 @@ from app.services.material.import_pipeline import (
     MaterialDatasetContract,
     MaterialImportPipeline,
     MaterialImportScope,
+    SYNTHETIC_BENCHMARK_LICENSE,
+    SYNTHETIC_BENCHMARK_LICENSE_URL,
+    SYNTHETIC_BENCHMARK_SOURCE,
 )
 from app.services.material.import_service import (
     DatasetImportCompletion,
@@ -151,19 +154,31 @@ def test_scope_is_normalized_and_bounded():
         MaterialImportScope(chemical_systems=("not-a-system",))
 
 
-def test_dataset_contract_requires_timezone_and_supported_license():
+def test_dataset_contract_requires_timezone_and_matching_source_license():
     with pytest.raises(ValueError, match="include a timezone"):
         MaterialDatasetContract(
             source_release="test-release",
             retrieved_at="2026-09-15T00:00:00",
         )
 
-    with pytest.raises(ValueError, match="license identifier"):
+    with pytest.raises(ValueError, match="source and license"):
         MaterialDatasetContract(
             source_release="test-release",
             retrieved_at="2026-09-15T00:00:00+00:00",
             license_identifier="unknown",
         )
+
+    synthetic = MaterialDatasetContract(
+        source_release="mg-de-004-fixture-v1",
+        retrieved_at="2026-09-16T00:00:00+00:00",
+        normalization_version="mg-de-004-synthetic-v1",
+        selection_contract_version="mg-de-004-selection-v1",
+        license_identifier=SYNTHETIC_BENCHMARK_LICENSE,
+        license_url=SYNTHETIC_BENCHMARK_LICENSE_URL,
+        source=SYNTHETIC_BENCHMARK_SOURCE,
+    )
+
+    assert synthetic.source == SYNTHETIC_BENCHMARK_SOURCE
 
 
 def test_build_manifest_paginates_deduplicates_and_records_rejections(tmp_path):
@@ -211,6 +226,7 @@ def test_build_manifest_paginates_deduplicates_and_records_rejections(tmp_path):
         "normalization_version": "materials-project-summary-v1",
         "retrieved_at": "2026-09-15T00:00:00+00:00",
         "selection_contract_version": "materials-project-selection-v1",
+        "source": "materials_project",
         "source_release": "test-release-2026-09-15",
     }
     assert [item["mp_id"] for item in document["candidates"]] == ["mp-1", "mp-2"]
