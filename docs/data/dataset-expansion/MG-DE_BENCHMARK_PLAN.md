@@ -112,6 +112,6 @@ responses. Review and sanitize it before sharing.
 
 Use the same disposable database and the locally installed PostgreSQL client.
 Record UTC start/end time, `pg_dump --format=custom` duration, file byte count,
-SHA-256, client/server versions, and the result of `pg_restore --list`. Do not
-perform a restore under this plan. Never place a database URL or credential in
-the evidence record.
+SHA-256, client/server versions, and the result of `pg_restore --list`.
+Do not perform a restore under this plan. Never place a database URL or
+credential in the evidence record.
