@@ -1,7 +1,7 @@
 # MG-DE-003 Implementation Record
 
 **Baseline:** `bfbe6afd50738c6fe3533c10937a8c8fcaad3de3`
-**Status:** Ready for independent PostgreSQL verification
+**Status:** Verified and closed
 **Production synchronization authorized:** No
 
 ## Implemented boundary
@@ -71,3 +71,12 @@ Before production use, rollback is a Git decision. No database downgrade or
 data restoration is required. If later deployed, restore the previously
 accepted application commit and restart the service under a separately approved
 rollback procedure.
+
+## Independent closure
+
+Representative PostgreSQL qualification at commit
+`69f0bda15f2a2ffe76c265ecc3bbfe60fc35f7a7` exercised every affected request
+family at the 1,000-material target. All returned HTTP 200 below the deadline,
+with bounded traced allocation and no demonstrated whole-dataset relationship
+materialization. The detailed measurements and limitations are recorded in
+[the qualification report](../MG-DE_QUALIFICATION_REPORT.md).

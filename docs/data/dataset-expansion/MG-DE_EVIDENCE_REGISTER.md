@@ -45,15 +45,20 @@
 | MG-DE-E-039 | The offline MG-DE-004 generator defines a deterministic 1,000-material synthetic manifest with dense, sparse, polymorph, missing-value, duplicate, rejection, stable, and unstable cohorts under explicit synthetic provenance | Repository implementation and tests | MG-DE-004 fixture readiness | Independent digest reproduction and PostgreSQL import remain required |
 | MG-DE-E-040 | The qualification harness requires PostgreSQL and an exact dedicated database name containing `test` and `mg_de_004`, executes only sequential bounded requests, and records full responses, timing, query counts, database time, traced Python allocation, row counts, server settings, and a scoped analyzed plan | Repository implementation | MG-DE-004 measurement readiness | No representative measurement is claimed until independent execution; host RSS is separate environment evidence |
 | MG-DE-E-041 | Curated-reference tools capture and compare complete detail and criticality JSON before and after fixture import | Repository implementation | MG-DE-004 scientific regression readiness | Independent pre/post comparison remains required |
+| MG-DE-E-042 | At commit `69f0bda15f2a2ffe76c265ecc3bbfe60fc35f7a7`, two independent offline generations produced the byte-identical 1,000-material manifest digest `6320e05e7a8138f7393cb2354c269d48dc0fa9fd848f805b1b51bd6a91a89701`, with five duplicates, five controlled rejections, complete traversal, and all required cohorts | Independent local execution, 2026-09-16 | MG-DE-004 closure | Synthetic scale fixture; not scientific source evidence |
+| MG-DE-E-043 | Clean PostgreSQL import completed in 30.883 seconds with 1,000 inserted and verified identities; an identical fresh run completed in 17.308 seconds with 1,000 unchanged outcomes and no insert, update, conflict, or retirement | Independent disposable PostgreSQL execution, 2026-09-16 | MG-DE-004 closure | Local sequential environment; not production capacity evidence |
+| MG-DE-E-044 | Changed-source manifest `477b6b47d68dced7c8fcb8f1ecc60760e1c9b2e7cdd3d3f34c040316c17ede31` completed with 1 inserted, 1 updated, 997 unchanged, 1 controlled conflict, 5 rejected, 2 retired, and 999 verified active identities | Independent disposable PostgreSQL execution, 2026-09-16 | MG-DE-002 and MG-DE-004 closure | Controlled synthetic changes; no external source request |
+| MG-DE-E-045 | A controlled failure during the second candidate of the first representative chunk left checkpoint index zero and no candidate material, source record, or candidate event; resumption completed with 1,000 inserted and verified identities | Independent disposable PostgreSQL failure-mode execution, 2026-09-16 | MG-DE-001 and MG-DE-004 closure | Deliberate in-process failure; not an infrastructure outage simulation |
+| MG-DE-E-046 | A controlled interruption after the second committed chunk left the checkpoint at 100 with 200 committed unchanged events; replay completed with exactly 1,000 unchanged and 5 rejected events and 1,000 distinct active source identities | Independent disposable PostgreSQL failure-mode execution, 2026-09-16 | MG-DE-001 and MG-DE-004 closure | Sequential process interruption; no concurrent writer was introduced |
+| MG-DE-E-047 | Twelve representative API scenarios returned HTTP 200; the slowest request was discovery path at 2,030.974 ms, peak traced Python allocation remained below 10 MiB, and all results stayed below established investigation thresholds | Independent sequential PostgreSQL qualification, 2026-09-16 | MG-DE-003 and MG-DE-004 closure | No concurrency/load test and no production-host RSS measurement |
+| MG-DE-E-048 | Scoped material-element `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` used an index-only scan, returned eight rows in one loop, and executed in 0.043 ms; complete curated detail and criticality JSON matched before import, after import, and after the controlled conflict | Independent PostgreSQL plan and complete-response evidence, 2026-09-16 | MG-DE-003 and MG-DE-004 closure | One retained significant plan; future scale steps require renewed plan review |
+| MG-DE-E-049 | PostgreSQL 16.14 custom-format backup completed in 20.511 seconds at 374,317 bytes with SHA-256 `3eb7e7d6c5820be9416c741e05ce9c57b8fef84114d46f8749b00ffd49fe6444`; `pg_restore --list` passed | Independent disposable PostgreSQL backup evidence, 2026-09-16 | MG-DE-004 closure | No restore was performed or claimed |
+| MG-DE-E-050 | Focused validation reported 69 passed; the complete suite reported 877 passed, 1 skipped; Ruff, automation pins, dependency contract, and diff check passed; GitHub Dependency Security run 16 and Secret Scan run 102 passed for commit `69f0bda15f2a2ffe76c265ecc3bbfe60fc35f7a7` | Independent local and GitHub workflow evidence, 2026-09-16 | MG-DE-003 and MG-DE-004 closure | Workflow checks do not replace PostgreSQL lifecycle and request evidence |
 
-## Evidence still required
+## Evidence still required before production expansion
 
-- authorized representative-source acquisition and manifest evidence;
-- deterministic representative fixture manifest;
-- representative-fixture import dry-run, completion, rerun, interruption, and resume records;
-- representative-fixture row-count and manifest reconciliation;
-- SQL query plans and query-count measurements;
-- latency and memory measurements for representative endpoints;
-- backup size/duration evidence from the test environment;
-- complete curated-response regression comparisons;
-- bounded production-canary evidence, only after separate approval.
+- authorized real-source acquisition and reviewed manifest evidence;
+- bounded production-host and managed-database resource evidence;
+- separately approved production canary and rollback decision;
+- restoration evidence when explicitly authorized;
+- concurrency/load evidence only if a future reviewed plan requires it.

@@ -1,6 +1,6 @@
 # MG-DE-004 Representative-scale qualification framework
 
-**Status:** Ready for independent execution
+**Status:** Verified and closed
 **Implementation baseline:** `ba19c90f627fed688e89d8d2ddca9f04cdfe8d9c`
 **Production impact:** None; production import is not authorized
 
@@ -72,12 +72,17 @@ target. Reviewers should also investigate any warm request above five seconds
 or any graph/path request above fifteen seconds before accepting the initial
 scale target.
 
-## Evidence not yet claimed
+## Independent closure
 
-This record does not claim that the fixture has been imported, benchmarked, or
-backed up. It does not prove production capacity, concurrent behavior, source
-acquisition, restoration, or a production canary. MG-DE-004 remains open until
-independent PostgreSQL results are recorded and reviewed.
+The required isolated lifecycle was executed on 2026-09-16 against commit
+`69f0bda15f2a2ffe76c265ecc3bbfe60fc35f7a7`. Fixture determinism, clean import,
+rerun, changed-source outcomes, failed-chunk rollback, committed-chunk replay,
+12 request scenarios, query plan, traced allocation, curated complete-JSON
+regression, and custom-format backup validation passed. See
+[the qualification report](../MG-DE_QUALIFICATION_REPORT.md).
+
+The evidence does not prove production capacity, concurrency, real-source
+acquisition, restoration, or a production canary. Those remain separate gates.
 
 ## Rollback
 

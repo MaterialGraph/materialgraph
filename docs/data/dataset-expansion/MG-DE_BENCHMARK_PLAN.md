@@ -1,5 +1,10 @@
 # MG-DE Benchmark Plan
 
+**Execution status:** Completed for the deterministic 1,000-material fixture at
+commit `69f0bda15f2a2ffe76c265ecc3bbfe60fc35f7a7`. See the
+[qualification report](MG-DE_QUALIFICATION_REPORT.md). This result does not
+authorize a real-source or production import.
+
 ## Objective
 
 Establish whether the first dataset target can be imported, queried, backed up,

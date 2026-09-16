@@ -7,25 +7,26 @@
 | Storage engine | PostgreSQL/Neon; normalized material-element relationships | Suitable in principle for approximately 1,000 materials | Record test and production sizing evidence |
 | Material identity | Source identity mapping and conservative polymorph/alias rules implemented | Verified against the PostgreSQL test database | Retain conflict and legacy-identity tests as regression gates |
 | Provenance | Immutable run, source-record, and event models plus source and normalized digests implemented | Migration and lifecycle verified against PostgreSQL | Retain persistence and run-reconciliation tests as regression gates |
-| Source acquisition | Configurable deterministic paging, bounds, retries, rejections, and manifest implemented | Source, licensing, release, and selection contract approved under MG-DE-002 | Capture an authorized representative-source manifest under MG-DE-004 |
+| Source acquisition | Configurable deterministic paging, bounds, retries, rejections, and manifest implemented | Source, licensing, release, and selection contract approved under MG-DE-002 | Capture an authorized real-source manifest before production use |
 | Import transaction | Configurable chunks commit independently and checkpoint after success | Verified against PostgreSQL test database | Retain the lifecycle test as a regression gate |
 | Idempotency | Per-run event replay and deterministic insert/update/unchanged/conflict outcomes implemented | Same-run replay and fresh-run refresh independently verified | Retain composed lifecycle coverage as a regression gate |
 | Recovery | Atomic checkpoint/resume and idempotent chunk replay implemented | Verified against PostgreSQL test database | Define production dataset-version rollback before an authorized canary |
-| Validation | Composition validation, sanitized rejection records, manifest digest, counts, and final identity reconciliation exist | Verified for the bounded lifecycle | Extend to the approved representative fixture under MG-DE-004 |
-| Candidate screening | Stable and energy constraints are applied in SQL before scoring | Ready for PostgreSQL verification | Confirm preserved results and measure the bounded representative fixture |
-| Substitution analysis | SQL loads only materials sharing at least one source element | Ready for PostgreSQL verification | Confirm zero-similarity exclusion is semantics-preserving and measure the representative fixture |
-| Discovery graph | Composition is loaded incrementally for the bounded active frontier | Ready for PostgreSQL verification | Confirm scoped query behavior through graph modes and dense neighborhoods |
-| Material families | SQL prefilter encodes the existing strong relationship predicates before material and composition loading | Ready for PostgreSQL verification | Confirm equivalence to exhaustive classification and measure dense common-element cases |
-| API listing | Limit/offset; maximum response limit 100 | Suitable for initial target | Verify stable ordering and query plans |
-| Graph traversal | Existing depth, branching, and result bounds | Suitable foundation | Verify with dense representative neighborhoods |
-| Indexes | Identity and relationship foreign-key indexes exist | Partial | Add indexes only from observed query plans |
-| Scale tests | Deterministic 1,000-material synthetic fixture and bounded sequential qualification harness implemented | Ready for independent execution | Record PostgreSQL import, query, memory, regression, and backup evidence |
-| Scientific regression | Existing deterministic tests and response comparisons | Suitable foundation | Complete pre/post JSON comparison for curated reference paths |
-| Backup/recovery | Daily production backup controls exist | Unqualified for expanded data | Measure backup size/duration and review recovery objectives |
+| Validation | Composition validation, sanitized rejection records, manifest digest, counts, and final identity reconciliation exist | Qualified with the deterministic 1,000-material fixture | Repeat with an approved real-source manifest before production use |
+| Candidate screening | Stable and energy constraints are applied in SQL before scoring | Qualified at the initial target | Retain result and query-count evidence for future scale steps |
+| Substitution analysis | SQL loads only materials sharing at least one source element | Qualified at the initial target | Requalify for materially larger or denser datasets |
+| Discovery graph | Composition is loaded incrementally for the bounded active frontier | Qualified at the initial target | Retain graph-density evidence and monitor query growth |
+| Material families | SQL prefilter encodes the existing strong relationship predicates before material and composition loading | Qualified at the initial target | Requalify dense common-element behavior at the next scale step |
+| API listing | Limit/offset; maximum response limit 100 | Qualified at the initial target | Preserve stable ordering and bounds |
+| Graph traversal | Existing depth, branching, and result bounds | Qualified at the initial target | Query counts remain optimization signals |
+| Indexes | Identity and relationship foreign-key indexes exist | Sufficient at the initial target | Add indexes only from future observed plans |
+| Scale tests | Deterministic 1,000-material fixture and bounded sequential harness executed against PostgreSQL | Qualified | Repeat for real-source and materially larger targets |
+| Scientific regression | Complete curated detail and criticality JSON matched before and after import and changed-source conflict | Qualified | Expand the invariant cohort with approved scientific capabilities |
+| Backup/recovery | Custom-format backup and archive listing completed at the initial target | Backup creation qualified | Restoration remains separately authorized evidence |
 | Compute capacity | Production uses a small EC2 instance and managed PostgreSQL | Unqualified, not proven inadequate | Measure canary resource use before production expansion |
 
 ## Overall result
 
-The initial target is feasible after the four open findings are addressed and
-their acceptance gates are satisfied. Storage capacity alone is not treated as
-readiness evidence.
+The bounded initial test target is qualified and MG-DE-001 through MG-DE-004
+are closed. This does not authorize a real-source or production import.
+Production capacity, concurrency, restoration, and substantially larger scale
+remain separate evidence gates; storage capacity alone is not readiness proof.

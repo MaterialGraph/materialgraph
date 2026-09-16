@@ -1,6 +1,6 @@
 # MG-DE-003: Request paths contain scale-sensitive broad loading
 
-**Status:** Ready for independent PostgreSQL verification
+**Status:** Closed
 **Priority:** Second implementation wave
 **Initial expansion blocker:** Yes
 
@@ -55,6 +55,14 @@ composition: at least three shared elements, a shared transition metal, or
 phosphate co-membership when the base contains phosphorus. Python
 classification remains authoritative, preserving explanations and ordering.
 
-No index was added without representative PostgreSQL query-plan evidence. The
-finding is not closed: focused result-equivalence tests, PostgreSQL execution,
-the complete suite, and the representative MG-DE-004 benchmark remain required.
+No index was added without representative PostgreSQL query-plan evidence.
+
+## Closure evidence
+
+Independent PostgreSQL execution at commit `69f0bda15f2a2ffe76c265ecc3bbfe60fc35f7a7`
+qualified screening, substitution, family, discovery candidates, discovery
+graph, discovery path, recommendations, and scientific pathways against the
+1,000-material fixture. All requests returned HTTP 200 below the existing
+deadline. Peak traced Python allocation stayed below 10 MiB; the scoped
+material-element plan used an index-only scan; curated detail and criticality
+JSON matched completely. See [the qualification report](../MG-DE_QUALIFICATION_REPORT.md).

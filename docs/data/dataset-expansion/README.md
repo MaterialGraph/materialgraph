@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 and MG-DE-002 closed; MG-DE-003 implemented; MG-DE-004 qualification framework ready for independent execution
+**Status:** MG-DE-001 through MG-DE-004 closed for the bounded initial test target
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -22,10 +22,11 @@ any substantially larger collection is attempted.
 The resumable import lifecycle, dataset provenance, and conservative refresh
 semantics are implemented and independently verified against the PostgreSQL
 test database. Exact SQL and active-frontier narrowing is implemented for the
-identified scale-sensitive request paths. A deterministic 1,000-material
-synthetic fixture and bounded qualification harness are implemented, but their
-independent PostgreSQL execution remains outstanding. No production migration
-or import is authorized.
+identified scale-sensitive request paths. Independent PostgreSQL qualification
+with a deterministic 1,000-material synthetic fixture confirmed ingestion,
+rerun, refresh, failure recovery, representative requests, curated scientific
+invariants, and backup creation within the initial acceptance gates. No
+production migration or import is authorized.
 
 ## Scope
 
@@ -80,6 +81,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [Evidence register](MG-DE_EVIDENCE_REGISTER.md)
 - [Decision register](MG-DE_DECISIONS.md)
 - [Benchmark plan](MG-DE_BENCHMARK_PLAN.md)
+- [Representative-scale qualification report](MG-DE_QUALIFICATION_REPORT.md)
 - [Materials Project source contract](MG-DE_SOURCE_CONTRACT.md)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
@@ -89,8 +91,10 @@ migration, service restart, backup restoration, or infrastructure resize.
 1. Approve the source and scientific dataset contract.
 2. Resolve provenance and ingestion lifecycle gaps.
 3. Narrow scale-sensitive request paths.
-4. Generate and exercise a deterministic representative fixture.
+4. Generate and exercise a deterministic representative fixture. **Complete.**
 5. Complete test-database import, rerun, interruption, and rollback checks.
+   **Complete.**
 6. Measure query plans, latency, memory, backup behavior, and scientific
-   regression.
-7. Review the evidence before authorizing any production canary.
+   regression. **Complete for the isolated initial test target.**
+7. Review real-source evidence and a separate bounded production-canary plan
+   before authorizing any production import. **Not authorized.**

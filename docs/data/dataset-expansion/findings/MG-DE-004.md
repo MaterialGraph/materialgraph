@@ -1,6 +1,6 @@
 # MG-DE-004: Representative scale evidence is absent
 
-**Status:** Ready for independent execution
+**Status:** Closed
 **Priority:** Cross-cutting verification
 **Initial expansion blocker:** Yes
 
@@ -35,6 +35,15 @@ production canary remains separately authorized work.
 
 The deterministic synthetic fixture, strict disposable-database guard,
 sequential measurement harness, complete-response capture, and comparison
-tools are implemented in the MG-DE-004 change. This finding is not closed:
-independent PostgreSQL import, benchmark, curated regression, and backup
-measurements remain required.
+tools were executed independently against PostgreSQL 16.14 at commit
+`69f0bda15f2a2ffe76c265ecc3bbfe60fc35f7a7`.
+
+Clean import, identical rerun, changed-source outcomes, failed-chunk rollback,
+checkpoint-lag replay, database reconciliation, 12 request scenarios, memory,
+query counts, an analyzed query plan, complete curated JSON comparisons, and a
+validated custom-format backup all passed. See
+[the qualification report](../MG-DE_QUALIFICATION_REPORT.md).
+
+Closure applies only to the bounded approximately 1,000-material test target.
+It does not authorize a production canary, real-source import, restoration,
+concurrency test, or infrastructure claim.
