@@ -187,6 +187,29 @@ def test_real_source_pilot_is_manifest_only_and_neon_safe():
     assert "api_key" not in release_reader.split("print(", maxsplit=1)[1]
 
 
+def test_real_source_pilot_closure_is_evidence_bounded():
+    root = PROJECT_ROOT / "docs/data/dataset-expansion"
+    report = (root / "MG-DE_QUALIFIED_MANIFEST_REPORT.md").read_text(
+        encoding="utf-8"
+    )
+    finding = (root / "findings/MG-DE-005.md").read_text(encoding="utf-8")
+    readme = (root / "README.md").read_text(encoding="utf-8")
+
+    assert "1,727" in report
+    assert (
+        "902109235f7d3da057537b73e240130b5a9e4d847852e39c52f43e2798b8a9b9"
+        in report
+    )
+    assert (
+        "7939dcfd0fab9a8e7e43f7395c59c874673ed19aaf49d1a942650a69595e3daa"
+        in report
+    )
+    assert "Li-Fe-S" in report and "Na-Ni-S" in report
+    assert "**Import authorized:** No" in report
+    assert "**Status:** Closed" in finding
+    assert "MG-DE-006 scientific cohort review is next" in readme
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(

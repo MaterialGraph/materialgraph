@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-004 closed; MG-DE-005 first manifest not qualified and revised scope ready for controlled reacquisition
+**Status:** MG-DE-001 through MG-DE-005 closed; MG-DE-006 scientific cohort review is next
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -29,9 +29,10 @@ invariants, and backup creation within the initial acceptance gates. No
 production migration or import is authorized.
 
 The first MG-DE-005 manifest-only execution reached its 3,000-material ceiling
-before completing all 48 systems and was not qualified or imported. Recorded
-offline sensitivity supports a revised 0.05 eV/atom ceiling while preserving
-the full system list, completeness gate, and database-write prohibition.
+before completing all 48 systems and was not qualified or imported. The
+revised 0.05 eV/atom version 3 contract completed with 1,727 identities and
+passed all technical manifest gates. Scientific cohort review and every
+database-import gate remain pending.
 
 ## Scope
 
@@ -91,6 +92,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [Representative-scale qualification report](MG-DE_QUALIFICATION_REPORT.md)
 - [Materials Project source contract](MG-DE_SOURCE_CONTRACT.md)
 - [MG-DE-005 real-source pilot plan](MG-DE_REAL_SOURCE_PILOT.md)
+- [MG-DE-005 qualified manifest report](MG-DE_QUALIFIED_MANIFEST_REPORT.md)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 
@@ -105,4 +107,5 @@ migration, service restart, backup restoration, or infrastructure resize.
 6. Measure query plans, latency, memory, backup behavior, and scientific
    regression. **Complete for the isolated initial test target.**
 7. Review real-source evidence and a separate bounded production-canary plan
-   before authorizing any production import. **Not authorized.**
+   before authorizing any production import. **MG-DE-005 technical manifest
+   qualification complete; scientific review and import remain unauthorized.**

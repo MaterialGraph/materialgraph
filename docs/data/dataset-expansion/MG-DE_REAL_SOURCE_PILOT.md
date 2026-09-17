@@ -1,6 +1,6 @@
 # MG-DE-005 Real-source Pilot Plan
 
-**Status:** Ready for controlled reacquisition under revised scope
+**Status:** Complete; qualified manifest retained for MG-DE-006
 **Revision baseline:** `f9e5400d8c25df1da5fcd48760008435bfa7d55b`
 **Database writes authorized:** No
 **Production or Neon writes authorized:** No
@@ -141,7 +141,8 @@ manifest path and a new retrieval timestamp.
 
 ## Next gate
 
-An accepted MG-DE-005 manifest may proceed to MG-DE-006 scientific cohort
-review. Database import remains prohibited until that review approves the
-manifest for isolated PostgreSQL qualification. Isolated Neon qualification
-and production canary work remain later, separately authorized gates.
+The accepted 1,727-record MG-DE-005 manifest proceeds to MG-DE-006 scientific
+cohort review. Database import remains prohibited until that review approves
+the manifest for isolated PostgreSQL qualification. Isolated Neon
+qualification and production canary work remain later, separately authorized
+gates. See the [qualified manifest report](MG-DE_QUALIFIED_MANIFEST_REPORT.md).

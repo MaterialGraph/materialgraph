@@ -1,16 +1,16 @@
 # MG-DE-005: A reviewed real-source pilot manifest is absent
 
-**Status:** Ready for controlled re-execution
+**Status:** Closed
 **Priority:** Real-data expansion gate
 **Production blocker:** Yes
 
 ## Observation
 
-The first immutable manifest from Materials Project release `2026.04.13` was
-captured and inspected without database access. It reached the 3,000-material
-bound before most Na systems were traversed and correctly failed the
-source-completeness gate. A revised manifest under the reviewed 0.05 eV/atom
-selection ceiling has not yet been acquired and reviewed.
+The first immutable manifest from Materials Project release `2026.04.13`
+correctly failed the source-completeness gate at 3,000 materials. The revised
+version 3 acquisition at 0.05 eV/atom completed all 48 source queries and
+passed every MG-DE-005 structural, provenance, boundedness, elemental, and
+property-coverage gate with 1,727 accepted identities.
 
 ## Risk
 
@@ -38,6 +38,8 @@ The [real-source pilot plan](../MG-DE_REAL_SOURCE_PILOT.md) preserves the
 near-stability ceiling from 0.1 to 0.05 eV/atom based on recorded offline
 sensitivity evidence. The release reader exposes only the authoritative
 database version. The offline inspector performs semantic validation and
-produces a bounded cohort report without network or database access. This
-finding remains open until the revised manifest passes independent inspection
-and scientific and attribution review.
+produces a bounded cohort report without network or database access. The
+independent inspection and source-terms record close this finding. The
+[qualified manifest report](../MG-DE_QUALIFIED_MANIFEST_REPORT.md) preserves
+the exact evidence and limitations. Scientific cohort review is intentionally
+separated into MG-DE-006, and no database import is authorized by this closure.

@@ -6,7 +6,7 @@
 | MG-DE-002 | [Dataset provenance and refresh semantics](MG-DE-002.md) | Verified and closed |
 | MG-DE-003 | [Scale-sensitive request-path narrowing](MG-DE-003.md) | Verified and closed |
 | MG-DE-004 | [Representative-scale qualification framework](MG-DE-004.md) | Verified and closed |
-| MG-DE-005 | [Real-source pilot acquisition and inspection](MG-DE-005.md) | Ready for controlled reacquisition |
+| MG-DE-005 | [Real-source pilot acquisition and inspection](MG-DE-005.md) | Verified and closed |
 
 Each approved change must receive a focused record describing:
 

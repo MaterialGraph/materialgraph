@@ -2,7 +2,7 @@
 
 **Contract version:** `materials-project-selection-v3`
 **Normalization version:** `materials-project-summary-v1`
-**Status:** Implemented; MG-DE-005 controlled real-source execution pending
+**Status:** Verified by MG-DE-005; scientific cohort review pending
 **Production import authorized:** No
 
 ## Authority and license

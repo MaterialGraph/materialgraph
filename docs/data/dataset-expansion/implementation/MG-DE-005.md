@@ -1,7 +1,7 @@
 # MG-DE-005 Implementation Record
 
 **Baseline:** `2e356a18e5b96ba3324edcc413dc0062187ba22c`
-**Status:** Ready for controlled manifest reacquisition
+**Status:** Verified and closed
 **Database synchronization authorized:** No
 
 ## Implemented boundary
@@ -35,6 +35,16 @@ they do not establish the current Materials Project release, license terms, API
 response, cohort size, or scientific usefulness. MG-DE-005 closes only after an
 independent operator records an accepted manifest and inspection report and a
 reviewer accepts the cohort and attribution evidence.
+
+## Independent result
+
+The revised release `2026.04.13` manifest completed with 1,727 accepted source
+identities, no rejections or duplicates, complete traversal, and complete
+coverage of all four normalized optional properties. Its payload digest and
+exact file hash are recorded in the
+[qualified manifest report](../MG-DE_QUALIFIED_MANIFEST_REPORT.md). The
+manifest is accepted only for MG-DE-006 review; no database synchronization is
+authorized.
 
 ## Rollback
 
