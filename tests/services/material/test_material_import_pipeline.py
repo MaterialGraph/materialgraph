@@ -150,6 +150,12 @@ def test_scope_is_normalized_and_bounded():
     with pytest.raises(ValueError, match="page_size"):
         MaterialImportScope(chemical_systems=("Li-O",), page_size=0)
 
+    with pytest.raises(ValueError, match="maximum_energy_above_hull"):
+        MaterialImportScope(
+            chemical_systems=("Li-O",),
+            maximum_energy_above_hull=0.1,
+        )
+
     with pytest.raises(ValueError, match="hyphen-separated element symbols"):
         MaterialImportScope(chemical_systems=("not-a-system",))
 
@@ -225,7 +231,7 @@ def test_build_manifest_paginates_deduplicates_and_records_rejections(tmp_path):
         "license_url": "https://creativecommons.org/licenses/by/4.0/",
         "normalization_version": "materials-project-summary-v1",
         "retrieved_at": "2026-09-15T00:00:00+00:00",
-        "selection_contract_version": "materials-project-selection-v1",
+        "selection_contract_version": "materials-project-selection-v2",
         "source": "materials_project",
         "source_release": "test-release-2026-09-15",
     }

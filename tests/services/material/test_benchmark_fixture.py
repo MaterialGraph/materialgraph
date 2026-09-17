@@ -9,6 +9,7 @@ from app.services.material.benchmark_fixture import (
     build_representative_fixture_manifest,
 )
 from app.services.material.import_pipeline import (
+    MaterialImportPipeline,
     SYNTHETIC_BENCHMARK_LICENSE,
     SYNTHETIC_BENCHMARK_SOURCE,
 )
@@ -26,6 +27,12 @@ def test_representative_fixture_is_deterministic_and_complete(tmp_path):
     assert first.accepted == 1_000
     assert first.rejected > 0
     assert first.duplicate_source_ids > 0
+
+    validated_manifest, validated_digest = MaterialImportPipeline._load_manifest(
+        first_path
+    )
+    assert validated_digest == first.digest
+    assert validated_manifest["counts"]["accepted"] == 1_000
 
     manifest = json.loads(first_path.read_text(encoding="utf-8"))
     assert manifest["counts"]["source_complete"] is True

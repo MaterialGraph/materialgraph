@@ -158,6 +158,33 @@ def test_dataset_expansion_qualification_is_isolated_and_bounded():
     assert "Do not perform a restore under this plan" in plan
 
 
+def test_real_source_pilot_is_manifest_only_and_neon_safe():
+    importer = (
+        PROJECT_ROOT / "scripts/import_materials_project.py"
+    ).read_text(encoding="utf-8")
+    inspector = (
+        PROJECT_ROOT / "scripts/inspect_materials_manifest.py"
+    ).read_text(encoding="utf-8")
+    release_reader = (
+        PROJECT_ROOT / "scripts/read_materials_project_release.py"
+    ).read_text(encoding="utf-8")
+    plan = (
+        PROJECT_ROOT
+        / "docs/data/dataset-expansion/MG-DE_REAL_SOURCE_PILOT.md"
+    ).read_text(encoding="utf-8")
+
+    before_apply, apply_path = importer.split("if args.apply:", maxsplit=1)
+    assert "from app.core.database import" not in before_apply
+    assert "from app.core.database import" in apply_path
+    assert "--apply" in plan
+    assert "Do not add `--apply`" in plan
+    assert "Production or Neon writes authorized:** No" in plan
+    assert "app.core.database" not in inspector
+    assert "MaterialsProjectService" not in inspector
+    assert "MATERIALS_PROJECT_API_KEY" in release_reader
+    assert "api_key" not in release_reader.split("print(", maxsplit=1)[1]
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(

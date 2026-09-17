@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-004 closed for the bounded initial test target
+**Status:** MG-DE-001 through MG-DE-004 closed; MG-DE-005 ready for controlled real-source manifest acquisition
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -70,6 +70,8 @@ migration, service restart, backup restoration, or infrastructure resize.
 - **In progress:** Approved implementation is underway but not verified.
 - **Ready for verification:** Implementation and local evidence exist; closure
   evidence is incomplete.
+- **Ready for controlled execution:** Safeguards and an execution plan exist,
+  but independent external-source evidence has not yet been captured.
 - **Closed:** Acceptance criteria and required evidence are satisfied.
 - **Accepted limitation:** Bounded limitation judged proportionate to the
   current target.
@@ -83,6 +85,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [Benchmark plan](MG-DE_BENCHMARK_PLAN.md)
 - [Representative-scale qualification report](MG-DE_QUALIFICATION_REPORT.md)
 - [Materials Project source contract](MG-DE_SOURCE_CONTRACT.md)
+- [MG-DE-005 real-source pilot plan](MG-DE_REAL_SOURCE_PILOT.md)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 

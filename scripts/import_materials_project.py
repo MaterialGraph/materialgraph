@@ -12,15 +12,12 @@ from app.services.material.import_pipeline import (
     MaterialImportScope,
 )
 from app.services.material.project_service import MaterialsProjectService
-
-
-DEFAULT_CHEMICAL_SYSTEMS = (
-    "Li-Fe-P-O",
-    "Na-Fe-P-O",
-    "Na-Mn-O",
-    "Mg-Mn-O",
-    "Li-Mn-O",
+from app.services.material.pilot_contract import (
+    MG_DE_005_CHEMICAL_SYSTEMS,
 )
+
+
+DEFAULT_CHEMICAL_SYSTEMS = MG_DE_005_CHEMICAL_SYSTEMS
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -71,6 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-pages-per-system", type=int, default=25)
     parser.add_argument("--max-fetch-attempts", type=int, default=3)
     parser.add_argument("--include-unstable", action="store_true")
+    parser.add_argument("--maximum-energy-above-hull", type=float)
     return parser
 
 
@@ -136,7 +134,11 @@ def main(argv: list[str] | None = None) -> int:
         max_source_records=args.max_source_records,
         max_pages_per_system=args.max_pages_per_system,
         max_fetch_attempts=args.max_fetch_attempts,
-        stable_only=not args.include_unstable,
+        stable_only=(
+            not args.include_unstable
+            and args.maximum_energy_above_hull is None
+        ),
+        maximum_energy_above_hull=args.maximum_energy_above_hull,
     )
     pipeline = MaterialImportPipeline(
         MaterialsProjectService(

@@ -82,6 +82,7 @@ class SyntheticBenchmarkSource:
         page: int,
         page_size: int,
         stable_only: bool,
+        maximum_energy_above_hull: float | None = None,
     ) -> MaterialFetchPage:
         if chemsys not in self._streams:
             raise ValueError("unknown synthetic fixture chemical system")
@@ -94,6 +95,14 @@ class SyntheticBenchmarkSource:
             for entry in entries
             if entry.candidate is not None
             and (entry.candidate.is_stable or not stable_only)
+            and (
+                maximum_energy_above_hull is None
+                or (
+                    entry.candidate.energy_above_hull is not None
+                    and entry.candidate.energy_above_hull
+                    <= maximum_energy_above_hull
+                )
+            )
         ]
         rejections = [
             entry.rejection

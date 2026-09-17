@@ -47,6 +47,15 @@ class MaterialsProjectService:
         self.api_key = api_key
         self.database_version = database_version
 
+    def get_database_version(self) -> str:
+        with MPRester(self.api_key) as mpr:
+            version = mpr.get_database_version()
+        if not isinstance(version, str) or not version.strip():
+            raise ValueError(
+                "Materials Project returned an invalid database version"
+            )
+        return version
+
     def fetch_materials(
         self,
         chemsys: str,
@@ -57,6 +66,7 @@ class MaterialsProjectService:
             page=1,
             page_size=limit,
             stable_only=True,
+            maximum_energy_above_hull=None,
         ).candidates
 
     def fetch_materials_page(
@@ -66,6 +76,7 @@ class MaterialsProjectService:
         page: int,
         page_size: int,
         stable_only: bool,
+        maximum_energy_above_hull: float | None = None,
     ) -> MaterialFetchPage:
         if page < 1:
             raise ValueError("page must be at least 1")
@@ -95,7 +106,12 @@ class MaterialsProjectService:
                 )
             docs = mpr.materials.summary.search(
                 chemsys=chemsys,
+                deprecated=False,
+                include_gnome=False,
                 is_stable=True if stable_only else None,
+                energy_above_hull=(0, maximum_energy_above_hull)
+                if maximum_energy_above_hull is not None
+                else None,
                 fields=fields,
                 num_chunks=1,
                 chunk_size=page_size,

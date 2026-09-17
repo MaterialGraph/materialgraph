@@ -1,8 +1,8 @@
 # MG-DE Materials Project Source Contract
 
-**Contract version:** `materials-project-selection-v1`
+**Contract version:** `materials-project-selection-v2`
 **Normalization version:** `materials-project-summary-v1`
-**Status:** Implemented for independent review and bounded test-database verification
+**Status:** Implemented; MG-DE-005 controlled real-source execution pending
 **Production import authorized:** No
 
 ## Authority and license
@@ -18,6 +18,11 @@ Primary references:
 - [Materials Project terms](https://legacy.materialsproject.org/terms)
 - [Materials Project API](https://next-gen.materialsproject.org/api)
 - [`SummaryRester.search` client contract](https://materialsproject.github.io/api/_autosummary/mp_api.client.routes.materials.summary.SummaryRester.html)
+
+The operator must recheck the current terms and attribution requirements on
+the acquisition date. Repository metadata and historical links do not replace
+that review. The official client documents chemical-system, stability, field,
+chunk, page, and deterministic sort parameters used by this contract.
 
 Contributed datasets with different terms are excluded from this contract. A
 new reviewed contract is required before importing them.
@@ -39,10 +44,14 @@ identifier.
 
 ## Inclusion and exclusion
 
-Version 1 includes only records returned by the reviewed summary endpoint for
-the explicitly listed chemical systems and declared stability policy. Paging,
-page size, page count, source-record count, accepted-material count, retry
-count, and chunk size are bounded manifest inputs.
+Version 2 includes only records returned by the reviewed summary endpoint for
+the explicitly listed chemical systems and declared stability policy. It can
+express either stable-only retrieval or an explicit finite energy-above-hull
+ceiling; the MG-DE-005 pilot uses 0 through 0.1 eV/atom and never uses an
+unbounded unstable-material query. Deprecated and GNoME records are explicitly
+excluded from the MG-DE-005 summary query. Paging, page size, page count,
+source-record count, accepted-material count, retry count, and chunk size are
+bounded manifest inputs.
 
 The following normalized fields are requested:
 

@@ -5,6 +5,16 @@ import pytest
 from scripts import import_materials_project
 
 
+def test_real_source_default_scope_is_explicit_and_unique():
+    systems = import_materials_project.DEFAULT_CHEMICAL_SYSTEMS
+
+    assert len(systems) == 48
+    assert len(set(systems)) == 48
+    assert "Li-Fe-P-O" in systems
+    assert "Na-Ni-Si-O" in systems
+    assert "Ca-Co-O" in systems
+
+
 def test_build_mode_refuses_to_overwrite_manifest(tmp_path: Path):
     manifest = tmp_path / "manifest.json"
     manifest.write_text("existing", encoding="utf-8")

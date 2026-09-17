@@ -12,5 +12,8 @@
 | MG-DE-D-008 | Require explicit refresh and conflict semantics before updating existing materials | `mp_id` duplicate skipping alone cannot establish dataset correctness | Implemented; verification pending |
 | MG-DE-D-009 | Treat retirement as an inactive provenance state, not automatic material deletion | Preserves audit history and avoids destructive deletion before publication semantics are measured | Approved |
 | MG-DE-D-010 | Qualify scale only in a disposable PostgreSQL database dedicated to MG-DE-004 | Prevents synthetic records and benchmark state from contaminating shared test or production data | Approved |
+| MG-DE-D-011 | Use 48 exact oxide, phosphate, sulfide, and silicate systems with an explicit 0.1 eV/atom energy-above-hull ceiling as the first real-source pilot | Exercises established substitution and family behavior across relevant mobile ions and transition metals without claiming domain-wide coverage | Proposed for MG-DE-005 execution |
+| MG-DE-D-012 | End MG-DE-005 at an immutable, offline-inspected manifest | Separates live-source discovery and legal/scientific review from all database mutation | Approved |
+| MG-DE-D-013 | Require local PostgreSQL qualification and isolated Neon qualification before any production canary | Production uses Neon, but the live database must not be the first real-data test environment | Approved |
 
 Proposed decisions become approved only through a reviewed repository change.

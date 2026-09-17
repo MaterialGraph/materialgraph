@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import time
@@ -38,7 +39,7 @@ SYNTHETIC_BENCHMARK_LICENSE_URL = (
     "https://creativecommons.org/publicdomain/zero/1.0/"
 )
 NORMALIZATION_VERSION = "materials-project-summary-v1"
-SELECTION_CONTRACT_VERSION = "materials-project-selection-v1"
+SELECTION_CONTRACT_VERSION = "materials-project-selection-v2"
 
 
 class MaterialPageSource(Protocol):
@@ -49,6 +50,7 @@ class MaterialPageSource(Protocol):
         page: int,
         page_size: int,
         stable_only: bool,
+        maximum_energy_above_hull: float | None,
     ) -> MaterialFetchPage: ...
 
 
@@ -96,6 +98,7 @@ class MaterialImportScope:
     max_pages_per_system: int = 25
     max_fetch_attempts: int = 3
     stable_only: bool = True
+    maximum_energy_above_hull: float | None = None
 
     def __post_init__(self) -> None:
         normalized = tuple(
@@ -124,6 +127,21 @@ class MaterialImportScope:
             raise ValueError("max_pages_per_system must be between 1 and 1000")
         if not 1 <= self.max_fetch_attempts <= 5:
             raise ValueError("max_fetch_attempts must be between 1 and 5")
+        if not isinstance(self.stable_only, bool):
+            raise ValueError("stable_only must be a boolean")
+        if self.maximum_energy_above_hull is not None and (
+            isinstance(self.maximum_energy_above_hull, bool)
+            or not isinstance(self.maximum_energy_above_hull, (int, float))
+            or not math.isfinite(self.maximum_energy_above_hull)
+            or not 0 <= self.maximum_energy_above_hull <= 1
+        ):
+            raise ValueError(
+                "maximum_energy_above_hull must be between 0 and 1"
+            )
+        if self.stable_only and self.maximum_energy_above_hull is not None:
+            raise ValueError(
+                "maximum_energy_above_hull requires stable_only to be false"
+            )
         object.__setattr__(self, "chemical_systems", normalized)
 
 
@@ -341,6 +359,9 @@ class MaterialImportPipeline:
                     page=page,
                     page_size=scope.page_size,
                     stable_only=scope.stable_only,
+                    maximum_energy_above_hull=(
+                        scope.maximum_energy_above_hull
+                    ),
                 )
             except Exception:
                 if attempt == scope.max_fetch_attempts:
@@ -464,6 +485,14 @@ class MaterialImportPipeline:
             or digest != MaterialImportPipeline._payload_digest(document)
         ):
             raise ValueError("manifest digest validation failed")
+        MaterialImportPipeline._validate_manifest_scope(document.get("scope"))
+        MaterialImportPipeline._validate_manifest_counts(document)
+        MaterialImportPipeline._validate_manifest_candidates(
+            document.get("candidates"),
+            scope=document["scope"],
+        )
+        MaterialImportPipeline._validate_manifest_rejections(document)
+        MaterialImportPipeline._validate_manifest_duplicates(document)
         if document["counts"]["accepted"] != len(document["candidates"]):
             raise ValueError("manifest accepted count does not reconcile")
         if document["counts"]["rejected"] != len(document["rejections"]):
@@ -477,6 +506,195 @@ class MaterialImportPipeline:
         if not isinstance(document["counts"].get("source_complete"), bool):
             raise ValueError("manifest source completion state is invalid")
         return document, digest
+
+    @staticmethod
+    def _validate_manifest_scope(value: Any) -> None:
+        if not isinstance(value, dict):
+            raise ValueError("manifest scope is invalid")
+        try:
+            scope = MaterialImportScope(**value)
+        except (TypeError, ValueError) as error:
+            raise ValueError("manifest scope is invalid") from error
+        normalized = asdict(scope)
+        normalized["chemical_systems"] = list(scope.chemical_systems)
+        comparable = dict(value)
+        comparable.setdefault("maximum_energy_above_hull", None)
+        if comparable != normalized:
+            raise ValueError("manifest scope is not normalized")
+
+    @staticmethod
+    def _validate_manifest_counts(document: dict[str, Any]) -> None:
+        counts = document.get("counts")
+        if not isinstance(counts, dict):
+            raise ValueError("manifest counts are invalid")
+        integer_names = (
+            "accepted",
+            "rejected",
+            "duplicate_source_ids",
+            "pages_fetched",
+            "source_records_seen",
+        )
+        if any(
+            not isinstance(counts.get(name), int)
+            or isinstance(counts.get(name), bool)
+            or counts[name] < 0
+            for name in integer_names
+        ):
+            raise ValueError("manifest counts are invalid")
+        if counts["pages_fetched"] < 1:
+            raise ValueError("manifest page count is invalid")
+        if counts["source_records_seen"] < counts["accepted"] + counts["rejected"]:
+            raise ValueError("manifest source-record count does not reconcile")
+        scope = document["scope"]
+        if counts["source_records_seen"] > scope["max_source_records"]:
+            raise ValueError("manifest source-record count exceeds its scope")
+        maximum_pages = (
+            len(scope["chemical_systems"]) * scope["max_pages_per_system"]
+        )
+        if counts["pages_fetched"] > maximum_pages:
+            raise ValueError("manifest page count exceeds its scope")
+
+    @staticmethod
+    def _validate_manifest_candidates(
+        candidates: Any,
+        *,
+        scope: dict[str, Any],
+    ) -> None:
+        if not isinstance(candidates, list) or not candidates:
+            raise ValueError("manifest contains no accepted materials")
+        source_ids: list[str] = []
+        element_pattern = re.compile(r"[A-Z][a-z]?")
+        optional_numbers = (
+            "band_gap",
+            "energy_above_hull",
+            "formation_energy_per_atom",
+            "density",
+        )
+        for value in candidates:
+            if not isinstance(value, dict):
+                raise ValueError("manifest candidate is invalid")
+            try:
+                candidate = MaterialCandidate(**value)
+            except TypeError as error:
+                raise ValueError("manifest candidate is invalid") from error
+            if any(
+                not isinstance(item, str) or not item.strip()
+                for item in (
+                    candidate.mp_id,
+                    candidate.formula,
+                    candidate.pretty_formula,
+                )
+            ):
+                raise ValueError("manifest candidate identity is invalid")
+            if (
+                not candidate.elements
+                or len(candidate.elements) != len(set(candidate.elements))
+                or any(
+                    not isinstance(element, str)
+                    or element_pattern.fullmatch(element) is None
+                    for element in candidate.elements
+                )
+            ):
+                raise ValueError("manifest candidate elements are invalid")
+            if not isinstance(candidate.raw_data, dict):
+                raise ValueError("manifest candidate raw data is invalid")
+            if not isinstance(candidate.is_stable, bool):
+                raise ValueError("manifest candidate stability is invalid")
+            for name in optional_numbers:
+                number = getattr(candidate, name)
+                if number is not None and (
+                    not isinstance(number, (int, float))
+                    or isinstance(number, bool)
+                    or not math.isfinite(number)
+                ):
+                    raise ValueError(
+                        "manifest candidate scientific value is invalid"
+                    )
+            if scope["stable_only"] and not candidate.is_stable:
+                raise ValueError(
+                    "manifest candidate violates the stable-only scope"
+                )
+            maximum_energy = scope["maximum_energy_above_hull"]
+            if maximum_energy is not None and (
+                candidate.energy_above_hull is None
+                or candidate.energy_above_hull < 0
+                or candidate.energy_above_hull > maximum_energy
+            ):
+                raise ValueError(
+                    "manifest candidate violates the energy-above-hull scope"
+                )
+            fractions = candidate.composition_fractions
+            if (
+                not isinstance(fractions, dict)
+                or set(fractions) != set(candidate.elements)
+                or any(
+                    not isinstance(amount, (int, float))
+                    or isinstance(amount, bool)
+                    or not math.isfinite(amount)
+                    or amount <= 0
+                    for amount in fractions.values()
+                )
+                or not math.isclose(
+                    sum(fractions.values()),
+                    1.0,
+                    rel_tol=1e-9,
+                    abs_tol=1e-9,
+                )
+            ):
+                raise ValueError("manifest candidate composition is invalid")
+            source_ids.append(candidate.mp_id)
+        if len(source_ids) != len(set(source_ids)):
+            raise ValueError("manifest contains duplicate accepted source identities")
+        if source_ids != sorted(source_ids):
+            raise ValueError("manifest candidates are not deterministically ordered")
+
+    @staticmethod
+    def _validate_manifest_duplicates(document: dict[str, Any]) -> None:
+        duplicates = document.get("duplicate_source_ids")
+        if (
+            not isinstance(duplicates, list)
+            or duplicates != sorted(set(duplicates))
+            or any(not isinstance(value, str) or not value for value in duplicates)
+        ):
+            raise ValueError("manifest duplicate identities are invalid")
+        accepted = {item["mp_id"] for item in document["candidates"]}
+        if not set(duplicates) <= accepted:
+            raise ValueError("manifest duplicate identities do not reconcile")
+
+    @staticmethod
+    def _validate_manifest_rejections(document: dict[str, Any]) -> None:
+        rejections = document.get("rejections")
+        if not isinstance(rejections, list):
+            raise ValueError("manifest rejections are invalid")
+        required = {"chemical_system", "page", "source_id", "reason"}
+        allowed_reasons = {
+            MATERIALS_PROJECT_SOURCE: {"normalization_error"},
+            SYNTHETIC_BENCHMARK_SOURCE: {
+                "synthetic_controlled_rejection"
+            },
+        }.get(document.get("source"), set())
+        scope = document["scope"]
+        for rejection in rejections:
+            if (
+                not isinstance(rejection, dict)
+                or set(rejection) != required
+                or not isinstance(rejection["chemical_system"], str)
+                or rejection["chemical_system"]
+                not in scope["chemical_systems"]
+                or not isinstance(rejection["page"], int)
+                or isinstance(rejection["page"], bool)
+                or rejection["page"] < 1
+                or rejection["page"] > scope["max_pages_per_system"]
+                or (
+                    rejection["source_id"] is not None
+                    and (
+                        not isinstance(rejection["source_id"], str)
+                        or not rejection["source_id"]
+                    )
+                )
+                or rejection["reason"] not in allowed_reasons
+            ):
+                raise ValueError("manifest rejection is invalid")
 
     @staticmethod
     def _load_checkpoint(

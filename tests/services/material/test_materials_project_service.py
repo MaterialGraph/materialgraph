@@ -102,10 +102,44 @@ def test_fetch_page_uses_deterministic_source_paging(monkeypatch):
     assert captured["_page"] == 3
     assert captured["_sort_fields"] == "material_id"
     assert captured["is_stable"] is True
+    assert captured["energy_above_hull"] is None
+    assert captured["deprecated"] is False
+    assert captured["include_gnome"] is False
+
+
+def test_fetch_page_applies_explicit_near_stable_bound(monkeypatch):
+    captured = {}
+
+    class FakeSummary:
+        def search(self, **kwargs):
+            captured.update(kwargs)
+            return []
+
+    class FakeMPRester:
+        def __init__(self, _api_key):
+            self.materials = type("Materials", (), {"summary": FakeSummary()})()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    monkeypatch.setattr(project_service, "MPRester", FakeMPRester)
+
+    make_service().fetch_materials_page(
+        chemsys="Li-Fe-O",
+        page=1,
+        page_size=50,
+        stable_only=False,
+        maximum_energy_above_hull=0.1,
+    )
+
+    assert captured["is_stable"] is None
+    assert captured["energy_above_hull"] == (0, 0.1)
 
 
 def test_fetch_page_verifies_the_declared_database_release(monkeypatch):
-
     class FakeSummary:
         def search(self, **_kwargs):
             return []
@@ -138,6 +172,46 @@ def test_fetch_page_verifies_the_declared_database_release(monkeypatch):
         stable_only=True,
     )
 
+
+def test_get_database_version_returns_authoritative_release(monkeypatch):
+    class FakeMPRester:
+        def __init__(self, api_key):
+            assert api_key == "test-api-key"
+
+        @staticmethod
+        def get_database_version():
+            return "2026.09.01"
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    monkeypatch.setattr(project_service, "MPRester", FakeMPRester)
+
+    assert make_service().get_database_version() == "2026.09.01"
+
+
+def test_get_database_version_rejects_invalid_response(monkeypatch):
+    class FakeMPRester:
+        def __init__(self, _api_key):
+            pass
+
+        @staticmethod
+        def get_database_version():
+            return None
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    monkeypatch.setattr(project_service, "MPRester", FakeMPRester)
+
+    with pytest.raises(ValueError, match="invalid database version"):
+        make_service().get_database_version()
 
 
 def test_fetch_page_rejects_a_database_release_mismatch(monkeypatch):
