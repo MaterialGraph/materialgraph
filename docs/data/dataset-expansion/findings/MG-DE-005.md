@@ -1,16 +1,16 @@
 # MG-DE-005: A reviewed real-source pilot manifest is absent
 
-**Status:** Ready for controlled execution
+**Status:** Ready for controlled re-execution
 **Priority:** Real-data expansion gate
 **Production blocker:** Yes
 
 ## Observation
 
-The ingestion lifecycle is qualified with a deterministic synthetic fixture,
-but no immutable manifest from the current Materials Project API release has
-been acquired and reviewed. Synthetic evidence cannot establish current source
-terms, real property coverage, real rejection behavior, or the usefulness and
-bias of the selected scientific cohort.
+The first immutable manifest from Materials Project release `2026.04.13` was
+captured and inspected without database access. It reached the 3,000-material
+bound before most Na systems were traversed and correctly failed the
+source-completeness gate. A revised manifest under the reviewed 0.05 eV/atom
+selection ceiling has not yet been acquired and reviewed.
 
 ## Risk
 
@@ -33,9 +33,11 @@ change.
 
 ## Implemented control
 
-The [real-source pilot plan](../MG-DE_REAL_SOURCE_PILOT.md) fixes the initial
-48-system, near-stable scientific scope and acceptance gates. The release
-reader exposes only the authoritative database version. The offline inspector performs semantic
-validation and produces a bounded cohort report without network or database
-access. This finding remains open until independent acquisition and review
-evidence are recorded.
+The [real-source pilot plan](../MG-DE_REAL_SOURCE_PILOT.md) preserves the
+48-system scientific scope and acceptance gates while narrowing the
+near-stability ceiling from 0.1 to 0.05 eV/atom based on recorded offline
+sensitivity evidence. The release reader exposes only the authoritative
+database version. The offline inspector performs semantic validation and
+produces a bounded cohort report without network or database access. This
+finding remains open until the revised manifest passes independent inspection
+and scientific and attribution review.

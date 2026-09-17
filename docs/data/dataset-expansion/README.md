@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-004 closed; MG-DE-005 ready for controlled real-source manifest acquisition
+**Status:** MG-DE-001 through MG-DE-004 closed; MG-DE-005 first manifest not qualified and revised scope ready for controlled reacquisition
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -27,6 +27,11 @@ with a deterministic 1,000-material synthetic fixture confirmed ingestion,
 rerun, refresh, failure recovery, representative requests, curated scientific
 invariants, and backup creation within the initial acceptance gates. No
 production migration or import is authorized.
+
+The first MG-DE-005 manifest-only execution reached its 3,000-material ceiling
+before completing all 48 systems and was not qualified or imported. Recorded
+offline sensitivity supports a revised 0.05 eV/atom ceiling while preserving
+the full system list, completeness gate, and database-write prohibition.
 
 ## Scope
 

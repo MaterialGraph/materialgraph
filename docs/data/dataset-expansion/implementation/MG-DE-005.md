@@ -1,13 +1,13 @@
 # MG-DE-005 Implementation Record
 
 **Baseline:** `2e356a18e5b96ba3324edcc413dc0062187ba22c`
-**Status:** Ready for controlled manifest acquisition
+**Status:** Ready for controlled manifest reacquisition
 **Database synchronization authorized:** No
 
 ## Implemented boundary
 
-- fixed the initial real-source pilot to 48 exact chemical systems, an explicit
-  0.1 eV/atom near-stability ceiling, and a 3,000-material bound;
+- fixed the real-source pilot to 48 exact chemical systems, an explicit
+  0.05 eV/atom near-stability ceiling, and a 3,000-material bound;
 - added a minimal release reader that never emits the API key;
 - added offline manifest inspection with explicit count, elemental coverage,
   property coverage, completion, formula, polymorph, stability, duplicate, and
@@ -18,6 +18,15 @@
 - retained refusal to overwrite manifest and inspection outputs;
 - preserved manifest-only acquisition as the default, without importing
   database modules.
+
+## Scope revision
+
+The first execution at 0.1 eV/atom stopped at 3,000 accepted identities before
+15 Na systems were visited. The non-qualifying manifest was retained as
+external evidence and was never imported. Offline sensitivity found 1,455 of
+the truncated records at 0.05 eV/atom. The revised implementation increments
+the selection contract to version 3 and enforces 0.05 eV/atom in the offline
+inspector before controlled reacquisition.
 
 ## Acceptance boundary
 

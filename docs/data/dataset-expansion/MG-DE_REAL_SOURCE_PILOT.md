@@ -1,7 +1,7 @@
 # MG-DE-005 Real-source Pilot Plan
 
-**Status:** Ready for controlled manifest acquisition
-**Baseline:** `2e356a18e5b96ba3324edcc413dc0062187ba22c`
+**Status:** Ready for controlled reacquisition under revised scope
+**Revision baseline:** `f9e5400d8c25df1da5fcd48760008435bfa7d55b`
 **Database writes authorized:** No
 **Production or Neon writes authorized:** No
 
@@ -25,7 +25,7 @@ materials-science dataset. The selection contract is:
   transition metals; and sulfides and silicates for `Li` and `Na` with those
   transition metals (48 exact systems in total);
 - stable and near-stable materials with energy above hull from 0 through
-  0.1 eV/atom;
+  0.05 eV/atom;
 - accepted-material bound: 3,000;
 - source-record bound: 5,000;
 - page size and import chunk size: 100;
@@ -73,7 +73,7 @@ python scripts/import_materials_project.py `
   --max-source-records 5000 `
   --max-pages-per-system 25 `
   --max-fetch-attempts 3 `
-  --maximum-energy-above-hull 0.1
+  --maximum-energy-above-hull 0.05
 ```
 
 Do not add `--apply` or the unbounded `--include-unstable` option. The explicit
@@ -122,6 +122,22 @@ reviewed decision and a new manifest.
 If the complete 48-system result contains fewer than 500 records, reaches a
 configured bound, or fails coverage, MG-DE-005 remains open. Record the result
 and revise the scientific selection contract before making another request.
+
+## First execution and revision
+
+The first independent execution against Materials Project release `2026.04.13`
+used the original 0.1 eV/atom ceiling and stopped at the approved 3,000-material
+bound after 3,068 source records and 53 pages. It had no rejections or duplicate
+identities and complete property coverage, but it was not source-complete: 15 Na
+systems had not been visited. No database write occurred and that manifest is
+not authorized for import.
+
+Offline sensitivity retained 1,455 of those truncated records at 0.05 eV/atom,
+compared with 2,349 at 0.075 eV/atom. Decision MG-DE-D-014 therefore preserves
+all 48 systems, completeness, and the 3,000-material ceiling while narrowing
+the near-stability ceiling to 0.05 eV/atom. The revision increments the
+selection contract to `materials-project-selection-v3`; it requires a new
+manifest path and a new retrieval timestamp.
 
 ## Next gate
 

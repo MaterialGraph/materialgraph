@@ -39,7 +39,7 @@ SYNTHETIC_BENCHMARK_LICENSE_URL = (
     "https://creativecommons.org/publicdomain/zero/1.0/"
 )
 NORMALIZATION_VERSION = "materials-project-summary-v1"
-SELECTION_CONTRACT_VERSION = "materials-project-selection-v2"
+SELECTION_CONTRACT_VERSION = "materials-project-selection-v3"
 
 
 class MaterialPageSource(Protocol):

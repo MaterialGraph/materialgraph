@@ -179,6 +179,8 @@ def test_real_source_pilot_is_manifest_only_and_neon_safe():
     assert "--apply" in plan
     assert "Do not add `--apply`" in plan
     assert "Production or Neon writes authorized:** No" in plan
+    assert "--maximum-energy-above-hull 0.05" in plan
+    assert "materials-project-selection-v3" in plan
     assert "app.core.database" not in inspector
     assert "MaterialsProjectService" not in inspector
     assert "MATERIALS_PROJECT_API_KEY" in release_reader

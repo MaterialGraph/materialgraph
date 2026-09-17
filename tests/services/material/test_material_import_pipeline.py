@@ -231,7 +231,7 @@ def test_build_manifest_paginates_deduplicates_and_records_rejections(tmp_path):
         "license_url": "https://creativecommons.org/licenses/by/4.0/",
         "normalization_version": "materials-project-summary-v1",
         "retrieved_at": "2026-09-15T00:00:00+00:00",
-        "selection_contract_version": "materials-project-selection-v2",
+        "selection_contract_version": "materials-project-selection-v3",
         "source": "materials_project",
         "source_release": "test-release-2026-09-15",
     }

@@ -1,6 +1,6 @@
 # MG-DE Materials Project Source Contract
 
-**Contract version:** `materials-project-selection-v2`
+**Contract version:** `materials-project-selection-v3`
 **Normalization version:** `materials-project-summary-v1`
 **Status:** Implemented; MG-DE-005 controlled real-source execution pending
 **Production import authorized:** No
@@ -44,10 +44,10 @@ identifier.
 
 ## Inclusion and exclusion
 
-Version 2 includes only records returned by the reviewed summary endpoint for
+Version 3 includes only records returned by the reviewed summary endpoint for
 the explicitly listed chemical systems and declared stability policy. It can
 express either stable-only retrieval or an explicit finite energy-above-hull
-ceiling; the MG-DE-005 pilot uses 0 through 0.1 eV/atom and never uses an
+ceiling; the revised MG-DE-005 pilot uses 0 through 0.05 eV/atom and never uses an
 unbounded unstable-material query. Deprecated and GNoME records are explicitly
 excluded from the MG-DE-005 summary query. Paging, page size, page count,
 source-record count, accepted-material count, retry count, and chunk size are

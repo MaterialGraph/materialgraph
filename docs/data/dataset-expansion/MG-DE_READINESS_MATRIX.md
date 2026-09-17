@@ -7,7 +7,7 @@
 | Storage engine | PostgreSQL/Neon; normalized material-element relationships | Suitable in principle for approximately 1,000 materials | Record test and production sizing evidence |
 | Material identity | Source identity mapping and conservative polymorph/alias rules implemented | Verified against the PostgreSQL test database | Retain conflict and legacy-identity tests as regression gates |
 | Provenance | Immutable run, source-record, and event models plus source and normalized digests implemented | Migration and lifecycle verified against PostgreSQL | Retain persistence and run-reconciliation tests as regression gates |
-| Source acquisition | Configurable deterministic paging, bounds, retries, rejections, release reader, and offline manifest inspection implemented | MG-DE-005 controlled pilot ready for execution | Capture and review the authorized real-source manifest before any database import |
+| Source acquisition | Configurable deterministic paging, bounds, retries, rejections, release reader, and offline manifest inspection implemented | First MG-DE-005 manifest failed closed at the material bound; revised 0.05 eV/atom scope ready | Capture and review a complete revised manifest before any database import |
 | Import transaction | Configurable chunks commit independently and checkpoint after success | Verified against PostgreSQL test database | Retain the lifecycle test as a regression gate |
 | Idempotency | Per-run event replay and deterministic insert/update/unchanged/conflict outcomes implemented | Same-run replay and fresh-run refresh independently verified | Retain composed lifecycle coverage as a regression gate |
 | Recovery | Atomic checkpoint/resume and idempotent chunk replay implemented | Verified against PostgreSQL test database | Define production dataset-version rollback before an authorized canary |
@@ -30,4 +30,5 @@ The bounded initial test target is qualified and MG-DE-001 through MG-DE-004
 are closed. This does not authorize a real-source or production import.
 Production capacity, concurrency, restoration, and substantially larger scale
 remain separate evidence gates; storage capacity alone is not readiness proof.
-MG-DE-005 is the next gate and ends before any PostgreSQL or Neon write.
+MG-DE-005 remains the next gate after its first manifest failed the completeness
+criterion. Controlled reacquisition ends before any PostgreSQL or Neon write.
