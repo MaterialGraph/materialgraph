@@ -1,7 +1,7 @@
 # MG-DE-007 Implementation Record
 
 **Baseline:** `c82c96e778b48512d16fa74252debd36542a28ae`
-**Status:** Implementation in progress; independent execution pending
+**Status:** Verified and closed
 **Database synchronization authorized:** Disposable local PostgreSQL only
 
 ## Implemented boundary
@@ -18,6 +18,17 @@
 - analyzed PostgreSQL plan capture for a real formula-equivalence lookup;
 - tests for manifest binding, curated invariants, collision semantics,
   recursive response inspection, and crowding calculations.
+
+## Independent result
+
+The exact 1,727-identity manifest produced 1,699 inserts and 28 protected
+curated conflicts. The curated state hash and complete sentinel API responses
+remained unchanged. A fresh rerun, failed first chunk, committed-chunk replay,
+12 representative scenarios, corrected occurrence/identity crowding analysis,
+an analyzed query plan, and custom-format backup listing all reconciled.
+
+The execution identified no local-qualification blocker. It retained real
+performance and product-presentation limitations in the qualification report.
 
 ## Deliberately manual evidence
 

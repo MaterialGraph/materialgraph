@@ -265,7 +265,15 @@ def test_real_data_qualification_is_exact_isolated_and_neon_safe():
     assert "Do not perform a restore under this plan" in plan
     assert "Neon or production writes authorized:** No" in plan
     assert "mp-19017" in plan
-    assert "**Status:** In progress" in finding
+    report = (root / "MG-DE_REAL_DATA_QUALIFICATION_REPORT.md").read_text(
+        encoding="utf-8"
+    )
+    assert "**Status:** Closed" in finding
+    assert "1,699" in report
+    assert "28 explained conflicts" in report
+    assert "63bb8ca50f42ffdfb57bb597fd1f5add" in report
+    assert "Neon or production import authorized:** No" in report
+    assert "59\nrepetitions reflect response structure" in report
 
 
 def test_request_timeout_hierarchy_is_bounded_and_documented():

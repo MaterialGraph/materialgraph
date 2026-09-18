@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-006 closed; MG-DE-007 in progress
+**Status:** MG-DE-001 through MG-DE-007 closed locally; isolated Neon qualification is next
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -32,8 +32,12 @@ The first MG-DE-005 manifest-only execution reached its 3,000-material ceiling
 before completing all 48 systems and was not qualified or imported. The
 revised 0.05 eV/atom version 3 contract completed with 1,727 identities and
 passed all technical manifest gates. MG-DE-006 accepted it with explicit
-scientific limitations for disposable local PostgreSQL qualification only;
-every database-import execution gate remains pending.
+scientific limitations for disposable local PostgreSQL qualification only.
+MG-DE-007 then qualified the exact manifest locally with 1,699 inserts and 28
+protected curated conflicts, preserved all curated state, measured real-data
+crowding and endpoint behavior, verified recovery and idempotency, and
+validated backup creation without restoration. Neon and production remain
+unauthorized.
 
 ## Scope
 
@@ -97,6 +101,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [MG-DE-006 scientific cohort review plan](MG-DE_SCIENTIFIC_COHORT_REVIEW.md)
 - [MG-DE-006 scientific cohort report](MG-DE_SCIENTIFIC_COHORT_REPORT.md)
 - [MG-DE-007 real-data PostgreSQL qualification plan](MG-DE_REAL_DATA_QUALIFICATION.md)
+- [MG-DE-007 real-data PostgreSQL qualification report](MG-DE_REAL_DATA_QUALIFICATION_REPORT.md)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 
@@ -111,5 +116,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 6. Measure query plans, latency, memory, backup behavior, and scientific
    regression. **Complete for the isolated initial test target.**
 7. Review real-source evidence and scientific cohort suitability before any
-   database import. **MG-DE-005 and MG-DE-006 complete; disposable local
-   PostgreSQL qualification is next. Neon and production remain unauthorized.**
+   database import. **MG-DE-005 and MG-DE-006 complete.**
+8. Qualify the exact approved manifest in disposable local PostgreSQL.
+   **MG-DE-007 complete with accepted limitations. Isolated non-production
+   Neon qualification is next; production remains unauthorized.**

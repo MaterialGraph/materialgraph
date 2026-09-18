@@ -8,7 +8,7 @@
 | [MG-DE-004](MG-DE-004.md) | Representative scale evidence is absent | Closed | Yes (resolved) |
 | [MG-DE-005](MG-DE-005.md) | A reviewed real-source pilot manifest is absent | Closed | Yes (resolved) |
 | [MG-DE-006](MG-DE-006.md) | Scientific usefulness of the qualified cohort is unreviewed | Closed | Yes (resolved) |
-| [MG-DE-007](MG-DE-007.md) | The approved real cohort lacks PostgreSQL qualification | In progress | Yes |
+| [MG-DE-007](MG-DE-007.md) | The approved real cohort lacks PostgreSQL qualification | Closed | Yes (resolved locally) |
 
 Findings describe confirmed readiness gaps. They are not security
 vulnerabilities and do not reopen closed `MG-SEC-*` or `MG-SA-*` records.
