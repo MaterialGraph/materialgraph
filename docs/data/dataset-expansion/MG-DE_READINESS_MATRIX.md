@@ -19,7 +19,7 @@
 | API listing | Limit/offset; maximum response limit 100 | Qualified at the initial target | Preserve stable ordering and bounds |
 | Graph traversal | Existing depth, branching, and result bounds | Qualified at the initial target | Query counts remain optimization signals |
 | Indexes | Identity and relationship foreign-key indexes exist | Sufficient at the initial target | Add indexes only from future observed plans |
-| Scale tests | Deterministic fixture and exact real cohort executed with the bounded sequential PostgreSQL harness | Locally qualified; MG-DE-008 now defines fail-closed remote identity, connection, cost, recovery, and cleanup gates | Run the reviewed isolated Neon qualification; concurrency remains separately authorized |
+| Scale tests | Deterministic fixture and exact real cohort executed with bounded sequential local PostgreSQL and isolated Neon harnesses | Qualified at the reviewed local and remote target with recorded latency findings | Optimize observed heavy paths before any separately authorized production expansion; concurrency remains separately authorized |
 | Scientific regression | Canonical state for all 28 curated materials and complete sentinel detail/criticality JSON matched before and after real import and rerun | Qualified | Expand the invariant cohort with approved scientific capabilities |
 | Backup/recovery | Real-data custom-format backup and archive listing completed | 750,478-byte archive with 124 listed entries qualified | Restoration remains separately authorized evidence |
 | Compute capacity | Production uses a small EC2 instance and managed PostgreSQL | Unqualified, not proven inadequate | Measure canary resource use before production expansion |
@@ -33,6 +33,6 @@ remain separate evidence gates; storage capacity alone is not readiness proof.
 MG-DE-005 through MG-DE-007 are closed with a technically qualified,
 scientifically accepted, and locally PostgreSQL-qualified external manifest.
 Broad response crowding and the heavier discovery paths are accepted signals,
-not hidden successes. MG-DE-008 planning safeguards are implemented; an
-independently authorized isolated non-production Neon execution is the next
-gate. Production writes remain unauthorized.
+not hidden successes. MG-DE-008 independently qualified the exact cohort on an
+isolated non-production Neon branch and completed evidence and cleanup gates.
+Production writes remain separately unauthorized.

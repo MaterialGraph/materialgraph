@@ -1,7 +1,8 @@
 # MG-DE-008 Isolated Neon Qualification Report
 
-**Status:** Execution passed; cleanup and independent closure review pending
+**Status:** Closed
 **Execution date:** 2026-09-18
+**Closure date:** 2026-09-19
 **Repository commit:** `ef0955bcd13dea624b87746a87a86c46a7d6e8f4`
 **Production import authorized:** No
 **Production deployment authorized:** No
@@ -13,9 +14,10 @@ an isolated, auto-expiring Neon branch. Identity, connection, migration,
 import, recovery, performance, and resource gates passed within the reviewed
 contract. The production branch and production endpoint were not contacted.
 
-MG-DE-008 is not closed by this report. Closure still requires independent
-review of the sanitized evidence, deletion of the qualification branch,
-independent deletion proof, and credential and temporary-resource cleanup.
+Independent review reproduced the archive hash, verified every inventoried
+file, and reconciled the retained gate evidence. The qualification branch was
+then deleted, its absence was independently confirmed, credentials were
+cleared, and exact temporary-resource paths were removed. MG-DE-008 is closed.
 
 ## Reviewed resource identity
 
@@ -59,7 +61,7 @@ network access and no database write.
 | Gate B: exact import and recovery | Passed | Exact import, identical rerun, failed-first-chunk recovery, and committed-chunk recovery reconciled without duplicate identities or events |
 | Gate C: remote performance | Passed with findings | All 12 sequential scenarios completed; remote round-trip-heavy pathways were materially slower than the local reference |
 | Gate D: resource and cost boundary | Passed | Measured duration, provider storage graph, logical database size, and connection observations remained below contract ceilings |
-| Gate E: cleanup and evidence | In progress | Sanitized archive downloaded and hash-verified; deletion proof and final independent review remain pending |
+| Gate E: cleanup and evidence | Passed | Sanitized archive independently verified; qualification branch deletion, credential clearing, and temporary-resource removal proved |
 
 ## Connection and TLS evidence
 
@@ -191,3 +193,60 @@ are recorded rather than inferred away.
 
 ## Evidence archive
 
+The sanitized final evidence archive was downloaded outside the qualification
+host and independently verified:
+
+| Property | Value |
+|---|---|
+| Archive | `mg-de-008-final-evidence.tar.gz` |
+| Size | 375,715 bytes |
+| SHA-256 | `2961ea28fd3cb5f1ad33fab35f7b00ba7e6540948ace12354ec3dec9abc53040` |
+| Inventoried files | 89 |
+| Inventory verification | Every recorded file size and SHA-256 matched |
+| Secret scan | 0 findings across 88 files |
+| Independent semantic review | Passed |
+
+The independent review reconciled the immutable manifest, migration revision,
+import totals, rerun and recovery outcomes, protected curated-state hash,
+performance measurements, execution plans, resource ceilings, and production
+denylist. Required evidence entries were present and internally consistent.
+The archive contains no complete database URL, generated Neon password,
+private key, or AWS access-key identifier detected by the bounded secret scan.
+The scan supplements rather than replaces the independent evidence review.
+
+Provider monitoring screenshots remain separately retained because they were
+captured outside the EC2 evidence directory. They establish the reviewed
+branch identity and expiration, bounded connection behavior, low observed
+compute use, storage growth, row activity, and zero deadlocks.
+
+## Cleanup and deletion proof
+
+After the archive was independently downloaded and hash-verified, the exact
+qualification branch `br-frosty-violet-aoleln66`
+(`mg-de-008-qualification-test`) was deleted. A post-deletion Neon console
+capture showed only the production branch `br-old-credit-ao7cn4h7`; the
+qualification branch was absent. The production branch and endpoint were not
+deleted, reset, restored, or written under this work item.
+
+All local `MG_DE_008*` connection variables and the qualification
+`DATABASE_MIGRATION_URL` were cleared. A qualification `DATABASE_URL`, when
+present, was also cleared. The EC2 directories
+`/tmp/materialgraph-mg-de-008-953Y4x` and
+`/tmp/materialgraph-mg-de-008-fresh-cOGOVk` were removed only after the final
+archive was verified off-host. Their absence was checked, and the host retained
+approximately 10 GiB free afterward.
+
+## Closure decision
+
+MG-DE-008 is closed because all reviewed gates passed, the retained archive
+passed independent integrity and semantic review, deletion was independently
+proved, and credential and temporary-resource cleanup completed.
+
+Closure retains the recorded limitations and findings. In particular, it does
+not convert remote latency observations into an unreviewed pass threshold, does
+not claim provider compute precision that Neon did not expose, and does not
+authorize a formula index solely from one representative plan.
+
+MG-DE-008 does not authorize production import, deployment, publication,
+backup restoration, concurrency or load testing, or a production canary. Each
+requires its own reviewed authorization and rollback boundary.

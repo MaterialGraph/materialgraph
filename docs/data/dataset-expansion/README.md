@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-007 closed locally; MG-DE-008 Neon safeguards implemented and execution pending
+**Status:** MG-DE-001 through MG-DE-008 closed; production expansion remains separately unauthorized
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -36,8 +36,12 @@ scientific limitations for disposable local PostgreSQL qualification only.
 MG-DE-007 then qualified the exact manifest locally with 1,699 inserts and 28
 protected curated conflicts, preserved all curated state, measured real-data
 crowding and endpoint behavior, verified recovery and idempotency, and
-validated backup creation without restoration. Neon and production remain
-unauthorized.
+validated backup creation without restoration. MG-DE-008 qualified the same
+manifest on an isolated Neon branch, preserving the same import and recovery
+outcomes within the reviewed resource ceilings. The remote run retained
+performance findings for discovery path, scientific pathways, and formula
+lookup. Its evidence and cleanup were independently verified. Production
+import and deployment remain unauthorized.
 
 ## Scope
 
@@ -103,6 +107,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [MG-DE-007 real-data PostgreSQL qualification plan](MG-DE_REAL_DATA_QUALIFICATION.md)
 - [MG-DE-007 real-data PostgreSQL qualification report](MG-DE_REAL_DATA_QUALIFICATION_REPORT.md)
 - [MG-DE-008 isolated Neon qualification plan](MG-DE_NEON_QUALIFICATION.md)
+- [MG-DE-008 isolated Neon qualification report](MG-DE_NEON_QUALIFICATION_REPORT.md)
 - [MG-DE-008 offline contract template](MG-DE_NEON_QUALIFICATION_CONTRACT.example.json)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
@@ -120,6 +125,6 @@ migration, service restart, backup restoration, or infrastructure resize.
 7. Review real-source evidence and scientific cohort suitability before any
    database import. **MG-DE-005 and MG-DE-006 complete.**
 8. Qualify the exact approved manifest in disposable local PostgreSQL.
-   **MG-DE-007 complete with accepted limitations. MG-DE-008 planning
-   safeguards are implemented; isolated Neon execution and production remain
-   unauthorized.**
+   **MG-DE-007 complete with accepted limitations. MG-DE-008 isolated Neon
+   qualification and cleanup are complete with recorded performance findings;
+   production expansion remains separately unauthorized.**
