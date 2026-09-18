@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-007 closed locally; isolated Neon qualification is next
+**Status:** MG-DE-001 through MG-DE-007 closed locally; MG-DE-008 Neon safeguards implemented and execution pending
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -102,6 +102,8 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [MG-DE-006 scientific cohort report](MG-DE_SCIENTIFIC_COHORT_REPORT.md)
 - [MG-DE-007 real-data PostgreSQL qualification plan](MG-DE_REAL_DATA_QUALIFICATION.md)
 - [MG-DE-007 real-data PostgreSQL qualification report](MG-DE_REAL_DATA_QUALIFICATION_REPORT.md)
+- [MG-DE-008 isolated Neon qualification plan](MG-DE_NEON_QUALIFICATION.md)
+- [MG-DE-008 offline contract template](MG-DE_NEON_QUALIFICATION_CONTRACT.example.json)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 
@@ -118,5 +120,6 @@ migration, service restart, backup restoration, or infrastructure resize.
 7. Review real-source evidence and scientific cohort suitability before any
    database import. **MG-DE-005 and MG-DE-006 complete.**
 8. Qualify the exact approved manifest in disposable local PostgreSQL.
-   **MG-DE-007 complete with accepted limitations. Isolated non-production
-   Neon qualification is next; production remains unauthorized.**
+   **MG-DE-007 complete with accepted limitations. MG-DE-008 planning
+   safeguards are implemented; isolated Neon execution and production remain
+   unauthorized.**

@@ -9,6 +9,7 @@
 | [MG-DE-005](MG-DE-005.md) | A reviewed real-source pilot manifest is absent | Closed | Yes (resolved) |
 | [MG-DE-006](MG-DE-006.md) | Scientific usefulness of the qualified cohort is unreviewed | Closed | Yes (resolved) |
 | [MG-DE-007](MG-DE-007.md) | The approved real cohort lacks PostgreSQL qualification | Closed | Yes (resolved locally) |
+| [MG-DE-008](MG-DE-008.md) | Real data lacks isolated Neon qualification | Open; planning safeguards implemented | Yes |
 
 Findings describe confirmed readiness gaps. They are not security
 vulnerabilities and do not reopen closed `MG-SEC-*` or `MG-SA-*` records.

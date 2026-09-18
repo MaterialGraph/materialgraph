@@ -276,6 +276,42 @@ def test_real_data_qualification_is_exact_isolated_and_neon_safe():
     assert "59\nrepetitions reflect response structure" in report
 
 
+def test_neon_qualification_planning_is_fail_closed_and_offline():
+    root = PROJECT_ROOT / "docs/data/dataset-expansion"
+    validator = (
+        PROJECT_ROOT / "scripts/validate_neon_qualification_contract.py"
+    ).read_text(encoding="utf-8")
+    implementation = (
+        PROJECT_ROOT / "app/services/material/neon_qualification.py"
+    ).read_text(encoding="utf-8")
+    plan = (root / "MG-DE_NEON_QUALIFICATION.md").read_text(
+        encoding="utf-8"
+    )
+    finding = (root / "findings/MG-DE-008.md").read_text(
+        encoding="utf-8"
+    )
+    frontend = (
+        PROJECT_ROOT / "docs/architecture/MATERIALGRAPH_FRONTEND_UX_DESIGN.md"
+    ).read_text(encoding="utf-8")
+
+    assert "APPROVED_MANIFEST_SHA256" in implementation
+    assert "APPROVED_MANIFEST_FILE_SHA256" in implementation
+    assert 'sslmode != "verify-full"' in implementation
+    assert 'channel_binding != "require"' in implementation
+    assert 'issues.append(f"production_{field_name}_collision")' in implementation
+    assert "max_parallel_requests != 1" in implementation
+    assert "create_engine" not in validator
+    assert "requests" not in validator
+    assert '"network_access_performed": False' in validator
+    assert '"database_writes_performed": False' in validator
+    assert "Neon resource creation authorized by this change:** No" in plan
+    assert "No concurrency or load test is authorized" in plan
+    assert "Do not perform a production restore under this plan" in plan
+    assert "**Status:** Open; planning safeguards implemented" in finding
+    assert "Material identity and formula diversity" in frontend
+    assert "presentation rather than deduplication" in frontend
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(

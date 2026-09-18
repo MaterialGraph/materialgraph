@@ -102,6 +102,23 @@ Where a validated domain extension or cross-domain context is active, the UI sho
 
 A domain template is a versioned scientific artifact when it encodes objective defaults, constraints, proxies, validation requirements, or applicability conditions. It must not be treated as an unversioned convenience preset.
 
+### 3.10 Material identity and formula diversity
+
+Candidate collections must distinguish source material identities from unique
+formulas. A result summary must expose both counts when formula-equivalent
+identities are present, and each identity must remain inspectable with its own
+source ID, structure or phase evidence, properties, provenance, and ranking
+explanation.
+
+The interface may group formula-equivalent identities for comprehension, but a
+group is presentation rather than deduplication. It must show the number of
+identities in the group, use scientifically neutral language such as
+"formula-equivalent identities" or "possible polymorphs," and allow expansion.
+It must not silently collapse identities, imply that formula equality proves
+structural equivalence, or apply an undisclosed diversity penalty. A researcher
+must be able to return to the ungrouped ranked result without changing the
+backend ordering.
+
 ---
 
 ## 3. MaterialGraph Research Cycle

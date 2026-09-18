@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "qualification_resource": {
+    "project_id": "replace-with-reviewed-project-id",
+    "branch_id": "replace-with-qualification-branch-id",
+    "branch_name": "mg-de-008-qualification-test",
+    "endpoint_id": "replace-with-qualification-endpoint-id",
+    "database_name": "replace-with-reviewed-database-name"
+  },
+  "production_denylist": {
+    "project_id": "replace-with-production-project-id",
+    "branch_id": "replace-with-production-branch-id",
+    "endpoint_id": "replace-with-production-endpoint-id"
+  },
+  "budget": {
+    "max_wall_clock_minutes": 120,
+    "max_active_compute_seconds": 3600,
+    "max_storage_delta_bytes": 268435456,
+    "max_connections": 5,
+    "max_parallel_requests": 1
+  }
+}
