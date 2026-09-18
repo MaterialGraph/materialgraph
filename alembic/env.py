@@ -9,7 +9,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.core.migration_config import prepare_migration_database_environment
+from app.core.migration_config import (
+    escape_alembic_config_value,
+    prepare_migration_database_environment,
+)
 
 load_dotenv()
 database_url = prepare_migration_database_environment()
@@ -19,7 +22,10 @@ models = importlib.import_module("app.models")
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", database_url)
+config.set_main_option(
+    "sqlalchemy.url",
+    escape_alembic_config_value(database_url),
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

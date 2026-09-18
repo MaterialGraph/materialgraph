@@ -2,6 +2,10 @@ import os
 from collections.abc import Mapping, MutableMapping
 
 
+def escape_alembic_config_value(value: str) -> str:
+    return value.replace("%", "%%")
+
+
 def resolve_migration_database_url(
     environ: Mapping[str, str] | None = None,
 ) -> str:

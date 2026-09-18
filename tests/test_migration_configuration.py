@@ -1,8 +1,10 @@
+from configparser import ConfigParser
 from pathlib import Path
 
 import pytest
 
 from app.core.migration_config import (
+    escape_alembic_config_value,
     prepare_migration_database_environment,
     resolve_migration_database_url,
 )
@@ -66,6 +68,31 @@ def test_existing_application_url_is_not_replaced_for_model_imports():
 
     assert result == "postgresql://direct/database"
     assert environment["DATABASE_URL"] == "postgresql://pooled/database"
+
+
+def test_plain_alembic_config_value_is_unchanged():
+    value = "postgresql+psycopg://user:password@host/database"
+
+    assert escape_alembic_config_value(value) == value
+
+
+def test_percent_encoded_alembic_url_survives_config_interpolation():
+    value = (
+        "postgresql+psycopg://user:p%40ss@host/database"
+        "?sslmode=verify-full"
+        "&sslrootcert=%2Fetc%2Fssl%2Fcerts%2Fca-certificates.crt"
+    )
+
+    escaped = escape_alembic_config_value(value)
+
+    assert "p%%40ss" in escaped
+    assert "sslrootcert=%%2Fetc%%2Fssl" in escaped
+
+    parser = ConfigParser()
+    parser.add_section("alembic")
+    parser.set("alembic", "sqlalchemy.url", escaped)
+
+    assert parser.get("alembic", "sqlalchemy.url") == value
 
 
 def test_alembic_ini_has_no_executable_database_fallback():
