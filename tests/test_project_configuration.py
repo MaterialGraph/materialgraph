@@ -207,7 +207,26 @@ def test_real_source_pilot_closure_is_evidence_bounded():
     assert "Li-Fe-S" in report and "Na-Ni-S" in report
     assert "**Import authorized:** No" in report
     assert "**Status:** Closed" in finding
-    assert "MG-DE-006 scientific cohort review is next" in readme
+    assert "MG-DE-006 ready for independent scientific review" in readme
+
+
+def test_scientific_cohort_review_is_offline_and_does_not_authorize_import():
+    root = PROJECT_ROOT / "docs/data/dataset-expansion"
+    script = (
+        PROJECT_ROOT / "scripts/review_materials_scientific_cohort.py"
+    ).read_text(encoding="utf-8")
+    plan = (root / "MG-DE_SCIENTIFIC_COHORT_REVIEW.md").read_text(
+        encoding="utf-8"
+    )
+    finding = (root / "findings/MG-DE-006.md").read_text(encoding="utf-8")
+
+    assert "app.core.database" not in script
+    assert "MaterialsProjectService" not in script
+    assert '"database_import_authorized": False' in script
+    assert "No universal numeric balance threshold is invented" in plan
+    assert "Accept for disposable PostgreSQL qualification" in plan
+    assert "It does not authorize Neon, production" in plan
+    assert "**Status:** Ready for verification" in finding
 
 
 def test_request_timeout_hierarchy_is_bounded_and_documented():

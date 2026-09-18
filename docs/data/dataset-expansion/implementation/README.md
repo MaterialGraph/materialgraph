@@ -7,6 +7,7 @@
 | MG-DE-003 | [Scale-sensitive request-path narrowing](MG-DE-003.md) | Verified and closed |
 | MG-DE-004 | [Representative-scale qualification framework](MG-DE-004.md) | Verified and closed |
 | MG-DE-005 | [Real-source pilot acquisition and inspection](MG-DE-005.md) | Verified and closed |
+| MG-DE-006 | [Offline scientific cohort review](MG-DE-006.md) | Ready for independent verification |
 
 Each approved change must receive a focused record describing:
 

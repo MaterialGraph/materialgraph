@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-005 closed; MG-DE-006 scientific cohort review is next
+**Status:** MG-DE-001 through MG-DE-005 closed; MG-DE-006 ready for independent scientific review
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -93,6 +93,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [Materials Project source contract](MG-DE_SOURCE_CONTRACT.md)
 - [MG-DE-005 real-source pilot plan](MG-DE_REAL_SOURCE_PILOT.md)
 - [MG-DE-005 qualified manifest report](MG-DE_QUALIFIED_MANIFEST_REPORT.md)
+- [MG-DE-006 scientific cohort review plan](MG-DE_SCIENTIFIC_COHORT_REVIEW.md)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 
