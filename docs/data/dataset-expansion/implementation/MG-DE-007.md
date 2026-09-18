@@ -13,8 +13,8 @@
   curated-conflict, and `mp-19017` sentinel reconciliation;
 - bounded representative endpoint execution using the established MG-DE-004
   measurement harness;
-- response-level identity and formula crowding measurements without changing
-  ranking or collapsing identities;
+- response-level occurrence, identity-repetition, and unique-identity formula
+  crowding measurements without changing ranking or collapsing identities;
 - analyzed PostgreSQL plan capture for a real formula-equivalence lookup;
 - tests for manifest binding, curated invariants, collision semantics,
   recursive response inspection, and crowding calculations.

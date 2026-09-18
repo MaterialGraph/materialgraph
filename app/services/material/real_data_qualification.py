@@ -32,6 +32,7 @@ def canonical_sha256(value: Any) -> str:
 class FormulaCrowdingSummary:
     result_count: int
     unique_identity_count: int
+    identity_repetition_count: int
     unique_formula_count: int
     repeated_formula_count: int
     repeated_identity_count: int
@@ -49,8 +50,14 @@ def summarize_formula_crowding(
 ) -> FormulaCrowdingSummary:
     """Measure identity and formula diversity without collapsing polymorphs."""
     material_rows = list(rows)
-    identities = {identity for identity, _formula in material_rows}
-    formula_counts = Counter(formula for _identity, formula in material_rows)
+    formulas_by_identity: dict[str, str] = {}
+    for identity, formula in material_rows:
+        existing_formula = formulas_by_identity.setdefault(identity, formula)
+        if existing_formula != formula:
+            raise ValueError(
+                "one material identity resolved to multiple formulas"
+            )
+    formula_counts = Counter(formulas_by_identity.values())
     repeated = {
         formula: count
         for formula, count in sorted(formula_counts.items())
@@ -59,17 +66,20 @@ def summarize_formula_crowding(
     result_count = len(material_rows)
     return FormulaCrowdingSummary(
         result_count=result_count,
-        unique_identity_count=len(identities),
+        unique_identity_count=len(formulas_by_identity),
+        identity_repetition_count=result_count - len(formulas_by_identity),
         unique_formula_count=len(formula_counts),
         repeated_formula_count=len(repeated),
         repeated_identity_count=sum(repeated.values()),
         maximum_formula_multiplicity=max(formula_counts.values(), default=0),
         identity_diversity_fraction=(
-            round(len(identities) / result_count, 6) if result_count else 0.0
+            round(len(formulas_by_identity) / result_count, 6)
+            if result_count
+            else 0.0
         ),
         formula_diversity_fraction=(
-            round(len(formula_counts) / result_count, 6)
-            if result_count
+            round(len(formula_counts) / len(formulas_by_identity), 6)
+            if formulas_by_identity
             else 0.0
         ),
         formula_multiplicities=repeated,

@@ -52,6 +52,7 @@ For every representative endpoint response, retain the unmodified JSON and
 record:
 
 - returned identity count and uniqueness;
+- response occurrence count and repeated occurrences of the same identity;
 - unique formula count and formula-diversity fraction;
 - repeated formula and repeated identity counts;
 - maximum formula multiplicity in the response;

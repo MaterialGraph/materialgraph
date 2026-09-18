@@ -1,3 +1,5 @@
+import pytest
+
 from app.services.material.real_data_qualification import (
     APPROVED_MANIFEST_SHA256,
     EXPECTED_CURATED_CONFLICTS,
@@ -77,9 +79,35 @@ def test_formula_crowding_keeps_identities_and_reports_formula_diversity():
 
     assert summary.result_count == 3
     assert summary.unique_identity_count == 3
+    assert summary.identity_repetition_count == 0
     assert summary.unique_formula_count == 2
     assert summary.formula_multiplicities == {"LiFePO4": 2}
     assert summary.formula_diversity_fraction == 0.666667
+
+
+def test_formula_crowding_separates_response_repetition_from_polymorphs():
+    summary = summarize_formula_crowding(
+        [
+            ("mp-1", "LiFePO4"),
+            ("mp-1", "LiFePO4"),
+            ("mp-2", "LiFePO4"),
+            ("mp-3", "NaFePO4"),
+        ]
+    )
+
+    assert summary.result_count == 4
+    assert summary.unique_identity_count == 3
+    assert summary.identity_repetition_count == 1
+    assert summary.unique_formula_count == 2
+    assert summary.repeated_identity_count == 2
+    assert summary.formula_diversity_fraction == 0.666667
+
+
+def test_formula_crowding_rejects_conflicting_identity_formulas():
+    with pytest.raises(ValueError, match="multiple formulas"):
+        summarize_formula_crowding(
+            [("mp-1", "LiFePO4"), ("mp-1", "NaFePO4")]
+        )
 
 
 def test_identity_formula_extraction_is_recursive_and_non_destructive():
