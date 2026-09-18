@@ -7,7 +7,7 @@
 | [MG-DE-003](MG-DE-003.md) | Request paths contain scale-sensitive broad loading | Closed | Yes (resolved) |
 | [MG-DE-004](MG-DE-004.md) | Representative scale evidence is absent | Closed | Yes (resolved) |
 | [MG-DE-005](MG-DE-005.md) | A reviewed real-source pilot manifest is absent | Closed | Yes (resolved) |
-| [MG-DE-006](MG-DE-006.md) | Scientific usefulness of the qualified cohort is unreviewed | Ready for verification | Yes |
+| [MG-DE-006](MG-DE-006.md) | Scientific usefulness of the qualified cohort is unreviewed | Closed | Yes (resolved) |
 
 Findings describe confirmed readiness gaps. They are not security
 vulnerabilities and do not reopen closed `MG-SEC-*` or `MG-SA-*` records.

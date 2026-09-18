@@ -1,6 +1,6 @@
 # MG-DE-006: Scientific usefulness of the qualified cohort is unreviewed
 
-**Status:** Ready for verification
+**Status:** Closed
 **Priority:** Scientific import gate
 **Production blocker:** Yes
 
@@ -35,3 +35,12 @@ has no integrity failures and the repository records a reviewed scientific
 decision with its limitations. Tool execution alone does not close this
 finding. Until closure, PostgreSQL, Neon, and production import remain
 unauthorized.
+
+## Resolution
+
+Independent execution matched the exact qualified manifest with no integrity
+failures. The [scientific cohort report](../MG-DE_SCIENTIFIC_COHORT_REPORT.md)
+accepts the cohort for disposable local PostgreSQL qualification while
+retaining explicit sulfide, imbalance, near-stability, source-zero,
+polymorph-crowding, attribution, and representativeness limitations. Neon and
+production writes remain unauthorized.

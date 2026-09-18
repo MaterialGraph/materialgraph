@@ -79,8 +79,9 @@ copy was independently verified against the manifest file hash above.
 
 ## Remaining gates
 
-- MG-DE-006 must review cohort composition, imbalance, polymorph density,
-  zero-result systems, intended product use, and attribution presentation.
+- MG-DE-006 accepted the cohort with explicit imbalance, polymorph,
+  zero-result, stability, and attribution limitations recorded in the
+  [scientific cohort report](MG-DE_SCIENTIFIC_COHORT_REPORT.md).
 - The manifest must then be qualified in disposable local PostgreSQL before an
   isolated Neon test environment is considered.
 - Production import, EC2 deployment, production Neon writes, schema changes,

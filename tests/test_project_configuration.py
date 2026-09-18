@@ -207,7 +207,7 @@ def test_real_source_pilot_closure_is_evidence_bounded():
     assert "Li-Fe-S" in report and "Na-Ni-S" in report
     assert "**Import authorized:** No" in report
     assert "**Status:** Closed" in finding
-    assert "MG-DE-006 ready for independent scientific review" in readme
+    assert "MG-DE-001 through MG-DE-006 closed" in readme
 
 
 def test_scientific_cohort_review_is_offline_and_does_not_authorize_import():
@@ -226,7 +226,17 @@ def test_scientific_cohort_review_is_offline_and_does_not_authorize_import():
     assert "No universal numeric balance threshold is invented" in plan
     assert "Accept for disposable PostgreSQL qualification" in plan
     assert "It does not authorize Neon, production" in plan
-    assert "**Status:** Ready for verification" in finding
+    report = (root / "MG-DE_SCIENTIFIC_COHORT_REPORT.md").read_text(
+        encoding="utf-8"
+    )
+    assert "**Status:** Closed" in finding
+    assert "Accept for disposable PostgreSQL qualification" in report
+    assert (
+        "1897c042a4884700ec52c222542840c1c1654033dc39b739c9c407fa21829740"
+        in report
+    )
+    assert "Neon or production import authorized:** No" in report
+    assert "largest formula groups contain 70 and 73" in report
 
 
 def test_request_timeout_hierarchy_is_bounded_and_documented():

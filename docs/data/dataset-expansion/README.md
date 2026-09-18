@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-005 closed; MG-DE-006 ready for independent scientific review
+**Status:** MG-DE-001 through MG-DE-006 closed; disposable real-source PostgreSQL qualification is next
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -31,8 +31,9 @@ production migration or import is authorized.
 The first MG-DE-005 manifest-only execution reached its 3,000-material ceiling
 before completing all 48 systems and was not qualified or imported. The
 revised 0.05 eV/atom version 3 contract completed with 1,727 identities and
-passed all technical manifest gates. Scientific cohort review and every
-database-import gate remain pending.
+passed all technical manifest gates. MG-DE-006 accepted it with explicit
+scientific limitations for disposable local PostgreSQL qualification only;
+every database-import execution gate remains pending.
 
 ## Scope
 
@@ -94,6 +95,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [MG-DE-005 real-source pilot plan](MG-DE_REAL_SOURCE_PILOT.md)
 - [MG-DE-005 qualified manifest report](MG-DE_QUALIFIED_MANIFEST_REPORT.md)
 - [MG-DE-006 scientific cohort review plan](MG-DE_SCIENTIFIC_COHORT_REVIEW.md)
+- [MG-DE-006 scientific cohort report](MG-DE_SCIENTIFIC_COHORT_REPORT.md)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 
@@ -107,6 +109,6 @@ migration, service restart, backup restoration, or infrastructure resize.
    **Complete.**
 6. Measure query plans, latency, memory, backup behavior, and scientific
    regression. **Complete for the isolated initial test target.**
-7. Review real-source evidence and a separate bounded production-canary plan
-   before authorizing any production import. **MG-DE-005 technical manifest
-   qualification complete; scientific review and import remain unauthorized.**
+7. Review real-source evidence and scientific cohort suitability before any
+   database import. **MG-DE-005 and MG-DE-006 complete; disposable local
+   PostgreSQL qualification is next. Neon and production remain unauthorized.**
