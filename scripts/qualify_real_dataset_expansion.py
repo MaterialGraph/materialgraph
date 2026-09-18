@@ -29,8 +29,8 @@ from app.services.material.real_data_qualification import (
     extract_identity_formula_pairs,
     summarize_formula_crowding,
 )
-from scripts.capture_curated_database_state import capture
-from scripts.qualify_dataset_expansion import (
+from capture_curated_database_state import capture
+from qualify_dataset_expansion import (
     execute_scenario,
     scenarios,
     write_json,
