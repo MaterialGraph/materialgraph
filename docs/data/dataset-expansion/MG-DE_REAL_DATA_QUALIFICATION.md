@@ -20,8 +20,9 @@ database, and `MATERIALGRAPH_ENV_FILE` must be disabled for the session. The
 qualification tools reject non-PostgreSQL databases and names that do not
 contain both `test` and `mg_de_007`.
 
-Do not use `materialgraph`, a shared test database, Neon, or production. Do not
-perform a restore under this plan. No concurrency or load test is authorized.
+Do not use `materialgraph`, a shared test database, Neon, or production.
+Do not perform a restore under this plan.
+No concurrency or load test is authorized.
 
 ## Gate A: curated-data preservation
 
