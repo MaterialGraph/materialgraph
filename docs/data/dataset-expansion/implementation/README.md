@@ -8,6 +8,7 @@
 | MG-DE-004 | [Representative-scale qualification framework](MG-DE-004.md) | Verified and closed |
 | MG-DE-005 | [Real-source pilot acquisition and inspection](MG-DE-005.md) | Verified and closed |
 | MG-DE-006 | [Offline scientific cohort review](MG-DE-006.md) | Verified and closed |
+| MG-DE-007 | [Real-data PostgreSQL qualification](MG-DE-007.md) | Independent execution pending |
 
 Each approved change must receive a focused record describing:
 

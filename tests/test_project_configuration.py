@@ -239,6 +239,35 @@ def test_scientific_cohort_review_is_offline_and_does_not_authorize_import():
     assert "largest formula groups contain 70 and 73" in report
 
 
+def test_real_data_qualification_is_exact_isolated_and_neon_safe():
+    root = PROJECT_ROOT / "docs/data/dataset-expansion"
+    qualifier = (
+        PROJECT_ROOT / "scripts/qualify_real_dataset_expansion.py"
+    ).read_text(encoding="utf-8")
+    capture = (
+        PROJECT_ROOT / "scripts/capture_curated_database_state.py"
+    ).read_text(encoding="utf-8")
+    plan = (root / "MG-DE_REAL_DATA_QUALIFICATION.md").read_text(
+        encoding="utf-8"
+    )
+    finding = (root / "findings/MG-DE-007.md").read_text(encoding="utf-8")
+
+    assert '"mg_de_007" not in lowered' in qualifier
+    assert 'engine.dialect.name != "postgresql"' in qualifier
+    assert "APPROVED_MANIFEST_SHA256" in qualifier
+    assert "evaluate_curated_preservation" in qualifier
+    assert "evaluate_collision_event" in qualifier
+    assert "summarize_formula_crowding" in qualifier
+    assert "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)" in qualifier
+    assert '"mg_de_007" not in lowered' in capture
+    assert "CURATED_MATERIAL_COUNT" in capture
+    assert "No concurrency or load test is authorized" in plan
+    assert "Do not perform a restore under this plan" in plan
+    assert "Neon or production writes authorized:** No" in plan
+    assert "mp-19017" in plan
+    assert "**Status:** In progress" in finding
+
+
 def test_request_timeout_hierarchy_is_bounded_and_documented():
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
     deployment = (PROJECT_ROOT / "docs/guide/DEPLOYMENT.md").read_text(

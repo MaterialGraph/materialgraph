@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-006 closed; disposable real-source PostgreSQL qualification is next
+**Status:** MG-DE-001 through MG-DE-006 closed; MG-DE-007 in progress
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -96,6 +96,7 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [MG-DE-005 qualified manifest report](MG-DE_QUALIFIED_MANIFEST_REPORT.md)
 - [MG-DE-006 scientific cohort review plan](MG-DE_SCIENTIFIC_COHORT_REVIEW.md)
 - [MG-DE-006 scientific cohort report](MG-DE_SCIENTIFIC_COHORT_REPORT.md)
+- [MG-DE-007 real-data PostgreSQL qualification plan](MG-DE_REAL_DATA_QUALIFICATION.md)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 

@@ -19,5 +19,7 @@
 | MG-DE-D-015 | Accept the complete version 3 manifest only as input to MG-DE-006 scientific cohort review | Technical qualification establishes provenance and coverage, not scientific representativeness or authorization to import | Approved |
 | MG-DE-D-016 | Separate deterministic cohort measurements from the MG-DE-006 scientific suitability decision | Integrity and distribution facts can be automated; usefulness and accepted imbalance must remain explicit reviewed judgment against the stated scope | Approved |
 | MG-DE-D-017 | Accept the 1,727-material cohort for disposable local PostgreSQL qualification only | Complete scope and meaningful focused coverage support the next isolated gate; sparse sulfides, source zeroes, lithium dominance, near-stability, and polymorph crowding remain explicit limitations | Approved with limitations |
+| MG-DE-D-018 | Make curated preservation, polymorph crowding, and exact-manifest recovery separate MG-DE-007 acceptance gates | A single aggregate performance result could hide curated corruption, misleading formula diversity, or incomplete recovery | Approved |
+| MG-DE-D-019 | Preserve polymorph identities and measure formula diversity before proposing ranking or grouping changes | Formula-equivalent source identities can be scientifically meaningful; silent collapse or an arbitrary diversity penalty would change product semantics without evidence | Approved |
 
 Proposed decisions become approved only through a reviewed repository change.
