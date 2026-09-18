@@ -9,8 +9,8 @@
 - exact approved-manifest constants and fail-closed contract evaluation;
 - canonical protected-state capture for curated material IDs 1 through 28 and
   their material-element relationships;
-- exact import-run, event, source-record, membership, total-material, and
-  `mp-19017` collision reconciliation;
+- exact import-run, event, source-record, membership, total-material, all-28
+  curated-conflict, and `mp-19017` sentinel reconciliation;
 - bounded representative endpoint execution using the established MG-DE-004
   measurement harness;
 - response-level identity and formula crowding measurements without changing

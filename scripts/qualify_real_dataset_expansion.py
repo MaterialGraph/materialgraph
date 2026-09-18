@@ -21,6 +21,8 @@ from app.services.material.real_data_qualification import (
     APPROVED_ACCEPTED,
     APPROVED_MANIFEST_SHA256,
     COLLISION_SOURCE_ID,
+    CURATED_MATERIAL_COUNT,
+    EXPECTED_CURATED_CONFLICTS,
     evaluate_collision_event,
     evaluate_curated_preservation,
     evaluate_manifest_contract,
@@ -128,16 +130,19 @@ def reconciliation() -> tuple[dict, int]:
             {"id": target_id},
         ).scalar_one()
         failures = evaluate_collision_event(collision_document)
-        expected_records = APPROVED_ACCEPTED - 1
+        expected_records = APPROVED_ACCEPTED - EXPECTED_CURATED_CONFLICTS
         if run.status != "completed_with_conflicts":
             failures.append("run_status")
-        if event_counts != {"conflicted": 1, "inserted": expected_records}:
+        if event_counts != {
+            "conflicted": EXPECTED_CURATED_CONFLICTS,
+            "inserted": expected_records,
+        }:
             failures.append("event_counts")
         if source_records != expected_records or active_records != expected_records:
             failures.append("source_records")
         if memberships != expected_records:
             failures.append("memberships")
-        if total_materials != 28 + expected_records:
+        if total_materials != CURATED_MATERIAL_COUNT + expected_records:
             failures.append("material_count")
         return (
             {

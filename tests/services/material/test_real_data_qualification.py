@@ -1,5 +1,6 @@
 from app.services.material.real_data_qualification import (
     APPROVED_MANIFEST_SHA256,
+    EXPECTED_CURATED_CONFLICTS,
     evaluate_collision_event,
     evaluate_curated_preservation,
     evaluate_manifest_contract,
@@ -27,6 +28,7 @@ def test_approved_manifest_contract_is_exact_and_fail_closed():
     manifest = approved_manifest()
 
     assert evaluate_manifest_contract(manifest) == []
+    assert EXPECTED_CURATED_CONFLICTS == 28
 
     manifest["counts"]["accepted"] = 1726
     manifest["counts"]["source_complete"] = False

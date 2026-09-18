@@ -35,14 +35,16 @@ No concurrency or load test is authorized.
 4. Require all 28 protected identities and their material-element links to
    retain the same canonical SHA-256.
 5. Require complete curated API JSON to match before and after import.
-6. Require the manifest identity `mp-19017` to produce one explained
-   `conflicted` event attached to curated material ID 5. It must not insert,
-   update, reassign, merge, or silently accept the curated row.
+6. Require all 28 manifest identities that overlap the curated cohort to
+   produce explained `conflicted` events rather than inserts or updates.
+7. Inspect `mp-19017` explicitly as the sentinel conflict attached to curated
+   material ID 5. It must not insert, update, reassign, merge, or silently
+   accept the curated row.
 
-Expected clean-import reconciliation is 1,726 inserted source identities, one
-conflict, 1,726 active source records, 1,726 active scope memberships, and
-1,754 total materials. These numbers are contract-derived; unexpected counts
-fail the gate.
+Expected clean-import reconciliation is 1,699 inserted source identities, 28
+curated conflicts, 1,699 active source records, 1,699 active scope memberships,
+and 1,727 total materials. These numbers are observed from the exact approved
+manifest and protected baseline; unexpected counts fail the gate.
 
 ## Gate B: polymorph crowding
 

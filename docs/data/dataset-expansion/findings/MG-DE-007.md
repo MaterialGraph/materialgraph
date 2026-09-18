@@ -16,7 +16,8 @@ plans, and backup behavior therefore remain unproven.
 
 - all requirements in the MG-DE-007 qualification plan pass;
 - all 28 curated materials and complete reference responses are unchanged;
-- `mp-19017` is an explained conflict for material ID 5;
+- all 28 curated overlaps are explained conflicts, including `mp-19017` for
+  material ID 5;
 - clean import and fresh rerun reconcile exactly;
 - failed and committed chunk recovery complete without duplicate events or
   source identities;
