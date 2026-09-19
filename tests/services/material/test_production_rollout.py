@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from app.services.material.neon_qualification import NeonQualificationBudget
 from app.services.material.production_rollout import (
     ProductionBaseline,
@@ -201,3 +204,42 @@ def test_contract_requires_rollback_controls_and_sequential_budget():
         "budget_connections",
         "budget_parallel_requests",
     ]
+
+def test_checked_in_production_identity_contract_is_exact_and_safe():
+    path = (
+        Path(__file__).resolve().parents[3]
+        / "docs/data/dataset-expansion"
+        / "MG-DE_PRODUCTION_ROLLOUT_CONTRACT.json"
+    )
+    contract = json.loads(path.read_text(encoding="utf-8"))
+    serialized = json.dumps(contract)
+
+    assert evaluate_production_rollout_document(contract) == []
+    assert "replace-with-" not in serialized
+    assert "postgresql://" not in serialized
+    assert "postgresql+psycopg://" not in serialized
+    assert "password" not in serialized.lower()
+    assert not any(contract["authorization"].values())
+
+    assert contract["production_target"] == {
+        "project_id": "nameless-art-61629272",
+        "branch_id": "br-old-credit-ao7cn4h7",
+        "branch_name": "production",
+        "endpoint_id": "ep-long-mud-ao7wdhiw",
+        "database_name": "neondb",
+        "pooled_role": "materialgraph_runtime",
+        "direct_role": "neondb_owner",
+    }
+    assert contract["expected_baseline"] == {
+        "current_revision": "7a4c2e91b6d8",
+        "target_revision": "c8f3a2d7e901",
+        "curated_records_sha256": (
+            "56930eaf013600fc4966e618acc01895c"
+            "3b1b5ea650547199225a81d3533296d"
+        ),
+        "material_count": 28,
+        "element_count": 9,
+        "material_element_count": 94,
+        "sentinel_id": 5,
+        "sentinel_mp_id": "mp-19017",
+    }
