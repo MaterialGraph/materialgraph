@@ -23,6 +23,7 @@
 | Scientific regression | Canonical state for all 28 curated materials and complete sentinel detail/criticality JSON matched before and after real import and rerun | Qualified | Expand the invariant cohort with approved scientific capabilities |
 | Backup/recovery | Real-data custom-format backup and archive listing completed | 750,478-byte archive with 124 listed entries qualified | Restoration remains separately authorized evidence |
 | Compute capacity | Production uses a small EC2 instance and managed PostgreSQL | Unqualified, not proven inadequate | Measure canary resource use before production expansion |
+| Production rollout | MG-DE-009 offline contract binds exact production identity, baseline, manifest, expected outcome, rollback controls, and bounded execution | Planning safeguards implemented; all execution authorization remains false | Independently review the contract, then separately authorize read-only preflight before any write decision |
 
 ## Overall result
 
@@ -36,3 +37,6 @@ Broad response crowding and the heavier discovery paths are accepted signals,
 not hidden successes. MG-DE-008 independently qualified the exact cohort on an
 isolated non-production Neon branch and completed evidence and cleanup gates.
 Production writes remain separately unauthorized.
+MG-DE-009 now defines the offline production-target and rollback safeguards.
+It does not authorize a production connection, backup, migration, import,
+restore, restart, deployment, publication, or canary.

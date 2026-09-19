@@ -207,7 +207,8 @@ def test_real_source_pilot_closure_is_evidence_bounded():
     assert "Li-Fe-S" in report and "Na-Ni-S" in report
     assert "**Import authorized:** No" in report
     assert "**Status:** Closed" in finding
-    assert "MG-DE-001 through MG-DE-007 closed locally" in readme
+    assert "MG-DE-001 through MG-DE-008 closed" in readme
+    assert "MG-DE-009 production rollout safeguards in progress" in readme
 
 
 def test_scientific_cohort_review_is_offline_and_does_not_authorize_import():

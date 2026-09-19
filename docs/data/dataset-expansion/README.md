@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-008 closed; production expansion remains separately unauthorized
+**Status:** MG-DE-001 through MG-DE-008 closed; MG-DE-009 production rollout safeguards in progress
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -109,6 +109,8 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [MG-DE-008 isolated Neon qualification plan](MG-DE_NEON_QUALIFICATION.md)
 - [MG-DE-008 isolated Neon qualification report](MG-DE_NEON_QUALIFICATION_REPORT.md)
 - [MG-DE-008 offline contract template](MG-DE_NEON_QUALIFICATION_CONTRACT.example.json)
+- [MG-DE-009 production rollout readiness plan](MG-DE_PRODUCTION_ROLLOUT.md)
+- [MG-DE-009 offline contract template](MG-DE_PRODUCTION_ROLLOUT_CONTRACT.example.json)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
 
@@ -128,3 +130,7 @@ migration, service restart, backup restoration, or infrastructure resize.
    **MG-DE-007 complete with accepted limitations. MG-DE-008 isolated Neon
    qualification and cleanup are complete with recorded performance findings;
    production expansion remains separately unauthorized.**
+9. Prepare an exact production-target contract, read-only preflight boundary,
+   backup evidence requirements, rollback ownership, and bounded execution
+   gates. **MG-DE-009 planning safeguards are implemented; production
+   execution remains unauthorized.**

@@ -26,5 +26,8 @@
 | MG-DE-D-022 | Require an offline, fail-closed resource contract before any MG-DE-008 connection or provisioning | SQL metadata cannot prove Neon project or branch identity, while explicit qualification and production identifiers make branch and endpoint collisions reviewable before credentials are used | Approved |
 | MG-DE-D-023 | Bound MG-DE-008 to sequential execution and explicit wall-clock, compute, storage, and connection ceilings | Remote qualification must produce useful evidence without becoming an implicit load test or open-ended managed-service expense | Approved |
 | MG-DE-D-024 | Carry material-identity and unique-formula counts into frontend presentation requirements without collapsing polymorphs | MG-DE-007 demonstrated scientifically meaningful identity multiplicity and broad-response formula crowding | Approved |
+| MG-DE-D-025 | Require a separate positive production-target contract for MG-DE-009 rather than weakening the MG-DE-008 non-production denylist | Qualification and production have opposite identity rules; reusing one validator could make either boundary ambiguous | Approved |
+| MG-DE-D-026 | End MG-DE-009 readiness implementation with migration, import, restore, and service-restart authorization explicitly false | Repository safeguards and a valid offline contract do not constitute approval to mutate production | Approved |
+| MG-DE-D-027 | Require independently retained backup evidence and a predeclared rollback decision boundary before any production write window | A backup file alone neither proves recoverability nor authorizes destructive restoration | Approved |
 
 Proposed decisions become approved only through a reviewed repository change.
