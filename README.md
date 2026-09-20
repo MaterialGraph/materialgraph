@@ -3,7 +3,7 @@
 > Deterministic, explainable materials research intelligence and decision
 > support
 
-MaterialGraph is an open-source knowledge-graph platform that computationally
+MaterialGraph is a proprietary knowledge-graph platform that computationally
 generates, ranks, compares, and explains material opportunities using available
 data and explicit deterministic rules.
 
@@ -335,6 +335,11 @@ research opportunities.
 
 ---
 
-## License
+## Licensing
 
-MIT License
+MaterialGraph's original software is proprietary. No general permission is
+currently granted to use, copy, modify, or redistribute its source code.
+
+Third-party components and materials remain subject to their respective
+licenses, notices, and attribution requirements. Repository visibility does not
+change these terms or grant an open-source licence.
