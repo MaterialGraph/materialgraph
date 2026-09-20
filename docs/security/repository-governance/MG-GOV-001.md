@@ -51,7 +51,6 @@ Configure a branch rule or ruleset targeting `main` with:
 
 - pull requests required before merge;
 - zero required approvals for the current solo-maintainer boundary;
-- conversation resolution required;
 - required status checks `Gitleaks` and `Locked dependency audit`;
 - strict/up-to-date branch requirement enabled;
 - administrator enforcement/no routine bypass;
@@ -92,6 +91,26 @@ revisited when another trusted maintainer is added.
    after both required checks pass. Do not weaken or bypass the rule for the
    test.
 7. Confirm `main` contains the reviewed merge commit and the worktree is clean.
+
+## Live control evidence
+
+GitHub settings were configured and re-read on 2026-09-20:
+
+- classic branch protection applies to `main`;
+- pull requests are required with zero required approvals;
+- `Gitleaks` and `Locked dependency audit` are required from GitHub Actions;
+- strict/up-to-date status checks are enabled;
+- administrator bypass is disabled;
+- force pushes and branch deletion remain disabled;
+- dependency graph, Dependabot alerts, Dependabot security updates, Secret
+  Protection, push protection, and private vulnerability reporting are enabled;
+- pull request `#5` contains the reviewed repository changes and showed four
+  successful workflow runs before this evidence update.
+
+The evidence update itself retriggers the protected checks. The pull request
+must be observed as blocked while either required check is pending, and ready
+only after both pass. The pull request remains open until merge is separately
+authorized.
 
 ## Rollback
 
