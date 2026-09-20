@@ -86,7 +86,7 @@ typing_extensions==4.15.0
 tzdata==2026.2
 uncertainties==3.2.3
 urllib3==2.7.0
-uvicorn==0.48.0
+uvicorn==0.53.0
 watchfiles==1.2.0
 websockets==16.0
 win32_setctime==1.2.0
