@@ -1,6 +1,6 @@
 # MG-GOV-001 — GitHub repository governance hardening
 
-**Status:** In progress
+**Status:** Closed
 **Baseline:** `918abe01c444e5346b6e895dc42d2d7037f718f7`
 **Production impact authorized:** None
 
@@ -41,9 +41,12 @@ The baseline repository was inspected at the exact commit above.
 | Root `SECURITY.md` | Absent |
 | Root `LICENSE` | Absent; GitHub reports no detected license |
 
-The missing license is a legal/product decision, not a formatting defect.
-`MG-GOV-001` does not select or add a license without an explicit owner
-decision.
+The missing license was a legal/product decision, not a formatting defect.
+On 2026-09-20, the owner selected a proprietary-source position. The unsupported
+MIT and open-source claims are removed in the closure change. MaterialGraph's
+original software grants no general permission to use, copy, modify, or
+redistribute its source code. Applicable third-party licenses, notices, and
+attribution obligations remain unchanged. No root open-source license is added.
 
 ## Target GitHub settings
 
@@ -107,10 +110,26 @@ GitHub settings were configured and re-read on 2026-09-20:
 - pull request `#5` contains the reviewed repository changes and showed four
   successful workflow runs before this evidence update.
 
-The evidence update itself retriggers the protected checks. The pull request
-must be observed as blocked while either required check is pending, and ready
-only after both pass. The pull request remains open until merge is separately
-authorized.
+The evidence update itself retriggered the protected checks. Pull request `#5`
+was observed as blocked while required checks were pending and ready only after
+they passed.
+
+## Closure evidence
+
+Pull request `#5` was merged into `main` on 2026-09-20 as commit
+`3db99d96abc26b2810cd107590cacd8e2c0f10fd`. The merged pull request records
+four successful checks and no base-branch conflict. The owner's local
+verification then confirmed:
+
+- local `main` and `origin/main` both pointed to the merge commit;
+- the merge was a clean fast-forward from the prior local baseline;
+- the working tree was clean;
+- protected `main` rejected direct web commits and required this closure
+  update to use a pull-request branch.
+
+The repository remains public. This closure does not change visibility, create
+an open-source license, modify production, or authorize new licensing terms.
+Any later visibility or licensing change requires separate owner authorization.
 
 ## Rollback
 

@@ -138,6 +138,11 @@ def test_repository_governance_configuration_is_bounded_and_explicit():
         PROJECT_ROOT
         / "docs/security/repository-governance/MG-GOV-001.md"
     ).read_text(encoding="utf-8")
+    governance_index = (
+        PROJECT_ROOT
+        / "docs/security/repository-governance/README.md"
+    ).read_text(encoding="utf-8")
+    project_readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     dependabot = (PROJECT_ROOT / ".github/dependabot.yml").read_text(
         encoding="utf-8"
     )
@@ -159,6 +164,15 @@ def test_repository_governance_configuration_is_bounded_and_explicit():
     assert "zero required approvals" in governance
     assert "force pushes disabled" in governance
     assert "branch deletion disabled" in governance
+    assert "**Status:** Closed" in governance
+    assert "3db99d96abc26b2810cd107590cacd8e2c0f10fd" in governance
+    assert "Closed; PR #5 merged" in governance_index
+    assert "MaterialGraph's original software is proprietary" in project_readme
+    assert "No general permission is" in project_readme
+    assert "Third-party components and materials remain subject" in project_readme
+    assert "MIT License" not in project_readme
+    assert "open-source knowledge-graph platform" not in project_readme
+    assert not (PROJECT_ROOT / "LICENSE").exists()
     assert dependabot.count('package-ecosystem: "pip"') == 1
     assert dependabot.count('package-ecosystem: "github-actions"') == 1
     assert dependabot.count('interval: "weekly"') == 2
