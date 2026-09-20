@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagnostic_commit": "918abe01c444e5346b6e895dc42d2d7037f718f7",
+  "method": "bounded sequential local diagnosis; no concurrency or network",
+  "fixture": {
+    "kind": "deterministic synthetic production-count fixture",
+    "materials": 1727,
+    "material_elements": 4144,
+    "material_applications": 128
+  },
+  "default_request": {
+    "material_id": 1,
+    "depth": 2,
+    "limit": 25,
+    "neighbor_service_calls": 25,
+    "database_query_count": 150,
+    "warm_median_service_ms": 1638.338,
+    "payload_bytes": 9657,
+    "payload_sha256": "50f22e6a428bd19f7569f169361e71cf5d019056c23e07d75cf2af97a2f2fd11"
+  },
+  "scaling": [
+    {"depth": 2, "limit": 1, "queries": 6, "warm_median_service_ms": 66.519, "payload_bytes": 336},
+    {"depth": 2, "limit": 5, "queries": 30, "warm_median_service_ms": 298.746, "payload_bytes": 2043},
+    {"depth": 2, "limit": 10, "queries": 60, "warm_median_service_ms": 649.084, "payload_bytes": 3945},
+    {"depth": 2, "limit": 25, "queries": 150, "warm_median_service_ms": 1638.338, "payload_bytes": 9657},
+    {"depth": 2, "limit": 50, "queries": 300, "warm_median_service_ms": 4538.827, "payload_bytes": 19262},
+    {"depth": 1, "limit": 25, "queries": 6, "warm_median_service_ms": 81.794, "payload_bytes": 9454}
+  ],
+  "round_trip_sensitivity": [
+    {"simulated_rtt_ms": 0, "queries": 150, "end_to_end_ms": 1697.022},
+    {"simulated_rtt_ms": 25, "queries": 150, "end_to_end_ms": 5514.719},
+    {"simulated_rtt_ms": 50, "queries": 150, "end_to_end_ms": 9325.920},
+    {"simulated_rtt_ms": 100, "queries": 150, "end_to_end_ms": 16749.582}
+  ],
+  "semantic_stability": {
+    "repeated_results_identical": true,
+    "artificial_delay_payload_hash_unchanged": true
+  },
+  "limitations": [
+    "SQLite does not reproduce PostgreSQL execution plans or Neon network behavior.",
+    "The fixture matches production material count but not the exact production cohort.",
+    "Artificial per-query delay is a sensitivity test, not a production measurement.",
+    "Sequential measurements do not establish concurrency capacity."
+  ]
+}
