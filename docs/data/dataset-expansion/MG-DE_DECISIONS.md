@@ -29,5 +29,7 @@
 | MG-DE-D-025 | Require a separate positive production-target contract for MG-DE-009 rather than weakening the MG-DE-008 non-production denylist | Qualification and production have opposite identity rules; reusing one validator could make either boundary ambiguous | Approved |
 | MG-DE-D-026 | End MG-DE-009 readiness implementation with migration, import, restore, and service-restart authorization explicitly false | Repository safeguards and a valid offline contract do not constitute approval to mutate production | Approved |
 | MG-DE-D-027 | Require independently retained backup evidence and a predeclared rollback decision boundary before any production write window | A backup file alone neither proves recoverability nor authorizes destructive restoration | Approved |
+| MG-DE-D-028 | Preserve the pooled `materialgraph_runtime` role as read-only and execute the authorized import through the reviewed direct `neondb_owner` path | The first attempt stopped before its first chunk because runtime privileges correctly denied lifecycle writes; widening runtime grants would weaken the production boundary | Verified |
+| MG-DE-D-029 | Retain the exact 1,727-material production state after successful MG-DE-009 observation and reconciliation | Exact outcomes, curated preservation, runtime reads, representative APIs, host health, provider state, and evidence integrity passed; native branch protection and neighborhood latency remain accepted limitations | Approved with limitations |
 
 Proposed decisions become approved only through a reviewed repository change.

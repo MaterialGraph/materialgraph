@@ -207,8 +207,8 @@ def test_real_source_pilot_closure_is_evidence_bounded():
     assert "Li-Fe-S" in report and "Na-Ni-S" in report
     assert "**Import authorized:** No" in report
     assert "**Status:** Closed" in finding
-    assert "MG-DE-001 through MG-DE-008 closed" in readme
-    assert "MG-DE-009 production rollout safeguards in progress" in readme
+    assert "MG-DE-001 through MG-DE-009 closed" in readme
+    assert "exact 1,727-material dataset active in production" in readme
 
 
 def test_scientific_cohort_review_is_offline_and_does_not_authorize_import():
@@ -1233,3 +1233,57 @@ def test_root_readme_audit_status_and_local_links_are_current():
     assert "71 remain open" not in readme
     assert local_targets
     assert all((PROJECT_ROOT / target).exists() for target in local_targets)
+
+def test_production_rollout_closure_is_evidence_bounded():
+    root = PROJECT_ROOT / "docs/data/dataset-expansion"
+
+    report = (
+        root / "MG-DE_PRODUCTION_ROLLOUT_REPORT.md"
+    ).read_text(encoding="utf-8")
+    plan = (
+        root / "MG-DE_PRODUCTION_ROLLOUT.md"
+    ).read_text(encoding="utf-8")
+    evidence = (
+        root / "MG-DE_EVIDENCE_REGISTER.md"
+    ).read_text(encoding="utf-8")
+    decisions = (
+        root / "MG-DE_DECISIONS.md"
+    ).read_text(encoding="utf-8")
+    readme = (root / "README.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "**Status:** Closed" in report
+    assert "1,727" in report
+    assert "1,699" in report
+    assert "28" in report
+    assert "c8f3a2d7e901" in report
+    assert (
+        "81ffa889-40f8-4089-b8e2-e52c70caf2bd"
+        in report
+    )
+    assert (
+        "5daec8411c7621be2f982bb991ab11dcbfb60b203a350b29ebafae14d1b1fe85"
+        in report
+    )
+    assert (
+        "Further database writes authorized:** No"
+        in report
+    )
+    assert "Restore authorized or performed:** No" in report
+    assert (
+        "Deployment or service restart performed:** No"
+        in report
+    )
+
+    assert (
+        "exact production rollout independently reconciled"
+        in plan
+    )
+    assert "MG-DE-E-097" in evidence
+    assert "MG-DE-D-029" in decisions
+    assert "MG-DE-001 through MG-DE-009 closed" in readme
+    assert "MG-DE_PRODUCTION_ROLLOUT_REPORT.md" in readme
+
+    assert "postgresql://" not in report
+    assert "BEGIN PRIVATE KEY" not in report

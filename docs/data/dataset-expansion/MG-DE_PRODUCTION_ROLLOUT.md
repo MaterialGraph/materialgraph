@@ -1,17 +1,20 @@
 # MG-DE-009 Production Rollout Readiness Plan
 
-**Status:** Planning safeguards implemented; production execution unauthorized
-**Production migration authorized:** No
-**Production import authorized:** No
-**Production restore authorized:** No
-**Service restart authorized:** No
+**Status:** Closed; exact production rollout independently reconciled
+**Production migration performed:** Yes
+**Production import performed:** Yes
+**Expanded dataset remains active:** Yes
+**Further database writes authorized:** No
+**Production restore performed or authorized:** No
+**Deployment or service restart performed:** No
 
 ## Purpose
 
 MG-DE-008 qualified the exact approved 1,727-identity manifest on an isolated
-Neon branch and then proved cleanup. MG-DE-009 defines the separate controls
-required before the production database may be migrated or imported. It is a
-rollout-readiness gate, not production execution and not a production canary.
+Neon branch and then proved cleanup. MG-DE-009 used the separate controls in
+this plan to migrate and import the exact cohort into the reviewed production
+target. The execution and its observation period are recorded in
+[the closure report](MG-DE_PRODUCTION_ROLLOUT_REPORT.md).
 
 ## Immutable input and expected outcome
 
@@ -130,9 +133,15 @@ evidence is independently retained.
 MG-DE-009 production execution can close only after independent reconciliation
 and a separate decision on whether the expanded dataset may remain active.
 
-## Current closure boundary
+## Closure result
 
-This planning change closes no production gate. It provides offline safeguards
-for preparing a reviewed contract. Production network access, backup,
-migration, import, restore, restart, deployment, publication, and canary
-remain unauthorized.
+MG-DE-009 completed the reviewed migration and exact manifest import with
+1,699 inserts and 28 protected curated conflicts. The final database contains
+1,727 distinct material identities at revision `c8f3a2d7e901`. Curated state,
+the sentinel, source identities, lifecycle counts, runtime read access, API
+responses, host health, and provider state passed the reviewed reconciliation
+and observation gates.
+
+The expanded dataset is authorized to remain active. No additional database
+write, migration, import, restore, deployment, service restart, or provider
+configuration change is authorized by this closure.

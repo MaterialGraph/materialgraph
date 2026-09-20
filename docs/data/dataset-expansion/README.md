@@ -1,7 +1,7 @@
 # MaterialGraph Dataset Expansion
 
 **Namespace:** `MG-DE-*`
-**Status:** MG-DE-001 through MG-DE-008 closed; MG-DE-009 production rollout safeguards in progress
+**Status:** MG-DE-001 through MG-DE-009 closed; exact 1,727-material dataset active in production
 **Baseline commit:** `60a6a9fe06ca9b0ba024b5507c6ac7e0307f7177`
 **Initial scale target:** Approximately 1,000 representative materials
 
@@ -40,8 +40,12 @@ validated backup creation without restoration. MG-DE-008 qualified the same
 manifest on an isolated Neon branch, preserving the same import and recovery
 outcomes within the reviewed resource ceilings. The remote run retained
 performance findings for discovery path, scientific pathways, and formula
-lookup. Its evidence and cleanup were independently verified. Production
-import and deployment remain unauthorized.
+lookup. Its evidence and cleanup were independently verified. MG-DE-009 then
+migrated production to `c8f3a2d7e901` and imported the exact manifest with
+1,699 inserts and 28 protected curated conflicts. The resulting 1,727-material
+state passed database, API, host, provider, and independent evidence
+reconciliation gates and is approved to remain active. No deployment or
+service restart was required.
 
 ## Scope
 
@@ -59,8 +63,9 @@ The workstream covers:
 - deterministic scientific regression checks;
 - backup size, duration, recovery objectives, and production rollout gates.
 
-It does not authorize a production import, dependency upgrade, schema
-migration, service restart, backup restoration, or infrastructure resize.
+Closure of this workstream does not authorize another production import,
+dependency upgrade, schema migration, database write, service restart, backup
+restoration, deployment, provider change, or infrastructure resize.
 
 ## Evidence rules
 
@@ -109,7 +114,8 @@ migration, service restart, backup restoration, or infrastructure resize.
 - [MG-DE-008 isolated Neon qualification plan](MG-DE_NEON_QUALIFICATION.md)
 - [MG-DE-008 isolated Neon qualification report](MG-DE_NEON_QUALIFICATION_REPORT.md)
 - [MG-DE-008 offline contract template](MG-DE_NEON_QUALIFICATION_CONTRACT.example.json)
-- [MG-DE-009 production rollout readiness plan](MG-DE_PRODUCTION_ROLLOUT.md)
+- [MG-DE-009 production rollout plan](MG-DE_PRODUCTION_ROLLOUT.md)
+- [MG-DE-009 production rollout closure report](MG-DE_PRODUCTION_ROLLOUT_REPORT.md)
 - [MG-DE-009 offline contract template](MG-DE_PRODUCTION_ROLLOUT_CONTRACT.example.json)
 - [Findings](findings/README.md)
 - [Implementation records](implementation/README.md)
@@ -130,7 +136,8 @@ migration, service restart, backup restoration, or infrastructure resize.
    **MG-DE-007 complete with accepted limitations. MG-DE-008 isolated Neon
    qualification and cleanup are complete with recorded performance findings;
    production expansion remains separately unauthorized.**
-9. Prepare an exact production-target contract, read-only preflight boundary,
-   backup evidence requirements, rollback ownership, and bounded execution
-   gates. **MG-DE-009 planning safeguards are implemented; production
-   execution remains unauthorized.**
+9. Prepare and execute the exact production-target contract, read-only
+   preflight, backups, migration, sequential import, observation, independent
+   reconciliation, and retention decision. **MG-DE-009 is closed; the exact
+   1,727-material dataset remains active with recorded limitations and no
+   authorization for further mutation.**

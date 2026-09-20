@@ -23,7 +23,7 @@
 | Scientific regression | Canonical state for all 28 curated materials and complete sentinel detail/criticality JSON matched before and after real import and rerun | Qualified | Expand the invariant cohort with approved scientific capabilities |
 | Backup/recovery | Real-data custom-format backup and archive listing completed | 750,478-byte archive with 124 listed entries qualified | Restoration remains separately authorized evidence |
 | Compute capacity | Production uses a small EC2 instance and managed PostgreSQL | Unqualified, not proven inadequate | Measure canary resource use before production expansion |
-| Production rollout | MG-DE-009 offline contract binds exact production identity, baseline, manifest, expected outcome, rollback controls, and bounded execution | Planning safeguards implemented; all execution authorization remains false | Independently review the contract, then separately authorize read-only preflight before any write decision |
+| Production rollout | MG-DE-009 contract, preflight, backups, migration, exact import, observation, provider evidence, and independent closure inventory | Closed with 1,727 materials active, curated state preserved, and no restore, deployment, restart, or runtime-grant change | Require a new reviewed scope and explicit authorization for any later mutation or operational change |
 
 ## Overall result
 
@@ -36,7 +36,11 @@ scientifically accepted, and locally PostgreSQL-qualified external manifest.
 Broad response crowding and the heavier discovery paths are accepted signals,
 not hidden successes. MG-DE-008 independently qualified the exact cohort on an
 isolated non-production Neon branch and completed evidence and cleanup gates.
-Production writes remain separately unauthorized.
-MG-DE-009 now defines the offline production-target and rollback safeguards.
-It does not authorize a production connection, backup, migration, import,
-restore, restart, deployment, publication, or canary.
+MG-DE-009 subsequently completed the reviewed production migration and exact
+manifest import. The final state contains 1,727 material identities at
+revision `c8f3a2d7e901`, with 1,699 inserts, 28 protected conflicts, preserved
+curated state, and zero updates, rejections, or retirements. Database, API,
+host, and provider observations passed the bounded closure gates. The dataset
+is approved to remain active with the recorded branch-protection and latency
+limitations. Further writes, restore, deployment, restart, provider mutation,
+concurrency testing, and larger expansion remain separately unauthorized.
