@@ -19,3 +19,4 @@ materialgraph-key.pem
 temp/
 env
 repository-files.txt
+*.egg-info/
