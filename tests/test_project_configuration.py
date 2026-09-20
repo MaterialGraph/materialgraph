@@ -133,6 +133,45 @@ def test_dependency_security_docs_do_not_overstate_branch_enforcement():
     assert "This is a manual operator precondition" in deployment
 
 
+def test_repository_governance_configuration_is_bounded_and_explicit():
+    governance = (
+        PROJECT_ROOT
+        / "docs/security/repository-governance/MG-GOV-001.md"
+    ).read_text(encoding="utf-8")
+    dependabot = (PROJECT_ROOT / ".github/dependabot.yml").read_text(
+        encoding="utf-8"
+    )
+    security_policy = (PROJECT_ROOT / "SECURITY.md").read_text(
+        encoding="utf-8"
+    )
+    secret_workflow = (
+        PROJECT_ROOT / ".github/workflows/secret-scan.yml"
+    ).read_text(encoding="utf-8")
+    dependency_workflow = (
+        PROJECT_ROOT / ".github/workflows/dependency-security.yml"
+    ).read_text(encoding="utf-8")
+
+    assert (
+        "**Baseline:** `918abe01c444e5346b6e895dc42d2d7037f718f7`"
+        in governance
+    )
+    assert "Production access, deployment, restoration" in governance
+    assert "zero required approvals" in governance
+    assert "force pushes disabled" in governance
+    assert "branch deletion disabled" in governance
+    assert dependabot.count('package-ecosystem: "pip"') == 1
+    assert dependabot.count('package-ecosystem: "github-actions"') == 1
+    assert dependabot.count('interval: "weekly"') == 2
+    assert (
+        "Do not disclose a suspected vulnerability in a public"
+        in security_policy
+    )
+    assert "name: Gitleaks" in secret_workflow
+    assert "pull_request:" in secret_workflow
+    assert "name: Locked dependency audit" in dependency_workflow
+    assert "pull_request:" in dependency_workflow
+
+
 def test_dataset_expansion_qualification_is_isolated_and_bounded():
     qualifier = (
         PROJECT_ROOT / "scripts/qualify_dataset_expansion.py"
