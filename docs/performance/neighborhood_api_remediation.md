@@ -72,8 +72,9 @@ The limit-100 request completed in 1,720.358 ms warm and 2,823.650 ms with
 
 ## Remaining boundary
 
-Disposable PostgreSQL validation with the exact accepted 1,727-material
-manifest remains an operational acceptance step where that environment is
-available. No PostgreSQL performance claim, concurrency claim, deployment,
-restart, production read, database write, schema change, migration, or index
-change is included in this remediation.
+Disposable local PostgreSQL validation on the exact accepted 1,727-material
+manifest is recorded in [the PostgreSQL evidence](neighborhood_api_postgresql_validation.md).
+The default local PostgreSQL warm median was 552.501 ms without Python memory
+tracing, so the synthetic SQLite 500 ms gate must not be represented as a
+PostgreSQL pass. No production-latency claim, concurrency claim, deployment,
+restart, production read, schema change, migration, or index change is included.
