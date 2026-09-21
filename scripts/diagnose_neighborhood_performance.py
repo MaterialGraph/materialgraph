@@ -33,7 +33,6 @@ from app.schemas.material_neighborhood import MaterialNeighborhoodResponse
 from app.services.material.neighbor_service import MaterialNeighborService
 from app.services.material.neighborhood_service import MaterialNeighborhoodService
 
-
 ELEMENTS = ("Li", "Fe", "P", "O", "Na", "Mn", "Co", "Ni", "Si", "S")
 APPLICATIONS = ("battery", "catalyst", "structural")
 
@@ -56,15 +55,17 @@ class ProfiledNeighborService(MaterialNeighborService):
     def __init__(self, db):
         super().__init__(db)
         self.calls = 0
+        self.materials_requested = 0
         self.call_ms = 0.0
         self.build_ms = 0.0
 
-    def get_neighbors(self, material_id: int) -> dict:
+    def get_neighbors_batch(self, material_ids: list[int]) -> dict[int, dict]:
         started = time.perf_counter()
         try:
-            return super().get_neighbors(material_id)
+            return super().get_neighbors_batch(material_ids)
         finally:
             self.calls += 1
+            self.materials_requested += len(material_ids)
             self.call_ms += (time.perf_counter() - started) * 1_000
 
     def _build_neighbors(self, *, neighbor_scores, materials_by_id):
@@ -271,6 +272,7 @@ def service_measurement(depth: int, limit: int) -> tuple[dict[str, Any], dict]:
             "database_execute_ms": round(database_ms, 3),
             "query_count_by_table": dict(sorted(statement_counts.items())),
             "neighbor_service_calls": profiled.calls,
+            "neighbor_materials_requested": profiled.materials_requested,
             "neighbor_service_ms": round(profiled.call_ms, 3),
             "neighbor_build_and_score_ms": round(profiled.build_ms, 3),
             "neighborhood_graph_ms_estimate": round(
@@ -300,11 +302,10 @@ def endpoint_measurement(depth: int, limit: int, rtt_ms: int) -> dict[str, Any]:
     app.dependency_overrides[get_db] = override_db
     path = f"/api/v1/materials/1/neighborhood?depth={depth}&limit={limit}"
     try:
-        with simulated_round_trip(engine, rtt_ms), record_queries(engine) as queries:
-            with TestClient(app) as client:
-                started = time.perf_counter()
-                response = client.get(path)
-                wall_ms = (time.perf_counter() - started) * 1_000
+        with simulated_round_trip(engine, rtt_ms), record_queries(engine) as queries, TestClient(app) as client:
+            started = time.perf_counter()
+            response = client.get(path)
+            wall_ms = (time.perf_counter() - started) * 1_000
     finally:
         app.dependency_overrides.clear()
     if response.status_code != 200:

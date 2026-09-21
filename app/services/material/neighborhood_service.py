@@ -1,5 +1,3 @@
-from collections import deque
-
 from sqlalchemy.orm import Session
 
 from app.services.material.neighbor_service import (
@@ -21,10 +19,10 @@ class MaterialNeighborhoodService:
     ) -> dict:
         neighbor_cache: dict[int, dict] = {}
 
-        root = self._get_neighbors(
-            material_id=material_id,
+        root = self._get_neighbors_batch(
+            material_ids=[material_id],
             cache=neighbor_cache,
-        )
+        )[material_id]
 
         if root["mp_id"] is None:
             return self._empty_neighborhood_response(
@@ -33,7 +31,7 @@ class MaterialNeighborhoodService:
             )
 
         visited: set[int] = {material_id}
-        frontier: deque[tuple[int, int]] = deque([(material_id, 0)])
+        frontier: list[int] = [material_id]
 
         nodes: dict[int, dict] = {
             material_id: {
@@ -51,64 +49,69 @@ class MaterialNeighborhoodService:
 
         edges: list[dict] = []
 
-        while frontier:
-            current_id, current_depth = frontier.popleft()
-
-            if current_depth >= depth:
-                continue
-
-            current_neighbors = self._get_neighbors(
-                material_id=current_id,
+        current_depth = 0
+        while frontier and current_depth < depth:
+            neighbors_by_material = self._get_neighbors_batch(
+                material_ids=frontier,
                 cache=neighbor_cache,
             )
+            next_frontier: list[int] = []
 
-            ordered_neighbors = sorted(
-                current_neighbors["neighbors"],
-                key=neighbor_ranking_key,
-            )
+            for current_id in frontier:
+                current_neighbors = neighbors_by_material[current_id]
 
-            for neighbor in ordered_neighbors:
-                neighbor_id = neighbor["material_id"]
-                next_depth = current_depth + 1
-
-                if neighbor_id not in nodes:
-                    if len(nodes) >= limit:
-                        continue
-
-                    nodes[neighbor_id] = {
-                        "material_id": neighbor_id,
-                        "mp_id": neighbor["mp_id"],
-                        "pretty_formula": neighbor["pretty_formula"],
-                        "formula": neighbor["formula"],
-                        "material_type": neighbor["material_type"],
-                        "is_stable": neighbor["is_stable"],
-                        "energy_above_hull": neighbor["energy_above_hull"],
-                        "depth": next_depth,
-                        "best_score": neighbor["neighbor_score"],
-                    }
-
-                else:
-                    nodes[neighbor_id]["best_score"] = max(
-                        nodes[neighbor_id]["best_score"],
-                        neighbor["neighbor_score"],
-                    )
-
-                edges.append(
-                    {
-                        "source_material_id": current_id,
-                        "target_material_id": neighbor_id,
-                        "relationship_types": neighbor["relationship_types"],
-                        "shared_element_count": neighbor["shared_element_count"],
-                        "shared_application_count": neighbor[
-                            "shared_application_count"
-                        ],
-                        "edge_score": neighbor["neighbor_score"],
-                    }
+                ordered_neighbors = sorted(
+                    current_neighbors["neighbors"],
+                    key=neighbor_ranking_key,
                 )
 
-                if neighbor_id not in visited:
-                    visited.add(neighbor_id)
-                    frontier.append((neighbor_id, next_depth))
+                for neighbor in ordered_neighbors:
+                    neighbor_id = neighbor["material_id"]
+                    next_depth = current_depth + 1
+
+                    if neighbor_id not in nodes:
+                        if len(nodes) >= limit:
+                            continue
+
+                        nodes[neighbor_id] = {
+                            "material_id": neighbor_id,
+                            "mp_id": neighbor["mp_id"],
+                            "pretty_formula": neighbor["pretty_formula"],
+                            "formula": neighbor["formula"],
+                            "material_type": neighbor["material_type"],
+                            "is_stable": neighbor["is_stable"],
+                            "energy_above_hull": neighbor["energy_above_hull"],
+                            "depth": next_depth,
+                            "best_score": neighbor["neighbor_score"],
+                        }
+
+                    else:
+                        nodes[neighbor_id]["best_score"] = max(
+                            nodes[neighbor_id]["best_score"],
+                            neighbor["neighbor_score"],
+                        )
+
+                    edges.append(
+                        {
+                            "source_material_id": current_id,
+                            "target_material_id": neighbor_id,
+                            "relationship_types": neighbor["relationship_types"],
+                            "shared_element_count": neighbor[
+                                "shared_element_count"
+                            ],
+                            "shared_application_count": neighbor[
+                                "shared_application_count"
+                            ],
+                            "edge_score": neighbor["neighbor_score"],
+                        }
+                    )
+
+                    if neighbor_id not in visited:
+                        visited.add(neighbor_id)
+                        next_frontier.append(neighbor_id)
+
+            frontier = next_frontier
+            current_depth += 1
 
         sorted_nodes = sorted(
             nodes.values(),
@@ -149,15 +152,25 @@ class MaterialNeighborhoodService:
             "edges": limited_edges,
         }
 
-    def _get_neighbors(
+    def _get_neighbors_batch(
         self,
-        material_id: int,
+        material_ids: list[int],
         cache: dict[int, dict],
-    ) -> dict:
-        if material_id not in cache:
-            cache[material_id] = self.neighbor_service.get_neighbors(material_id)
+    ) -> dict[int, dict]:
+        missing_material_ids = [
+            material_id
+            for material_id in material_ids
+            if material_id not in cache
+        ]
+        if missing_material_ids:
+            cache.update(
+                self.neighbor_service.get_neighbors_batch(missing_material_ids)
+            )
 
-        return cache[material_id]
+        return {
+            material_id: cache[material_id]
+            for material_id in material_ids
+        }
 
     def _empty_neighborhood_response(
         self,
