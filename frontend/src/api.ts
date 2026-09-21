@@ -30,6 +30,9 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   catch (error) { if (signal?.aborted) throw error; throw new ApiError(0, 'Cannot reach the API. Check the local backend connection.'); }
   if (!response.ok) {
     let message = `Request failed (${response.status}).`;
+    if (response.status >= 500 && !response.headers?.get('content-type')?.includes('application/json')) {
+      message = 'API unavailable or returned a non-JSON error. Check the local backend and Vite proxy.';
+    }
     if (response.status === 404) message = 'Material not found.';
     if (response.status === 422) message = 'Invalid element symbol. Enter a valid chemical symbol.';
     if (response.status === 429) message = 'Too many requests. Please try again shortly.';

@@ -28,3 +28,13 @@ it('distinguishes a missing material from a transport failure', async () => {
   await expect(materialDetail(5)).rejects.toBeInstanceOf(ApiError);
   await expect(materialDetail(5)).rejects.toMatchObject({ status: 0 });
 });
+
+it('explains a proxy failure without treating it as a scientific result', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+    ok: false, status: 500, headers: { get: () => 'text/plain' },
+  }));
+  await expect(materialDetail(5)).rejects.toMatchObject({
+    status: 500,
+    message: 'API unavailable or returned a non-JSON error. Check the local backend and Vite proxy.',
+  });
+});
