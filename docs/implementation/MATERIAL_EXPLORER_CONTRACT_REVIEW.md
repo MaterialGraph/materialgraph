@@ -13,3 +13,5 @@ Baseline: clean `main` at `158b19314`. Reviewed `MATERIALGRAPH_FRONTEND_UX_DESIG
 | Domain extensibility | Current core and documents distinguish generic reasoning from domain scientific validation | No battery-specific assumptions or defaults. |
 
 The product docs remain a target specification; this bounded implementation exposes current gaps rather than changing backend semantics. Follow-up backend work should specify property-level provenance, version/completeness metadata, pagination search, and rank semantics before implementing the broader roadmap's status/tie/coverage UI.
+
+The candidate `explanation` is currently a single backend-authored prose field. Some entries combine multiple composition heuristics and validation caveats into long semicolon-separated sentences. The explorer separates its existing sentences and clauses visually without rewriting claims; a future backend contract should expose distinct structured reasons, cautions, and evidence references so the UI can present a concise summary without parsing prose.
