@@ -68,8 +68,11 @@ def _service() -> MaterialNeighborhoodService:
         4: _response(4, []),
     }
 
-    service.neighbor_service.get_neighbors = Mock(
-        side_effect=lambda material_id: responses[material_id]
+    service.neighbor_service.get_neighbors_batch = Mock(
+        side_effect=lambda material_ids: {
+            material_id: responses[material_id]
+            for material_id in material_ids
+        }
     )
 
     return service
@@ -154,9 +157,9 @@ def test_limit_bounds_neighbor_expansion() -> None:
         for node in result["nodes"]
     } == {1, 2}
 
-    assert service.neighbor_service.get_neighbors.call_args_list == [
-        call(1),
-        call(2),
+    assert service.neighbor_service.get_neighbors_batch.call_args_list == [
+        call([1]),
+        call([2]),
     ]
 
 
@@ -170,8 +173,8 @@ def test_limit_one_does_not_expand_descendants() -> None:
     )
 
     assert [node["material_id"] for node in result["nodes"]] == [1]
-    assert service.neighbor_service.get_neighbors.call_count == 1
-    service.neighbor_service.get_neighbors.assert_called_once_with(1)
+    assert service.neighbor_service.get_neighbors_batch.call_count == 1
+    service.neighbor_service.get_neighbors_batch.assert_called_once_with([1])
 
 
 def test_bounded_traversal_is_deterministic() -> None:
@@ -204,8 +207,11 @@ def test_permuted_ties_preserve_membership_expansion_and_edge_order() -> None:
             2: _response(2, []),
             3: _response(3, []),
         }
-        service.neighbor_service.get_neighbors = Mock(
-            side_effect=lambda material_id: responses[material_id]
+        service.neighbor_service.get_neighbors_batch = Mock(
+            side_effect=lambda material_ids: {
+                material_id: responses[material_id]
+                for material_id in material_ids
+            }
         )
         return service
 
@@ -221,15 +227,13 @@ def test_permuted_ties_preserve_membership_expansion_and_edge_order() -> None:
         (edge["source_material_id"], edge["target_material_id"])
         for edge in first["edges"]
     ] == [(1, 2), (1, 3)]
-    assert first_service.neighbor_service.get_neighbors.call_args_list == [
-        call(1),
-        call(2),
-        call(3),
+    assert first_service.neighbor_service.get_neighbors_batch.call_args_list == [
+        call([1]),
+        call([2, 3]),
     ]
-    assert second_service.neighbor_service.get_neighbors.call_args_list == [
-        call(1),
-        call(2),
-        call(3),
+    assert second_service.neighbor_service.get_neighbors_batch.call_args_list == [
+        call([1]),
+        call([2, 3]),
     ]
 
 
@@ -247,5 +251,5 @@ def test_depth_remains_maximum_expansion_depth() -> None:
         for node in result["nodes"]
     } == {1, 2, 3}
 
-    assert service.neighbor_service.get_neighbors.call_count == 1
-    service.neighbor_service.get_neighbors.assert_called_once_with(1)
+    assert service.neighbor_service.get_neighbors_batch.call_count == 1
+    service.neighbor_service.get_neighbors_batch.assert_called_once_with([1])

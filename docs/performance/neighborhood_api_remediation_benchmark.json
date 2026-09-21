@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "local remediation acceptance gates passed",
+  "method": "bounded sequential local benchmark; no concurrency, network, or production access",
+  "fixture": {
+    "kind": "deterministic synthetic production-count fixture",
+    "materials": 1727,
+    "material_elements": 4144,
+    "material_applications": 128
+  },
+  "default_request": {
+    "material_id": 1,
+    "depth": 2,
+    "limit": 25,
+    "batch_calls": 2,
+    "expanded_materials": 25,
+    "database_query_count": 12,
+    "warm_median_service_ms": 342.218,
+    "payload_bytes": 9657,
+    "payload_sha256": "50f22e6a428bd19f7569f169361e71cf5d019056c23e07d75cf2af97a2f2fd11"
+  },
+  "baseline_comparison": {
+    "database_query_count_before": 150,
+    "database_query_count_after": 12,
+    "query_reduction_percent": 92.0,
+    "warm_median_service_ms_before": 1638.338,
+    "warm_median_service_ms_after": 342.218,
+    "warm_speedup_multiple": 4.79,
+    "simulated_100_ms_rtt_end_to_end_ms_before": 16749.582,
+    "simulated_100_ms_rtt_end_to_end_ms_after": 1756.175,
+    "simulated_100_ms_rtt_speedup_multiple": 9.54
+  },
+  "limit_scaling": [
+    {"limit": 1, "queries": 6, "warm_median_service_ms": 72.422, "simulated_100_ms_rtt_ms": 640.311, "payload_bytes": 336},
+    {"limit": 5, "queries": 12, "warm_median_service_ms": 141.766, "simulated_100_ms_rtt_ms": 1447.459, "payload_bytes": 2043},
+    {"limit": 10, "queries": 12, "warm_median_service_ms": 170.726, "simulated_100_ms_rtt_ms": 1456.539, "payload_bytes": 3945},
+    {"limit": 25, "queries": 12, "warm_median_service_ms": 342.218, "simulated_100_ms_rtt_ms": 1756.175, "payload_bytes": 9657},
+    {"limit": 50, "queries": 12, "warm_median_service_ms": 720.542, "simulated_100_ms_rtt_ms": 2077.637, "payload_bytes": 19262},
+    {"limit": 100, "queries": 12, "warm_median_service_ms": 1720.358, "simulated_100_ms_rtt_ms": 2823.65, "payload_bytes": 37596}
+  ],
+  "semantic_stability": {
+    "default_payload_hash_matches_diagnostic_baseline": true,
+    "default_payload_bytes_match_diagnostic_baseline": true,
+    "repeated_results_identical": true,
+    "individual_and_batch_neighbor_results_equal": true
+  },
+  "acceptance": {
+    "depth_two_queries_at_most_12": true,
+    "default_warm_median_at_most_500_ms": true,
+    "default_100_ms_rtt_at_most_3000_ms": true,
+    "serialization_below_5_ms": true,
+    "limits_50_and_100_below_20_seconds": true,
+    "disposable_postgresql_validation": "pending where available",
+    "production_validation": "not authorized and not performed"
+  }
+}
