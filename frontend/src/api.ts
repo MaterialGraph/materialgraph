@@ -21,7 +21,7 @@ export interface CandidateResponse {
   discovery_warnings: string[]; candidates: Candidate[];
 }
 export class ApiError extends Error {
-  constructor(readonly status: number, message: string) { super(message); }
+  constructor(readonly status: number, message: string, readonly details?: unknown) { super(message); }
 }
 const base = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/$/, '');
 async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
@@ -49,4 +49,29 @@ export function candidates(id: number, avoid: string, prefer: string, signal?: A
   if (avoid.trim()) params.set('avoid_element', avoid.trim());
   if (prefer.trim()) params.set('prefer_element', prefer.trim());
   return get<CandidateResponse>(`/materials/${id}/discovery/candidates?${params}`, signal);
+}
+
+export async function postJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(`${base}${path}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body), signal,
+    });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    throw new ApiError(0, 'Cannot reach the API. Check the local backend connection.');
+  }
+  if (!response.ok) {
+    if (response.status === 422) {
+      const payload: unknown = await response.json().catch(() => null);
+      throw new ApiError(422, 'Check the objective fields and try again.', payload);
+    }
+    if (response.status === 404) throw new ApiError(404, 'Material not found.');
+    if (response.status === 429) throw new ApiError(429, 'Too many requests. Please try again shortly.');
+    throw new ApiError(response.status, response.status >= 500
+      ? 'The investigation API is unavailable. Please try again.'
+      : `Request failed (${response.status}).`);
+  }
+  return response.json() as Promise<T>;
 }

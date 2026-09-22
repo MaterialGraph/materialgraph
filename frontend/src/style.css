@@ -41,3 +41,40 @@
 .scoreFactors p{grid-column:1/-1;margin:0;font-size:12px;color:var(--muted)}
 .dossierDetails .textButton{margin-top:var(--space-3);padding:0}
 @media(max-width:1100px){.discoveryWorkspace{grid-template-columns:1fr}.discoveryList{max-height:300px}}
+
+.objectiveInvestigation{margin-top:var(--space-3)}
+.objectiveForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2);margin:var(--space-3) 0}
+.objectiveForm>label{display:block;font-size:12px;font-weight:700}
+.objectiveForm input,.objectiveForm select{display:block;width:100%;margin-top:7px;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:11px 12px;color:var(--ink)}
+.objectiveForm small{display:block;margin-top:6px;font-weight:400;color:var(--muted);line-height:1.5}
+.objectiveChecks{display:flex;flex-wrap:wrap;gap:12px 24px;grid-column:1/-1}
+.objectiveChecks label{display:flex;align-items:center;gap:8px;font-size:12px}
+.objectiveChecks input{width:auto;margin:0}
+.objectiveModeHint,.objectiveForm>.error{grid-column:1/-1;margin:0}
+.objectiveForm>button{justify-self:start;border:0;border-radius:8px;background:#343632;color:#fff;padding:11px 18px;font-weight:700}
+.objectiveResults{border-top:1px solid var(--border);padding-top:var(--space-3)}
+.objectiveResults h3{font-size:18px;margin:0 0 8px}
+.objectiveScope{background:#f6f3ed;border:1px solid var(--border);border-radius:8px;padding:var(--space-3);font:14px/1.55 Georgia,serif}
+.objectiveScope p{margin:8px 0}
+.objectiveScope details{margin-top:16px}
+.objectiveScope pre{font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.objectiveColumns{display:grid;grid-template-columns:minmax(0,43%) minmax(0,1fr);gap:var(--space-2);margin-top:var(--space-3)}
+.objectiveCandidates,.objectivePaths{list-style:none;padding:0;margin:14px 0;display:grid;gap:10px}
+.objectiveCandidate,.objectivePath{min-width:0;border:1px solid var(--border);border-radius:8px;padding:var(--space-2);background:var(--surface)}
+.objectiveRowHead{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.objectiveRowHead .eyebrow{font-size:10px;letter-spacing:.05em}
+.objectiveRowHead h4{font-size:18px;margin:8px 0}
+.objectiveScore{text-align:right;white-space:nowrap;font:600 14px ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums}
+.objectiveScore small{display:block;font:11px system-ui,sans-serif;color:var(--muted)}
+.objectiveCandidate .hint{margin:8px 0}.objectiveCandidate details,.objectivePath details{margin-top:12px}
+.objectiveCandidate details ul{padding-left:18px;font-size:12px;line-height:1.6}
+.objectivePath h4{font-size:16px;margin:0}.objectivePath h4 .hint{font-weight:400}
+.objectivePathMaterials{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.objectivePathMaterials li{padding:7px 10px;border:1px solid var(--border);border-radius:5px;font-weight:600}
+.objectivePathMaterials li+li:before{content:'→';padding-right:10px;color:var(--muted)}
+.objectivePathMaterials small{display:block;font-weight:400;font-size:10px;color:var(--muted)}
+.objectiveTransition{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.6}
+.objectiveTransition p{margin:6px 0}.objectiveBreakdown div{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;font-size:12px}
+.objectiveBreakdown dt{text-transform:capitalize}.objectiveBreakdown dd{margin:0;font-variant-numeric:tabular-nums}
+@media(max-width:1100px){.objectiveColumns{grid-template-columns:1fr}}
+@media(max-width:650px){.objectiveForm{grid-template-columns:1fr}}
