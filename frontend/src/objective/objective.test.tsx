@@ -49,6 +49,9 @@ it('derives intermediate and final roles only from returned chain membership', (
   const html = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
   expect(html).toContain('none of the returned pathways contains it');
   expect(html).toContain('Intermediate in returned chain');
+  expect(html).toContain('Returned chain:');
+  expect(html).not.toContain('Returned pathways:');
+  expect(renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [sample.chains[0], sample.chains[0]] }} submitted="{}"/>)).toContain('Returned chains:');
   expect(html).toContain('Returned composition chain 1 · 2 relationship steps');
   expect(html).toContain('Shared elements: Fe, Li, O, P');
   expect(html).toContain('Shared elements: Fe, O, P');

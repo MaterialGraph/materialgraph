@@ -23,7 +23,7 @@ function RankedMaterial({ result, candidate, index }: { result: ObjectiveRespons
     <div className="objectiveRowHead"><div><span className="eyebrow">Ranked material {index + 1} · Local ID {candidate.material_id}</span>
       <h4><ChemicalFormula formula={candidate.formula || 'Formula unavailable'}/></h4></div>
       <div className="objectiveScore"><strong>{candidate.score.toLocaleString()}</strong><small>objective rule score</small></div></div>
-    {paths.length ? <p className="hint">{returnedRole(result, candidate.material_id)} · Returned {paths.length === 1 ? 'pathway' : 'pathways'}: {paths.map((path, position) => <span key={path}>{position > 0 && ', '}<a href={`#objective-path-${path + 1}`}>{path + 1}</a></span>)}</p>
+    {paths.length ? <p className="hint">{returnedRole(result, candidate.material_id)} · Returned {paths.length === 1 ? 'chain' : 'chains'}: {paths.map((path, position) => <span key={path}>{position > 0 && ', '}<a href={`#objective-path-${path + 1}`}>{path + 1}</a></span>)}</p>
       : <p className="hint">No pathway included in this response. This material appears in the ranked results, but none of the returned pathways contains it.</p>}
     {candidate.reasons.length > 0 && <details open={index === 0}><summary>Returned reasons</summary><ul>{candidate.reasons.map((reason, n) => <li key={n}>{reason}</li>)}</ul></details>}
     {candidate.warnings.map((warning, n) => <p className="warning" key={n}>{warning}</p>)}
