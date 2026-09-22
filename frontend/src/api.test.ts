@@ -19,6 +19,7 @@ it('sends only explicitly chosen soft element filters', async () => {
   expect(url.searchParams.get('avoid_element')).toBe('Li');
   expect(url.searchParams.has('prefer_element')).toBe(false);
   expect(url.searchParams.get('include_substitution_paths')).toBe('false');
+  expect(url.searchParams.get('limit')).toBe('10');
 });
 
 it('distinguishes a missing material from a transport failure', async () => {
