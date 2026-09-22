@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { ChemicalFormula } from '../ChemicalFormula';
-import type { ObjectiveCandidate, ObjectiveChain, ObjectiveResponse } from './contract';
+import type { ObjectiveCandidate, ObjectiveChain, ObjectiveResponse, ObjectiveTransition } from './contract';
 import { buildObjectiveRequest, initialDraft, type ObjectiveDraft } from './request';
 import { useObjectiveInvestigation } from './useObjectiveInvestigation';
 
@@ -11,9 +11,9 @@ export function returnedPathways(result: ObjectiveResponse, materialId: number) 
 export function returnedRole(result: ObjectiveResponse, materialId: number): string | null {
   const roles = new Set(result.chains.flatMap(chain => chain.materials.slice(1).flatMap((material, index, nonRoot) =>
     material.material_id === materialId ? [index === nonRoot.length - 1 ? 'final' : 'intermediate'] : [])));
-  if (roles.size === 2) return 'Intermediate and final in returned pathways';
-  if (roles.has('final')) return 'Final material in returned pathway';
-  if (roles.has('intermediate')) return 'Intermediate in returned pathway';
+  if (roles.size === 2) return 'Intermediate and final material in returned chains';
+  if (roles.has('final')) return 'Final material in returned chain';
+  if (roles.has('intermediate')) return 'Intermediate in returned chain';
   return null;
 }
 
@@ -25,24 +25,39 @@ function RankedMaterial({ result, candidate, index }: { result: ObjectiveRespons
       <div className="objectiveScore"><strong>{candidate.score.toLocaleString()}</strong><small>objective rule score</small></div></div>
     {paths.length ? <p className="hint">{returnedRole(result, candidate.material_id)} · Returned {paths.length === 1 ? 'pathway' : 'pathways'}: {paths.map((path, position) => <span key={path}>{position > 0 && ', '}<a href={`#objective-path-${path + 1}`}>{path + 1}</a></span>)}</p>
       : <p className="hint">No pathway included in this response. This material appears in the ranked results, but none of the returned pathways contains it.</p>}
-    {candidate.reasons.length > 0 && <details><summary>Returned reasons</summary><ul>{candidate.reasons.map((reason, n) => <li key={n}>{reason}</li>)}</ul></details>}
+    {candidate.reasons.length > 0 && <details open={index === 0}><summary>Returned reasons</summary><ul>{candidate.reasons.map((reason, n) => <li key={n}>{reason}</li>)}</ul></details>}
     {candidate.warnings.map((warning, n) => <p className="warning" key={n}>{warning}</p>)}
+  </li>;
+}
+
+export function relationshipLabel(type: string): string {
+  if (type === 'alkali_substitution') return 'Possible alkali composition substitution';
+  if (type === 'family_expansion') return 'Composition family relationship';
+  return `Reported relationship: ${type.replaceAll('_', ' ')}`;
+}
+
+function Relationship({ transition }: { transition: ObjectiveTransition }) {
+  return <li className="objectiveRelationship">
+    <strong>{relationshipLabel(transition.transition_type)}</strong>
+    <small>{transition.shared_elements.length ? `Shared elements: ${transition.shared_elements.join(', ')}` : 'Shared elements not supplied'}</small>
   </li>;
 }
 
 function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
   return <li className="objectivePath" id={`objective-path-${index + 1}`}>
-    <h4>Pathway {index + 1} <span className="hint">· {chain.hop_count} {chain.hop_count === 1 ? 'step' : 'steps'}</span></h4>
-    <ol className="objectivePathMaterials">{chain.materials.map((material, materialIndex) => <li key={`${material.material_id}-${materialIndex}`}>
-      <ChemicalFormula formula={material.pretty_formula || material.formula}/>
-      <small>{material.mp_id ?? `Local ID ${material.material_id}`} · {materialIndex === 0 ? 'Source' : materialIndex === chain.materials.length - 1 ? 'Final in returned pathway' : 'Intermediate in returned pathway'}</small>
-    </li>)}</ol>
-    <p className="hint">{chain.chain_reason}</p>
+    <h4>Returned composition chain {index + 1} · {chain.transitions.length} relationship {chain.transitions.length === 1 ? 'step' : 'steps'}</h4>
+    <ol className="objectivePathMaterials">{chain.materials.flatMap((material, materialIndex) => [
+      <li className="objectiveMaterialRecord" key={`material-${materialIndex}`}><ChemicalFormula formula={material.pretty_formula || material.formula}/>
+        <small>{material.mp_id ?? `Local ID ${material.material_id}`} · {materialIndex === 0 ? 'Source' : materialIndex === chain.materials.length - 1 ? 'Final material in returned chain' : 'Intermediate in returned chain'}</small></li>,
+      ...(materialIndex < chain.transitions.length ? [<Relationship key={`relationship-${materialIndex}`} transition={chain.transitions[materialIndex]}/>] : []),
+    ])}</ol>
+    <p className="hint">Composition-level relationships only; reaction steps and mechanisms are not established.</p>
     <details><summary>Transitions and score details</summary>
+      <p className="hint">Original returned chain explanation: {chain.chain_reason}</p>
       <p className="hint">Pathway usefulness rule score: {chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}. This is separate from the objective rule score.</p>
       {chain.transitions.map((transition, n) => <div className="objectiveTransition" key={n}>
-        <strong>Step {n + 1}: {transition.transition_type.replaceAll('_', ' ')}</strong>
-        <p>{transition.reason}</p>
+        <strong>Relationship {n + 1}: {relationshipLabel(transition.transition_type)}</strong>
+        <p>Original returned reason: {transition.reason}</p>
         <p className="hint">Shared elements: {transition.shared_elements.length ? transition.shared_elements.join(', ') : 'None supplied'} · Basis: {transition.relationship_basis}, {transition.preservation_basis}. Structural preservation: {transition.structural_preservation_validated ? 'Reported as validated' : 'Not validated'}. Substitution mechanism: {transition.substitution_mechanism_validated ? 'Reported as validated' : 'Not validated'}.</p>
       </div>)}
       {chain.score_breakdown && <dl className="objectiveBreakdown">{Object.entries(chain.score_breakdown).map(([name, value]) => <div key={name}><dt>{name.replaceAll('_', ' ')}</dt><dd>{value.toLocaleString()}</dd></div>)}</dl>}
@@ -71,7 +86,7 @@ export function ObjectiveResults({ result, submitted }: { result: ObjectiveRespo
       <section><h3>Ranked materials</h3><p className="hint">Returned order and objective rule scores. A score does not measure experimental confidence.</p>
         {result.ranked_candidates.length ? <ol className="objectiveCandidates">{result.ranked_candidates.map((candidate, index) => <RankedMaterial key={`${candidate.material_id}-${index}`} candidate={candidate} index={index} result={result}/>)}</ol> : <p className="empty">No ranked materials returned for this objective.</p>}
       </section>
-      <section><h3>Returned pathways</h3><p className="hint">Shared-element continuity describes a composition-level relationship. It does not establish structural preservation or a validated substitution mechanism.</p>
+      <section><h3>Returned composition chains</h3><p className="hint">These chains describe composition-level relationships between returned materials. They do not establish that reactions proceed through these steps.</p><p className="hint">Shared-element continuity means element overlap across each consecutive relationship; it does not establish structural preservation or a validated substitution mechanism.</p>
         {result.chains.length ? <ol className="objectivePaths">{result.chains.map((chain, index) => <Pathway key={index} chain={chain} index={index}/>)}</ol> : <p className="empty">No pathways included in this response.</p>}
       </section>
     </div>
