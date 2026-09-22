@@ -1,29 +1,72 @@
+import { useState } from 'react';
 import type { CandidateResponse, MaterialDetail } from './api';
 import { ChemicalFormula, FormulaInText } from './ChemicalFormula';
-import { factorExplanation, presentCandidate } from './candidatePresentation';
-type Props = { selected: number; select: (id: number) => void; detail: MaterialDetail | null; avoid: string; setAvoid: (value: string) => void; prefer: string; setPrefer: (value: string) => void; result: CandidateResponse | null; candidateError: string; candidateLoading: boolean; searchCandidates: () => void };
-export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPrefer, result, candidateError, candidateLoading, searchCandidates }: Props) {
-  return <>
+import { factorExplanation, factorLabel, presentCandidate } from './candidatePresentation';
 
-        {detail && <div className="panel discovery"><div className="sectionTitle"><span>03 / EXPLORE</span><h2>Discovery candidates</h2></div><p className="hint">Optional element preferences adjust scores. Avoid is a soft penalty, not an exclusion; prefer is a soft bonus. Results can include the selected element even when avoided.</p>
-          <form className="filters" onSubmit={e => { e.preventDefault(); searchCandidates(); }}><label>Avoid element <input value={avoid} onChange={e => setAvoid(e.target.value)} maxLength={3} placeholder="e.g. Li"/></label><label>Prefer element <input value={prefer} onChange={e => setPrefer(e.target.value)} maxLength={3} placeholder="e.g. Na"/></label><button type="submit" disabled={candidateLoading}>{candidateLoading ? 'Searching…' : 'Find candidates →'}</button></form>
-          {candidateLoading && <p role="status">Ranking candidates using current backend rules…</p>}{candidateError && <div role="alert" className="error">{candidateError} <button onClick={() => searchCandidates()}>Retry</button></div>}
-          {result && <><p className="hint">{result.candidates.length} returned identities · backend order preserved. Dataset and methodology versions, evidence coverage, and completeness status are not supplied by this endpoint.</p>{result.discovery_warnings.map((warning, i) => <p className="warning" key={i} role="status">{warning}</p>)}{!result.candidates.length && <div className="empty">No candidates returned within this request. This does not establish that no alternatives exist.</div>}
-            <ol className="candidateList">{result.candidates.map((candidate, index) => {
-              const presentation = presentCandidate(candidate, result.base_formula || detail.pretty_formula || detail.formula);
-              return <li key={candidate.material_id} className="candidate">
-                <div className="candidateHead"><div><span className="eyebrow">ITEM {index + 1} · SOURCE {candidate.mp_id ?? 'UNKNOWN'}</span><h3><ChemicalFormula formula={candidate.pretty_formula || candidate.formula}/></h3></div><div className="score"><strong>{candidate.discovery_score.toLocaleString()}</strong><small>rule score</small></div></div>
-                <div className="candidateZone"><h4>Hypothesis</h4><p><FormulaInText text={presentation.hypothesis} formula={result.base_formula || detail.pretty_formula || detail.formula}/></p></div>
-                <div className="candidateZone"><h4>Matching signals</h4><div className="signalPills">{presentation.signals.map(signal => <span key={signal.key} className="signalPill">{signal.label}</span>)}</div>
-                  <p className="hint">Score factors · expand a factor for its reason</p>
-                  <div className="factorPreview">{Object.entries(candidate.score_breakdown).map(([name, amount]) => <details key={name} className="factorPill"><summary><span>{name.replaceAll('_', ' ')}</span> <strong>{amount > 0 ? '+' : ''}{amount.toLocaleString()}</strong></summary><p>{factorExplanation(name, candidate, result.discovery_goal)}</p></details>)}</div>
-                </div>
-                <div className="candidateZone caveats"><h4>Caveats & unvalidated assumptions</h4><ul>{presentation.caveats.map(caveat => <li key={caveat}>{caveat}</li>)}</ul></div>
-                <details className="originalExplanation"><summary>Original backend explanation</summary><p>{candidate.explanation}</p>{candidate.substitution_path && <p>{candidate.substitution_path.reason}</p>}</details>
-                <button className="textButton" onClick={() => select(candidate.material_id)}>Inspect this material →</button>
-              </li>;
-            })}</ol>
-            <p className="rankingNote">Rule scores rank candidates under backend heuristics. They do not establish synthesis feasibility, performance, or novelty.</p></>}
-        </div>}
-  </>;
+type Props = {
+  select: (id: number) => void; detail: MaterialDetail | null;
+  avoid: string; setAvoid: (value: string) => void;
+  prefer: string; setPrefer: (value: string) => void;
+  result: CandidateResponse | null; candidateError: string;
+  candidateLoading: boolean; searchCandidates: () => void;
+};
+
+export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPrefer, result, candidateError, candidateLoading, searchCandidates }: Props) {
+  const [inspectedId, setInspectedId] = useState<number | null>(null);
+  if (!detail) return null;
+  const inspected = result?.candidates.find(candidate => candidate.material_id === inspectedId) ?? result?.candidates[0];
+  const sourceFormula = result?.base_formula || detail.pretty_formula || detail.formula;
+  const presentation = inspected && result ? presentCandidate(inspected, sourceFormula, result.discovery_goal) : null;
+
+  return <section className="panel discovery" aria-label="Discovery results">
+    <div className="sectionTitle"><span>03 / EXPLORE</span><h2>Discovery results</h2></div>
+    <p className="hint">Avoid applies a soft score penalty; Prefer applies a soft score bonus. Results may still include avoided elements.</p>
+    <form className="filters" onSubmit={event => { event.preventDefault(); searchCandidates(); }}>
+      <label>Avoid element <input value={avoid} onChange={event => setAvoid(event.target.value)} maxLength={3} placeholder="e.g. Li"/></label>
+      <label>Prefer element <input value={prefer} onChange={event => setPrefer(event.target.value)} maxLength={3} placeholder="e.g. Na"/></label>
+      <button type="submit" disabled={candidateLoading}>{candidateLoading ? 'Discovering…' : 'Discover candidates'}</button>
+    </form>
+    {candidateLoading && <p role="status">Loading discovery results…</p>}
+    {candidateError && <div role="alert" className="error">{candidateError} <button onClick={searchCandidates}>Retry</button></div>}
+    {result && <>
+      <p className="hint">{result.candidates.length} candidates returned in ranking order. Dataset and method versions, evidence coverage, and completeness are not provided with these results.</p>
+      {result.discovery_warnings.map((warning, index) => <p className="warning" key={index} role="status">{warning}</p>)}
+      {!result.candidates.length && <div className="empty">No candidates were returned for this request. Other candidates may still exist.</div>}
+      {!!inspected && presentation && <div className="discoveryWorkspace">
+        <div className="discoveryList" aria-label="Ranked candidates">
+          <ol className="candidateList">{result.candidates.map((candidate, index) => {
+            const selected = candidate.material_id === inspected.material_id;
+            const candidateSignals = presentCandidate(candidate, sourceFormula, result.discovery_goal).signals;
+            const avoided = candidateSignals.find(signal => signal.key === 'contains_avoided_element');
+            return <li key={candidate.material_id}>
+              <button className={`candidateRow${selected ? ' active' : ''}`} aria-current={selected ? 'true' : undefined} onClick={() => setInspectedId(candidate.material_id)}>
+                <span className="eyebrow">Candidate {index + 1} · {candidate.mp_id ?? 'source ID unavailable'}</span>
+                <span className="rowIdentity"><strong><ChemicalFormula formula={candidate.pretty_formula || candidate.formula}/></strong><span>{candidate.discovery_score.toLocaleString()} <small>rule score</small></span></span>
+                {avoided && <span className="rowNote">{avoided.label} · Avoid is a soft penalty</span>}
+              </button>
+            </li>;
+          })}</ol>
+        </div>
+        <article className="investigationDossier" aria-label="Candidate investigation" key={inspected.material_id}>
+          <div className="dossierIdentity"><p className="eyebrow">Investigation · {inspected.mp_id ?? 'source ID unavailable'}</p><h3><ChemicalFormula formula={inspected.pretty_formula || inspected.formula}/></h3><p className="hint">Deterministic rule score: {inspected.discovery_score.toLocaleString()}.{inspected.discovery_score < 0 && ' A negative score reflects rule penalties, not negative scientific value.'}</p></div>
+          <div className="researchSummary">
+            <h4>Research hypothesis</h4><p><FormulaInText text={presentation.hypothesis} formula={sourceFormula}/></p>
+            <aside><h4>Scientific limitations</h4><ul>{presentation.caveats.map(caveat => <li key={caveat}>{caveat}</li>)}</ul></aside>
+          </div>
+          <div className="dossierDetails">
+            <section><h4>Why this candidate?</h4>
+              {presentation.signals.length ? <ul className="signalList">{presentation.signals.map(signal => <li key={signal.key}>{signal.label}</li>)}</ul> : <p className="hint">No individual matching signals were provided.</p>}
+              {presentation.signals.some(signal => signal.key === 'contains_avoided_element') && <p className="hint">Avoid is a soft penalty. This candidate remains in the ranked results because it was not excluded.</p>}
+            </section>
+            <section><h4>How the rule score was calculated</h4>
+              {Object.entries(inspected.score_breakdown).length ? <dl className="scoreFactors">{Object.entries(inspected.score_breakdown).map(([name, amount]) => <div key={name}><dt>{factorLabel(name)}</dt><dd>{amount > 0 ? '+' : ''}{amount.toLocaleString()}</dd><p>{factorExplanation(name, inspected, result.discovery_goal)}</p></div>)}</dl> : <p className="hint">No factor breakdown was provided.</p>}
+            </section>
+            <details className="originalExplanation"><summary>Full discovery explanation</summary><p>{inspected.explanation}</p>{inspected.substitution_path && <p>{inspected.substitution_path.reason}</p>}</details>
+            <button className="textButton" onClick={() => select(inspected.material_id)}>Explore material →</button>
+          </div>
+        </article>
+      </div>}
+      <p className="rankingNote">Rule scores are deterministic composition heuristics, not confidence or validated performance. Candidate relationships do not establish a substitution mechanism, structural preservation, synthesis feasibility, or application performance.</p>
+    </>}
+  </section>;
 }
