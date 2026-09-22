@@ -30,3 +30,17 @@ it('falls back to an honest generic hypothesis when no structured relationship i
   expect(factorExplanation('unknown_rule', candidate, { avoid_element: null, prefer_element: null })).toContain('A scoring rule');
   expect(factorLabel('avoided_element_present_penalty')).toBe('Avoided element present');
 });
+
+it('uses returned preference signals to label absent and present elements', () => {
+  const goal = { avoid_element: 'Li', prefer_element: 'Na' };
+  const absent = presentCandidate({ ...candidate, discovery_path: ['avoided_element_removed', 'preferred_element'] }, 'LiFePO4', goal);
+  expect(absent.signals.map(signal => signal.label)).toEqual(['Li absent', 'Na present']);
+  const present = presentCandidate({ ...candidate, discovery_path: ['contains_avoided_element'] }, 'LiFePO4', goal);
+  expect(present.signals.map(signal => signal.label)).toEqual(['Contains Li (avoided)']);
+});
+
+it('does not invent element identities when optional preference context is missing', () => {
+  const presentation = presentCandidate({ ...candidate, mp_id: null, pretty_formula: null, explanation: '', discovery_path: ['preferred_element'] }, '');
+  expect(presentation.signals).toEqual([]);
+  expect(presentation.hypothesis).toContain('Composition-based');
+});

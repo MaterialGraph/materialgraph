@@ -1,18 +1,17 @@
 import type { Candidate } from './api';
 
 const signalLabels: Record<string, string> = {
-  family_related: 'Composition rule match',
+  family_related: 'Related composition',
   shared_chemistry: 'Shared elements',
   alkali_substitution: 'Possible alkali substitution',
-  transition_metal_related: 'Shared transition metal element',
+  transition_metal_related: 'Shared transition metal',
   phosphate_related: 'Both contain P and O',
   oxide_related: 'Both contain O',
-  preferred_element: 'Preferred element present',
-  avoided_element_removed: 'Avoided element absent',
-  contains_avoided_element: 'Avoided element present',
 };
 
-export function presentCandidate(candidate: Candidate, sourceFormula: string) {
+type DiscoveryGoal = { avoid_element: string | null; prefer_element: string | null };
+
+export function presentCandidate(candidate: Candidate, sourceFormula: string, goal: DiscoveryGoal = { avoid_element: null, prefer_element: null }) {
   const signals = new Set(candidate.discovery_path);
   const substitution = candidate.explanation.match(/composition-level alkali-substitution hypothesis from ([A-Z][a-z]?(?:, [A-Z][a-z]?)*) to ([A-Z][a-z]?(?:, [A-Z][a-z]?)*)/);
   const shared = candidate.explanation.match(/shares ([A-Z][a-z]?(?:, [A-Z][a-z]?)*) chemistry with /);
@@ -31,14 +30,21 @@ export function presentCandidate(candidate: Candidate, sourceFormula: string) {
   // The shared-chemistry signal already accounts for element overlap. Avoid
   // separately displaying the narrower phosphate/oxide overlap as new evidence.
   const visibleSignals = candidate.discovery_path.filter(signal =>
-    !(signals.has('shared_chemistry') && (signal === 'phosphate_related' || signal === 'oxide_related'))
+    !(signals.has('shared_chemistry') && ['family_related', 'transition_metal_related', 'phosphate_related', 'oxide_related'].includes(signal))
+    && !(signals.has('phosphate_related') && signal === 'oxide_related')
   );
+  const elementLabels: Record<string, string | undefined> = {
+    preferred_element: goal.prefer_element ? `${goal.prefer_element} present` : undefined,
+    avoided_element_removed: goal.avoid_element ? `${goal.avoid_element} absent` : undefined,
+    contains_avoided_element: goal.avoid_element ? `Contains ${goal.avoid_element} (avoided)` : undefined,
+  };
   const caveats = [];
   if (signals.has('alkali_substitution')) caveats.push('A substitution mechanism has not been demonstrated.');
   caveats.push('Composition-based signals do not establish structural similarity, synthesis feasibility, or performance.');
   return {
     hypothesis,
-    signals: visibleSignals.map(signal => ({ key: signal, label: signalLabels[signal] ?? signal.replaceAll('_', ' ') })),
+    signals: visibleSignals.filter(signal => !(signal in elementLabels) || elementLabels[signal])
+      .map(signal => ({ key: signal, label: elementLabels[signal] ?? signalLabels[signal] ?? signal.replaceAll('_', ' ') })),
     caveats,
   };
 }

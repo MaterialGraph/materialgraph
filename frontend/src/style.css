@@ -6,3 +6,38 @@
 .chemicalFormula sub{font-size:.7em;line-height:0;vertical-align:sub}.candidateZone{margin:17px 0}.candidateZone h4{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#626660;margin:0 0 10px}.candidateZone>p{margin:0}.signalPills{display:flex;flex-wrap:wrap;gap:7px}.signalPill{font-size:12px;background:#eeefec;border-radius:6px;padding:7px 10px;color:#626660}.candidateZone>.hint{margin:15px 0 8px}.factorPreview{margin:0}.factorPill{border:0;padding:0;background:#eeefec;border-radius:7px;max-width:100%}.factorPill summary{padding:8px 10px;color:#343632;font-size:12px;text-transform:capitalize;display:list-item;list-style-position:inside}.factorPill summary strong{margin-left:6px}.factorPill p{margin:0;padding:0 10px 10px;max-width:320px}.caveats{background:#f7f6f3;border-radius:8px;padding:12px 15px}.caveats ul{margin:0;padding-left:18px;color:#626660;font-size:12px;line-height:1.6}.originalExplanation{margin:20px 0 12px}.originalExplanation p{max-width:75ch}.candidate>.textButton{padding:0}.rankingNote{border-top:1px solid #d9dcd6;padding-top:15px;font-size:12px;color:#626660;line-height:1.6}
 
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}button:disabled{cursor:not-allowed}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+
+.discoveryWorkspace{display:grid;grid-template-columns:minmax(210px,34%) minmax(0,1fr);gap:var(--space-2);align-items:start;margin-top:var(--space-3)}
+.discoveryList{min-width:0;max-height:74vh;overflow:auto}
+.discoveryList .candidateList{display:grid;gap:1px;margin:0;padding:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--border)}
+.candidateRow{display:block;width:100%;border:0;border-left:3px solid transparent;background:var(--surface);padding:var(--space-2);text-align:left;color:var(--ink)}
+.candidateRow:hover,.candidateRow.active{background:var(--selection)}
+.candidateRow.active{border-left-color:var(--ink)}
+.candidateRow .eyebrow{display:block;letter-spacing:.05em;font-size:10px}
+.rowIdentity{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:8px}
+.rowIdentity strong{font-size:17px;min-width:0;overflow-wrap:anywhere}
+.rowIdentity>span{white-space:nowrap;font:600 13px ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums}
+.rowIdentity small{display:block;text-align:right;font:11px system-ui,sans-serif;color:var(--muted)}
+.rowNote{display:block;margin-top:8px;font-size:11px;color:var(--muted)}
+.investigationDossier{min-width:0;border:1px solid var(--border);border-radius:8px;background:var(--surface)}
+.dossierIdentity,.dossierDetails{padding:var(--space-3)}
+.dossierIdentity{border-bottom:1px solid var(--border)}
+.dossierIdentity .eyebrow{margin:0}
+.dossierIdentity h3{margin:7px 0;font-size:25px}
+.dossierIdentity .hint{margin:0}
+.researchSummary{padding:var(--space-3);background:#f6f3ed;border-bottom:1px solid var(--border)}
+.researchSummary>p{font:18px/1.55 Georgia,serif;max-width:65ch;margin:10px 0 18px}
+.researchSummary aside{border-left:2px solid var(--border);padding-left:var(--space-2);font:14px/1.5 Georgia,serif;color:var(--muted)}
+.researchSummary aside ul{margin:8px 0 0;padding-left:18px}
+.investigationDossier h4{margin:0;font-size:12px;letter-spacing:.07em;text-transform:uppercase}
+.dossierDetails{max-height:55vh;overflow:auto}
+.dossierDetails section+section{margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--border)}
+.signalList{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:12px 0 0;padding:0}
+.signalList li{border:1px solid var(--border);border-radius:4px;padding:6px 9px;font-size:12px}
+.scoreFactors{margin:12px 0 0}
+.scoreFactors div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 0;border-top:1px solid var(--border)}
+.scoreFactors dt{font-size:13px}
+.scoreFactors dd{margin:0;font:600 13px ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums}
+.scoreFactors p{grid-column:1/-1;margin:0;font-size:12px;color:var(--muted)}
+.dossierDetails .textButton{margin-top:var(--space-3);padding:0}
+@media(max-width:1100px){.discoveryWorkspace{grid-template-columns:1fr}.discoveryList{max-height:300px}.dossierDetails{max-height:none}}
