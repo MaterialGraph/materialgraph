@@ -47,7 +47,9 @@ it('derives intermediate and final roles only from returned chain membership', (
   expect(returnedRole(sample, 6)).toBe('Final material in returned chain');
   expect(returnedRole(sample, 8)).toBeNull();
   const html = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
-  expect(html).toContain('none of the returned pathways contains it');
+  expect(html).toContain('No returned chain includes this material.');
+  expect(html).toContain('A missing returned chain does not establish the absence of a composition-level relationship.');
+  expect(html).toContain('Some materials have the same objective rule score. Their order follows the API response.');
   expect(html).toContain('Intermediate in returned chain');
   expect(html).toContain('Returned chain:');
   expect(html).not.toContain('Returned pathways:');
@@ -55,6 +57,10 @@ it('derives intermediate and final roles only from returned chain membership', (
   expect(html).toContain('Returned composition chain 1 · 2 relationship steps');
   expect(html).toContain('Shared elements: Fe, Li, O, P');
   expect(html).toContain('Shared elements: Fe, O, P');
+  expect(html).toContain('Relationship details and scoring');
+  expect(html).toContain('Not validated</span>');
+  expect(html).toContain('“Not validated” refers to structural preservation or a substitution mechanism for that relationship');
+  expect(html.match(/class="objectiveValidation"/g)).toHaveLength(2);
   expect(html).toContain('These chains describe composition-level relationships between returned materials.');
   expect(html).toContain('<details open=""><summary>Returned reasons');
   expect(html).toContain('Search truncation: No');
@@ -74,11 +80,22 @@ it('presents one relationship step without implying a reaction or inventing unkn
   expect(relationshipLabel('alkali_substitution')).toBe('Possible alkali composition substitution');
 });
 
+it('does not add validation badges or an equality note without supporting response fields', () => {
+  const transition = { ...sample.chains[0].transitions[0], structural_preservation_validated: true, substitution_mechanism_validated: true };
+  const chain = { ...sample.chains[0], materials: sample.chains[0].materials.slice(0, 2), transitions: [transition] };
+  const result = { ...sample, ranked_candidates: [sample.ranked_candidates[0], { ...sample.ranked_candidates[1], score: 126 }], chains: [chain] };
+  const html = renderToStaticMarkup(<ObjectiveResults result={result} submitted="{}"/>);
+  expect(html).not.toContain('class="objectiveValidation"');
+  expect(html).not.toContain('Some materials have the same objective rule score.');
+  expect(html).toContain('Returned composition chain 1 · 1 relationship step');
+  expect(html).toContain('Shared elements: Fe, Li, O, P');
+});
+
 it('presents zero ranked materials and zero returned pathways separately', () => {
   const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, ranked_candidates: [], chains: [] }} submitted="{}"/>);
   expect(html).toContain('No ranked materials returned for this objective.');
   expect(html).toContain('No pathways included in this response.');
   const rankedWithoutPaths = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [] }} submitted="{}"/>);
   expect(rankedWithoutPaths).toContain('No pathways included in this response.');
-  expect(rankedWithoutPaths).toContain('none of the returned pathways contains it');
+  expect(rankedWithoutPaths).toContain('No returned chain includes this material.');
 });

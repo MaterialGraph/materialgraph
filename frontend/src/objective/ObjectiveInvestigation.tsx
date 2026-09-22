@@ -24,7 +24,7 @@ function RankedMaterial({ result, candidate, index }: { result: ObjectiveRespons
       <h4><ChemicalFormula formula={candidate.formula || 'Formula unavailable'}/></h4></div>
       <div className="objectiveScore"><strong>{candidate.score.toLocaleString()}</strong><small>objective rule score</small></div></div>
     {paths.length ? <p className="hint">{returnedRole(result, candidate.material_id)} · Returned {paths.length === 1 ? 'chain' : 'chains'}: {paths.map((path, position) => <span key={path}>{position > 0 && ', '}<a href={`#objective-path-${path + 1}`}>{path + 1}</a></span>)}</p>
-      : <p className="hint">No pathway included in this response. This material appears in the ranked results, but none of the returned pathways contains it.</p>}
+      : <p className="hint">No returned chain includes this material.</p>}
     {candidate.reasons.length > 0 && <details open={index === 0}><summary>Returned reasons</summary><ul>{candidate.reasons.map((reason, n) => <li key={n}>{reason}</li>)}</ul></details>}
     {candidate.warnings.map((warning, n) => <p className="warning" key={n}>{warning}</p>)}
   </li>;
@@ -39,6 +39,7 @@ export function relationshipLabel(type: string): string {
 function Relationship({ transition }: { transition: ObjectiveTransition }) {
   return <li className="objectiveRelationship">
     <strong>{relationshipLabel(transition.transition_type)}</strong>
+    {(!transition.structural_preservation_validated || !transition.substitution_mechanism_validated) && <span className="objectiveValidation">Not validated</span>}
     <small>{transition.shared_elements.length ? `Shared elements: ${transition.shared_elements.join(', ')}` : 'Shared elements not supplied'}</small>
   </li>;
 }
@@ -52,7 +53,7 @@ function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
       ...(materialIndex < chain.transitions.length ? [<Relationship key={`relationship-${materialIndex}`} transition={chain.transitions[materialIndex]}/>] : []),
     ])}</ol>
     <p className="hint">Composition-level relationships only; reaction steps and mechanisms are not established.</p>
-    <details><summary>Transitions and score details</summary>
+    <details><summary>Relationship details and scoring</summary>
       <p className="hint">Original returned chain explanation: {chain.chain_reason}</p>
       <p className="hint">Pathway usefulness rule score: {chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}. This is separate from the objective rule score.</p>
       {chain.transitions.map((transition, n) => <div className="objectiveTransition" key={n}>
@@ -68,6 +69,10 @@ function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
 
 export function ObjectiveResults({ result, submitted }: { result: ObjectiveResponse; submitted: string }) {
   const metadata = result.search_metadata;
+  const scores = result.ranked_candidates.map(candidate => candidate.score);
+  const hasEqualScores = new Set(scores).size < scores.length;
+  const hasRankedWithoutChain = result.ranked_candidates.some(candidate => returnedPathways(result, candidate.material_id).length === 0);
+  const hasUnvalidatedRelationship = result.chains.some(chain => chain.transitions.some(transition => !transition.structural_preservation_validated || !transition.substitution_mechanism_validated));
   return <div className="objectiveResults">
     <div className="objectiveScope"><h3>Search scope</h3>
       <p>{metadata.returned_chain_count} of {metadata.generated_chain_count} generated chains are included in this response. The generated count is before objective filtering.</p>
@@ -84,9 +89,12 @@ export function ObjectiveResults({ result, submitted }: { result: ObjectiveRespo
     {result.warnings.map((warning, n) => <p className="warning" key={n}>{warning}</p>)}
     <div className="objectiveColumns">
       <section><h3>Ranked materials</h3><p className="hint">Returned order and objective rule scores. A score does not measure experimental confidence.</p>
+        {hasEqualScores && <p className="hint">Some materials have the same objective rule score. Their order follows the API response.</p>}
+        {hasRankedWithoutChain && <p className="hint">A missing returned chain does not establish the absence of a composition-level relationship.</p>}
         {result.ranked_candidates.length ? <ol className="objectiveCandidates">{result.ranked_candidates.map((candidate, index) => <RankedMaterial key={`${candidate.material_id}-${index}`} candidate={candidate} index={index} result={result}/>)}</ol> : <p className="empty">No ranked materials returned for this objective.</p>}
       </section>
       <section><h3>Returned composition chains</h3><p className="hint">These chains describe composition-level relationships between returned materials. They do not establish that reactions proceed through these steps.</p><p className="hint">Shared-element continuity means element overlap across each consecutive relationship; it does not establish structural preservation or a validated substitution mechanism.</p>
+        {hasUnvalidatedRelationship && <p className="hint">“Not validated” refers to structural preservation or a substitution mechanism for that relationship; the reported shared elements are shown separately.</p>}
         {result.chains.length ? <ol className="objectivePaths">{result.chains.map((chain, index) => <Pathway key={index} chain={chain} index={index}/>)}</ol> : <p className="empty">No pathways included in this response.</p>}
       </section>
     </div>
