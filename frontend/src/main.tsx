@@ -4,6 +4,7 @@ import { useMaterialExplorer } from './useMaterialExplorer';
 import { SourcePicker } from './SourcePicker';
 import { MaterialIdentity } from './MaterialIdentity';
 import { CandidateList } from './CandidateList';
+import { ObjectiveInvestigation } from './objective/ObjectiveInvestigation';
 import './style.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         {!selected && <div className="panel welcome"><span className="eyebrow">A PLACE TO BEGIN</span><h2>Select a material to open its workspace.</h2><p>Each source identity stays distinct, even when two materials share a formula.</p></div>}
         <MaterialIdentity {...explorer}/>
         <CandidateList {...explorer}/>
+        {explorer.detail && <ObjectiveInvestigation key={explorer.detail.id} materialId={explorer.detail.id}/>}
       </section>
     </main><footer>MaterialGraph · Evidence and limits stay visible.</footer>
   </div>;
