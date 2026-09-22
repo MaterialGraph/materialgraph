@@ -42,7 +42,7 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
               <button className={`candidateRow${selected ? ' active' : ''}`} aria-current={selected ? 'true' : undefined} onClick={() => setInspectedId(candidate.material_id)}>
                 <span className="eyebrow">Candidate {index + 1} · {candidate.mp_id ?? 'source ID unavailable'}</span>
                 <span className="rowIdentity"><strong><ChemicalFormula formula={candidate.pretty_formula || candidate.formula}/></strong><span>{candidate.discovery_score.toLocaleString()} <small>rule score</small></span></span>
-                {avoided && <span className="rowNote">{avoided.label} · Avoid is a soft penalty</span>}
+                {avoided && <span className="rowNote">{avoided.label}</span>}
               </button>
             </li>;
           })}</ol>
@@ -56,7 +56,6 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
           <div className="dossierDetails">
             <section><h4>Why this candidate?</h4>
               {presentation.signals.length ? <ul className="signalList">{presentation.signals.map(signal => <li key={signal.key}>{signal.label}</li>)}</ul> : <p className="hint">No individual matching signals were provided.</p>}
-              {presentation.signals.some(signal => signal.key === 'contains_avoided_element') && <p className="hint">Avoid is a soft penalty. This candidate remains in the ranked results because it was not excluded.</p>}
             </section>
             <section><h4>How the rule score was calculated</h4>
               {Object.entries(inspected.score_breakdown).length ? <dl className="scoreFactors">{Object.entries(inspected.score_breakdown).map(([name, amount]) => <div key={name}><dt>{factorLabel(name)}</dt><dd>{amount > 0 ? '+' : ''}{amount.toLocaleString()}</dd><p>{factorExplanation(name, inspected, result.discovery_goal)}</p></div>)}</dl> : <p className="hint">No factor breakdown was provided.</p>}
