@@ -5,6 +5,7 @@ import { SourcePicker } from './SourcePicker';
 import { MaterialIdentity } from './MaterialIdentity';
 import { CandidateList } from './CandidateList';
 import { ObjectiveInvestigation } from './objective/ObjectiveInvestigation';
+import { PropertyComparisonWorkspace } from './comparison/PropertyComparison';
 import './style.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <MaterialIdentity {...explorer}/>
         <CandidateList {...explorer}/>
         {explorer.detail && <ObjectiveInvestigation key={explorer.detail.id} materialId={explorer.detail.id}/>}
+        <PropertyComparisonWorkspace/>
       </section>
     </main><footer>MaterialGraph · Evidence and limits stay visible.</footer>
   </div>;

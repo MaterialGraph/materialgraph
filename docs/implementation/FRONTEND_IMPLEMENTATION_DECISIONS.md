@@ -360,3 +360,34 @@ Do not resolve these in the client by assumption:
 - [ ] Perform a live browser review without treating it as broad performance
       evidence.
 - [ ] Record unresolved contract questions and stop before unrelated features.
+
+## 13. Standalone source-first property comparison (2026-09-23)
+
+The first comparison workspace accepts an explicit local source ID and two or
+three distinct candidate IDs. The local reference defaults to IDs 5, 6, and 7;
+the displayed values are always fetched from current material-detail responses.
+The launcher does not read Candidate Discovery or Objective Investigation state.
+Their future selection trays remain separate, and no shareable URL is defined.
+
+Each column independently fetches `GET /api/v1/materials/{id}/detail`. The
+pairwise `POST /api/v1/comparison/materials` endpoint screens and scores two
+candidates, so its winner/tie result is not a reported-property comparison.
+Each fetch has its own loading, success, error, and retry lifecycle. Selection
+changes remount and abort old requests; an error in one column preserves other
+columns and their source-relative differences. When the source fails, candidate
+records remain visible but differences are unavailable.
+
+The table displays band gap, energy above hull, formation energy per atom,
+density, stored stability classification, material type, and listed elements.
+Numeric values are displayed with at most four fractional digits using the
+client formatter, while arithmetic uses the original response numbers. This is
+a display convention, not a backend precision or uncertainty claim. Numeric
+zero is Available; null is Unknown. Both true and false stability flags are
+available stored classifications, with no supporting basis supplied by this
+endpoint. An empty elements array means no elements were listed in the record.
+
+Candidate-minus-source differences are arithmetic only when both field values
+are numbers. Matching units do not establish comparable calculation methods or
+conditions; the methodology notice states the scientific boundary. Source ID,
+selected IDs, and any explicitly passed launch context are investigation
+context, not property-level provenance, dataset version, or historical record.
