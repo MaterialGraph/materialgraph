@@ -69,9 +69,11 @@
 .objectiveCandidate .hint{margin:8px 0}.objectiveCandidate details,.objectivePath details{margin-top:12px}
 .objectiveCandidate details ul{padding-left:18px;font-size:12px;line-height:1.6}
 .objectivePath h4{font-size:16px;margin:0}.objectivePath h4 .hint{font-weight:400}
-.objectivePathMaterials{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.objectivePathMaterials{list-style:none;padding:0;display:grid;gap:8px}
 .objectivePathMaterials li{padding:7px 10px;border:1px solid var(--border);border-radius:5px;font-weight:600}
-.objectivePathMaterials li+li:before{content:'→';padding-right:10px;color:var(--muted)}
+.objectivePathMaterials .objectiveRelationship{margin-left:14px;border-left:3px solid var(--border);background:#f6f3ed;font-weight:400;font-size:12px}
+.objectiveRelationship strong{display:block}
+.objectiveValidation{display:inline-block;margin:5px 0 2px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font:11px system-ui,sans-serif;color:var(--muted)}
 .objectivePathMaterials small{display:block;font-weight:400;font-size:10px;color:var(--muted)}
 .objectiveTransition{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.6}
 .objectiveTransition p{margin:6px 0}.objectiveBreakdown div{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;font-size:12px}
