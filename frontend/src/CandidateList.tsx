@@ -38,6 +38,7 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
       {result.discovery_warnings.map((warning, index) => <p className="warning" key={index} role="status">{warning}</p>)}
       {!result.candidates.length && <div className="empty">No candidates were returned for this request. Other candidates may still exist.</div>}
       {!!inspected && presentation && <div className="discoveryWorkspace">
+        <div className="discoveryRail">
         <div className="discoveryList" aria-label="Ranked candidates">
           <ol className="candidateList">{result.candidates.map((candidate, index) => {
             const inspectedRow = candidate.material_id === inspected.material_id;
@@ -58,6 +59,8 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
             </li>;
           })}</ol>
         </div>
+        {onCompare && <CompareTray id="discovery-selection-limit" selected={comparison} remove={id => setComparison(previous => previous.filter(item => item.id !== id))} compare={() => { if (comparison.length >= 2) onCompare(discoveryLaunch(result, comparison)); }}/>}
+        </div>
         <article className="investigationDossier" aria-label="Candidate investigation" key={inspected.material_id}>
           <div className="dossierIdentity"><p className="eyebrow">Investigation · {inspected.mp_id ?? 'source ID unavailable'}</p><h3><ChemicalFormula formula={inspected.pretty_formula || inspected.formula}/></h3><p className="hint">Deterministic rule score: {inspected.discovery_score.toLocaleString()}.{inspected.discovery_score < 0 && ' A negative score reflects rule penalties, not negative scientific value.'}</p></div>
           <div className="researchSummary">
@@ -76,7 +79,6 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
           </div>
         </article>
       </div>}
-      {onCompare && <CompareTray id="discovery-selection-limit" selected={comparison} remove={id => setComparison(previous => previous.filter(item => item.id !== id))} compare={() => { if (comparison.length >= 2) onCompare(discoveryLaunch(result, comparison)); }}/>}
       <p className="rankingNote">Rule scores are deterministic composition heuristics, not confidence or validated performance. Candidate relationships do not establish a substitution mechanism, structural preservation, synthesis feasibility, or application performance.</p>
     </>}
   </section>;

@@ -46,6 +46,8 @@ it('keeps Discovery inspection separate from comparison, enforces the limit, and
     return <CandidateList select={id => { inspected = id; }} detail={source} avoid={draft} setAvoid={setDraft} prefer="Na" setPrefer={noop} result={discovery} candidateError="" candidateLoading={false} searchCandidates={noop} onCompare={value => { launch = value; }}/>;
   }
   await render(<Discovery/>);
+  expect(host.querySelector('.discoveryRail > .discoveryList')).not.toBeNull();
+  expect(host.querySelector('.discoveryRail > .compareTray')).not.toBeNull();
   expect(host.textContent).toContain('0 of 3 selected');
   expect(compareButton().disabled).toBe(true);
   await click(host.querySelectorAll('.candidateRow')[1]);
