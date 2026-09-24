@@ -165,6 +165,7 @@ it('launches Objective from its submitted request and restores only its own sele
   await render(<App/>);
   await click(host.querySelector('.materialList button'));
   await click(host.querySelector('.objectiveForm button[type="submit"]'));
+  expect(host.querySelector('.objectiveColumns > section:first-child > .compareTray')).not.toBeNull();
   await act(async () => { const input = host.querySelector<HTMLInputElement>('.objectiveForm input')!; Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(input, 'Co'); input.dispatchEvent(new Event('input', { bubbles: true })); });
   const objectiveControls = [...host.querySelectorAll<HTMLButtonElement>('.objectiveCandidate .compareSelect')];
   expect(objectiveControls).toHaveLength(3);

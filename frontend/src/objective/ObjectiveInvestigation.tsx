@@ -75,7 +75,7 @@ function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
   </li>;
 }
 
-export function ObjectiveResults({ result, submitted, comparison, toggle }: { result: ObjectiveResponse; submitted: string; comparison?: SelectedMaterial[]; toggle?: (material: SelectedMaterial) => void }) {
+export function ObjectiveResults({ result, submitted, comparison, toggle, remove, compare }: { result: ObjectiveResponse; submitted: string; comparison?: SelectedMaterial[]; toggle?: (material: SelectedMaterial) => void; remove?: (id: number) => void; compare?: () => void }) {
   const metadata = result.search_metadata;
   const scores = result.ranked_candidates.map(candidate => candidate.score);
   const hasEqualScores = new Set(scores).size < scores.length;
@@ -100,6 +100,7 @@ export function ObjectiveResults({ result, submitted, comparison, toggle }: { re
         {hasEqualScores && <p className="hint">Some materials have the same objective rule score. Their order follows the API response.</p>}
         {hasRankedWithoutChain && <p className="hint">A missing returned chain does not establish the absence of a composition-level relationship.</p>}
         {result.ranked_candidates.length ? <ol className="objectiveCandidates">{result.ranked_candidates.map((candidate, index) => <RankedMaterial key={`${candidate.material_id}-${index}`} candidate={candidate} index={index} result={result} comparison={comparison} toggle={toggle}/>)}</ol> : <p className="empty">No ranked materials returned for this objective.</p>}
+        {comparison && remove && compare && <CompareTray id="objective-selection-limit" selected={comparison} remove={remove} compare={compare}/>}
       </section>
       <section><h3>Returned composition chains</h3><p className="hint">These chains describe composition-level relationships between returned materials. They do not establish that reactions proceed through these steps.</p><p className="hint">Shared-element continuity means element overlap across each consecutive relationship; it does not establish structural preservation or a validated substitution mechanism.</p>
         {hasUnvalidatedRelationship && <p className="hint">“Not validated” refers to structural preservation or a substitution mechanism for that relationship; the reported shared elements are shown separately.</p>}
@@ -142,7 +143,8 @@ export function ObjectiveInvestigation({ materialId, onCompare }: { materialId: 
     </form>
     {loading && <p role="status">Investigating this objective…</p>}
     {errors.length > 0 && <div className="error" role="alert"><p>Investigation request failed.</p><ul>{errors.map((error, n) => <li key={n}>{error}</li>)}</ul><button type="button" onClick={retry}>Retry submitted objective</button></div>}
-    {!loading && result && submitted && <><p className="hint">Results for the submitted objective below. Changes to the form take effect when you run a new investigation.</p><ObjectiveResults result={result} submitted={JSON.stringify(submitted, null, 2)} comparison={comparison} toggle={onCompare ? material => setComparison(previous => toggleComparisonSelection(previous, material)) : undefined}/>
-      {onCompare && <CompareTray id="objective-selection-limit" selected={comparison} remove={id => setComparison(previous => previous.filter(item => item.id !== id))} compare={() => { if (comparison.length >= 2) onCompare(objectiveLaunch(result, submitted, comparison)); }}/>}</>}
+    {!loading && result && submitted && <><p className="hint">Results for the submitted objective below. Changes to the form take effect when you run a new investigation.</p><ObjectiveResults result={result} submitted={JSON.stringify(submitted, null, 2)} comparison={comparison} toggle={onCompare ? material => setComparison(previous => toggleComparisonSelection(previous, material)) : undefined}
+      remove={onCompare ? id => setComparison(previous => previous.filter(item => item.id !== id)) : undefined}
+      compare={onCompare ? () => { if (comparison.length >= 2) onCompare(objectiveLaunch(result, submitted, comparison)); } : undefined}/></>}
   </section>;
 }
