@@ -35,6 +35,7 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
     {candidateLoading && <p role="status">Loading discovery results…</p>}
     {candidateError && <div role="alert" className="error">{candidateError} <button onClick={searchCandidates}>Retry</button></div>}
     {result && <>
+      <p className="hint">These discovery results come from a selected cohort of material identities in battery-relevant chemical systems. They do not represent a comprehensive search of materials space.</p>
       <p className="hint">{result.candidates.length} candidates returned in ranking order. Dataset and method versions, evidence coverage, and completeness are not provided with these results.</p>
       {result.discovery_warnings.map((warning, index) => <p className="warning" key={index} role="status">{warning}</p>)}
       {!result.candidates.length && <div className="empty">No candidates were returned for this request. Other candidates may still exist.</div>}

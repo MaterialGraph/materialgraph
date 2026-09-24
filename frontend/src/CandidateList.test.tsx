@@ -23,6 +23,24 @@ const result: CandidateResponse = {
   ],
 };
 const noop = () => {};
+const scope = 'These discovery results come from a selected cohort of material identities in battery-relevant chemical systems. They do not represent a comprehensive search of materials space.';
+const render = (changes: Partial<Parameters<typeof CandidateList>[0]> = {}) => renderToStaticMarkup(<CandidateList select={noop} detail={detail} avoid="Li" setAvoid={noop} prefer="Na" setPrefer={noop} result={result} candidateError="" candidateLoading={false} searchCandidates={noop} {...changes}/>);
+
+it('places dataset coverage before populated and empty Discovery results, only after success', () => {
+  const populated = render();
+  expect(populated).toContain(`<p class="hint">${scope}</p>`);
+  expect(populated.indexOf(scope)).toBeLessThan(populated.indexOf('2 candidates returned'));
+  expect(populated.indexOf(scope)).toBeLessThan(populated.indexOf('Candidate 1'));
+  const empty = render({ result: { ...result, candidates: [] } });
+  expect(empty).toContain(scope);
+  expect(empty.indexOf(scope)).toBeLessThan(empty.indexOf('No candidates were returned for this request.'));
+  expect(render({ result: null })).not.toContain(scope);
+  expect(render({ result: null, candidateLoading: true })).not.toContain(scope);
+  const failed = render({ result: null, candidateError: 'Request failed' });
+  expect(failed).not.toContain(scope);
+  expect(failed).toContain('Request failed');
+  expect(failed).toContain('Retry');
+});
 
 it('keeps backend order and explains a negative rule score without judging scientific value', () => {
   const html = renderToStaticMarkup(<CandidateList select={noop} detail={detail} avoid="Li" setAvoid={noop} prefer="Na" setPrefer={noop} result={result} candidateError="" candidateLoading={false} searchCandidates={noop}/>);

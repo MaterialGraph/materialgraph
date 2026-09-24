@@ -483,3 +483,16 @@ comparison links use freshly fetched details and the same rule. This does
 not infer Materials Project provenance for individual Discovery or Objective
 results, or for the analysis computed by MaterialGraph. Dataset-wide
 attribution and release-level scientific provenance remain separate tasks.
+
+## 17. Pilot dataset coverage at results (2026-09-24)
+
+Discovery displays a cohort-coverage sentence before its returned-candidate
+count for successful results, including empty results. Objective displays the
+corresponding sentence directly under “Ranked materials” for successful
+results, including empty rankings. The notices explain the selected population
+available to the workflows. They remain separate from request-specific Search
+scope, scientific completeness, material-detail limitations, and source
+attribution. “Material identities” preserves the distinction between records
+that share a formula. The permanent UI omits the qualified 1,727-identity
+deployment count, which could become stale; the count belongs in the pilot
+briefing. No backend cohort metadata or endpoint was added for this display.

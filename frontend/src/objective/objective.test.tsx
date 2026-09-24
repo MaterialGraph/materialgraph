@@ -42,6 +42,24 @@ const sample: ObjectiveResponse = {
   warnings: [], explanation: 'Backend explanation.',
 };
 
+const scope = 'These ranked materials come from a selected cohort of material identities in battery-relevant chemical systems. They do not represent a comprehensive search of materials space.';
+
+it('places cohort coverage beneath the ranked-material heading for populated and empty results', () => {
+  for (const ranked_candidates of [sample.ranked_candidates, []]) {
+    const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, ranked_candidates }} submitted="{}"/>);
+    expect(html).toContain(`<h3>Ranked materials</h3><p class="hint">${scope}</p>`);
+    expect(html.indexOf(scope)).toBeLessThan(html.indexOf('Returned order and objective rule scores.'));
+    expect(html).toContain('Search scope');
+    expect(html).toContain('The returned results are limited. Scientific completeness is not guaranteed.');
+    expect(html).toContain('Search truncation: No');
+    expect(html).toContain('This does not establish that every scientifically relevant pathway was found.');
+  }
+  const populated = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
+  expect(populated.indexOf(scope)).toBeLessThan(populated.indexOf('Ranked material 1'));
+  expect(populated).toContain('No returned chain includes this material.');
+  expect(populated).toContain('A missing returned chain does not establish the absence of a composition-level relationship.');
+});
+
 it('derives intermediate and final roles only from returned chain membership', () => {
   expect(returnedRole(sample, 1)).toBe('Intermediate in returned chain');
   expect(returnedRole(sample, 6)).toBe('Final material in returned chain');
