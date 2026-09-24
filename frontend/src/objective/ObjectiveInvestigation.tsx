@@ -97,7 +97,7 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
     </div>
     {result.warnings.map((warning, n) => <p className="warning" key={n}>{warning}</p>)}
     <div className="objectiveColumns">
-      <section><h3>Ranked materials</h3><p className="hint">Returned order and objective rule scores. A score does not measure experimental confidence.</p>
+      <section><h3>Ranked materials</h3><p className="hint">These ranked materials come from a selected cohort of material identities in battery-relevant chemical systems. They do not represent a comprehensive search of materials space.</p><p className="hint">Returned order and objective rule scores. A score does not measure experimental confidence.</p>
         {hasEqualScores && <p className="hint">Some materials have the same objective rule score. Their order follows the API response.</p>}
         {hasRankedWithoutChain && <p className="hint">A missing returned chain does not establish the absence of a composition-level relationship.</p>}
         {result.ranked_candidates.length ? <ol className="objectiveCandidates">{result.ranked_candidates.map((candidate, index) => <RankedMaterial key={`${candidate.material_id}-${index}`} candidate={candidate} index={index} result={result} comparison={comparison} toggle={toggle}/>)}</ol> : <p className="empty">No ranked materials returned for this objective.</p>}
