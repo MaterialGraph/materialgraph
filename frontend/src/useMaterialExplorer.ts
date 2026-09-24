@@ -59,11 +59,20 @@ export function useMaterialExplorer() {
     url.searchParams.set('material', String(id));
     history.replaceState(null, '', url);
   }
+  function restoreEntry(id: number) {
+    setResult(null); setRequest(null); setCandidateError('');
+    setDetail(null); setDetailError('');
+    setSelected(id);
+    setDetailRetry(n => n + 1);
+    const url = new URL(location.href);
+    url.searchParams.set('material', String(id));
+    history.replaceState(null, '', url);
+  }
   function searchCandidates() {
     setRequest(previous => ({ id: selected, avoid, prefer, sequence: (previous?.sequence ?? 0) + 1 }));
   }
   return {
-    selected, select, items, offset, loadMore: () => setOffset(items.length), listError, listLoading,
+    selected, select, restoreEntry, items, offset, loadMore: () => setOffset(items.length), listError, listLoading,
     retryList: () => setListRetry(n => n + 1), detail, detailError, detailLoading,
     retryDetail: () => setDetailRetry(n => n + 1), avoid, setAvoid, prefer, setPrefer,
     result, candidateError, candidateLoading, searchCandidates,

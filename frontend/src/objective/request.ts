@@ -6,7 +6,7 @@ export const exploreObjective = (materialId: number, request: ObjectiveRequest, 
 
 export type ObjectiveDraft = {
   avoid: string; prefer: string; preserve: string; family: '' | 'phosphate';
-  mode: ObjectiveRequest['mode']; hops: number; limit: number;
+  mode: ObjectiveRequest['mode']; hops: number; limit: number; objectiveLimit?: number;
   lowerCriticality: boolean; requireStable: boolean;
 };
 
@@ -29,12 +29,15 @@ export function buildObjectiveRequest(draft: ObjectiveDraft): ObjectiveRequest {
   if (!Number.isInteger(draft.limit) || draft.limit < 1 || draft.limit > 20) {
     throw new Error('Maximum returned results must be between 1 and 20.');
   }
+  if (draft.objectiveLimit !== undefined && (!Number.isInteger(draft.objectiveLimit) || draft.objectiveLimit < 1 || draft.objectiveLimit > 20)) {
+    throw new Error('Objective chain limit must be between 1 and 20.');
+  }
   return {
     objective: {
       avoid_elements: elements(draft.avoid, 'Elements to avoid'),
       prefer_elements: elements(draft.prefer, 'Preferred elements'),
       preserve_elements: elements(draft.preserve, 'Elements to retain'),
-      target_family: draft.family || null, max_hops: draft.hops, limit: draft.limit,
+      target_family: draft.family || null, max_hops: draft.hops, limit: draft.objectiveLimit ?? draft.limit,
       prefer_lower_criticality: draft.lowerCriticality,
       require_stable_materials: draft.requireStable,
     },

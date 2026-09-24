@@ -428,3 +428,41 @@ remounts both workflows and clears their selections. The two selection sets
 never merge. No permanent comparison route, browser-history entry, shareable
 URL, saved state, or cross-workflow comparison is created; those need separate
 contracts. Selection of arbitrary unranked chain members is also deferred.
+
+## 15. Comparison routing and sharing v1 (2026-09-24)
+
+This section supersedes section 14's statement that comparison URLs and
+history entries are absent. The frontend serializes comparisons on the `/`
+path with query keys in canonical order: `view=compare`, `v=1`, `source`,
+`candidates`, `workflow`, and optional `context`. Two or three ordered,
+distinct positive safe local material IDs are required; the source cannot
+also be a candidate. This frontend URL version is not a dataset or scientific
+methodology version. Links depend on the local ID mapping of the instance
+where they were created; portable external-ID resolution needs a backend API.
+
+The optional context is compact UTF-8 JSON encoded as unpadded base64url.
+It holds applied Discovery Avoid/Prefer with limit 10 and substitution paths
+disabled, or the submitted Objective request with both independent limits.
+It never holds returned ranks, chain memberships, scores, detail values, or
+UI state. The ceilings are 1,600 relative URL characters, 1,200 encoded
+context characters, and 900 decoded JSON bytes. Current frontend Objective
+families are `null` or `phosphate`; the backend's unrestricted family strings
+are outside this v1 frontend URL contract. Duplicate/unknown parameters,
+source ambiguity with `?material=`, malformed values, and noncanonical
+encoded context make the link invalid. Absent context is explicitly labelled.
+
+Opening or refreshing a comparison independently refetches current `/detail`
+records. Neither research workflow reruns automatically. A source fetch
+failure prevents source-relative inspection. Failed candidate requests keep
+their columns as material-not-found or API errors, separate from Unknown
+properties in successful records. Cold Objective restoration omits historic
+rank and chain roles; a live in-app launch still shows returned roles.
+
+An in-app comparison pushes a history entry and keeps its workbench mounted.
+Return and browser Back restore that in-memory selection; Forward shows the
+comparison again. After a cold load or refresh, Open enters the relevant
+workflow with source and available recorded inputs prefilled, without results,
+selection, or an automatic investigation. Browser Back follows real browser
+history. Copy comparison link copies the canonical URL for the current
+instance; it does not preserve old values or establish reproducibility,
+current result membership, or scientific comparability.
