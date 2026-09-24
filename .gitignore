@@ -20,3 +20,14 @@ temp/
 env
 repository-files.txt
 *.egg-info/
+
+# Local comparison qualification evidence
+/comparison-reference-evidence/
+/objective-reference-headers.txt
+/objective-reference-request.json
+/objective-reference-response.json
+# Local comparison qualification evidence
+/comparison-reference-evidence/
+/objective-reference-headers.txt
+/objective-reference-request.json
+/objective-reference-response.json
