@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { materialDetail, type MaterialDetail } from '../api';
+import { ApiError, materialDetail, type MaterialDetail } from '../api';
 import { ChemicalFormula } from '../ChemicalFormula';
 import { arithmeticDifference, formatNumber, parseSelection, properties, type ColumnState } from './model';
 import type { ComparisonLaunchContext } from './launch';
@@ -11,7 +11,7 @@ export async function loadColumn(id: number, signal: AbortSignal, report: (state
     const material = await materialDetail(id, signal);
     if (!signal.aborted) report({ status: 'success', id, material });
   } catch (error) {
-    if (!signal.aborted) report({ status: 'error', id, message: error instanceof Error ? error.message : 'Request failed.' });
+    if (!signal.aborted) report({ status: 'error', id, message: error instanceof Error ? error.message : 'Request failed.', code: error instanceof ApiError ? error.status : 0 });
   }
 }
 
@@ -29,15 +29,18 @@ export function useComparisonColumn(id: number): ColumnState & { retry: () => vo
 
 type Column = ColumnState & { retry: () => void };
 type Props = { source: Column; candidates: Column[]; launchContext?: string };
+function columnFailure(column: Column) {
+  return column.status === 'loading' ? 'Loading' : column.status === 'error' && column.code === 404 ? 'Material not found' : 'API Error';
+}
 
 function identity(column: Column, role: string) {
-  if (column.status !== 'success') return <><strong>{role} · Local ID {column.id}</strong><span className="comparisonState" role="status">{column.status === 'loading' ? 'Loading' : 'API Error'}</span>{column.status === 'error' && <><small>{column.message}</small><button type="button" onClick={event => { event.currentTarget.closest<HTMLElement>('[role="region"]')?.focus(); column.retry(); }}>Retry fetch</button></>}</>;
+  if (column.status !== 'success') return <><strong>{role} · Local ID {column.id}</strong><span className="comparisonState" role="status">{columnFailure(column)}</span>{column.status === 'error' && <><small>{column.message}</small><button type="button" onClick={event => { event.currentTarget.closest<HTMLElement>('[role="region"]')?.focus(); column.retry(); }}>Retry fetch</button></>}</>;
   const material = column.material;
   return <><strong>{role} · <ChemicalFormula formula={material.pretty_formula || material.formula}/></strong><small>{material.mp_id} · Local ID {material.id}</small><small>Record source: {material.source}</small></>;
 }
 
 function numericCell(column: Column, source: MaterialDetail | null, field: (typeof properties)[number]['field'], unit: string, candidate: boolean) {
-  if (column.status !== 'success') return <span className="comparisonState">{column.status === 'loading' ? 'Loading' : 'API Error'}</span>;
+  if (column.status !== 'success') return <span className="comparisonState">{columnFailure(column)}</span>;
   const value = column.material[field];
   if (value === null) return <span className="comparisonState">Unknown</span>;
   const delta = candidate ? arithmeticDifference(source, column.material, field) : null;
@@ -54,9 +57,9 @@ export function ComparisonTable({ source, candidates, launchContext }: Props) {
     <div className="comparisonScroll" role="region" aria-label="Property comparison table" tabIndex={0}>
       <table><caption>Source-first property comparison. Numerical differences are candidate minus source.</caption><thead><tr><th scope="col">Property</th>{columns.map((column, index) => <th scope="col" key={index}>{identity(column, index ? 'Candidate' : 'Source')}</th>)}</tr></thead>
         <tbody>{properties.map(({ field, label, unit }) => <tr key={field}><th scope="row">{label}<small>{unit}</small></th>{columns.map((column, index) => <td key={index}>{numericCell(column, sourceMaterial, field, unit, index > 0)}</td>)}</tr>)}
-          <tr><th scope="row">Stored stability classification<small>Basis not supplied by this endpoint.</small></th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? <><span>{column.material.is_stable ? 'Yes' : 'No'}</span><span className="comparisonState">Available stored classification</span></> : <span className="comparisonState">{column.status === 'loading' ? 'Loading' : 'API Error'}</span>}</td>)}</tr>
-          <tr><th scope="row">Material type</th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? column.material.material_type ?? 'Unknown' : column.status === 'loading' ? 'Loading' : 'API Error'}</td>)}</tr>
-          <tr><th scope="row">Elements listed</th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? column.material.elements.length ? column.material.elements.map(element => element.symbol).join(', ') : 'No elements listed' : column.status === 'loading' ? 'Loading' : 'API Error'}</td>)}</tr>
+          <tr><th scope="row">Stored stability classification<small>Basis not supplied by this endpoint.</small></th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? <><span>{column.material.is_stable ? 'Yes' : 'No'}</span><span className="comparisonState">Available stored classification</span></> : <span className="comparisonState">{columnFailure(column)}</span>}</td>)}</tr>
+          <tr><th scope="row">Material type</th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? column.material.material_type ?? 'Unknown' : columnFailure(column)}</td>)}</tr>
+          <tr><th scope="row">Elements listed</th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? column.material.elements.length ? column.material.elements.map(element => element.symbol).join(', ') : 'No elements listed' : columnFailure(column)}</td>)}</tr>
         </tbody></table>
     </div>
     <p className="comparisonMethodology">{methodology}</p>
@@ -74,14 +77,18 @@ function TwoCandidates({ sourceId, candidateIds, launchContext }: { sourceId: nu
   const source = useComparisonColumn(sourceId);
   const first = useComparisonColumn(candidateIds[0]);
   const second = useComparisonColumn(candidateIds[1]);
-  return <ComparisonTable source={source} candidates={[first, second]} launchContext={launchContext}/>;
+  return source.status === 'error' ? <section role="alert"><h2>Source restoration failure</h2><p>{source.message}</p><button onClick={source.retry}>Retry source</button></section> : <ComparisonTable source={source} candidates={[first, second]} launchContext={launchContext}/>;
 }
 function ThreeCandidates({ sourceId, candidateIds, launchContext }: { sourceId: number; candidateIds: number[]; launchContext?: string }) {
   const source = useComparisonColumn(sourceId);
   const first = useComparisonColumn(candidateIds[0]);
   const second = useComparisonColumn(candidateIds[1]);
   const third = useComparisonColumn(candidateIds[2]);
-  return <ComparisonTable source={source} candidates={[first, second, third]} launchContext={launchContext}/>;
+  return source.status === 'error' ? <section role="alert"><h2>Source restoration failure</h2><p>{source.message}</p><button onClick={source.retry}>Retry source</button></section> : <ComparisonTable source={source} candidates={[first, second, third]} launchContext={launchContext}/>;
+}
+
+export function RestoredColumns({route,context}:{route:{source:number;candidates:number[]};context?:string}) {
+  return <LoadedComparison sourceId={route.source} candidateIds={route.candidates} launchContext={context}/>;
 }
 
 export function WorkflowComparison({ launch }: { launch: ComparisonLaunchContext }) {

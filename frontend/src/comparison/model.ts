@@ -3,7 +3,7 @@ import type { MaterialDetail } from '../api';
 export type ColumnState =
   | { status: 'loading'; id: number }
   | { status: 'success'; id: number; material: MaterialDetail }
-  | { status: 'error'; id: number; message: string };
+  | { status: 'error'; id: number; message: string; code?: number };
 
 export const properties = [
   { field: 'band_gap', label: 'Band gap', unit: 'eV' },

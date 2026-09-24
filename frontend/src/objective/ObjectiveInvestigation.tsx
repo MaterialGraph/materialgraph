@@ -5,6 +5,7 @@ import { objectiveLaunch, objectiveRole, toggleComparisonSelection, type Compari
 import type { ObjectiveCandidate, ObjectiveChain, ObjectiveResponse, ObjectiveTransition } from './contract';
 import { buildObjectiveRequest, initialDraft, type ObjectiveDraft } from './request';
 import { useObjectiveInvestigation } from './useObjectiveInvestigation';
+import { routeFromObjective, type ComparisonRoute } from '../comparison/routing';
 
 export function returnedPathways(result: ObjectiveResponse, materialId: number) {
   return result.chains.flatMap((chain, index) => chain.materials.slice(1).some(material => material.material_id === materialId) ? [index] : []);
@@ -110,8 +111,8 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
   </div>;
 }
 
-export function ObjectiveInvestigation({ materialId, onCompare }: { materialId: number; onCompare?: (launch: ComparisonLaunchContext) => void }) {
-  const [draft, setDraft] = useState<ObjectiveDraft>(initialDraft);
+export function ObjectiveInvestigation({ materialId, onCompare, initialInputs }: { materialId: number; onCompare?: (launch: ComparisonLaunchContext, route: ComparisonRoute) => void; initialInputs?: ObjectiveDraft | null }) {
+  const [draft, setDraft] = useState<ObjectiveDraft>(initialInputs ?? initialDraft);
   const [comparison, setComparison] = useState<SelectedMaterial[]>([]);
   const [fieldError, setFieldError] = useState('');
   const { submitted, result, loading, errors, run, retry } = useObjectiveInvestigation(materialId);
@@ -133,6 +134,7 @@ export function ObjectiveInvestigation({ materialId, onCompare }: { materialId: 
       <label>Investigation mode <select value={draft.mode} onChange={e => set('mode', e.target.value as ObjectiveDraft['mode'])}><option value="balanced">Balanced</option><option value="exploratory">Exploratory</option><option value="strict">Strict</option></select></label>
       <label>Maximum pathway steps <input type="number" min="1" max="3" required value={draft.hops} onChange={e => set('hops', Number(e.target.value))}/></label>
       <label>Maximum returned materials and pathways <input type="number" min="1" max="20" required value={draft.limit} onChange={e => set('limit', Number(e.target.value))}/></label>
+      {draft.objectiveLimit !== undefined && <label>Recorded objective chain limit <input type="number" min="1" max="20" required value={draft.objectiveLimit} onChange={e => set('objectiveLimit', Number(e.target.value))}/></label>}
       <div className="objectiveChecks"><label><input type="checkbox" checked={draft.lowerCriticality} onChange={e => set('lowerCriticality', e.target.checked)}/> Prefer lower criticality</label>
         <label><input type="checkbox" checked={draft.requireStable} onChange={e => set('requireStable', e.target.checked)}/> Require stable intermediate and final materials</label></div>
       <p className="hint objectiveModeHint">{draft.mode === 'strict'
@@ -145,6 +147,6 @@ export function ObjectiveInvestigation({ materialId, onCompare }: { materialId: 
     {errors.length > 0 && <div className="error" role="alert"><p>Investigation request failed.</p><ul>{errors.map((error, n) => <li key={n}>{error}</li>)}</ul><button type="button" onClick={retry}>Retry submitted objective</button></div>}
     {!loading && result && submitted && <><p className="hint">Results for the submitted objective below. Changes to the form take effect when you run a new investigation.</p><ObjectiveResults result={result} submitted={JSON.stringify(submitted, null, 2)} comparison={comparison} toggle={onCompare ? material => setComparison(previous => toggleComparisonSelection(previous, material)) : undefined}
       remove={onCompare ? id => setComparison(previous => previous.filter(item => item.id !== id)) : undefined}
-      compare={onCompare ? () => { if (comparison.length >= 2) onCompare(objectiveLaunch(result, submitted, comparison)); } : undefined}/></>}
+      compare={onCompare ? () => { if (comparison.length >= 2) { const launch = objectiveLaunch(result, submitted, comparison); onCompare(launch, routeFromObjective(launch, submitted)); } } : undefined}/></>}
   </section>;
 }

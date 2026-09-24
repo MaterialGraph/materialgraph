@@ -4,6 +4,7 @@ import { ChemicalFormula, FormulaInText } from './ChemicalFormula';
 import { factorExplanation, factorLabel, presentCandidate } from './candidatePresentation';
 import { CompareTray } from './comparison/CompareTray';
 import { discoveryLaunch, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from './comparison/launch';
+import { routeFromDiscovery, type ComparisonRoute } from './comparison/routing';
 
 type Props = {
   select: (id: number) => void; detail: MaterialDetail | null;
@@ -11,7 +12,7 @@ type Props = {
   prefer: string; setPrefer: (value: string) => void;
   result: CandidateResponse | null; candidateError: string;
   candidateLoading: boolean; searchCandidates: () => void;
-  onCompare?: (launch: ComparisonLaunchContext) => void;
+  onCompare?: (launch: ComparisonLaunchContext, route: ComparisonRoute) => void;
 };
 
 export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPrefer, result, candidateError, candidateLoading, searchCandidates, onCompare }: Props) {
@@ -59,7 +60,7 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
             </li>;
           })}</ol>
         </div>
-        {onCompare && <CompareTray id="discovery-selection-limit" selected={comparison} remove={id => setComparison(previous => previous.filter(item => item.id !== id))} compare={() => { if (comparison.length >= 2) onCompare(discoveryLaunch(result, comparison)); }}/>}
+        {onCompare && <CompareTray id="discovery-selection-limit" selected={comparison} remove={id => setComparison(previous => previous.filter(item => item.id !== id))} compare={() => { if (comparison.length >= 2) { const launch = discoveryLaunch(result, comparison); onCompare(launch, routeFromDiscovery(launch, result)); } }}/>}
         </div>
         <article className="investigationDossier" aria-label="Candidate investigation" key={inspected.material_id}>
           <div className="dossierIdentity"><p className="eyebrow">Investigation · {inspected.mp_id ?? 'source ID unavailable'}</p><h3><ChemicalFormula formula={inspected.pretty_formula || inspected.formula}/></h3><p className="hint">Deterministic rule score: {inspected.discovery_score.toLocaleString()}.{inspected.discovery_score < 0 && ' A negative score reflects rule penalties, not negative scientific value.'}</p></div>

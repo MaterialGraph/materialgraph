@@ -11,6 +11,7 @@ import { WorkflowComparison } from './PropertyComparison';
 import { discoveryLaunch, objectiveLaunch, objectiveRole, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from './launch';
 import { CompareTray } from './CompareTray';
 import { App } from '../main';
+import { serializeComparison } from './routing';
 
 const noop = () => {};
 const source: MaterialDetail = { id: 5, mp_id: 'mp-19017', formula: 'LiFePO4', pretty_formula: 'LiFePO4', source: 'materials_project', material_type: null, band_gap: 3, energy_above_hull: 0, formation_energy_per_atom: -2, density: 3, is_stable: true, elements: [] };
@@ -32,7 +33,7 @@ const objective: ObjectiveResponse = {
 let host: HTMLDivElement;
 let root: Root;
 beforeEach(() => { host = document.createElement('div'); document.body.append(host); root = createRoot(host); (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true; });
-afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.unstubAllGlobals(); });
+afterEach(async () => { await act(async () => root.unmount()); host.remove(); history.replaceState(null,'','/'); vi.unstubAllGlobals(); });
 async function render(view: React.ReactNode) { await act(async () => root.render(view)); }
 async function click(button: Element | null) { expect(button).not.toBeNull(); await act(async () => (button as HTMLButtonElement).click()); }
 function selectButtons() { return [...host.querySelectorAll<HTMLButtonElement>('.compareSelect')]; }
@@ -182,4 +183,104 @@ it('launches Objective from its submitted request and restores only its own sele
   await act(async () => { await new Promise(resolve => requestAnimationFrame(resolve)); });
   expect(host.querySelector('.objectiveInvestigation .compareTray')?.textContent).toContain('2 of 3 selected');
   expect(host.querySelector('.discovery .compareTray')).toBeNull();
+});
+
+it('cold-restores Discovery with fresh details and prefilled inputs without rerunning research', async () => {
+  const calls: string[] = [];
+  history.replaceState(null,'',serializeComparison({source:5,candidates:[6,8],workflow:'discovery',context:{kind:'discovery',avoid_element:'Li',prefer_element:'Na',limit:10,include_substitution_paths:false}}));
+  vi.stubGlobal('fetch',vi.fn(async (url: string) => { calls.push(url); if (url.includes('/materials?')) return {ok:true,json:async()=>[source]}; const id=Number(url.match(/materials\/(\d+)\/detail/)?.[1]); return {ok:true,json:async()=>({...source,id,band_gap:id === 6 ? 0 : 4})}; }));
+  await render(<App/>);
+  expect(calls.filter(url=>url.includes('/detail'))).toEqual(['/api/v1/materials/5/detail','/api/v1/materials/6/detail','/api/v1/materials/8/detail']);
+  expect(calls.some(url=>url.includes('/discovery/'))).toBe(false);
+  expect(host.textContent).toContain('Property values are fetched again and may have changed');
+  expect(host.textContent).toContain('current result membership has not been checked');
+  expect(host.querySelector('.comparisonContext')?.textContent).toContain('Applied Avoid: Li');
+  await click(host.querySelector('.workflowComparison > button'));
+  expect(host.querySelector<HTMLInputElement>('.filters input')?.value).toBe('Li');
+  expect(host.querySelector('.discovery .compareTray')).toBeNull();
+  expect(host.textContent).toContain('No investigation results are contained in this link');
+  expect(calls.some(url=>url.includes('/discovery/'))).toBe(false);
+});
+
+it('cold-restores Objective without prior roles and opens prefilled unsent request', async () => {
+  history.replaceState(null,'',serializeComparison({source:5,candidates:[6,8],workflow:'objective',context:{kind:'objective',request:{...submitted,objective:{...submitted.objective,limit:7}}}}));
+  const calls:string[]=[];
+  vi.stubGlobal('fetch',vi.fn(async (url:string)=>{calls.push(url);if(url.includes('/materials?')) return {ok:true,json:async()=>[source]};const id=Number(url.match(/materials\/(\d+)\/detail/)?.[1]);return {ok:true,json:async()=>({...source,id})};}));
+  await render(<App/>);
+  expect(host.textContent).toContain('previous rank and chain membership unavailable');
+  expect(host.textContent).not.toContain('Included in returned composition chain');
+  expect(host.querySelector('.comparisonContext')?.textContent).toContain('"limit":5');
+  await click(host.querySelector('.workflowComparison > button'));
+  expect(host.querySelector<HTMLInputElement>('.objectiveForm input')?.value).toBe('Li');
+  expect(host.querySelector<HTMLInputElement>('input[value="7"]')?.value).toBe('7');
+  expect(host.querySelector('.objectiveCandidates')).toBeNull();
+  expect(calls.some(url=>url.includes('/discovery/objective/'))).toBe(false);
+});
+
+it('treats source 404 as restoration failure and candidate 404 as material not found', async () => {
+  history.replaceState(null,'',serializeComparison({source:5,candidates:[6,8],workflow:'discovery',context:null}));
+  vi.stubGlobal('fetch',vi.fn(async (url:string)=>url.includes('/materials?') ? {ok:true,json:async()=>[]} : url.includes('/materials/5/') ? {ok:false,status:404} : {ok:true,json:async()=>({...source,id:6})}));
+  await render(<App/>);
+  expect(host.textContent).toContain('Source restoration failure');
+  expect(host.querySelector('.propertyComparison')).toBeNull();
+  expect(host.textContent).toContain('Investigation context unavailable');
+});
+
+it('shows invalid comparison without material fetches', async () => {
+  history.replaceState(null,'','/?view=compare&v=1&source=05&candidates=6,8&workflow=discovery');
+  const calls:string[]=[];
+  vi.stubGlobal('fetch',vi.fn(async (url:string)=>{calls.push(url);return {ok:true,json:async()=>[]};}));
+  await render(<App/>);
+  expect(host.textContent).toContain('Invalid comparison link');
+  expect(calls.some(url=>url.includes('/detail'))).toBe(false);
+});
+
+it('navigates in-app Back and Forward while preserving the actual Discovery selection', async () => {
+  vi.stubGlobal('fetch',vi.fn(async (url:string)=>{
+    if(url.includes('discovery/candidates')) return {ok:true,json:async()=>discovery};
+    if(url.includes('/materials?')) return {ok:true,json:async()=>[source]};
+    const id=Number(url.match(/materials\/(\d+)\/detail/)?.[1]);return {ok:true,json:async()=>({...source,id})};
+  }));
+  await render(<App/>);
+  await click(host.querySelector('.materialList button'));
+  await click(host.querySelector('.filters button'));
+  await click(selectButtons()[0]);await click(selectButtons()[1]);await click(compareButton());
+  const comparisonUrl=location.search;
+  expect(comparisonUrl).toContain('view=compare');
+  await act(async()=>{history.replaceState(null,'','/?material=5');dispatchEvent(new PopStateEvent('popstate'));});
+  expect(host.querySelector('.layout')?.hasAttribute('hidden')).toBe(false);
+  expect(host.querySelector('.discovery .compareTray')?.textContent).toContain('2 of 3 selected');
+  await act(async()=>{history.replaceState(null,'',`/${comparisonUrl}`);dispatchEvent(new PopStateEvent('popstate'));});
+  expect(host.querySelector('.workflowComparison')).not.toBeNull();
+  expect(host.textContent).toContain('Discovery candidate');
+});
+
+it('copies the canonical absolute URL, reporting clipboard failure honestly', async () => {
+  history.replaceState(null,'',serializeComparison({source:5,candidates:[6,8],workflow:'discovery',context:null}));
+  vi.stubGlobal('fetch',vi.fn(async (url:string)=>url.includes('/materials?') ? {ok:true,json:async()=>[]} : {ok:true,json:async()=>({...source,id:Number(url.match(/materials\/(\d+)\/detail/)?.[1])})}));
+  const copy=vi.fn(async()=>{});
+  vi.stubGlobal('navigator',Object.assign(Object.create(navigator),{clipboard:{writeText:copy}}));
+  await render(<App/>);
+  await click([...host.querySelectorAll('.workflowComparison > button')][1]);
+  expect(copy).toHaveBeenCalledWith(`${location.origin}${location.pathname}${location.search}`);
+  expect(host.textContent).toContain('Comparison link copied.');
+  copy.mockRejectedValueOnce(Error('Clipboard denied'));
+  await click([...host.querySelectorAll('.workflowComparison > button')][1]);
+  expect(host.textContent).toContain('Could not copy comparison link.');
+});
+
+it('retains missing candidate columns distinctly from Unknown properties', async () => {
+  history.replaceState(null,'',serializeComparison({source:5,candidates:[6,8],workflow:'discovery',context:null}));
+  vi.stubGlobal('fetch',vi.fn(async (url:string)=>{
+    if(url.includes('/materials?')) return {ok:true,json:async()=>[]};
+    if(url.includes('/materials/6/')) return {ok:false,status:404};
+    if(url.includes('/materials/8/')) return {ok:false,status:503,headers:{get:()=>null}};
+    return {ok:true,json:async()=>({...source,band_gap:null})};
+  }));
+  await render(<App/>);
+  expect(host.querySelector('.propertyComparison')).not.toBeNull();
+  expect(host.textContent).toContain('Material not found');
+  expect(host.textContent).toContain('API Error');
+  expect(host.textContent).toContain('Unknown');
+  expect(host.querySelectorAll('.propertyComparison thead th')).toHaveLength(4);
 });
