@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { materialDetail, type MaterialDetail } from '../api';
 import { ChemicalFormula } from '../ChemicalFormula';
 import { arithmeticDifference, formatNumber, parseSelection, properties, type ColumnState } from './model';
+import type { ComparisonLaunchContext } from './launch';
 
 const methodology = 'Reported property values reflect independent material records, not a validated phase transformation pathway. Differences between records do not establish structural preservation, synthesis feasibility, or application performance. Matching units do not establish that the underlying methods or conditions are comparable.';
 
@@ -63,24 +64,29 @@ export function ComparisonTable({ source, candidates, launchContext }: Props) {
   </section>;
 }
 
-function LoadedComparison({ sourceId, candidateIds }: { sourceId: number; candidateIds: number[] }) {
+function LoadedComparison({ sourceId, candidateIds, launchContext }: { sourceId: number; candidateIds: number[]; launchContext?: string }) {
   // Keys remount columns on selection change. Abort cleanup blocks stale responses.
   return candidateIds.length === 3
-    ? <ThreeCandidates key={[sourceId, ...candidateIds].join(':')} sourceId={sourceId} candidateIds={candidateIds}/>
-    : <TwoCandidates key={[sourceId, ...candidateIds].join(':')} sourceId={sourceId} candidateIds={candidateIds}/>;
+    ? <ThreeCandidates key={[sourceId, ...candidateIds].join(':')} sourceId={sourceId} candidateIds={candidateIds} launchContext={launchContext}/>
+    : <TwoCandidates key={[sourceId, ...candidateIds].join(':')} sourceId={sourceId} candidateIds={candidateIds} launchContext={launchContext}/>;
 }
-function TwoCandidates({ sourceId, candidateIds }: { sourceId: number; candidateIds: number[] }) {
+function TwoCandidates({ sourceId, candidateIds, launchContext }: { sourceId: number; candidateIds: number[]; launchContext?: string }) {
   const source = useComparisonColumn(sourceId);
   const first = useComparisonColumn(candidateIds[0]);
   const second = useComparisonColumn(candidateIds[1]);
-  return <ComparisonTable source={source} candidates={[first, second]}/>;
+  return <ComparisonTable source={source} candidates={[first, second]} launchContext={launchContext}/>;
 }
-function ThreeCandidates({ sourceId, candidateIds }: { sourceId: number; candidateIds: number[] }) {
+function ThreeCandidates({ sourceId, candidateIds, launchContext }: { sourceId: number; candidateIds: number[]; launchContext?: string }) {
   const source = useComparisonColumn(sourceId);
   const first = useComparisonColumn(candidateIds[0]);
   const second = useComparisonColumn(candidateIds[1]);
   const third = useComparisonColumn(candidateIds[2]);
-  return <ComparisonTable source={source} candidates={[first, second, third]}/>;
+  return <ComparisonTable source={source} candidates={[first, second, third]} launchContext={launchContext}/>;
+}
+
+export function WorkflowComparison({ launch }: { launch: ComparisonLaunchContext }) {
+  const roleContext = launch.selectedMaterials.map(material => `${material.formula} (local ID ${material.id}): ${material.role}`).join('; ');
+  return <LoadedComparison sourceId={launch.sourceMaterialId} candidateIds={launch.selectedMaterials.map(material => material.id)} launchContext={`${launch.investigationContext} Selected result roles: ${roleContext}`}/>;
 }
 
 export function PropertyComparisonWorkspace() {

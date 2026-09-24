@@ -8,6 +8,7 @@
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}button:disabled{cursor:not-allowed}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
 
 .discoveryWorkspace{display:grid;grid-template-columns:minmax(210px,34%) minmax(0,1fr);gap:var(--space-2);align-items:start;margin-top:var(--space-3)}
+.discoveryRail{min-width:0;display:flex;flex-direction:column;gap:var(--space-2)}
 .discoveryList{min-width:0;max-height:74vh;overflow:auto}
 .discoveryList .candidateList{display:grid;gap:1px;margin:0;padding:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--border)}
 .candidateRow{display:block;width:100%;border:0;border-left:3px solid transparent;background:var(--surface);padding:var(--space-2);text-align:left;color:var(--ink)}
@@ -104,3 +105,20 @@
 .comparisonMethodology{margin:18px 0 10px;padding:12px 16px;border-left:3px solid var(--border);background:#f6f3ed;font:14px/1.55 Georgia,serif}
 .comparisonContext{font-size:12px;color:var(--muted)}
 .comparisonContext p{margin:5px 0}
+
+[hidden]{display:none!important}
+.compareSelect{margin:0 12px 12px;padding:6px 9px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--ink);font-size:12px}
+.compareSelect[aria-pressed="true"]{background:var(--selection);border-color:var(--ink)}
+.compareSelect:disabled{cursor:not-allowed}
+.compareTray{margin-top:18px;padding:14px;border:1px solid var(--border);border-radius:8px;background:#f6f3ed}
+.discoveryRail .compareTray{margin-top:0}
+.compareTray>strong{display:block;font-size:13px}
+.compareTray ul{list-style:none;margin:10px 0;padding:0;display:grid;gap:7px}
+.compareTray li{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px}
+.compareTray li small{display:block;color:var(--muted)}
+.compareTray button,.workflowComparison>button{padding:8px 12px;border:1px solid var(--ink);border-radius:6px;background:var(--surface);color:var(--ink)}
+.compareTray>button{background:var(--ink);color:var(--surface)}
+.compareTray button:disabled{cursor:not-allowed;opacity:.6}
+.workflowComparison{min-width:0;padding-top:22px}
+.workflowComparison h1{font-size:24px}
+.workflowComparison .propertyComparison{margin-top:18px}

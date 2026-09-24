@@ -391,3 +391,40 @@ are numbers. Matching units do not establish comparable calculation methods or
 conditions; the methodology notice states the scientific boundary. Source ID,
 selected IDs, and any explicitly passed launch context are investigation
 context, not property-level provenance, dataset version, or historical record.
+
+## 14. Workflow selection into property comparison (2026-09-24)
+
+Candidate Discovery and Objective Investigation each own a separate, empty-on-new-
+result comparison selection. Selecting a result is an independent control:
+opening a Discovery dossier or following a returned-chain link does not select
+anything; selecting for comparison does not change the inspected result or the
+API ordering. Each workflow allows up to three comparison materials. Two are
+required to launch; the source is supplied explicitly by the workflow and does
+not occupy a candidate slot. The tray retains selected identities and allows
+removal at the limit.
+
+The workflow passes one launch value containing the source local ID, two or
+three selected material identities, the workflow of origin, and bounded
+investigation context. Discovery context comes from the applied response goal,
+not the editable Avoid/Prefer fields. Objective context comes from the
+submitted structured request, not the current form draft. Ranked Objective
+materials retain their rank-result role and any membership in the actual
+returned composition chains. A ranked result without returned-chain membership
+is labeled as ranked only. Unranked chain members cannot be selected through
+this slice. Chain roles are selection context, not validated reactions or
+scientific provenance.
+
+The comparison view receives the launch value and continues to fetch every
+current `/detail` record independently. It does not reuse result-list properties,
+scores, or pathway values. The comparison table, uncertainty handling, and
+arithmetic interpretation are unchanged. The standalone ID-entry workspace
+remains available.
+
+Launching temporarily hides the existing workbench while keeping its mounted
+state. The explicit Return button restores the originating workflow and its
+selection, and focus moves between the comparison heading and originating
+workflow. New results clear their own workflow's selection. Changing the source
+remounts both workflows and clears their selections. The two selection sets
+never merge. No permanent comparison route, browser-history entry, shareable
+URL, saved state, or cross-workflow comparison is created; those need separate
+contracts. Selection of arbitrary unranked chain members is also deferred.
