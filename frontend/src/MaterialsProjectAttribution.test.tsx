@@ -17,9 +17,9 @@ it('credits a fetched Materials Project record with accessible links and a reada
   const html = view(detail);
   expect(html).toContain('Material record data: Materials Project (CC BY 4.0). MaterialGraph calculates the discovery, objective, chain, and comparison analysis shown here.');
   expect(html).toContain('<span class="tag">Materials Project</span>');
-  expect(html).toContain('href="https://materialsproject.org/"');
-  expect(html).toContain('href="https://creativecommons.org/licenses/by/4.0/"');
-  expect(html).toContain('href="https://materialsproject.org/about/cite"');
+  expect(html).toContain('href="https://materialsproject.org/" target="_blank" rel="noopener noreferrer"');
+  expect(html).toContain('href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer"');
+  expect(html).toContain('href="https://materialsproject.org/about/cite" target="_blank" rel="noopener noreferrer"');
   expect(html.match(/class="materialsAttribution"/g)).toHaveLength(1);
 });
 
