@@ -33,6 +33,21 @@ it('renders source and two independent candidates with neutral differences and m
   expect(html).not.toMatch(/\b(winner|tie|recommended|better|worse)\b/i);
 });
 
+it('credits fetched Materials Project records once per comparison, including a mixed-source table', () => {
+  const html = view(loaded({ ...source, source: 'other_provider' }), [loaded(first), loaded({ ...second, source: 'other_provider' })]);
+  expect(html).toContain('Record source: other_provider');
+  expect(html).toContain('Record source: Materials Project');
+  expect(html.match(/class="materialsAttribution"/g)).toHaveLength(1);
+  expect(html).toContain('Material record data: Materials Project (CC BY 4.0). MaterialGraph calculates the discovery, objective, chain, and comparison analysis shown here.');
+  expect(html).toContain('href="https://materialsproject.org/about/cite"');
+});
+
+it('does not attribute another provider or an unfetched record to Materials Project', () => {
+  const other = (material: MaterialDetail) => loaded({ ...material, source: 'other_provider' });
+  expect(view(other(source), [other(first), error(7)])).not.toContain('materialsAttribution');
+  expect(view(other(source), [error(6), loaded(second)])).toContain('materialsAttribution');
+});
+
 it('renders three candidates and listed-elements absence without claiming empty composition', () => {
   const html = view(loaded(source), [loaded(first), loaded(second), loaded(third)]);
   expect(html.match(/Candidate ·/g)).toHaveLength(3);

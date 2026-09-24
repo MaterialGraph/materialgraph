@@ -466,3 +466,20 @@ selection, or an automatic investigation. Browser Back follows real browser
 history. Copy comparison link copies the canonical URL for the current
 instance; it does not preserve old values or establish reproducibility,
 current result membership, or scientific comparability.
+
+## 16. Materials Project record attribution (2026-09-24)
+
+When a successful `/detail` response has `source: materials_project`, the
+Source Context material identity and the independent comparison display a
+single compact attribution beside the record data: “Material record data:
+Materials Project (CC BY 4.0). MaterialGraph calculates the discovery,
+objective, chain, and comparison analysis shown here.” The attribution links
+to Materials Project, its CC BY 4.0 license, and its citation guidance.
+Record-source labels render `materials_project` as “Materials Project” while
+retaining any other source string as reported. A mixed-source comparison
+credits the fetched Materials Project record once for the whole table; an
+unfetched or other-source record cannot trigger that credit. Cold-opened
+comparison links use freshly fetched details and the same rule. This does
+not infer Materials Project provenance for individual Discovery or Objective
+results, or for the analysis computed by MaterialGraph. Dataset-wide
+attribution and release-level scientific provenance remain separate tasks.

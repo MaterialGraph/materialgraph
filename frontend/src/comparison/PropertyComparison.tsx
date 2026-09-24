@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { ApiError, materialDetail, type MaterialDetail } from '../api';
 import { ChemicalFormula } from '../ChemicalFormula';
+import { MaterialsProjectAttribution, recordSourceLabel } from '../MaterialsProjectAttribution';
 import { arithmeticDifference, formatNumber, parseSelection, properties, type ColumnState } from './model';
 import type { ComparisonLaunchContext } from './launch';
 
@@ -36,7 +37,7 @@ function columnFailure(column: Column) {
 function identity(column: Column, role: string) {
   if (column.status !== 'success') return <><strong>{role} · Local ID {column.id}</strong><span className="comparisonState" role="status">{columnFailure(column)}</span>{column.status === 'error' && <><small>{column.message}</small><button type="button" onClick={event => { event.currentTarget.closest<HTMLElement>('[role="region"]')?.focus(); column.retry(); }}>Retry fetch</button></>}</>;
   const material = column.material;
-  return <><strong>{role} · <ChemicalFormula formula={material.pretty_formula || material.formula}/></strong><small>{material.mp_id} · Local ID {material.id}</small><small>Record source: {material.source}</small></>;
+  return <><strong>{role} · <ChemicalFormula formula={material.pretty_formula || material.formula}/></strong><small>{material.mp_id} · Local ID {material.id}</small><small>Record source: {recordSourceLabel(material.source)}</small></>;
 }
 
 function numericCell(column: Column, source: MaterialDetail | null, field: (typeof properties)[number]['field'], unit: string, candidate: boolean) {
@@ -63,6 +64,7 @@ export function ComparisonTable({ source, candidates, launchContext }: Props) {
         </tbody></table>
     </div>
     <p className="comparisonMethodology">{methodology}</p>
+    {columns.some(column => column.status === 'success' && column.material.source === 'materials_project') && <MaterialsProjectAttribution/>}
     <div className="comparisonContext"><strong>Investigation context</strong><p>Source ID {source.id} · Selected material IDs: {candidates.map(column => column.id).join(', ')}{launchContext ? ` · ${launchContext}` : ''}. This is client request context, not scientific provenance. Values reflect current backend responses.</p></div>
   </section>;
 }
