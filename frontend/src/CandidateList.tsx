@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { CandidateResponse, MaterialDetail } from './api';
 import { ChemicalFormula, FormulaInText } from './ChemicalFormula';
 import { factorExplanation, factorLabel, presentCandidate } from './candidatePresentation';
+import { CompareTray } from './comparison/CompareTray';
+import { discoveryLaunch, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from './comparison/launch';
 
 type Props = {
   select: (id: number) => void; detail: MaterialDetail | null;
@@ -9,10 +11,13 @@ type Props = {
   prefer: string; setPrefer: (value: string) => void;
   result: CandidateResponse | null; candidateError: string;
   candidateLoading: boolean; searchCandidates: () => void;
+  onCompare?: (launch: ComparisonLaunchContext) => void;
 };
 
-export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPrefer, result, candidateError, candidateLoading, searchCandidates }: Props) {
+export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPrefer, result, candidateError, candidateLoading, searchCandidates, onCompare }: Props) {
   const [inspectedId, setInspectedId] = useState<number | null>(null);
+  const [comparison, setComparison] = useState<SelectedMaterial[]>([]);
+  useEffect(() => { setComparison([]); }, [result]);
   if (!detail) return null;
   const inspected = result?.candidates.find(candidate => candidate.material_id === inspectedId) ?? result?.candidates[0];
   const sourceFormula = result?.base_formula || detail.pretty_formula || detail.formula;
@@ -35,15 +40,21 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
       {!!inspected && presentation && <div className="discoveryWorkspace">
         <div className="discoveryList" aria-label="Ranked candidates">
           <ol className="candidateList">{result.candidates.map((candidate, index) => {
-            const selected = candidate.material_id === inspected.material_id;
+            const inspectedRow = candidate.material_id === inspected.material_id;
+            const selectedForComparison = comparison.some(item => item.id === candidate.material_id);
             const candidateSignals = presentCandidate(candidate, sourceFormula, result.discovery_goal).signals;
             const avoided = candidateSignals.find(signal => signal.key === 'contains_avoided_element');
             return <li key={candidate.material_id}>
-              <button className={`candidateRow${selected ? ' active' : ''}`} aria-current={selected ? 'true' : undefined} onClick={() => setInspectedId(candidate.material_id)}>
+              <button className={`candidateRow${inspectedRow ? ' active' : ''}`} aria-current={inspectedRow ? 'true' : undefined} onClick={() => setInspectedId(candidate.material_id)}>
                 <span className="eyebrow">Candidate {index + 1} · {candidate.mp_id ?? 'source ID unavailable'}</span>
                 <span className="rowIdentity"><strong><ChemicalFormula formula={candidate.pretty_formula || candidate.formula}/></strong><span>{candidate.discovery_score.toLocaleString()} <small>rule score</small></span></span>
                 {avoided && <span className="rowNote">{avoided.label}</span>}
               </button>
+              {onCompare && candidate.material_id !== detail.id && <button type="button" className="compareSelect" aria-pressed={selectedForComparison} aria-label={`${selectedForComparison ? 'Remove' : 'Select'} ${candidate.pretty_formula || candidate.formula}, local ID ${candidate.material_id} ${selectedForComparison ? 'from' : 'for'} comparison`}
+                disabled={comparison.length === 3 && !selectedForComparison} aria-describedby={comparison.length === 3 && !selectedForComparison ? 'discovery-selection-limit' : undefined}
+                onClick={() => setComparison(previous => toggleComparisonSelection(previous, { id: candidate.material_id, formula: candidate.pretty_formula || candidate.formula, mpId: candidate.mp_id, role: 'Discovery candidate' }))}>
+                {selectedForComparison ? 'Selected for comparison' : 'Select for comparison'}
+              </button>}
             </li>;
           })}</ol>
         </div>
@@ -65,6 +76,7 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
           </div>
         </article>
       </div>}
+      {onCompare && <CompareTray id="discovery-selection-limit" selected={comparison} remove={id => setComparison(previous => previous.filter(item => item.id !== id))} compare={() => { if (comparison.length >= 2) onCompare(discoveryLaunch(result, comparison)); }}/>}
       <p className="rankingNote">Rule scores are deterministic composition heuristics, not confidence or validated performance. Candidate relationships do not establish a substitution mechanism, structural preservation, synthesis feasibility, or application performance.</p>
     </>}
   </section>;
