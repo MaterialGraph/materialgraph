@@ -521,3 +521,15 @@ physical route. A ranked material can still have no returned chain. The
 frontend renders backend reasons as supplied, and machine-readable API fields
 and identifiers remain unchanged. Separate Scientific Pathway and Candidate
 Discovery substitution-path surfaces are outside this correction.
+
+## 20. Objective chain score explanation (2026-09-25)
+
+Objective returned-chain usefulness reasons describe the encoded composition
+relationships that contribute to the chain rule score. Reported elemental
+differences across relationships remain separate from endpoint composition:
+an element reported removed or introduced at one relationship need not be
+absent or present at the endpoint. Shared elements are reported as overlap,
+without claiming structural preservation or a validated reaction mechanism.
+The Objective response retains its existing score values, breakdown keys,
+and raw relationship identifiers. Other workflows using the same ranking
+service retain their existing reason wording.

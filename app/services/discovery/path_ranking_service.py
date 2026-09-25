@@ -31,6 +31,7 @@ class DiscoveryPathRankingService:
         avoid_elements: Collection[str] | None = None,
         prefer_elements: Collection[str] | None = None,
         prefer_lower_criticality: bool | None = None,
+        composition_chain_reason: bool = False,
     ) -> dict:
         normalized_avoid_elements = self._normalize_elements(
             element=avoid_element,
@@ -84,7 +85,11 @@ class DiscoveryPathRankingService:
                 transitions=transitions,
                 avoid_elements=normalized_avoid_elements,
                 prefer_elements=normalized_prefer_elements,
-            ) + self._criticality_policy_reason(prefer_lower_criticality),
+                composition_chain_reason=composition_chain_reason,
+            ) + self._criticality_policy_reason(
+                prefer_lower_criticality,
+                composition_chain_reason=composition_chain_reason,
+            ),
         }
 
     def _score_shared_element_continuity(
@@ -262,9 +267,14 @@ class DiscoveryPathRankingService:
         transitions: list[dict],
         avoid_elements: frozenset[str],
         prefer_elements: frozenset[str],
+        composition_chain_reason: bool = False,
     ) -> str:
         if not transitions:
-            return "No discovery path was available for ranking."
+            return (
+                "No composition chain was available for ranking."
+                if composition_chain_reason
+                else "No discovery path was available for ranking."
+            )
 
         # preserved_framework is retained as a legacy elemental-overlap
         # fallback; it does not establish structural preservation.
@@ -303,7 +313,7 @@ class DiscoveryPathRankingService:
 
         reasons = []
 
-        # Describe transition events independently from endpoint outcomes.
+        # Describe encoded relationship differences independently from endpoint outcomes.
         path_removed = sorted(avoid_elements & removed_elements)
         path_not_removed = sorted(avoid_elements - removed_elements)
         path_introduced = sorted(
@@ -315,29 +325,35 @@ class DiscoveryPathRankingService:
 
         if path_removed:
             reasons.append(
-                "removes "
+                ("reports removal of " if composition_chain_reason else "removes ")
                 + ", ".join(path_removed)
-                + " during the path"
+                + (" across composition relationships" if composition_chain_reason
+                   else " during the path")
             )
 
         if path_not_removed:
             reasons.append(
-                "does not show removal events during the path for "
-                "requested avoided element(s) "
+                ("does not report removal across composition relationships for "
+                 if composition_chain_reason else
+                 "does not show removal events during the path for ")
+                + "requested avoided element(s) "
                 + ", ".join(path_not_removed)
             )
 
         if path_introduced:
             reasons.append(
-                "introduces "
+                ("reports introduction of " if composition_chain_reason else "introduces ")
                 + ", ".join(path_introduced)
-                + " during the path"
+                + (" across composition relationships" if composition_chain_reason
+                   else " during the path")
             )
 
         if path_not_introduced:
             reasons.append(
-                "does not show introduction events during the path for "
-                "requested preferred element(s) "
+                ("does not report introduction across composition relationships for "
+                 if composition_chain_reason else
+                 "does not show introduction events during the path for ")
+                + "requested preferred element(s) "
                 + ", ".join(path_not_introduced)
             )
 
@@ -402,8 +418,10 @@ class DiscoveryPathRankingService:
 
         if common_shared_elements:
             reasons.append(
-                f"maintains {'-'.join(common_shared_elements)} "
-                "shared-element continuity"
+                (f"shared-element continuity ({', '.join(common_shared_elements)}) "
+                 "across reported composition relationships"
+                 if composition_chain_reason else
+                 f"maintains {'-'.join(common_shared_elements)} shared-element continuity")
             )
 
         valid_transition_types = [
@@ -414,19 +432,23 @@ class DiscoveryPathRankingService:
 
         if valid_transition_types:
             reasons.append(
-                "uses "
+                ("reported relationship types: " if composition_chain_reason else "uses ")
                 + " -> ".join(valid_transition_types)
-                + " transition logic"
+                + ("" if composition_chain_reason else " transition logic")
             )
 
         if not reasons:
             return (
+                "The composition-chain rule score uses the available "
+                "encoded relationship evidence."
+                if composition_chain_reason else
                 "This path is scientifically useful under the "
                 "available deterministic transition evidence."
             )
 
         return (
-            "This path is scientifically useful because it "
+            ("Composition-chain rule score evidence: " if composition_chain_reason
+             else "This path is scientifically useful because it ")
             + "; ".join(reasons)
             + "."
         )
@@ -513,6 +535,7 @@ class DiscoveryPathRankingService:
     @staticmethod
     def _criticality_policy_reason(
         prefer_lower_criticality: bool | None,
+        composition_chain_reason: bool = False,
     ) -> str:
         if prefer_lower_criticality is True:
             return (
@@ -521,6 +544,8 @@ class DiscoveryPathRankingService:
             )
         if prefer_lower_criticality is False:
             return (
+                " Criticality is excluded from the composition-chain rule score."
+                if composition_chain_reason else
                 " Criticality is excluded from objective-specific pathway "
                 "ranking."
             )
