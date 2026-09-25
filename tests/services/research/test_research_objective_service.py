@@ -141,6 +141,55 @@ def test_research_objective_chains_are_sorted_by_usefulness(db_session):
     assert scores == sorted(scores, reverse=True)
 
 
+def test_objective_chain_explains_relationships_without_claiming_a_route(db_session):
+    service = ResearchObjectiveService(db_session)
+    objective = ResearchObjective(
+        avoid_elements=["Li", "Co"],
+        prefer_elements=["Na", "K"],
+        preserve_elements=[],
+        target_family=None,
+        max_hops=2,
+        limit=5,
+        prefer_lower_criticality=False,
+    )
+
+    ranked = service._rank_chains([_sample_chain()], objective)[0]
+    reason = ranked["usefulness_reason"]
+    discovery_ranking = service.path_ranking_service.rank_path(
+        materials=_sample_chain()["materials"],
+        transitions=_sample_chain()["transitions"],
+        avoid_elements=objective.avoid_elements,
+        prefer_elements=objective.prefer_elements,
+        prefer_lower_criticality=False,
+    )
+
+    assert ranked["scientific_usefulness_score"] == discovery_ranking["scientific_usefulness_score"]
+    assert ranked["score_breakdown"] == discovery_ranking["score_breakdown"]
+    assert "removes Li during the path" in discovery_ranking["usefulness_reason"]
+
+    assert "Composition-chain rule score evidence:" in reason
+    assert "reports removal of Li across composition relationships" in reason
+    assert (
+        "does not report removal across composition relationships for "
+        "requested avoided element(s) Co"
+    ) in reason
+    assert "reports introduction of Na across composition relationships" in reason
+    assert (
+        "does not report introduction across composition relationships for "
+        "requested preferred element(s) K"
+    ) in reason
+    assert "endpoint excludes requested avoided element(s) Co, Li" in reason
+    assert "endpoint contains requested preferred element(s) Na" in reason
+    assert (
+        "shared-element continuity (Fe, O, P) across reported "
+        "composition relationships"
+    ) in reason
+    assert "reported relationship types: alkali_substitution" in reason
+    assert "Criticality is excluded from the composition-chain rule score." in reason
+    assert "scientifically useful" not in reason
+    assert "during the path" not in reason
+
+
 def test_research_objective_filters_preserved_elements(db_session):
     service = ResearchObjectiveService(db_session)
 

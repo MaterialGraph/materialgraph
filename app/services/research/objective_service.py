@@ -190,6 +190,7 @@ class ResearchObjectiveService:
                 prefer_lower_criticality=(
                     objective.prefer_lower_criticality
                 ),
+                composition_chain_reason=True,
             )
 
             ranked_chains.append({
