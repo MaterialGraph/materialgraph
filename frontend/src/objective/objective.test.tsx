@@ -130,9 +130,58 @@ it('keeps chain position, metadata, and score scopes explicit', () => {
   expect(html).toContain('Substitution mechanism</dt><dd>Not validated');
   expect(html).toContain('Shared elements</dt><dd>Fe, O, P');
   expect(html).toContain('Chain usefulness rule score: 96');
-  expect(html).toContain('Chain usefulness rule score breakdown (whole chain):');
+  expect(html).toContain('Whole-chain score breakdown');
+  expect(html).toContain('Relationship type weighting');
+  expect(html).not.toContain('Transition Plausibility');
   expect(html).not.toContain('Relationship usefulness rule score');
   expect(html).toContain('Shared-element continuity describes a composition-level relationship. It does not establish structural preservation or a validated substitution mechanism.');
+  expect(html).toContain('No returned chain includes this material.');
+  expect(html).toContain('A missing returned chain does not establish the absence of a composition-level relationship.');
+});
+
+it('separates relationship facts, the whole-chain score, and verbatim backend explanations', () => {
+  const transition = {
+    ...sample.chains[0].transitions[1],
+    reason: 'Backend Li -> Na wording; preserve exactly.',
+    removed_elements: ['Li'], introduced_elements: ['Na'],
+  };
+  const chain = {
+    ...sample.chains[0],
+    transitions: [sample.chains[0].transitions[0], transition],
+    chain_reason: 'This discovery chain follows family_expansion -> alkali_substitution.',
+    usefulness_reason: 'Composition-chain rule score evidence: reported relationship types: alkali_substitution.',
+    scientific_usefulness_score: 93.75,
+    score_breakdown: {
+      shared_element_continuity: 30, objective_alignment: 18.75,
+      transition_plausibility: 20, path_efficiency: 10, material_quality: 15,
+    },
+  };
+  const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [chain] }} submitted="{}"/>);
+  expect(html.indexOf('Chain usefulness rule score: 93.75')).toBeLessThan(html.indexOf('<summary>Relationship details and scoring'));
+  expect(html).toContain('<section class="objectiveDetailSection" aria-label="Relationship details">');
+  expect(html).toContain('Relationship 2: Possible alkali composition substitution');
+  expect(html).toContain('Composition heuristic <code>composition_heuristic</code>');
+  expect(html).toContain('Element overlap <code>element_overlap</code>');
+  expect(html).toContain('Structural preservation</dt><dd>Not validated');
+  expect(html).toContain('Substitution mechanism</dt><dd>Not validated');
+  expect(html).toContain('Shared elements</dt><dd>Fe, O, P');
+  expect(html).toContain('Elements absent in next composition</dt><dd>Li');
+  expect(html).toContain('Elements present only in next composition</dt><dd>Na');
+  expect(html).toContain('<h5>Whole-chain score breakdown</h5>');
+  for (const [label, key, value, maximum] of [
+    ['Shared-element overlap', 'shared_element_continuity', '30', '30'],
+    ['Endpoint objective alignment', 'objective_alignment', '18.75', '25'],
+    ['Relationship type weighting', 'transition_plausibility', '20', '20'],
+    ['Chain structure component', 'path_efficiency', '10', '10'],
+    ['Endpoint/bottleneck material quality', 'material_quality', '15', '15'],
+  ]) expect(html).toContain(`${label} <code>${key}</code></th><td>${value}</td><td>${maximum}</td>`);
+  expect(html).toContain('Chain usefulness rule score</th><td>93.75</td><td>100</td>');
+  expect(html).toContain('<details class="objectiveTechnical"><summary>Backend technical explanations</summary>');
+  expect(html).toContain('Backend chain explanation:</strong> This discovery chain follows family_expansion -&gt; alkali_substitution.');
+  expect(html).toContain('Backend transition reason:</strong> Backend Li -&gt; Na wording; preserve exactly.');
+  expect(html).toContain('Backend score explanation:</strong> Composition-chain rule score evidence: reported relationship types: alkali_substitution.');
+  expect(html).not.toContain('Original returned reason');
+  expect(html).not.toContain('Path Efficiency');
   expect(html).toContain('No returned chain includes this material.');
   expect(html).toContain('A missing returned chain does not establish the absence of a composition-level relationship.');
 });
