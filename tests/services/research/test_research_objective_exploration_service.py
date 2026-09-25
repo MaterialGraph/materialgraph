@@ -64,6 +64,56 @@ def _chain(*, material_id: int, formula: str, score: float = 0.0) -> dict:
     }
 
 
+def test_eligible_chain_reason_when_supporting_chain_is_not_returned():
+    service = ResearchObjectiveExplorationService.__new__(
+        ResearchObjectiveExplorationService
+    )
+    returned_chain = _chain(material_id=6, formula="NaFePO4")
+    eligible_only_chain = _chain(material_id=8, formula="Na3Fe(PO4)2")
+    eligible_only_chain["transitions"] = [{
+        "transition_type": "alkali_substitution",
+        "shared_elements": ["Fe", "P", "O"],
+    }]
+    service.objective_service = _ObjectiveServiceStub(
+        [returned_chain, eligible_only_chain]
+    )
+    request = ResearchObjectiveExplorationRequest(
+        objective=ResearchObjective(
+            avoid_elements=[],
+            prefer_elements=[],
+            preserve_elements=[],
+            target_family=None,
+            max_hops=1,
+            limit=2,
+            prefer_lower_criticality=False,
+        ),
+        mode="balanced",
+        limit=1,
+    )
+
+    result = service.explore(material_id=5, request=request)
+    candidate = next(
+        item for item in result["ranked_candidates"]
+        if item["material_id"] == 8
+    )
+    assert result["search_metadata"]["result_truncated"] is True
+    assert all(
+        all(material["material_id"] != 8 for material in chain["materials"])
+        for chain in result["chains"]
+    )
+    assert candidate["reasons"] == [
+        "Appears in an eligible composition chain with relationship type "
+        "alkali_substitution.",
+        "Shares elements across the composition relationship: Fe, P, O. "
+        "Structural preservation is not validated.",
+    ]
+    assert not any(
+        word in reason.lower()
+        for reason in candidate["reasons"]
+        for word in ("pathway", "reaction", "synthesis route", "returned chain")
+    )
+
+
 def test_research_objective_exploration_returns_ranked_candidates(db_session):
     service = ResearchObjectiveExplorationService(db_session)
 
@@ -310,17 +360,20 @@ def test_candidate_attribution_excludes_future_transitions(db_session):
 
     assert intermediate["score"] == 50.0
     assert (
-        "Connected through shared_chemistry pathway."
+        "Appears in an eligible composition chain with relationship type shared_chemistry."
         in intermediate["reasons"]
     )
     assert (
-        "Connected through alkali_substitution pathway."
+        "Appears in an eligible composition chain with relationship type alkali_substitution."
         not in intermediate["reasons"]
     )
     assert endpoint["score"] == 60.0
-    assert "Connected through shared_chemistry pathway." in endpoint["reasons"]
     assert (
-        "Connected through alkali_substitution pathway."
+        "Appears in an eligible composition chain with relationship type shared_chemistry."
+        in endpoint["reasons"]
+    )
+    assert (
+        "Appears in an eligible composition chain with relationship type alkali_substitution."
         in endpoint["reasons"]
     )
 

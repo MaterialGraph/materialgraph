@@ -44,6 +44,21 @@ const sample: ObjectiveResponse = {
 
 const scope = 'These ranked materials come from a selected cohort of material identities in battery-relevant chemical systems. They do not represent a comprehensive search of materials space.';
 
+it('shows an eligible-chain reason alongside no returned chain without rewriting backend text', () => {
+  const reason = 'Appears in an eligible composition chain with relationship type alkali_substitution.';
+  const result = {
+    ...sample,
+    ranked_candidates: sample.ranked_candidates.map(candidate => candidate.material_id === 8
+      ? { ...candidate, reasons: [reason] }
+      : candidate),
+  };
+  const html = renderToStaticMarkup(<ObjectiveResults result={result} submitted="{}"/>);
+  expect(html).toContain(reason);
+  expect(html).toContain('No returned chain includes this material.');
+  expect(html).toContain('A missing returned chain does not establish the absence of a composition-level relationship.');
+  expect(html).toContain('Returned composition chain 1 · 2 relationship steps');
+});
+
 it('places cohort coverage beneath the ranked-material heading for populated and empty results', () => {
   for (const ranked_candidates of [sample.ranked_candidates, []]) {
     const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, ranked_candidates }} submitted="{}"/>);

@@ -240,12 +240,16 @@ class ResearchObjectiveExplorationService:
         for transition in transitions:
             transition_type = transition.get("transition_type")
             if transition_type:
-                reasons.append(f"Connected through {transition_type} pathway.")
+                reasons.append(
+                    "Appears in an eligible composition chain with relationship "
+                    f"type {transition_type}."
+                )
 
             shared_elements = transition.get("shared_elements") or transition.get("preserved_framework", [])
             if shared_elements:
                 reasons.append(
-                    f"Shares elements across the transition: {', '.join(shared_elements)}. "
+                    "Shares elements across the composition relationship: "
+                    f"{', '.join(shared_elements)}. "
                     "Structural preservation is not validated."
                 )
 

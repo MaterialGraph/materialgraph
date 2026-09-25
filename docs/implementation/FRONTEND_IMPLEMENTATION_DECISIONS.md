@@ -510,3 +510,14 @@ are displayed as distinct returned fields. The chain usefulness rule score
 appears at chain scope, with its returned breakdown in expanded details.
 Neither node roles nor composition overlap establish reaction intermediates,
 products, structural preservation, or validated pathways.
+
+## 19. Eligible composition chain reasons (2026-09-25)
+
+Objective ranked-material reasons describe membership in an eligible
+composition chain because ranking precedes the response limit on returned
+chains. Backend human-facing reasons now say “eligible composition chain” and
+“composition relationship”; the former `pathway` wording could imply a
+physical route. A ranked material can still have no returned chain. The
+frontend renders backend reasons as supplied, and machine-readable API fields
+and identifiers remain unchanged. Separate Scientific Pathway and Candidate
+Discovery substitution-path surfaces are outside this correction.
