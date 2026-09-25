@@ -42,7 +42,13 @@ function RankedMaterial({ result, candidate, index, comparison, toggle }: { resu
 export function relationshipLabel(type: string): string {
   if (type === 'alkali_substitution') return 'Possible alkali composition substitution';
   if (type === 'family_expansion') return 'Composition family relationship';
-  return `Reported relationship: ${type.replaceAll('_', ' ')}`;
+  return 'Reported composition relationship';
+}
+
+function basisLabel(value: string): string {
+  if (value === 'composition_heuristic') return 'Composition heuristic';
+  if (value === 'element_overlap') return 'Element overlap';
+  return 'Reported basis';
 }
 
 function Relationship({ transition }: { transition: ObjectiveTransition }) {
@@ -58,19 +64,26 @@ function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
     <h4>Returned composition chain {index + 1} · {chain.transitions.length} relationship {chain.transitions.length === 1 ? 'step' : 'steps'}</h4>
     <ol className="objectivePathMaterials">{chain.materials.flatMap((material, materialIndex) => [
       <li className="objectiveMaterialRecord" key={`material-${materialIndex}`}><ChemicalFormula formula={material.pretty_formula || material.formula}/>
-        <small>{material.mp_id ?? `Local ID ${material.material_id}`} · {materialIndex === 0 ? 'Source' : materialIndex === chain.materials.length - 1 ? 'Final material in returned chain' : 'Intermediate in returned chain'}</small></li>,
+        <small>{material.mp_id ?? `Local ID ${material.material_id}`} <span className="objectiveRole">{materialIndex === 0 ? 'Source' : materialIndex === chain.materials.length - 1 ? 'Final' : 'Intermediate'}</span></small></li>,
       ...(materialIndex < chain.transitions.length ? [<Relationship key={`relationship-${materialIndex}`} transition={chain.transitions[materialIndex]}/>] : []),
     ])}</ol>
     <p className="hint">Composition-level relationships only; reaction steps and mechanisms are not established.</p>
+    <p className="objectiveChainScore">Chain usefulness rule score: {chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}. <span className="hint">This is separate from the objective rule score.</span></p>
     <details><summary>Relationship details and scoring</summary>
       <p className="hint">Original returned chain explanation: {chain.chain_reason}</p>
-      <p className="hint">Pathway usefulness rule score: {chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}. This is separate from the objective rule score.</p>
       {chain.transitions.map((transition, n) => <div className="objectiveTransition" key={n}>
         <strong>Relationship {n + 1}: {relationshipLabel(transition.transition_type)}</strong>
         <p>Original returned reason: {transition.reason}</p>
-        <p className="hint">Shared elements: {transition.shared_elements.length ? transition.shared_elements.join(', ') : 'None supplied'} · Basis: {transition.relationship_basis}, {transition.preservation_basis}. Structural preservation: {transition.structural_preservation_validated ? 'Reported as validated' : 'Not validated'}. Substitution mechanism: {transition.substitution_mechanism_validated ? 'Reported as validated' : 'Not validated'}.</p>
+        <dl className="objectiveMetadata">
+          <div><dt>Backend relationship identifier</dt><dd><code>{transition.transition_type}</code></dd></div>
+          <div><dt>Relationship basis</dt><dd>{basisLabel(transition.relationship_basis)} <code>{transition.relationship_basis}</code></dd></div>
+          <div><dt>Preservation/continuity basis</dt><dd>{basisLabel(transition.preservation_basis)} <code>{transition.preservation_basis}</code></dd></div>
+          <div><dt>Structural preservation</dt><dd>{transition.structural_preservation_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
+          <div><dt>Substitution mechanism</dt><dd>{transition.substitution_mechanism_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
+          <div><dt>Shared elements</dt><dd>{transition.shared_elements.length ? transition.shared_elements.join(', ') : 'None supplied'}</dd></div>
+        </dl>
       </div>)}
-      {chain.score_breakdown && <dl className="objectiveBreakdown">{Object.entries(chain.score_breakdown).map(([name, value]) => <div key={name}><dt>{name.replaceAll('_', ' ')}</dt><dd>{value.toLocaleString()}</dd></div>)}</dl>}
+      {chain.score_breakdown && <><p className="hint">Chain usefulness rule score breakdown (whole chain):</p><dl className="objectiveBreakdown">{Object.entries(chain.score_breakdown).map(([name, value]) => <div key={name}><dt>{name.replaceAll('_', ' ')}</dt><dd>{value.toLocaleString()}</dd></div>)}</dl></>}
       {chain.usefulness_reason && <p>{chain.usefulness_reason}</p>}
     </details>
   </li>;
@@ -103,7 +116,7 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
         {result.ranked_candidates.length ? <ol className="objectiveCandidates">{result.ranked_candidates.map((candidate, index) => <RankedMaterial key={`${candidate.material_id}-${index}`} candidate={candidate} index={index} result={result} comparison={comparison} toggle={toggle}/>)}</ol> : <p className="empty">No ranked materials returned for this objective.</p>}
         {comparison && remove && compare && <CompareTray id="objective-selection-limit" selected={comparison} remove={remove} compare={compare}/>}
       </section>
-      <section><h3>Returned composition chains</h3><p className="hint">These chains describe composition-level relationships between returned materials. They do not establish that reactions proceed through these steps.</p><p className="hint">Shared-element continuity means element overlap across each consecutive relationship; it does not establish structural preservation or a validated substitution mechanism.</p>
+      <section><h3>Returned composition chains</h3><p className="hint">These chains describe composition-level relationships between returned materials. They do not establish that reactions proceed through these steps.</p><p className="hint">“Intermediate” and “final” describe positions within the returned chain and do not denote experimentally established reaction intermediates or products.</p><p className="hint">Shared-element continuity describes a composition-level relationship. It does not establish structural preservation or a validated substitution mechanism.</p>
         {hasUnvalidatedRelationship && <p className="hint">“Not validated” refers to structural preservation or a substitution mechanism for that relationship; the reported shared elements are shown separately.</p>}
         {result.chains.length ? <ol className="objectivePaths">{result.chains.map((chain, index) => <Pathway key={index} chain={chain} index={index}/>)}</ol> : <p className="empty">No pathways included in this response.</p>}
       </section>
