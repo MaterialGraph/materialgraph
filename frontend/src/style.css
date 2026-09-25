@@ -85,6 +85,16 @@
 @media(max-width:500px){.objectiveMetadata div{grid-template-columns:1fr;gap:1px}}
 .objectiveTransition{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.6}
 .objectiveTransition p{margin:6px 0}.objectiveBreakdown div{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;font-size:12px}
+.objectiveDetailSection{padding:12px 0;border-bottom:1px solid var(--border)}
+.objectiveDetailSection h5{font-size:13px;margin:0 0 8px}
+.objectiveTransition h6{font-size:12px;margin:0 0 8px}
+.objectiveScoreTable{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12px}
+.objectiveScoreTable th,.objectiveScoreTable td{text-align:left;border-bottom:1px solid var(--border);padding:7px 5px;overflow-wrap:anywhere}
+.objectiveScoreTable th:first-child{width:52%}.objectiveScoreTable th:nth-child(2){width:26%}.objectiveScoreTable th:nth-child(3){width:22%}
+.objectiveScoreTable td{text-align:right;font-variant-numeric:tabular-nums}
+.objectiveScoreTable code{display:block;font-size:11px;font-weight:400;color:var(--muted);overflow-wrap:anywhere}
+.objectiveScoreTotal{font-weight:700}.objectiveTechnical{margin-top:12px;overflow-wrap:anywhere;font-size:12px;line-height:1.6}
+.objectiveTechnical p{margin:9px 0}
 .objectiveBreakdown dt{text-transform:capitalize}.objectiveBreakdown dd{margin:0;font-variant-numeric:tabular-nums}
 @media(max-width:1100px){.objectiveColumns{grid-template-columns:1fr}}
 @media(max-width:650px){.objectiveForm{grid-template-columns:1fr}}

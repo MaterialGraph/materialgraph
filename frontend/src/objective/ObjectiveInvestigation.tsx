@@ -51,6 +51,14 @@ function basisLabel(value: string): string {
   return 'Reported basis';
 }
 
+const chainScoreComponents: Record<string, { label: string; maximum: number }> = {
+  shared_element_continuity: { label: 'Shared-element overlap', maximum: 30 },
+  objective_alignment: { label: 'Endpoint objective alignment', maximum: 25 },
+  transition_plausibility: { label: 'Relationship type weighting', maximum: 20 },
+  path_efficiency: { label: 'Chain structure component', maximum: 10 },
+  material_quality: { label: 'Endpoint/bottleneck material quality', maximum: 15 },
+};
+
 function Relationship({ transition }: { transition: ObjectiveTransition }) {
   return <li className="objectiveRelationship">
     <strong>{relationshipLabel(transition.transition_type)}</strong>
@@ -70,10 +78,9 @@ function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
     <p className="hint">Composition-level relationships only; reaction steps and mechanisms are not established.</p>
     <p className="objectiveChainScore">Chain usefulness rule score: {chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}. <span className="hint">This is separate from the objective rule score.</span></p>
     <details><summary>Relationship details and scoring</summary>
-      <p className="hint">Original returned chain explanation: {chain.chain_reason}</p>
+      <section className="objectiveDetailSection" aria-label="Relationship details"><h5>Relationship details</h5>
       {chain.transitions.map((transition, n) => <div className="objectiveTransition" key={n}>
-        <strong>Relationship {n + 1}: {relationshipLabel(transition.transition_type)}</strong>
-        <p>Original returned reason: {transition.reason}</p>
+        <h6>Relationship {n + 1}: {relationshipLabel(transition.transition_type)}</h6>
         <dl className="objectiveMetadata">
           <div><dt>Backend relationship identifier</dt><dd><code>{transition.transition_type}</code></dd></div>
           <div><dt>Relationship basis</dt><dd>{basisLabel(transition.relationship_basis)} <code>{transition.relationship_basis}</code></dd></div>
@@ -81,10 +88,24 @@ function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
           <div><dt>Structural preservation</dt><dd>{transition.structural_preservation_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
           <div><dt>Substitution mechanism</dt><dd>{transition.substitution_mechanism_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
           <div><dt>Shared elements</dt><dd>{transition.shared_elements.length ? transition.shared_elements.join(', ') : 'None supplied'}</dd></div>
+          {transition.removed_elements && <div><dt>Elements absent in next composition</dt><dd>{transition.removed_elements.length ? transition.removed_elements.join(', ') : 'None reported'}</dd></div>}
+          {transition.introduced_elements && <div><dt>Elements present only in next composition</dt><dd>{transition.introduced_elements.length ? transition.introduced_elements.join(', ') : 'None reported'}</dd></div>}
         </dl>
-      </div>)}
-      {chain.score_breakdown && <><p className="hint">Chain usefulness rule score breakdown (whole chain):</p><dl className="objectiveBreakdown">{Object.entries(chain.score_breakdown).map(([name, value]) => <div key={name}><dt>{name.replaceAll('_', ' ')}</dt><dd>{value.toLocaleString()}</dd></div>)}</dl></>}
-      {chain.usefulness_reason && <p>{chain.usefulness_reason}</p>}
+      </div>)}</section>
+      {chain.score_breakdown && <section className="objectiveDetailSection" aria-label="Whole-chain score breakdown">
+        <h5>Whole-chain score breakdown</h5>
+        <p className="hint">Deterministic rule components for the whole chain; these values do not measure reaction likelihood or synthesis feasibility.</p>
+        <table className="objectiveScoreTable"><thead><tr><th scope="col">Rule component</th><th scope="col">Contribution</th><th scope="col">Maximum</th></tr></thead><tbody>
+          {Object.entries(chain.score_breakdown).map(([name, value]) => <tr key={name}><th scope="row">{chainScoreComponents[name]?.label ?? 'Reported rule component'} <code>{name}</code></th><td>{value.toLocaleString()}</td><td>{chainScoreComponents[name]?.maximum ?? 'Not specified'}</td></tr>)}
+          <tr className="objectiveScoreTotal"><th scope="row">Chain usefulness rule score</th><td>{chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}</td><td>100</td></tr>
+        </tbody></table>
+      </section>}
+      <details className="objectiveTechnical"><summary>Backend technical explanations</summary>
+        <p className="hint">These strings are returned by the backend and may use terminology different from the researcher-facing presentation above.</p>
+        <p><strong>Backend chain explanation:</strong> {chain.chain_reason}</p>
+        {chain.transitions.map((transition, n) => <p key={n}><strong>Relationship {n + 1} — Backend transition reason:</strong> {transition.reason}</p>)}
+        {chain.usefulness_reason && <p><strong>Backend score explanation:</strong> {chain.usefulness_reason}</p>}
+      </details>
     </details>
   </li>;
 }

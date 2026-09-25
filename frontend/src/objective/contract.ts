@@ -23,6 +23,7 @@ export type ObjectiveTransition = {
   reason: string; shared_elements: string[]; preservation_basis: string;
   relationship_basis: string; structural_preservation_validated: boolean;
   substitution_mechanism_validated: boolean;
+  removed_elements?: string[]; introduced_elements?: string[];
 };
 export type ObjectiveChain = {
   hop_count: number; materials: ObjectiveMaterial[]; transitions: ObjectiveTransition[];

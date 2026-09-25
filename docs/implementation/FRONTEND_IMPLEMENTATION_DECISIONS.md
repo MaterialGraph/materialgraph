@@ -533,3 +533,16 @@ without claiming structural preservation or a validated reaction mechanism.
 The Objective response retains its existing score values, breakdown keys,
 and raw relationship identifiers. Other workflows using the same ranking
 service retain their existing reason wording.
+
+## 21. Objective relationship details and chain score (2026-09-25)
+
+The existing Objective chain disclosure groups each returned relationship's
+structured fields separately from the whole-chain rule score breakdown.
+Reported composition differences between adjacent records appear only when
+the response provides those element lists; they do not describe a reaction.
+The five score components retain their API keys and numeric contributions,
+with researcher-facing labels that describe the implemented rule weights,
+endpoint alignment, chain structure, and material quality. The returned
+whole-chain total remains authoritative. Original backend chain, relationship,
+and score explanations remain verbatim in a collapsed technical disclosure.
+No scoring rules, API fields, node roles, or missing-chain qualifications change.
