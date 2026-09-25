@@ -68,7 +68,7 @@ it('derives intermediate and final roles only from returned chain membership', (
   expect(html).toContain('No returned chain includes this material.');
   expect(html).toContain('A missing returned chain does not establish the absence of a composition-level relationship.');
   expect(html).toContain('Some materials have the same objective rule score. Their order follows the API response.');
-  expect(html).toContain('Intermediate in returned chain');
+  expect(html).toContain('class="objectiveRole">Intermediate</span>');
   expect(html).toContain('Returned chain:');
   expect(html).not.toContain('Returned pathways:');
   expect(renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [sample.chains[0], sample.chains[0]] }} submitted="{}"/>)).toContain('Returned chains:');
@@ -91,11 +91,35 @@ it('presents one relationship step without implying a reaction or inventing unkn
   const chain = { ...sample.chains[0], hop_count: 1, materials: [sample.chains[0].materials[0], sample.chains[0].materials[2]], transitions: [transition] };
   const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [chain], search_metadata: { ...sample.search_metadata, search_truncated: true, result_truncated: false } }} submitted="{}"/>);
   expect(html).toContain('Returned composition chain 1 · 1 relationship step');
-  expect(html).toContain('Reported relationship: new relation');
+  expect(html).toContain('Reported composition relationship');
+  expect(html).toContain('<code>new_relation</code>');
+  expect(html).not.toContain('Reported relationship: new relation');
   expect(html).toContain('Shared elements not supplied');
   expect(html).toContain('Search truncation: Yes');
   expect(html).not.toContain('→');
   expect(relationshipLabel('alkali_substitution')).toBe('Possible alkali composition substitution');
+});
+
+it('keeps chain position, metadata, and score scopes explicit', () => {
+  const chain = { ...sample.chains[0], score_breakdown: { transition_plausibility: 20 } };
+  const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [chain] }} submitted="{}"/>);
+  expect(html).toContain('mp-19017 <span class="objectiveRole">Source</span>');
+  expect(html).toContain('mp-26003 <span class="objectiveRole">Intermediate</span>');
+  expect(html).toContain('mp-19028 <span class="objectiveRole">Final</span>');
+  expect(html).toContain('Possible alkali composition substitution');
+  expect(html).toContain('Composition family relationship');
+  expect(html).toContain('<code>alkali_substitution</code>');
+  expect(html).toContain('Composition heuristic <code>composition_heuristic</code>');
+  expect(html).toContain('Element overlap <code>element_overlap</code>');
+  expect(html).toContain('Structural preservation</dt><dd>Not validated');
+  expect(html).toContain('Substitution mechanism</dt><dd>Not validated');
+  expect(html).toContain('Shared elements</dt><dd>Fe, O, P');
+  expect(html).toContain('Chain usefulness rule score: 96');
+  expect(html).toContain('Chain usefulness rule score breakdown (whole chain):');
+  expect(html).not.toContain('Relationship usefulness rule score');
+  expect(html).toContain('Shared-element continuity describes a composition-level relationship. It does not establish structural preservation or a validated substitution mechanism.');
+  expect(html).toContain('No returned chain includes this material.');
+  expect(html).toContain('A missing returned chain does not establish the absence of a composition-level relationship.');
 });
 
 it('does not add validation badges or an equality note without supporting response fields', () => {

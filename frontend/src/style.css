@@ -76,6 +76,13 @@
 .objectiveRelationship strong{display:block}
 .objectiveValidation{display:inline-block;margin:5px 0 2px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font:11px system-ui,sans-serif;color:var(--muted)}
 .objectivePathMaterials small{display:block;font-weight:400;font-size:10px;color:var(--muted)}
+.objectiveRole{display:inline-block;margin-left:6px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;color:var(--ink);font:600 10px system-ui,sans-serif}
+.objectiveChainScore{padding:9px 0;margin:8px 0;border-top:1px solid var(--border);font-size:12px;font-weight:700}
+.objectiveChainScore .hint{font-weight:400}
+.objectiveMetadata{display:grid;gap:5px;margin:8px 0;overflow-wrap:anywhere}
+.objectiveMetadata div{display:grid;grid-template-columns:minmax(0,145px) minmax(0,1fr);gap:8px}
+.objectiveMetadata dt{color:var(--muted)}.objectiveMetadata dd{margin:0}
+@media(max-width:500px){.objectiveMetadata div{grid-template-columns:1fr;gap:1px}}
 .objectiveTransition{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.6}
 .objectiveTransition p{margin:6px 0}.objectiveBreakdown div{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;font-size:12px}
 .objectiveBreakdown dt{text-transform:capitalize}.objectiveBreakdown dd{margin:0;font-variant-numeric:tabular-nums}

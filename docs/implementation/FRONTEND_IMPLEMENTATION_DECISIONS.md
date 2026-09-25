@@ -496,3 +496,17 @@ attribution. “Material identities” preserves the distinction between records
 that share a formula. The permanent UI omits the qualified 1,727-identity
 deployment count, which could become stale; the count belongs in the pilot
 briefing. No backend cohort metadata or endpoint was added for this display.
+
+## 18. Returned composition chain legibility (2026-09-25)
+
+The existing Objective chain cards identify Source, Intermediate, and Final
+as positions within the returned chain only. Composition relationship blocks
+remain between consecutive material records; no reaction direction is implied.
+Known relationship identifiers retain qualified researcher-facing labels;
+unrecognized identifiers use a neutral label. Raw identifiers appear in the
+existing expanded technical details. Relationship basis, element-overlap
+continuity basis, structural-preservation validation, and mechanism validation
+are displayed as distinct returned fields. The chain usefulness rule score
+appears at chain scope, with its returned breakdown in expanded details.
+Neither node roles nor composition overlap establish reaction intermediates,
+products, structural preservation, or validated pathways.
