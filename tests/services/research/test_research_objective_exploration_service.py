@@ -360,17 +360,20 @@ def test_candidate_attribution_excludes_future_transitions(db_session):
 
     assert intermediate["score"] == 50.0
     assert (
-        "Connected through shared_chemistry pathway."
+        "Appears in an eligible composition chain with relationship type shared_chemistry."
         in intermediate["reasons"]
     )
     assert (
-        "Connected through alkali_substitution pathway."
+        "Appears in an eligible composition chain with relationship type alkali_substitution."
         not in intermediate["reasons"]
     )
     assert endpoint["score"] == 60.0
-    assert "Connected through shared_chemistry pathway." in endpoint["reasons"]
     assert (
-        "Connected through alkali_substitution pathway."
+        "Appears in an eligible composition chain with relationship type shared_chemistry."
+        in endpoint["reasons"]
+    )
+    assert (
+        "Appears in an eligible composition chain with relationship type alkali_substitution."
         in endpoint["reasons"]
     )
 
