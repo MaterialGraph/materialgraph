@@ -142,3 +142,16 @@
 .workflowComparison{min-width:0;padding-top:22px}
 .workflowComparison h1{font-size:24px}
 .workflowComparison .propertyComparison{margin-top:18px}
+
+.pilotOrientation{margin:18px 0}
+.pilotHelp{display:flex;justify-content:flex-end}
+.pilotHelp button,.pilotGuide button{padding:10px 14px;border:1px solid var(--ink);border-radius:8px;background:var(--surface);color:var(--ink)}
+.pilotGuide{width:min(620px,calc(100vw - 32px));max-height:calc(100dvh - 48px);margin:auto;padding:28px;border:1px solid var(--border);border-radius:15px;background:var(--surface);color:var(--ink);box-shadow:0 24px 80px #00000030;overflow-y:auto}
+.pilotGuide::backdrop{background:#15181580}
+.pilotGuide h2{margin:0 0 18px;font-size:23px;letter-spacing:-.5px}
+.pilotGuide ol{margin:0;padding-left:22px}
+.pilotGuide li,.pilotGuide p{font-size:14px;line-height:1.65}
+.pilotGuide li+li{margin-top:12px}
+.pilotGuide p{color:var(--muted)}
+.pilotGuide>button{margin-top:8px;background:var(--ink);color:var(--surface);font-weight:600}
+@media(max-width:500px){.pilotGuide{padding:22px}.pilotGuide h2{font-size:21px}}

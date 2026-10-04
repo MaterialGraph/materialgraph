@@ -13,6 +13,25 @@ import { CompareTray } from './CompareTray';
 import { App } from '../main';
 import { serializeComparison } from './routing';
 
+// jsdom lacks native dialog methods. Browser qualification covers modal focus
+// and backdrop behavior; this shim lets workflow tests mount the application.
+if (!HTMLDialogElement.prototype.showModal) {
+  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.setAttribute('open', '');
+    },
+  });
+}
+if (!HTMLDialogElement.prototype.close) {
+  Object.defineProperty(HTMLDialogElement.prototype, 'close', {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.removeAttribute('open');
+    },
+  });
+}
+
 const noop = () => {};
 const source: MaterialDetail = { id: 5, mp_id: 'mp-19017', formula: 'LiFePO4', pretty_formula: 'LiFePO4', source: 'materials_project', material_type: null, band_gap: 3, energy_above_hull: 0, formation_energy_per_atom: -2, density: 3, is_stable: true, elements: [] };
 const discovery: CandidateResponse = {
