@@ -2,3 +2,6 @@
 # the scanner and all of its dependencies.
 
 pip-audit==2.10.1
+
+# Security constraint for PYSEC-2026-4175, -4176 and -4177.
+urllib3==2.8.0
