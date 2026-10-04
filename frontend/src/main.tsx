@@ -9,6 +9,7 @@ import { PropertyComparisonWorkspace, WorkflowComparison, RestoredColumns } from
 import type { ComparisonLaunchContext } from './comparison/launch';
 import { parseComparison, serializeComparison, type ComparisonRoute } from './comparison/routing';
 import type { ObjectiveDraft } from './objective/request';
+import { PilotOrientation } from './PilotOrientation';
 import './style.css';
 
 export function App() {
@@ -80,6 +81,7 @@ export function App() {
   const invalid = parsed.kind === 'invalidComparison';
   return <div className="shell">
     <header><div className="brand">Material<span>Graph</span><small>Research workspace / 01</small></div><div className="headerNote">MATERIAL EXPLORER <span>·</span> READ ONLY</div></header>
+    <PilotOrientation/>
     <div className="intro"><p className="eyebrow">EXPLORE THE MATERIAL LANDSCAPE</p><h1>Start with a material.<br/><em>Follow the evidence.</em></h1><p>Select a source identity, inspect available properties, then explore explainable candidates. Scores describe encoded rules, not experimental validation.</p></div>
     <main className="layout" hidden={comparisonVisible || invalid}>
       <SourcePicker {...explorer} select={selectSource}/>
