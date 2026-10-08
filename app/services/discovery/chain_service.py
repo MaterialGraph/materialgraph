@@ -26,10 +26,14 @@ class DiscoveryChainService:
         self.family_service = MaterialFamilyService(db)
         self.transition_validator = DiscoveryTransitionValidator()
         self._candidate_cache: dict[
-            tuple[int, tuple[str, ...], tuple[str, ...]],
+            tuple[int, tuple[str, ...], tuple[str, ...], bool, bool],
             list[dict],
         ] = {}
         self._relationship_cache: dict[tuple[int, int], list[str]] = {}
+        self._admission_diagnostics: dict[
+            tuple[int, tuple[str, ...], tuple[str, ...], bool, bool],
+            dict[str, int],
+        ] = {}
         self._family_result_cache: dict[int, dict] = {}
 
     def get_discovery_chains(
@@ -42,6 +46,8 @@ class DiscoveryChainService:
         avoid_elements: Collection[str] | None = None,
         prefer_elements: Collection[str] | None = None,
         include_search_pool: bool = False,
+        hard_avoid_admission: bool = False,
+        objective_aware_prefer_allocation: bool = False,
     ) -> dict:
         max_hops = min(max_hops, self.MAX_ALLOWED_HOPS)
 
@@ -72,6 +78,8 @@ class DiscoveryChainService:
             avoid_elements=normalized_avoid_elements,
             prefer_elements=normalized_prefer_elements,
             max_hops=max_hops,
+            hard_avoid_admission=hard_avoid_admission,
+            objective_aware_prefer_allocation=objective_aware_prefer_allocation,
         )
         chains = chain_pool if include_search_pool else chain_pool[:limit]
         search_metadata = {
@@ -105,6 +113,8 @@ class DiscoveryChainService:
         avoid_elements: frozenset[str],
         prefer_elements: frozenset[str],
         max_hops: int,
+        hard_avoid_admission: bool = False,
+        objective_aware_prefer_allocation: bool = False,
     ) -> tuple[list[dict], dict]:
         queue = deque()
 
@@ -138,6 +148,8 @@ class DiscoveryChainService:
                 avoid_elements=avoid_elements,
                 prefer_elements=prefer_elements,
                 elements_map=elements_map,
+                hard_avoid_admission=hard_avoid_admission,
+                objective_aware_prefer_allocation=objective_aware_prefer_allocation,
             )
             logger.info(
                 "Next candidates for material {} took {:.3f}s count={}",
@@ -213,6 +225,8 @@ class DiscoveryChainService:
         prefer_element: str | None = None,
         avoid_elements: Collection[str] | None = None,
         prefer_elements: Collection[str] | None = None,
+        hard_avoid_admission: bool = False,
+        objective_aware_prefer_allocation: bool = False,
     ) -> list[dict]:
         normalized_avoid_elements = self._normalize_elements(
             element=avoid_element,
@@ -227,6 +241,8 @@ class DiscoveryChainService:
             material_id,
             tuple(sorted(normalized_avoid_elements)),
             tuple(sorted(normalized_prefer_elements)),
+            hard_avoid_admission,
+            objective_aware_prefer_allocation,
         )
 
         if cache_key in self._candidate_cache:
@@ -235,16 +251,111 @@ class DiscoveryChainService:
         family_result = self._get_family_result(material_id)
         candidates = []
 
+        # Preserve the legacy bounded admission path for existing callers.
+        if not hard_avoid_admission and (
+            not objective_aware_prefer_allocation
+            or not normalized_prefer_elements
+        ):
+            for candidate in family_result["related_materials"]:
+                mp_id = candidate.get("mp_id") or ""
+
+                if mp_id.startswith("mp-test"):
+                    continue
+
+                candidates.append(candidate)
+
+                if len(candidates) >= self.EXPANSION_LIMIT:
+                    break
+
+            self._candidate_cache[cache_key] = candidates
+            return candidates
+
+        eligible_candidates = []
+        missing_membership_excluded = 0
+        # Finding 1 (approved refinement): Strict hard Avoid fails closed.
+        # A candidate without MaterialElement membership cannot be shown to
+        # be free of avoided elements, so it must not consume admission
+        # capacity. Applies only when there is something to avoid.
+        fail_closed_unknown_composition = hard_avoid_admission and bool(
+            normalized_avoid_elements
+        )
+
         for candidate in family_result["related_materials"]:
             mp_id = candidate.get("mp_id") or ""
 
             if mp_id.startswith("mp-test"):
                 continue
 
-            candidates.append(candidate)
+            candidate_elements = set(
+                elements_map.get(candidate["material_id"], [])
+            )
 
-            if len(candidates) >= self.EXPANSION_LIMIT:
+            if fail_closed_unknown_composition and not candidate_elements:
+                missing_membership_excluded += 1
+                continue
+
+            if (
+                hard_avoid_admission
+                and candidate_elements.intersection(normalized_avoid_elements)
+            ):
+                continue
+
+            eligible_candidates.append(candidate)
+
+        selected_indices: set[int] = set()
+
+        if objective_aware_prefer_allocation and normalized_prefer_elements:
+            covered_preferred_elements: set[str] = set()
+
+            for preferred_element in sorted(normalized_prefer_elements):
+                if preferred_element in covered_preferred_elements:
+                    continue
+
+                if len(selected_indices) >= self.EXPANSION_LIMIT:
+                    break
+
+                for index, candidate in enumerate(eligible_candidates):
+                    if index in selected_indices:
+                        continue
+
+                    candidate_elements = set(
+                        elements_map.get(candidate["material_id"], [])
+                    )
+
+                    if preferred_element not in candidate_elements:
+                        continue
+
+                    selected_indices.add(index)
+                    covered_preferred_elements.update(
+                        candidate_elements.intersection(
+                            normalized_prefer_elements
+                        )
+                    )
+                    break
+
+        for index in range(len(eligible_candidates)):
+            if len(selected_indices) >= self.EXPANSION_LIMIT:
                 break
+
+            selected_indices.add(index)
+
+        candidates = [
+            candidate
+            for index, candidate in enumerate(eligible_candidates)
+            if index in selected_indices
+        ]
+
+        self._admission_diagnostics[cache_key] = {
+            "missing_membership_excluded": missing_membership_excluded,
+        }
+
+        if missing_membership_excluded:
+            logger.info(
+                "Hard-avoid admission for material {} excluded {} "
+                "candidate(s) without element membership",
+                material_id,
+                missing_membership_excluded,
+            )
 
         self._candidate_cache[cache_key] = candidates
         return candidates
