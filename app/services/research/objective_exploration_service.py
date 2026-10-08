@@ -16,6 +16,8 @@ class ResearchObjectiveExplorationService:
             material_id=material_id,
             objective=request.objective,
             include_ranked_pool=True,
+            hard_avoid_admission=request.mode == "strict",
+            objective_aware_prefer_allocation=True,
         )
 
         chains = chain_result.get("chains", [])
