@@ -1,18 +1,58 @@
 #!/bin/sh
+set -eu
 
 echo "Running Gitleaks on staged changes..."
 
+IMAGE="ghcr.io/gitleaks/gitleaks:v8.18.4@sha256:75bdb2b2f4db213cde0b8295f13a88d6b333091bbfbf3012a4e083d00d31caba"
+
+worktree=$(git rev-parse --show-toplevel)
+git_dir=$(git rev-parse --absolute-git-dir)
+common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
+
+# Convert Git Bash paths into Docker Desktop-compatible Windows paths.
+to_windows_path() {
+    if command -v cygpath >/dev/null 2>&1; then
+        cygpath -m "$1"
+    else
+        printf '%s\n' "$1"
+    fi
+}
+
+worktree_mount=$(to_windows_path "$worktree")
+common_mount=$(to_windows_path "$common_dir")
+
+case "$git_dir" in
+    "$common_dir")
+        container_git_dir="/gitmeta"
+        container_index="/gitmeta/index"
+        ;;
+    "$common_dir"/*)
+        relative_git_dir=${git_dir#"$common_dir"/}
+        container_git_dir="/gitmeta/$relative_git_dir"
+        container_index="$container_git_dir/index"
+        ;;
+    *)
+        echo "Unsupported Git metadata layout: $git_dir" >&2
+        exit 1
+        ;;
+esac
+
 MSYS_NO_PATHCONV=1 docker run --rm \
-  --network none \
-  --volume "$(pwd):/repo:ro" \
-  ghcr.io/gitleaks/gitleaks:v8.18.4@sha256:75bdb2b2f4db213cde0b8295f13a88d6b333091bbfbf3012a4e083d00d31caba \
-  protect --source /repo --staged --redact --verbose
+    --network none \
+    --mount "type=bind,source=$worktree_mount,target=/repo,readonly" \
+    --mount "type=bind,source=$common_mount,target=/gitmeta,readonly" \
+    --env "GIT_DIR=$container_git_dir" \
+    --env "GIT_WORK_TREE=/repo" \
+    --env "GIT_INDEX_FILE=$container_index" \
+    --workdir /repo \
+    "$IMAGE" \
+    protect --source /repo --staged --redact --verbose
 
 status=$?
 
-if [ $status -ne 0 ]; then
-  echo "Commit blocked: Gitleaks detected a potential secret or the scan failed."
-  exit $status
+if [ "$status" -ne 0 ]; then
+    echo "Commit blocked: Gitleaks detected a potential secret or the scan failed." >&2
+    exit "$status"
 fi
 
 echo "Gitleaks passed."
