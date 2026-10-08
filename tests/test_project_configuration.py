@@ -69,7 +69,26 @@ def test_secret_scanners_are_immutable_and_locally_contained():
     assert workflow.count(digest) == 1
     assert hook.count(digest) == 1
     assert '--volume "$PWD:/repo:ro"' in workflow
-    assert '--volume "$(pwd):/repo:ro"' in hook
+    # Local hook (worktree-aware since PR #42): exactly two read-only bind
+    # mounts - the worktree and the Git common dir - and nothing else.
+    hook_mounts = [
+        line.strip()
+        for line in hook.splitlines()
+        if line.strip().startswith(("--mount", "--volume", "-v "))
+    ]
+    assert hook_mounts == [
+        '--mount "type=bind,source=$worktree_mount,target=/repo,readonly" \\',
+        '--mount "type=bind,source=$common_mount,target=/gitmeta,readonly" \\',
+    ]
+    for loosening in (
+        "docker.sock",
+        "--privileged",
+        "--network host",
+        "--cap-add",
+        "--pid",
+        "--ipc",
+    ):
+        assert loosening not in hook
     assert "--network none" in workflow
     assert "--network none" in hook
     assert "python scripts/check_automation_pins.py" in workflow
