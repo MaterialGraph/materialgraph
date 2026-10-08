@@ -1,0 +1,2365 @@
+{
+  "classification": "EXPLORATORY DIAGNOSTIC ? NOT CASE STUDY 01 FROZEN RESULT",
+  "diagnostic_id": "MG-LCS01-D01",
+  "timestamp_utc": "2026-10-06T15:12:53.149429+00:00",
+  "purpose": "Determine whether historical sodium candidate IDs 6-10 occur in the current chain generator's complete bounded search pool.",
+  "environment": "local PostgreSQL materialgraph_test",
+  "operation": "DiscoveryChainService.get_discovery_chains",
+  "parameters": {
+    "material_id": 5,
+    "avoid_elements": [
+      "Li",
+      "Co"
+    ],
+    "prefer_elements": [
+      "Na",
+      "K"
+    ],
+    "max_hops": 2,
+    "limit": 5,
+    "include_search_pool": true
+  },
+  "search_metadata": {
+    "search_policy": "bounded_breadth_first",
+    "requested_result_limit": 5,
+    "expansion_limit_per_material": 6,
+    "search_state_budget": 200,
+    "expanded_state_count": 7,
+    "generated_chain_count": 34,
+    "returned_chain_count": 34,
+    "search_truncated": false,
+    "result_truncated": true,
+    "scientific_completeness_guaranteed": false
+  },
+  "target_traces": {
+    "6": {
+      "generated": true,
+      "occurrence_count": 10,
+      "occurrences": [
+        {
+          "generated_chain_index": 5,
+          "material_ids": [
+            5,
+            6
+          ],
+          "hop_count": 1,
+          "chain": {
+            "hop_count": 1,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 10,
+          "material_ids": [
+            5,
+            1,
+            6
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 1,
+                "mp_id": "mp-26003",
+                "pretty_formula": "LiFe(PO3)3",
+                "formula": "LiFe(PO3)3"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 1,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFe(PO3)3",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFe(PO3)3: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 1,
+                "to_material_id": 6,
+                "from_formula": "LiFe(PO3)3",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFe(PO3)3 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 15,
+          "material_ids": [
+            5,
+            2,
+            6
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 2,
+                "mp_id": "mp-25977",
+                "pretty_formula": "LiFe(PO3)4",
+                "formula": "LiFe(PO3)4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 2,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFe(PO3)4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFe(PO3)4: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 2,
+                "to_material_id": 6,
+                "from_formula": "LiFe(PO3)4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFe(PO3)4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 20,
+          "material_ids": [
+            5,
+            3,
+            6
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 3,
+                "mp_id": "mp-27007",
+                "pretty_formula": "LiFe2P3O10",
+                "formula": "LiFe2P3O10"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 3,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFe2P3O10",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFe2P3O10: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 3,
+                "to_material_id": 6,
+                "from_formula": "LiFe2P3O10",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFe2P3O10 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 25,
+          "material_ids": [
+            5,
+            4,
+            6
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 4,
+                "mp_id": "mp-19294",
+                "pretty_formula": "LiFeP2O7",
+                "formula": "LiFeP2O7"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 4,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFeP2O7",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFeP2O7: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 4,
+                "to_material_id": 6,
+                "from_formula": "LiFeP2O7",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFeP2O7 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 27,
+          "material_ids": [
+            5,
+            6,
+            7
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 7,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> Na3Fe3(PO4)4: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 28,
+          "material_ids": [
+            5,
+            6,
+            8
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 8,
+                "mp_id": "mp-761065",
+                "pretty_formula": "Na9Fe3P8O29",
+                "formula": "Na9Fe3P8O29"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 8,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "Na9Fe3P8O29",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> Na9Fe3P8O29: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 29,
+          "material_ids": [
+            5,
+            6,
+            9
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 9,
+                "mp_id": "mp-752506",
+                "pretty_formula": "NaFeP2O7",
+                "formula": "NaFeP2O7"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 9,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "NaFeP2O7",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> NaFeP2O7: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 30,
+          "material_ids": [
+            5,
+            6,
+            10
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 10,
+                "mp_id": "mp-19226",
+                "pretty_formula": "NaFePO4",
+                "formula": "NaFePO4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 10,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "NaFePO4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> NaFePO4: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 31,
+          "material_ids": [
+            5,
+            7,
+            6
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 6,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> Na3Fe(PO4)2: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        }
+      ]
+    },
+    "7": {
+      "generated": true,
+      "occurrence_count": 10,
+      "occurrences": [
+        {
+          "generated_chain_index": 6,
+          "material_ids": [
+            5,
+            7
+          ],
+          "hop_count": 1,
+          "chain": {
+            "hop_count": 1,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 11,
+          "material_ids": [
+            5,
+            1,
+            7
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 1,
+                "mp_id": "mp-26003",
+                "pretty_formula": "LiFe(PO3)3",
+                "formula": "LiFe(PO3)3"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 1,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFe(PO3)3",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFe(PO3)3: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 1,
+                "to_material_id": 7,
+                "from_formula": "LiFe(PO3)3",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFe(PO3)3 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 16,
+          "material_ids": [
+            5,
+            2,
+            7
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 2,
+                "mp_id": "mp-25977",
+                "pretty_formula": "LiFe(PO3)4",
+                "formula": "LiFe(PO3)4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 2,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFe(PO3)4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFe(PO3)4: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 2,
+                "to_material_id": 7,
+                "from_formula": "LiFe(PO3)4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFe(PO3)4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 21,
+          "material_ids": [
+            5,
+            3,
+            7
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 3,
+                "mp_id": "mp-27007",
+                "pretty_formula": "LiFe2P3O10",
+                "formula": "LiFe2P3O10"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 3,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFe2P3O10",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFe2P3O10: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 3,
+                "to_material_id": 7,
+                "from_formula": "LiFe2P3O10",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFe2P3O10 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 26,
+          "material_ids": [
+            5,
+            4,
+            7
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 4,
+                "mp_id": "mp-19294",
+                "pretty_formula": "LiFeP2O7",
+                "formula": "LiFeP2O7"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 4,
+                "from_formula": "LiFePO4",
+                "to_formula": "LiFeP2O7",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> LiFeP2O7: sharing Fe-Li-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Li",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              },
+              {
+                "from_material_id": 4,
+                "to_material_id": 7,
+                "from_formula": "LiFeP2O7",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFeP2O7 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              }
+            ],
+            "chain_reason": "This discovery chain follows family_expansion -> alkali_substitution with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 27,
+          "material_ids": [
+            5,
+            6,
+            7
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 7,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> Na3Fe3(PO4)4: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 31,
+          "material_ids": [
+            5,
+            7,
+            6
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 6,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> Na3Fe(PO4)2: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 32,
+          "material_ids": [
+            5,
+            7,
+            8
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 8,
+                "mp_id": "mp-761065",
+                "pretty_formula": "Na9Fe3P8O29",
+                "formula": "Na9Fe3P8O29"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 8,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "Na9Fe3P8O29",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> Na9Fe3P8O29: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 33,
+          "material_ids": [
+            5,
+            7,
+            9
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 9,
+                "mp_id": "mp-752506",
+                "pretty_formula": "NaFeP2O7",
+                "formula": "NaFeP2O7"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 9,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "NaFeP2O7",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> NaFeP2O7: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 34,
+          "material_ids": [
+            5,
+            7,
+            10
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 10,
+                "mp_id": "mp-19226",
+                "pretty_formula": "NaFePO4",
+                "formula": "NaFePO4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 10,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "NaFePO4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> NaFePO4: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        }
+      ]
+    },
+    "8": {
+      "generated": true,
+      "occurrence_count": 2,
+      "occurrences": [
+        {
+          "generated_chain_index": 28,
+          "material_ids": [
+            5,
+            6,
+            8
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 8,
+                "mp_id": "mp-761065",
+                "pretty_formula": "Na9Fe3P8O29",
+                "formula": "Na9Fe3P8O29"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 8,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "Na9Fe3P8O29",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> Na9Fe3P8O29: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 32,
+          "material_ids": [
+            5,
+            7,
+            8
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 8,
+                "mp_id": "mp-761065",
+                "pretty_formula": "Na9Fe3P8O29",
+                "formula": "Na9Fe3P8O29"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 8,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "Na9Fe3P8O29",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> Na9Fe3P8O29: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        }
+      ]
+    },
+    "9": {
+      "generated": true,
+      "occurrence_count": 2,
+      "occurrences": [
+        {
+          "generated_chain_index": 29,
+          "material_ids": [
+            5,
+            6,
+            9
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 9,
+                "mp_id": "mp-752506",
+                "pretty_formula": "NaFeP2O7",
+                "formula": "NaFeP2O7"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 9,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "NaFeP2O7",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> NaFeP2O7: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 33,
+          "material_ids": [
+            5,
+            7,
+            9
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 9,
+                "mp_id": "mp-752506",
+                "pretty_formula": "NaFeP2O7",
+                "formula": "NaFeP2O7"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 9,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "NaFeP2O7",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> NaFeP2O7: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        }
+      ]
+    },
+    "10": {
+      "generated": true,
+      "occurrence_count": 2,
+      "occurrences": [
+        {
+          "generated_chain_index": 30,
+          "material_ids": [
+            5,
+            6,
+            10
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 6,
+                "mp_id": "mp-19028",
+                "pretty_formula": "Na3Fe(PO4)2",
+                "formula": "Na3Fe(PO4)2"
+              },
+              {
+                "material_id": 10,
+                "mp_id": "mp-19226",
+                "pretty_formula": "NaFePO4",
+                "formula": "NaFePO4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 6,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe(PO4)2",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe(PO4)2: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 6,
+                "to_material_id": 10,
+                "from_formula": "Na3Fe(PO4)2",
+                "to_formula": "NaFePO4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe(PO4)2 -> NaFePO4: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        },
+        {
+          "generated_chain_index": 34,
+          "material_ids": [
+            5,
+            7,
+            10
+          ],
+          "hop_count": 2,
+          "chain": {
+            "hop_count": 2,
+            "materials": [
+              {
+                "material_id": 5,
+                "mp_id": "mp-19017",
+                "pretty_formula": "LiFePO4",
+                "formula": "LiFePO4"
+              },
+              {
+                "material_id": 7,
+                "mp_id": "mp-556540",
+                "pretty_formula": "Na3Fe3(PO4)4",
+                "formula": "Na3Fe3(PO4)4"
+              },
+              {
+                "material_id": 10,
+                "mp_id": "mp-19226",
+                "pretty_formula": "NaFePO4",
+                "formula": "NaFePO4"
+              }
+            ],
+            "transitions": [
+              {
+                "from_material_id": 5,
+                "to_material_id": 7,
+                "from_formula": "LiFePO4",
+                "to_formula": "Na3Fe3(PO4)4",
+                "transition_type": "alkali_substitution",
+                "family": "phosphate",
+                "reason": "LiFePO4 -> Na3Fe3(PO4)4: Li is replaced by Na; sharing Fe-O-P elements; structural preservation is not validated; the alkali-substitution label is a composition-level hypothesis; a substitution mechanism is not validated; introducing preferred element(s) Na.",
+                "shared_elements": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [
+                  "Li"
+                ],
+                "introduced_elements": [
+                  "Na"
+                ]
+              },
+              {
+                "from_material_id": 7,
+                "to_material_id": 10,
+                "from_formula": "Na3Fe3(PO4)4",
+                "to_formula": "NaFePO4",
+                "transition_type": "family_expansion",
+                "family": "phosphate",
+                "reason": "Na3Fe3(PO4)4 -> NaFePO4: sharing Fe-Na-O-P elements; structural preservation is not validated; matching the composition-heuristic phosphate grouping; structural family membership is not validated.",
+                "shared_elements": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preserved_framework": [
+                  "Fe",
+                  "Na",
+                  "O",
+                  "P"
+                ],
+                "preservation_basis": "element_overlap",
+                "structural_preservation_validated": false,
+                "relationship_basis": "composition_heuristic",
+                "substitution_mechanism_validated": false,
+                "removed_elements": [],
+                "introduced_elements": []
+              }
+            ],
+            "chain_reason": "This discovery chain follows alkali_substitution -> family_expansion with Fe-O-P shared-element continuity."
+          }
+        }
+      ]
+    }
+  },
+  "does_not_replace_frozen_prospective_result": true
+}

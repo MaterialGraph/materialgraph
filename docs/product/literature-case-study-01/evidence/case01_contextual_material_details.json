@@ -1,0 +1,212 @@
+[
+    {
+        "id":  5,
+        "mp_id":  "mp-19017",
+        "formula":  "LiFePO4",
+        "pretty_formula":  "LiFePO4",
+        "material_type":  null,
+        "band_gap":  3.922399999999999,
+        "energy_above_hull":  0.0,
+        "formation_energy_per_atom":  -2.4798960147108833,
+        "density":  3.683145802977754,
+        "is_stable":  true,
+        "source":  "materials_project",
+        "elements":  [
+                         {
+                             "id":  4,
+                             "symbol":  "Fe",
+                             "name":  "Iron"
+                         },
+                         {
+                             "id":  1,
+                             "symbol":  "Li",
+                             "name":  "Lithium"
+                         },
+                         {
+                             "id":  9,
+                             "symbol":  "O",
+                             "name":  "Oxygen"
+                         },
+                         {
+                             "id":  8,
+                             "symbol":  "P",
+                             "name":  "Phosphorus"
+                         }
+                     ]
+    },
+    {
+        "id":  198,
+        "mp_id":  "mp-1101512",
+        "formula":  "LiFeP2O7",
+        "pretty_formula":  "LiFeP2O7",
+        "material_type":  null,
+        "band_gap":  2.6064,
+        "energy_above_hull":  0.013783898409091222,
+        "formation_energy_per_atom":  -2.5119754809199124,
+        "density":  2.9283289745447396,
+        "is_stable":  false,
+        "source":  "materials_project",
+        "elements":  [
+                         {
+                             "id":  4,
+                             "symbol":  "Fe",
+                             "name":  "Iron"
+                         },
+                         {
+                             "id":  1,
+                             "symbol":  "Li",
+                             "name":  "Lithium"
+                         },
+                         {
+                             "id":  9,
+                             "symbol":  "O",
+                             "name":  "Oxygen"
+                         },
+                         {
+                             "id":  8,
+                             "symbol":  "P",
+                             "name":  "Phosphorus"
+                         }
+                     ]
+    },
+    {
+        "id":  199,
+        "mp_id":  "mp-1101516",
+        "formula":  "LiFeP2O7",
+        "pretty_formula":  "LiFeP2O7",
+        "material_type":  null,
+        "band_gap":  2.5628,
+        "energy_above_hull":  0.018711985681818533,
+        "formation_energy_per_atom":  -2.5070473936471855,
+        "density":  3.193512447643948,
+        "is_stable":  false,
+        "source":  "materials_project",
+        "elements":  [
+                         {
+                             "id":  4,
+                             "symbol":  "Fe",
+                             "name":  "Iron"
+                         },
+                         {
+                             "id":  1,
+                             "symbol":  "Li",
+                             "name":  "Lithium"
+                         },
+                         {
+                             "id":  9,
+                             "symbol":  "O",
+                             "name":  "Oxygen"
+                         },
+                         {
+                             "id":  8,
+                             "symbol":  "P",
+                             "name":  "Phosphorus"
+                         }
+                     ]
+    },
+    {
+        "id":  1,
+        "mp_id":  "mp-26003",
+        "formula":  "LiFe(PO3)3",
+        "pretty_formula":  "LiFe(PO3)3",
+        "material_type":  null,
+        "band_gap":  3.948699999999999,
+        "energy_above_hull":  0.0,
+        "formation_energy_per_atom":  -2.553984804090135,
+        "density":  2.784880833092008,
+        "is_stable":  true,
+        "source":  "materials_project",
+        "elements":  [
+                         {
+                             "id":  4,
+                             "symbol":  "Fe",
+                             "name":  "Iron"
+                         },
+                         {
+                             "id":  1,
+                             "symbol":  "Li",
+                             "name":  "Lithium"
+                         },
+                         {
+                             "id":  9,
+                             "symbol":  "O",
+                             "name":  "Oxygen"
+                         },
+                         {
+                             "id":  8,
+                             "symbol":  "P",
+                             "name":  "Phosphorus"
+                         }
+                     ]
+    },
+    {
+        "id":  2,
+        "mp_id":  "mp-25977",
+        "formula":  "LiFe(PO3)4",
+        "pretty_formula":  "LiFe(PO3)4",
+        "material_type":  null,
+        "band_gap":  2.937999999999999,
+        "energy_above_hull":  0.0,
+        "formation_energy_per_atom":  -2.549689882050263,
+        "density":  2.493968756542278,
+        "is_stable":  true,
+        "source":  "materials_project",
+        "elements":  [
+                         {
+                             "id":  4,
+                             "symbol":  "Fe",
+                             "name":  "Iron"
+                         },
+                         {
+                             "id":  1,
+                             "symbol":  "Li",
+                             "name":  "Lithium"
+                         },
+                         {
+                             "id":  9,
+                             "symbol":  "O",
+                             "name":  "Oxygen"
+                         },
+                         {
+                             "id":  8,
+                             "symbol":  "P",
+                             "name":  "Phosphorus"
+                         }
+                     ]
+    },
+    {
+        "id":  3,
+        "mp_id":  "mp-27007",
+        "formula":  "LiFe2P3O10",
+        "pretty_formula":  "LiFe2P3O10",
+        "material_type":  null,
+        "band_gap":  3.1686,
+        "energy_above_hull":  0.0,
+        "formation_energy_per_atom":  -2.479408053891369,
+        "density":  3.33485227671589,
+        "is_stable":  true,
+        "source":  "materials_project",
+        "elements":  [
+                         {
+                             "id":  4,
+                             "symbol":  "Fe",
+                             "name":  "Iron"
+                         },
+                         {
+                             "id":  1,
+                             "symbol":  "Li",
+                             "name":  "Lithium"
+                         },
+                         {
+                             "id":  9,
+                             "symbol":  "O",
+                             "name":  "Oxygen"
+                         },
+                         {
+                             "id":  8,
+                             "symbol":  "P",
+                             "name":  "Phosphorus"
+                         }
+                     ]
+    }
+]
