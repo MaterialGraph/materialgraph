@@ -1,0 +1,111 @@
+{
+  "classification": "EXPLORATORY DIAGNOSTIC - NOT CASE STUDY 01 FROZEN RESULT",
+  "diagnostic_id": "MG-LCS01-D04",
+  "timestamp_utc": "2026-10-06T15:31:25.065265+00:00",
+  "purpose": "Record the deterministic family-ordering and bounded-expansion mechanism that can explain the local-versus-frozen candidate reversal.",
+  "observed_local_state": {
+    "source_material_id": 5,
+    "expansion_limit": 6,
+    "source_family_order": [
+      {
+        "position": 1,
+        "material_id": 1,
+        "shared_count": 4
+      },
+      {
+        "position": 2,
+        "material_id": 2,
+        "shared_count": 4
+      },
+      {
+        "position": 3,
+        "material_id": 3,
+        "shared_count": 4
+      },
+      {
+        "position": 4,
+        "material_id": 4,
+        "shared_count": 4
+      },
+      {
+        "position": 5,
+        "material_id": 6,
+        "shared_count": 3
+      },
+      {
+        "position": 6,
+        "material_id": 7,
+        "shared_count": 3
+      },
+      {
+        "position": 7,
+        "material_id": 8
+      },
+      {
+        "position": 8,
+        "material_id": 9
+      },
+      {
+        "position": 9,
+        "material_id": 10
+      }
+    ],
+    "material_198_present": false,
+    "material_199_present": false,
+    "generated_chain_count": 34,
+    "sodium_gateway_ids": [
+      6,
+      7
+    ],
+    "sodium_gateway_positions": [
+      5,
+      6
+    ]
+  },
+  "frozen_production_observations": {
+    "generated_chain_count": 36,
+    "returned_candidate_ids": [
+      198,
+      199,
+      1,
+      2,
+      3
+    ],
+    "material_198": {
+      "mp_id": "mp-1101512",
+      "formula": "LiFeP2O7",
+      "elements": [
+        "Fe",
+        "Li",
+        "O",
+        "P"
+      ],
+      "shared_with_source_5_count": 4
+    },
+    "material_199": {
+      "mp_id": "mp-1101516",
+      "formula": "LiFeP2O7",
+      "elements": [
+        "Fe",
+        "Li",
+        "O",
+        "P"
+      ],
+      "shared_with_source_5_count": 4
+    }
+  },
+  "implementation_rules": {
+    "family_sort": [
+      "descending shared-element count",
+      "ascending material_id"
+    ],
+    "chain_expansion_limit_per_material": 6,
+    "avoid_prefer_do_not_reorder_get_next_candidates": true
+  },
+  "derived_mechanism": {
+    "classification": "strongly_supported_inference_not_direct_production_trace",
+    "description": "In the expanded frozen production dataset, IDs 198 and 199 each share all four source elements and therefore sort ahead of three-shared-element sodium gateway IDs 6 and 7 under the current deterministic family sort. Together with IDs 1-4, they can fill all six source expansion slots. If so, IDs 6 and 7 are not expanded from source 5 and the downstream sodium branch is not generated, even though the local diagnostic shows those sodium candidates rank above Li-retaining candidates when they enter the eligible pool.",
+    "not_directly_verified": "The complete source-5 family ordering was not captured from the frozen production execution."
+  },
+  "does_not_replace_frozen_prospective_result": true
+}
