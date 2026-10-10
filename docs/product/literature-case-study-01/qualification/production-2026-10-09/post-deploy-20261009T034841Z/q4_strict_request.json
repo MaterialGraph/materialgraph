@@ -1,0 +1,1 @@
+{"limit":5,"mode":"strict","objective":{"avoid_elements":["Li"],"limit":5,"max_hops":2,"prefer_elements":["Na"],"prefer_lower_criticality":false,"preserve_elements":["Fe","P","O"],"require_stable_materials":false,"target_family":"phosphate"}}
