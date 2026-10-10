@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+Server: nginx
+Date: Fri, 09 Oct 2026 03:44:26 GMT
+Content-Type: application/json
+Content-Length: 12362
+Connection: keep-alive
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: same-origin
+Cache-Control: no-store
+

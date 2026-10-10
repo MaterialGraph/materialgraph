@@ -1,0 +1,14 @@
+{
+  "objective": {
+    "avoid_elements": ["Li", "Co"],
+    "prefer_elements": ["Na", "K"],
+    "preserve_elements": ["Fe", "P", "O"],
+    "target_family": "phosphate",
+    "max_hops": 2,
+    "limit": 5,
+    "prefer_lower_criticality": true,
+    "require_stable_materials": false
+  },
+  "mode": "balanced",
+  "limit": 5
+}

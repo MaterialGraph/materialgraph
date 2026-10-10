@@ -1,0 +1,841 @@
+{
+  "artifact_type": "PRE_FIX_HARNESS_REPRODUCTION_CHECK",
+  "baseline_artifact": "PRE_FIX_MULTI_OBJECTIVE_QUALIFICATION_BASELINE",
+  "baseline_captured_at_utc": "2026-10-07T14:05:27.567558+00:00",
+  "captured_at_utc": "2026-10-08T18:06:04.615791+00:00",
+  "case_study_01_reexecution": false,
+  "cases": [
+    {
+      "case_id": "Q1",
+      "description": "LiFePO4 \u2014 Prefer Na only \u2014 Balanced",
+      "deterministic_across_two_runs": true,
+      "matches_frozen_baseline": true,
+      "registered_request": {
+        "limit": 5,
+        "mode": "balanced",
+        "objective": {
+          "avoid_elements": [],
+          "limit": 5,
+          "max_hops": 2,
+          "prefer_elements": [
+            "Na"
+          ],
+          "prefer_lower_criticality": false,
+          "preserve_elements": [],
+          "require_stable_materials": false,
+          "target_family": null
+        }
+      },
+      "result": {
+        "base_formula": "LiFePO4",
+        "constraint_policy": {
+          "avoid_elements": "soft_penalty",
+          "hard_rejection_scope": "none",
+          "prefer_elements": "soft_bonus"
+        },
+        "material_id": 5,
+        "mode": "balanced",
+        "ranked_candidates": [
+          {
+            "formula": "Na3Fe(PO4)2",
+            "material_id": 6,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Li, O, P. Structural preservation is not validated.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 75.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na3Fe3(PO4)4",
+            "material_id": 7,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Li, O, P. Structural preservation is not validated.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 75.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na9Fe3P8O29",
+            "material_id": 8,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 75.0,
+            "warnings": []
+          },
+          {
+            "formula": "NaFeP2O7",
+            "material_id": 9,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 75.0,
+            "warnings": []
+          },
+          {
+            "formula": "NaFePO4",
+            "material_id": 10,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 75.0,
+            "warnings": []
+          }
+        ],
+        "returned_chain_material_ids": [
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            5,
+            1,
+            6
+          ],
+          [
+            5,
+            1,
+            7
+          ],
+          [
+            5,
+            2,
+            6
+          ]
+        ],
+        "search_metadata": {
+          "expanded_state_count": 7,
+          "expansion_limit_per_material": 6,
+          "generated_chain_count": 38,
+          "requested_result_limit": 5,
+          "result_truncated": true,
+          "returned_chain_count": 5,
+          "scientific_completeness_guaranteed": false,
+          "search_policy": "bounded_breadth_first",
+          "search_state_budget": 200,
+          "search_truncated": false
+        }
+      },
+      "seconds_run1": 0.3082,
+      "seconds_run2": 0.1563,
+      "source_id": 5
+    },
+    {
+      "case_id": "Q2",
+      "description": "LiFePO4 \u2014 Avoid Li only \u2014 Balanced",
+      "deterministic_across_two_runs": true,
+      "matches_frozen_baseline": true,
+      "registered_request": {
+        "limit": 5,
+        "mode": "balanced",
+        "objective": {
+          "avoid_elements": [
+            "Li"
+          ],
+          "limit": 5,
+          "max_hops": 2,
+          "prefer_elements": [],
+          "prefer_lower_criticality": false,
+          "preserve_elements": [],
+          "require_stable_materials": false,
+          "target_family": null
+        }
+      },
+      "result": {
+        "base_formula": "LiFePO4",
+        "constraint_policy": {
+          "avoid_elements": "soft_penalty",
+          "hard_rejection_scope": "none",
+          "prefer_elements": "soft_bonus"
+        },
+        "material_id": 5,
+        "mode": "balanced",
+        "ranked_candidates": [
+          {
+            "formula": "Na3Fe(PO4)2",
+            "material_id": 6,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Li, O, P. Structural preservation is not validated.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 60.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na3Fe3(PO4)4",
+            "material_id": 7,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Li, O, P. Structural preservation is not validated.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 60.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na9Fe3P8O29",
+            "material_id": 8,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 60.0,
+            "warnings": []
+          },
+          {
+            "formula": "NaFeP2O7",
+            "material_id": 9,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 60.0,
+            "warnings": []
+          },
+          {
+            "formula": "NaFePO4",
+            "material_id": 10,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 60.0,
+            "warnings": []
+          }
+        ],
+        "returned_chain_material_ids": [
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            5,
+            1,
+            6
+          ],
+          [
+            5,
+            1,
+            7
+          ],
+          [
+            5,
+            2,
+            6
+          ]
+        ],
+        "search_metadata": {
+          "expanded_state_count": 7,
+          "expansion_limit_per_material": 6,
+          "generated_chain_count": 34,
+          "requested_result_limit": 5,
+          "result_truncated": true,
+          "returned_chain_count": 5,
+          "scientific_completeness_guaranteed": false,
+          "search_policy": "bounded_breadth_first",
+          "search_state_budget": 200,
+          "search_truncated": false
+        }
+      },
+      "seconds_run1": 0.012,
+      "seconds_run2": 0.0107,
+      "source_id": 5
+    },
+    {
+      "case_id": "Q3",
+      "description": "LiFePO4 \u2014 Avoid Li/Co + Prefer Na/K + Preserve Fe/P/O + phosphate \u2014 Balanced",
+      "deterministic_across_two_runs": true,
+      "matches_frozen_baseline": true,
+      "registered_request": {
+        "limit": 5,
+        "mode": "balanced",
+        "objective": {
+          "avoid_elements": [
+            "Li",
+            "Co"
+          ],
+          "limit": 5,
+          "max_hops": 2,
+          "prefer_elements": [
+            "Na",
+            "K"
+          ],
+          "prefer_lower_criticality": true,
+          "preserve_elements": [
+            "Fe",
+            "P",
+            "O"
+          ],
+          "require_stable_materials": false,
+          "target_family": "phosphate"
+        }
+      },
+      "result": {
+        "base_formula": "LiFePO4",
+        "constraint_policy": {
+          "avoid_elements": "soft_penalty",
+          "hard_rejection_scope": "none",
+          "prefer_elements": "soft_bonus"
+        },
+        "material_id": 5,
+        "mode": "balanced",
+        "ranked_candidates": [
+          {
+            "formula": "Na3Fe(PO4)2",
+            "material_id": 6,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Li, O, P. Structural preservation is not validated.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 127.25,
+            "warnings": []
+          },
+          {
+            "formula": "Na3Fe3(PO4)4",
+            "material_id": 7,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Li, O, P. Structural preservation is not validated.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 127.25,
+            "warnings": []
+          },
+          {
+            "formula": "Na9Fe3P8O29",
+            "material_id": 8,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+              "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+            ],
+            "score": 127.25,
+            "warnings": []
+          },
+          {
+            "formula": "NaFeP2O7",
+            "material_id": 9,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+              "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+            ],
+            "score": 127.25,
+            "warnings": []
+          },
+          {
+            "formula": "NaFePO4",
+            "material_id": 10,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+              "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+            ],
+            "score": 127.25,
+            "warnings": []
+          }
+        ],
+        "returned_chain_material_ids": [
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            5,
+            1,
+            6
+          ],
+          [
+            5,
+            1,
+            7
+          ],
+          [
+            5,
+            2,
+            6
+          ]
+        ],
+        "search_metadata": {
+          "expanded_state_count": 7,
+          "expansion_limit_per_material": 6,
+          "generated_chain_count": 34,
+          "requested_result_limit": 5,
+          "result_truncated": true,
+          "returned_chain_count": 5,
+          "scientific_completeness_guaranteed": false,
+          "search_policy": "bounded_breadth_first",
+          "search_state_budget": 200,
+          "search_truncated": false
+        }
+      },
+      "seconds_run1": 0.0268,
+      "seconds_run2": 0.0239,
+      "source_id": 5
+    },
+    {
+      "case_id": "Q4",
+      "description": "LiFePO4 \u2014 Avoid Li + Prefer Na + Preserve Fe/P/O + phosphate \u2014 Strict",
+      "deterministic_across_two_runs": true,
+      "matches_frozen_baseline": true,
+      "registered_request": {
+        "limit": 5,
+        "mode": "strict",
+        "objective": {
+          "avoid_elements": [
+            "Li"
+          ],
+          "limit": 5,
+          "max_hops": 2,
+          "prefer_elements": [
+            "Na"
+          ],
+          "prefer_lower_criticality": false,
+          "preserve_elements": [
+            "Fe",
+            "P",
+            "O"
+          ],
+          "require_stable_materials": false,
+          "target_family": "phosphate"
+        }
+      },
+      "result": {
+        "base_formula": "LiFePO4",
+        "constraint_policy": {
+          "avoid_elements": "hard_rejection",
+          "hard_rejection_scope": "all_non_root_chain_materials",
+          "prefer_elements": "soft_bonus"
+        },
+        "material_id": 5,
+        "mode": "strict",
+        "ranked_candidates": [
+          {
+            "formula": "Na3Fe(PO4)2",
+            "material_id": 6,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 125.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na3Fe3(PO4)4",
+            "material_id": 7,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 125.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na9Fe3P8O29",
+            "material_id": 8,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 125.0,
+            "warnings": []
+          },
+          {
+            "formula": "NaFeP2O7",
+            "material_id": 9,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 125.0,
+            "warnings": []
+          },
+          {
+            "formula": "NaFePO4",
+            "material_id": 10,
+            "reasons": [
+              "Candidate contains preferred element Na.",
+              "Appears in an eligible composition chain with relationship type alkali_substitution.",
+              "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+            ],
+            "score": 125.0,
+            "warnings": []
+          }
+        ],
+        "returned_chain_material_ids": [
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            5,
+            6,
+            7
+          ],
+          [
+            5,
+            6,
+            8
+          ],
+          [
+            5,
+            6,
+            9
+          ]
+        ],
+        "search_metadata": {
+          "expanded_state_count": 7,
+          "expansion_limit_per_material": 6,
+          "generated_chain_count": 34,
+          "requested_result_limit": 5,
+          "result_truncated": true,
+          "returned_chain_count": 5,
+          "scientific_completeness_guaranteed": false,
+          "search_policy": "bounded_breadth_first",
+          "search_state_budget": 200,
+          "search_truncated": false
+        }
+      },
+      "seconds_run1": 0.0129,
+      "seconds_run2": 0.0091,
+      "source_id": 5
+    },
+    {
+      "case_id": "Q5",
+      "description": "NaMnO2 \u2014 Prefer Mg only \u2014 Balanced",
+      "deterministic_across_two_runs": true,
+      "matches_frozen_baseline": true,
+      "registered_request": {
+        "limit": 5,
+        "mode": "balanced",
+        "objective": {
+          "avoid_elements": [],
+          "limit": 5,
+          "max_hops": 2,
+          "prefer_elements": [
+            "Mg"
+          ],
+          "prefer_lower_criticality": false,
+          "preserve_elements": [],
+          "require_stable_materials": false,
+          "target_family": null
+        }
+      },
+      "result": {
+        "base_formula": "NaMnO2",
+        "constraint_policy": {
+          "avoid_elements": "soft_penalty",
+          "hard_rejection_scope": "none",
+          "prefer_elements": "soft_bonus"
+        },
+        "material_id": 19,
+        "mode": "balanced",
+        "ranked_candidates": [
+          {
+            "formula": "Na14Mn2O9",
+            "material_id": 11,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Mn, Na, O. Structural preservation is not validated."
+            ],
+            "score": 50.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na2Mn2O3",
+            "material_id": 12,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Mn, Na, O. Structural preservation is not validated."
+            ],
+            "score": 50.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na2Mn3O7",
+            "material_id": 13,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Mn, Na, O. Structural preservation is not validated."
+            ],
+            "score": 50.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na2MnO3",
+            "material_id": 14,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Mn, Na, O. Structural preservation is not validated."
+            ],
+            "score": 50.0,
+            "warnings": []
+          },
+          {
+            "formula": "Na3MnO4",
+            "material_id": 15,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Mn, Na, O. Structural preservation is not validated."
+            ],
+            "score": 50.0,
+            "warnings": []
+          }
+        ],
+        "returned_chain_material_ids": [
+          [
+            19,
+            11
+          ],
+          [
+            19,
+            12
+          ],
+          [
+            19,
+            13
+          ],
+          [
+            19,
+            14
+          ],
+          [
+            19,
+            15
+          ]
+        ],
+        "search_metadata": {
+          "expanded_state_count": 7,
+          "expansion_limit_per_material": 6,
+          "generated_chain_count": 42,
+          "requested_result_limit": 5,
+          "result_truncated": true,
+          "returned_chain_count": 5,
+          "scientific_completeness_guaranteed": false,
+          "search_policy": "bounded_breadth_first",
+          "search_state_budget": 200,
+          "search_truncated": false
+        }
+      },
+      "seconds_run1": 0.1489,
+      "seconds_run2": 0.1376,
+      "source_id": 19
+    },
+    {
+      "case_id": "Q6",
+      "description": "LiMnO2 \u2014 Avoid Li + Prefer Na \u2014 Balanced",
+      "deterministic_across_two_runs": true,
+      "matches_frozen_baseline": true,
+      "registered_request": {
+        "limit": 5,
+        "mode": "balanced",
+        "objective": {
+          "avoid_elements": [
+            "Li"
+          ],
+          "limit": 5,
+          "max_hops": 2,
+          "prefer_elements": [
+            "Na"
+          ],
+          "prefer_lower_criticality": false,
+          "preserve_elements": [],
+          "require_stable_materials": false,
+          "target_family": null
+        }
+      },
+      "result": {
+        "base_formula": "LiMnO2",
+        "constraint_policy": {
+          "avoid_elements": "soft_penalty",
+          "hard_rejection_scope": "none",
+          "prefer_elements": "soft_bonus"
+        },
+        "material_id": 28,
+        "mode": "balanced",
+        "ranked_candidates": [
+          {
+            "formula": "Li2MnO3",
+            "material_id": 24,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated."
+            ],
+            "score": 25.0,
+            "warnings": [
+              "Candidate still contains avoided element Li."
+            ]
+          },
+          {
+            "formula": "Li4Mn5O12",
+            "material_id": 25,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated."
+            ],
+            "score": 25.0,
+            "warnings": [
+              "Candidate still contains avoided element Li."
+            ]
+          },
+          {
+            "formula": "Li5Mn7O16",
+            "material_id": 26,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated."
+            ],
+            "score": 25.0,
+            "warnings": [
+              "Candidate still contains avoided element Li."
+            ]
+          },
+          {
+            "formula": "LiMn2O4",
+            "material_id": 27,
+            "reasons": [
+              "Appears in an eligible composition chain with relationship type family_expansion.",
+              "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated."
+            ],
+            "score": 25.0,
+            "warnings": [
+              "Candidate still contains avoided element Li."
+            ]
+          }
+        ],
+        "returned_chain_material_ids": [
+          [
+            28,
+            24
+          ],
+          [
+            28,
+            25
+          ],
+          [
+            28,
+            26
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            28,
+            24,
+            25
+          ]
+        ],
+        "search_metadata": {
+          "expanded_state_count": 5,
+          "expansion_limit_per_material": 6,
+          "generated_chain_count": 16,
+          "requested_result_limit": 5,
+          "result_truncated": true,
+          "returned_chain_count": 5,
+          "scientific_completeness_guaranteed": false,
+          "search_policy": "bounded_breadth_first",
+          "search_state_budget": 200,
+          "search_truncated": false
+        }
+      },
+      "seconds_run1": 0.1002,
+      "seconds_run2": 0.0807,
+      "source_id": 28
+    }
+  ],
+  "label": "pre-fix-reproduction",
+  "provenance": {
+    "app_import_path": "C:\\MaterialGraph-Backups\\mg-baseline\\app\\__init__.py",
+    "database_target": "postgresql+psycopg://***@localhost:5432/materialgraph_test",
+    "git_branch": "HEAD",
+    "git_head": "b183993a3c5486b8659693f34b618e1f6e2d6cc0",
+    "working_tree_changes": []
+  },
+  "scientific_validation": false,
+  "summary": {
+    "all_cases_deterministic": true,
+    "all_cases_match_frozen_baseline": true
+  }
+}
