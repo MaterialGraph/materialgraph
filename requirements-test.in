@@ -1,0 +1,6 @@
+# Test-only tooling for CI and local test runs. Never a production install source.
+# requirements-test.lock is seeded from requirements-production.lock so shared
+# packages keep their exact production versions.
+
+pytest==9.0.3
+httpx2==2.2.0

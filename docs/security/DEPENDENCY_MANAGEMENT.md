@@ -10,6 +10,14 @@ their generated hash locks:
 - `requirements-audit.in` pins the vulnerability scanner.
 - `requirements-audit.lock` supplies exact versions and hashes for the scanner
   and its dependencies.
+- `requirements-test.in` pins test-only tooling: `pytest` and `httpx2`, the HTTP
+  client required by Starlette's test client.
+- `requirements-test.lock` is compiled from `requirements-production.in` and
+  `requirements-test.in`, seeded from `requirements-production.lock`, so every
+  production package keeps its exact production version.
+  `scripts/check_dependency_contract.py` fails if any production pin differs.
+  It is used only by the Backend Tests workflow and local test environments and
+  is never a production installation source.
 
 `requirements.txt` remains the cross-platform developer snapshot. It is not a
 production installation source.
@@ -64,7 +72,10 @@ scientific regression suite.
    security advisories.
 2. Change the smallest necessary exact pins in the input files and
    `pyproject.toml`.
-3. Regenerate both locks in the reviewed Linux container.
+3. Regenerate the production and audit locks in the reviewed Linux container,
+   then regenerate the test lock: copy the new `requirements-production.lock` to
+   `requirements-test.lock` and compile `requirements-production.in` together
+   with `requirements-test.in` into it using the same flags.
 4. Review every direct and transitive version change and the generated hashes.
 5. Run the dependency workflow locally or in CI and run the complete test suite.
 6. Capture deterministic scientific baseline and post-change responses when a
