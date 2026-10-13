@@ -1359,3 +1359,29 @@ def test_production_rollout_closure_is_evidence_bounded():
 
     assert "postgresql://" not in report
     assert "BEGIN PRIVATE KEY" not in report
+
+
+def test_backend_tests_workflow_is_hash_locked_isolated_and_offline():
+    workflow = (
+        PROJECT_ROOT / ".github/workflows/backend-tests.yml"
+    ).read_text(encoding="utf-8")
+    contract = (PROJECT_ROOT / "scripts/check_dependency_contract.py").read_text(
+        encoding="utf-8"
+    )
+    policy = (PROJECT_ROOT / "docs/security/DEPENDENCY_MANAGEMENT.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "pull_request:" in workflow
+    assert "permissions:\n  contents: read" in workflow
+    assert "--require-hashes -r requirements-test.lock" in workflow
+    assert "python -m alembic upgrade head" in workflow
+    assert "python -m scripts.reference_test_data load" in workflow
+    assert "python -m pytest" in workflow
+    assert "POSTGRES_HOST_AUTH_METHOD: trust" in workflow
+    assert "materialgraph_test_ci" in workflow
+    assert "secrets." not in workflow
+    assert "neon" not in workflow.lower()
+    assert "requirements-test.lock" in contract
+    assert "never a production installation source" in policy
+    assert (PROJECT_ROOT / "tests/fixtures/reference_dataset.json").is_file()

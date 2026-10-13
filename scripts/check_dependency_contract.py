@@ -15,6 +15,10 @@ CONTRACTS = (
         PROJECT_ROOT / "requirements-audit.in",
         PROJECT_ROOT / "requirements-audit.lock",
     ),
+    (
+        PROJECT_ROOT / "requirements-test.in",
+        PROJECT_ROOT / "requirements-test.lock",
+    ),
 )
 
 PIN = re.compile(r"^([A-Za-z0-9_.-]+)(?:\[[^]]+\])?==([^\s;\\]+)")
@@ -83,6 +87,7 @@ def validate_contracts() -> tuple[dict[str, str], list[str]]:
     errors = []
     production = {}
     production_direct = {}
+    test_locked = {}
 
     for input_path, lock_path in CONTRACTS:
         try:
@@ -95,11 +100,23 @@ def validate_contracts() -> tuple[dict[str, str], list[str]]:
         if input_path.name == "requirements-production.in":
             production = locked
             production_direct = direct
+        if input_path.name == "requirements-test.in":
+            test_locked = locked
 
         for name, version in direct.items():
             if locked.get(name) != version:
                 errors.append(
                     f"{lock_path.name}: direct pin {name}=={version} is missing"
+                )
+
+    # The test lock must contain every production pin at the identical version,
+    # so the test suite always runs on the exact production dependency set.
+    if production and test_locked:
+        for name, version in sorted(production.items()):
+            if test_locked.get(name) != version:
+                errors.append(
+                    f"requirements-test.lock: production pin {name}=={version} "
+                    f"differs or is missing (found {test_locked.get(name) or 'absent'})"
                 )
 
     try:
