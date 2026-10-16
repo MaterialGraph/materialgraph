@@ -575,3 +575,30 @@ not parse formulas or derive any status.
 
 Workbench layout, ranked-material cards, chain disclosures, comparison
 selection, routing and URL state are unchanged.
+
+### 22.1 Coverage matrix and compare-tray alignment (2026-10-16, follow-up)
+
+Pilot review found the first coverage panel (stacked sentences plus a separate
+warning callout) hard to scan, and the compare tray let the Remove button wrap
+under long role text.
+
+- The panel is now one compact table: one row per requested element
+  (Prefer rows first, then Avoid), columns *Element · Goal · Returned ranked
+  materials (n) · Returned chains (m, source excluded)*. The denominators sit in
+  the column headers, so units remain explicit.
+- Each cell shows a text status pill with an aria-hidden icon and a tone
+  (✓ Represented, ✕ Not represented, ⚠ Present, – Not observed, ? Not evaluated),
+  the backend count, and "+n not evaluated" when coverage is incomplete. Tone
+  is never the only signal.
+- Prefer rows show "—" in the chain column (visually hidden text "Not assessed
+  for chains"); the contract does not evaluate Prefer on chains.
+- A Present chain cell links directly to the affected chains
+  (`#objective-path-N`); this replaces the separate warning callout. Per-chain
+  "Contains avoided element" markers are unchanged.
+- The backend mode explanation stays above the table; the source-material
+  disclosure, terms not evaluated and the formula-based note form one footnote;
+  limitations are in a collapsed `<details>`.
+- Compare tray rows use a two-column grid (text, then Remove aligned right);
+  long role text wraps inside its column instead of pushing the button down.
+
+No contract, API, data or routing change.
