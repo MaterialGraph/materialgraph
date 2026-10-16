@@ -86,12 +86,30 @@ def _mounted_route_policy() -> frozenset[tuple[str, str]]:
 
 
 def _nginx_expensive_patterns() -> tuple[re.Pattern[str], ...]:
+    """Return the regex locations that apply the expensive-route rate limit.
+
+    Other regex locations (such as the general backend proxy location) are not
+    expensive-route policy and must not be treated as such.
+    """
     nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
-    return tuple(
-        re.compile(line.strip().removeprefix("location ~ ").removesuffix(" {"))
-        for line in nginx.splitlines()
-        if line.strip().startswith("location ~ ")
-    )
+    patterns: list[re.Pattern[str]] = []
+    current: str | None = None
+    rate_limited = False
+    for raw_line in nginx.splitlines():
+        line = raw_line.strip()
+        if line.startswith("location ~ ") and line.endswith(" {"):
+            current = line.removeprefix("location ~ ").removesuffix(" {")
+            rate_limited = False
+        elif current is not None and line.startswith(
+            "limit_req zone=materialgraph_expensive "
+        ):
+            rate_limited = True
+        elif current is not None and line == "}":
+            if rate_limited:
+                patterns.append(re.compile(current))
+            current = None
+    assert len(patterns) == 2, "expected two rate-limited expensive locations"
+    return tuple(patterns)
 
 
 def test_classifies_public_expensive_routes():

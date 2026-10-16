@@ -10,6 +10,50 @@ from app.version import PROJECT_VERSION, UNKNOWN_VERSION, get_project_version
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+def _nginx_tree(text: str) -> dict:
+    """Parse the tracked one-directive-per-line Nginx site into nested blocks."""
+    root: dict = {"header": None, "directives": [], "children": []}
+    stack = [root]
+    for raw_line in text.splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        if line.endswith("{"):
+            block = {"header": line[:-1].strip(), "directives": [], "children": []}
+            stack[-1]["children"].append(block)
+            stack.append(block)
+        elif line == "}":
+            stack.pop()
+        else:
+            stack[-1]["directives"].append(line)
+    assert len(stack) == 1, "unbalanced braces in materialgraph.nginx"
+    return root
+
+
+def _nginx_servers() -> tuple[dict, dict]:
+    tree = _nginx_tree(
+        (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
+    )
+    servers = [block for block in tree["children"] if block["header"] == "server"]
+    https = [s for s in servers if "listen 443 ssl;" in s["directives"]]
+    http = [s for s in servers if "listen 80 default_server;" in s["directives"]]
+    assert len(servers) == 2 and len(https) == 1 and len(http) == 1
+    return https[0], http[0]
+
+
+def _nginx_locations(server: dict) -> dict[str, dict]:
+    return {
+        block["header"]: block
+        for block in server["children"]
+        if block["header"].startswith("location ")
+    }
+
+
+_HOST_ALLOW_LIST = (
+    r"if ($host !~* ^(materialgraph\.org|www\.materialgraph\.org)$)"
+)
+
+
 def test_requirements_do_not_install_another_materialgraph_checkout():
     requirements = (PROJECT_ROOT / "requirements.txt").read_text(
         encoding="utf-8"
@@ -146,7 +190,11 @@ def test_dependency_security_docs_do_not_overstate_branch_enforcement():
         encoding="utf-8"
     )
 
-    assert "automated audit, not a GitHub-enforced merge gate" in policy
+    assert "required status check for\nmerges to `main`" in policy
+    assert "This\ngates merges only" in policy
+    assert "no branch protection" not in policy
+    assert "does not have\na branch protection rule" not in deployment
+    assert "Branch\nprotection gates merges, not deployments" in deployment
     assert "A passing result proves only" in policy
     assert "Do not deploy when either run is" in deployment
     assert "This is a manual operator precondition" in deployment
@@ -401,10 +449,30 @@ def test_request_timeout_hierarchy_is_bounded_and_documented():
         Settings.model_fields["expensive_request_timeout_seconds"].default
         == 20
     )
-    assert nginx.count("proxy_connect_timeout 3s;") == 3
-    assert nginx.count("proxy_send_timeout 10s;") == 3
-    assert nginx.count("proxy_read_timeout 25s;") == 2
-    assert nginx.count("proxy_read_timeout 20s;") == 1
+    https, _ = _nginx_servers()
+    locations = _nginx_locations(https)
+    expensive = [
+        block
+        for block in locations.values()
+        if any(d.startswith("limit_req ") for d in block["directives"])
+    ]
+    # Ordinary budgets are set once at server level and inherited.
+    for directive in (
+        "proxy_connect_timeout 3s;",
+        "proxy_send_timeout 10s;",
+        "proxy_read_timeout 20s;",
+    ):
+        assert directive in https["directives"]
+        assert nginx.count(directive) == 1
+    # Only expensive routes extend the upstream read budget, and all of them do.
+    assert len(expensive) == 2
+    assert all("proxy_read_timeout 25s;" in b["directives"] for b in expensive)
+    assert nginx.count("proxy_read_timeout 25s;") == len(expensive)
+    for block in locations.values():
+        assert not any(
+            d.startswith(("proxy_connect_timeout", "proxy_send_timeout"))
+            for d in block["directives"]
+        )
     assert "database statement < application deadline" in deployment
     assert "compatible with the Neon pooled endpoint" in deployment
     assert "Database dependency failures explicitly roll back" in deployment
@@ -680,7 +748,9 @@ def test_public_https_configuration_is_bounded_and_reproducible():
 
     assert "listen 443 ssl;" in nginx
     assert "server_name materialgraph.org www.materialgraph.org;" in nginx
-    assert "return 301 https://$host$request_uri;" in nginx
+    _, http = _nginx_servers()
+    assert "return 301 https://materialgraph.org$request_uri;" in http["directives"]
+    assert "$host$request_uri" not in nginx
     assert 'Strict-Transport-Security "max-age=31536000" always' in nginx
     assert "includeSubDomains" not in nginx
     assert "preload" not in nginx
@@ -721,7 +791,10 @@ def test_public_expensive_request_controls_are_repository_controlled():
     assert "limit_req_status 429" in nginx
     assert "limit_conn_status 429" in nginx
     assert "$proxy_add_x_forwarded_for" not in nginx
-    assert nginx.count("proxy_set_header X-Forwarded-For $remote_addr;") == 3
+    https, _ = _nginx_servers()
+    assert "proxy_set_header X-Forwarded-For $remote_addr;" in https["directives"]
+    assert "proxy_set_header X-Real-IP $remote_addr;" in https["directives"]
+    assert nginx.count("proxy_set_header X-Forwarded-For") == 1
     assert "ExpensiveRequestAdmissionMiddleware" in application
     assert "expensive_request_capacity_exceeded" in admission
     assert 'headers={"Retry-After": "1"}' in admission
@@ -1385,3 +1458,84 @@ def test_backend_tests_workflow_is_hash_locked_isolated_and_offline():
     assert "requirements-test.lock" in contract
     assert "never a production installation source" in policy
     assert (PROJECT_ROOT / "tests/fixtures/reference_dataset.json").is_file()
+
+
+def test_pilot_access_and_frontend_serving_are_repository_controlled():
+    nginx = (PROJECT_ROOT / "materialgraph.nginx").read_text(encoding="utf-8")
+    https, http = _nginx_servers()
+    locations = _nginx_locations(https)
+
+    # Unknown hosts are closed on both ports before any other handling.
+    for server in (https, http):
+        host_checks = [b for b in server["children"] if b["header"] == _HOST_ALLOW_LIST]
+        assert len(host_checks) == 1
+        assert host_checks[0]["directives"] == ["return 444;"]
+
+    # Pilot Basic Auth covers the whole HTTPS site; only /health opts out.
+    assert 'auth_basic "MaterialGraph supervised pilot";' in https["directives"]
+    assert (
+        "auth_basic_user_file /etc/nginx/materialgraph-pilot.htpasswd;"
+        in https["directives"]
+    )
+    health = locations["location = /health"]
+    assert health["directives"] == [
+        "auth_basic off;",
+        "proxy_pass http://127.0.0.1:8000;",
+    ]
+    assert nginx.count("auth_basic off;") == 1
+    assert not re.search(r"\$apr1\$|\$2[aby]\$|\{SHA\}", nginx)
+
+    # Pilot credentials never reach Uvicorn, and locations cannot drop the
+    # inherited proxy headers or security headers by declaring their own.
+    assert 'proxy_set_header Authorization "";' in https["directives"]
+    for block in locations.values():
+        assert not any(
+            d.startswith(("proxy_set_header", "add_header"))
+            for d in block["directives"]
+        ), block["header"]
+    for header in (
+        'add_header X-Content-Type-Options "nosniff" always;',
+        'add_header X-Frame-Options "SAMEORIGIN" always;',
+        'add_header Referrer-Policy "same-origin" always;',
+        'add_header Cache-Control "no-store" always;',
+    ):
+        assert header in https["directives"]
+
+    # Frontend releases are served from the atomically switched symlink.
+    assert "root /var/www/materialgraph/current;" in https["directives"]
+    assert "index index.html;" in https["directives"]
+    assert locations["location ^~ /assets/"]["directives"] == [
+        "try_files $uri =404;"
+    ]
+    assert locations["location /"]["directives"] == [
+        "try_files $uri $uri/ /index.html;"
+    ]
+
+    # Every proxied location targets loopback Uvicorn only.
+    proxied = [
+        d
+        for block in locations.values()
+        for d in block["directives"]
+        if d.startswith("proxy_pass ")
+    ]
+    assert proxied and set(proxied) == {"proxy_pass http://127.0.0.1:8000;"}
+
+    # Backend paths are proxied; frontend paths are not.
+    backend = [
+        re.compile(header.removeprefix("location ~ "))
+        for header, block in locations.items()
+        if header.startswith("location ~ ")
+        and not any(d.startswith("limit_req ") for d in block["directives"])
+    ]
+    assert len(backend) == 1
+    for path in (
+        "/api/v1/materials",
+        "/api",
+        "/health/",
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+    ):
+        assert backend[0].search(path), path
+    for path in ("/", "/index.html", "/assets/index.js", "/favicon.ico", "/apiary"):
+        assert not backend[0].search(path), path
