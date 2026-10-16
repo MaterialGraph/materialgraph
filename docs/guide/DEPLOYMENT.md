@@ -15,13 +15,18 @@ Current deployment architecture:
 
 Internet
 ↓
-Nginx (Port 80)
-↓
-Uvicorn (127.0.0.1:8000)
-↓
-FastAPI
-↓
-Neon PostgreSQL
+Nginx (HTTPS 443; HTTP 80 redirects to HTTPS)
+├── static React frontend from /var/www/materialgraph/current
+└── /api, /health, /docs, /redoc, /openapi.json
+    ↓
+    Uvicorn (127.0.0.1:8000)
+    ↓
+    FastAPI
+    ↓
+    Neon PostgreSQL
+
+During the supervised pilot, Nginx requires HTTP Basic Auth for every path
+except `/health`.
 
 ---
 
@@ -175,9 +180,15 @@ rather than been skipped. Record the candidate SHA and workflow run URLs or run
 identifiers in the deployment evidence. Do not deploy when either run is
 missing, skipped, cancelled, or failing.
 
-This is a manual operator precondition. The current `main` branch does not have
-a branch protection rule or ruleset that requires these checks, so workflow
-success must not be described as a GitHub-enforced merge gate.
+This is a manual operator precondition. Merges to `main` are gated by classic
+branch protection (verified 2026-10-16): a pull request is required, the status
+checks `Locked dependency audit` (Dependency Security), `Gitleaks` (Secret Scan)
+and `Backend pytest (ephemeral PostgreSQL)` (Backend Tests) must pass on a branch
+that is up to date with `main`, the rules apply to administrators, and force
+pushes and branch deletion are disabled. No repository ruleset exists. Branch
+protection gates merges, not deployments: it does not prove that the specific
+commit being deployed passed these workflows, and an administrator can change
+the protection settings. Confirm the runs for the exact deployed SHA every time.
 
 Create deployment directory:
 
@@ -439,9 +450,39 @@ sudo certbot --nginx --non-interactive --agree-tos --no-eff-email \
   -d materialgraph.org -d www.materialgraph.org
 ```
 
-After issuance, install the reviewed final site configuration:
+After issuance, install the reviewed final site configuration.
+
+The tracked `materialgraph.nginx` is the production site configuration. It was
+reconciled with the live server on 2026-10-16 (SHA-256
+`c129c9b8654002e8a192f07540c7b00acc06bcf099fd9b7e8b68ed664562fe51`). It enables
+pilot Basic Auth and serves the frontend, so two prerequisites must exist before
+it is installed, or the site will refuse every login or return no frontend:
+
+* `/etc/nginx/materialgraph-pilot.htpasswd` (root-owned, not world-readable).
+  Create and manage it on the server only; never commit, print or copy its
+  contents.
+* `/var/www/materialgraph/current`, a symlink to a built frontend release (see
+  "Frontend release and rollback" below).
+
+Never install the tracked file over the live site without first comparing them.
+Any difference must be explained by a reviewed repository change:
 
 ```bash
+test -f /etc/nginx/materialgraph-pilot.htpasswd && echo htpasswd-present
+readlink -f /var/www/materialgraph/current
+sudo sha256sum /etc/nginx/sites-available/materialgraph \
+  /opt/materialgraph/materialgraph.nginx
+diff -u /etc/nginx/sites-available/materialgraph \
+  /opt/materialgraph/materialgraph.nginx
+```
+
+Back up the active site file (root-owned, mode `600`), then install, validate
+and reload:
+
+```bash
+backup=/etc/nginx/materialgraph.rollback-$(date -u +%Y%m%dT%H%M%SZ).conf
+sudo install -o root -g root -m 0600 \
+  /etc/nginx/sites-available/materialgraph "$backup"
 sudo install -o root -g root -m 0644 \
   /opt/materialgraph/materialgraph.nginx \
   /etc/nginx/sites-available/materialgraph
@@ -451,6 +492,36 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl reload nginx
 ```
+
+Backup files are kept directly in `/etc/nginx/`, outside `sites-enabled/` and
+`conf.d/`, so Nginx does not load them. If `nginx -t` fails, do not reload:
+reinstall the backup over `sites-available/materialgraph`, then run `nginx -t`
+again.
+
+The tracked site serves the frontend and the API from the same origin:
+
+* Basic Auth (`auth_basic`) applies to the whole HTTPS server. Only
+  `location = /health` turns it off, so monitoring works without credentials.
+* `proxy_set_header Authorization "";` removes the pilot credentials before a
+  request reaches Uvicorn.
+* Requests whose `Host` is not `materialgraph.org` or `www.materialgraph.org`
+  are closed without a response (`444`) on both ports. HTTP redirects to
+  `https://materialgraph.org`.
+* `/api`, `/health`, `/docs`, `/redoc` and `/openapi.json` are proxied to
+  Uvicorn on loopback. `/assets/` is served from the release directory and
+  returns `404` for missing files. Every other path falls back to
+  `index.html`, because the frontend keeps its state in the query string.
+* Proxy timeouts and forwarding headers are set once at server level and
+  inherited by every proxied location. Locations must not set their own
+  `proxy_set_header` or `add_header`: in Nginx, either directive in a location
+  discards all inherited ones of that kind, which would forward the pilot
+  credentials or drop the security headers.
+* Responses carry `X-Content-Type-Options: nosniff`,
+  `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: same-origin` and
+  `Cache-Control: no-store` (also on content-hashed assets, which only costs
+  performance).
+* No favicon is shipped. `/favicon.ico` falls back to `index.html` (HTTP `200`,
+  `text/html`). This is harmless.
 
 The tracked site terminates TLS with Certbot-managed material, accepts modern
 protocols through Certbot's maintained options, redirects HTTP before proxying,
@@ -539,6 +610,64 @@ previous endpoint before removing rollback material.
 
 ---
 
+# Frontend release and rollback
+
+The React frontend (`frontend/`) is built off the server and published as an
+immutable release directory. `/opt/materialgraph/frontend` holds sources only;
+Nginx never serves it.
+
+```
+/var/www/materialgraph/
+├── releases/<full commit SHA>/   index.html, assets/index-<hash>.js|css
+└── current -> releases/<full commit SHA>
+```
+
+Build from a clean export of the exact commit, never from a working tree:
+
+```bash
+git archive --format=tar -o materialgraph-<sha>.tar <sha>
+# extract into an empty directory, then in frontend/:
+npm ci
+npm test
+npm run build      # tsc -b && vite build -> frontend/dist/
+```
+
+Record the commit, the test result and the `dist/assets` file names in the
+deployment evidence. Package `dist/`, record the archive's SHA-256, copy it to
+`/tmp` on the server, check the SHA-256 there, then create the release. Never
+modify an existing release directory.
+
+```bash
+# build machine, in frontend/:
+tar -czf frontend-<short sha>.tgz -C dist .
+# server, after copying the archive to /tmp and checking its SHA-256:
+release=/var/www/materialgraph/releases/<full commit SHA>
+sudo mkdir "$release"
+sudo tar -xzf /tmp/frontend-<short sha>.tgz -C "$release"
+sudo chown -R root:root "$release"
+sudo find "$release" -type d -exec chmod 755 {} + -o -type f -exec chmod 644 {} +
+```
+
+Deploy the backend first when a release depends on a backend change. Then
+record the current target for rollback and switch the symlink atomically:
+
+```bash
+readlink -f /var/www/materialgraph/current      # rollback target
+sudo ln -sfn releases/<full commit SHA> /var/www/materialgraph/current.new
+sudo mv -T /var/www/materialgraph/current.new /var/www/materialgraph/current
+readlink -f /var/www/materialgraph/current
+```
+
+Verify that unauthenticated `/` returns `401`, `/health` returns `200`, and,
+in an authenticated browser, that `index.html` references the new asset names
+and the application loads without console errors.
+
+Rollback switches `current` back to the recorded previous release the same way.
+Nginx does not need a reload for either switch. Keep at least the previous
+release directory until the new release is accepted.
+
+---
+
 # Security Group Rules
 
 Inbound:
@@ -558,15 +687,19 @@ Port 8000 is not publicly exposed.
 
 # Production Endpoints
 
-API Root:
+Frontend (pilot Basic Auth required):
 
 https://materialgraph.org
 
-Swagger UI:
+API (pilot Basic Auth required):
+
+https://materialgraph.org/api/v1
+
+Swagger UI (pilot Basic Auth required):
 
 https://materialgraph.org/docs
 
-Health Check:
+Health Check (no authentication):
 
 https://materialgraph.org/health
 

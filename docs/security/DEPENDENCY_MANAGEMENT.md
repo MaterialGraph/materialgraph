@@ -36,12 +36,15 @@ The schedule reassesses an unchanged lock against advisories published after
 installation. A scanner result establishes affected installed code, not
 application-path exploitability; reachability is assessed separately.
 
-The workflow is an automated audit, not a GitHub-enforced merge gate. At the
-current solo-maintainer prototype boundary, `main` has no branch protection or
-ruleset requiring the Dependency Security or Secret Scan checks. A direct push
-or a commit-message skip instruction can therefore reach `main` without a
-successful run. A passing result proves only that the identified commit passed
-that workflow execution.
+The workflow's `Locked dependency audit` job is a required status check for
+merges to `main`. Classic branch protection (verified 2026-10-16) requires a
+pull request and passing `Locked dependency audit`, `Gitleaks` and
+`Backend pytest (ephemeral PostgreSQL)` checks on a branch that is up to date
+with `main`, applies to administrators, and has no repository ruleset. This
+gates merges only; it is configuration that an administrator can change, and it
+does not cover the scheduled weekly audit or prove anything about a deployed
+commit. A passing result proves only that the identified commit passed that
+workflow execution.
 
 Before a production deployment, the operator must identify the exact candidate
 commit and confirm that both Dependency Security and Secret Scan completed
