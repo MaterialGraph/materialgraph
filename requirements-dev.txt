@@ -1,4 +1,3 @@
+# Developer environment. requirements.txt already pins the test and lint
+# tooling at the versions used by CI; see docs/security/DEPENDENCY_MANAGEMENT.md.
 -r requirements.txt
-pytest
-httpx2
-ruff

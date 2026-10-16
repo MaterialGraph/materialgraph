@@ -168,7 +168,14 @@ def test_production_dependencies_are_locked_audited_and_reconcilable():
     assert image in policy
     assert 'cron: "17 4 * * 1"' in workflow
     assert "--require-hashes" in workflow
-    assert "python -m pip_audit --require-hashes -r" in workflow
+    assert (
+        "python -m pip_audit --require-hashes -r requirements-production.lock"
+        in workflow
+    )
+    assert (
+        "python -m pip_audit --require-hashes -r requirements-test.lock"
+        in workflow
+    )
     assert "--no-index" in workflow
     assert "--check-installed" in workflow
     assert "pip-audit==2.10.1" in audit_lock
@@ -242,7 +249,9 @@ def test_repository_governance_configuration_is_bounded_and_explicit():
     assert not (PROJECT_ROOT / "LICENSE").exists()
     assert dependabot.count('package-ecosystem: "pip"') == 1
     assert dependabot.count('package-ecosystem: "github-actions"') == 1
-    assert dependabot.count('interval: "weekly"') == 2
+    assert dependabot.count('package-ecosystem: "npm"') == 1
+    assert 'directory: "/frontend"' in dependabot
+    assert dependabot.count('interval: "weekly"') == 3
     assert (
         "Do not disclose a suspected vulnerability in a public"
         in security_policy

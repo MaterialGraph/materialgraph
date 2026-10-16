@@ -33,6 +33,9 @@ jobs:
       - name: Audit production lock
         run: python -m pip_audit --require-hashes -r requirements-production.lock
 
+      - name: Audit test lock
+        run: python -m pip_audit --require-hashes -r requirements-test.lock
+
       - name: Build clean production environment
         run: |
           python -m venv /tmp/materialgraph-runtime
