@@ -55,4 +55,36 @@ export type ObjectiveResponse = {
   };
   ranked_candidates: ObjectiveCandidate[]; chains: ObjectiveChain[];
   warnings: string[]; explanation: string;
+  /** Absent when the backend predates objective coverage contract version 1. */
+  objective_coverage?: ObjectiveCoverage;
+};
+
+export type PreferCoverageStatus = 'represented' | 'not_represented' | 'not_evaluated';
+export type AvoidCoverageStatus = 'present' | 'not_observed' | 'not_evaluated';
+export type MaterialElementCoverage<S> = {
+  element: string; unit: 'returned_ranked_materials';
+  containing_count: number; evaluated_count: number; not_evaluated_count: number; total_count: number;
+  status: S; coverage_complete: boolean;
+};
+export type ChainElementCoverage = {
+  element: string; unit: 'returned_chains_excluding_source';
+  containing_chain_count: number; evaluated_chain_count: number; not_evaluated_chain_count: number; total_chain_count: number;
+  chain_positions: number[]; status: AvoidCoverageStatus; coverage_complete: boolean;
+};
+export type ChainAvoidanceDetail = {
+  chain_position: number;
+  materials_with_avoided_elements: { material_id: number; chain_material_index: number; role: 'intermediate' | 'final'; avoided_elements: string[] }[];
+  not_evaluated_material_ids: number[];
+};
+/** Backend-computed objective coverage (contract version 1). The client renders it and never re-derives it. */
+export type ObjectiveCoverage = {
+  contract_version: '1'; scope: 'returned_results_only'; element_evaluation_basis: 'formula_symbols_strict_parse';
+  returned_ranked_material_count: number; ranked_material_pool_count: number; returned_chain_count: number;
+  preferred_elements: MaterialElementCoverage<PreferCoverageStatus>[];
+  avoided_elements_in_ranked_materials: MaterialElementCoverage<AvoidCoverageStatus>[];
+  avoided_elements_in_returned_chains: ChainElementCoverage[];
+  chain_avoidance: ChainAvoidanceDetail[];
+  source_material: { material_id: number; excluded_from_counts: true; avoided_elements_present: string[] | null };
+  terms_not_evaluated: ('preserve_elements' | 'target_family')[];
+  mode: 'balanced' | 'exploratory' | 'strict'; avoid_policy_explanation: string; limitations: string[];
 };

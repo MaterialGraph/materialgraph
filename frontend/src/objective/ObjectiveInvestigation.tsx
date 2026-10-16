@@ -2,7 +2,8 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { ChemicalFormula } from '../ChemicalFormula';
 import { CompareTray } from '../comparison/CompareTray';
 import { objectiveLaunch, objectiveRole, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from '../comparison/launch';
-import type { ObjectiveCandidate, ObjectiveChain, ObjectiveResponse, ObjectiveTransition } from './contract';
+import type { ChainAvoidanceDetail, ObjectiveCandidate, ObjectiveChain, ObjectiveResponse, ObjectiveTransition } from './contract';
+import { ChainAvoidanceNote, ObjectiveCoveragePanel, materialAvoidanceLabel } from './ObjectiveCoverage';
 import { buildObjectiveRequest, initialDraft, type ObjectiveDraft } from './request';
 import { useObjectiveInvestigation } from './useObjectiveInvestigation';
 import { routeFromObjective, type ComparisonRoute } from '../comparison/routing';
@@ -67,14 +68,16 @@ function Relationship({ transition }: { transition: ObjectiveTransition }) {
   </li>;
 }
 
-function Pathway({ chain, index }: { chain: ObjectiveChain; index: number }) {
+function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: number; avoidance?: ChainAvoidanceDetail }) {
   return <li className="objectivePath" id={`objective-path-${index + 1}`}>
     <h4>Returned composition chain {index + 1} · {chain.transitions.length} relationship {chain.transitions.length === 1 ? 'step' : 'steps'}</h4>
     <ol className="objectivePathMaterials">{chain.materials.flatMap((material, materialIndex) => [
       <li className="objectiveMaterialRecord" key={`material-${materialIndex}`}><ChemicalFormula formula={material.pretty_formula || material.formula}/>
-        <small>{material.mp_id ?? `Local ID ${material.material_id}`} <span className="objectiveRole">{materialIndex === 0 ? 'Source' : materialIndex === chain.materials.length - 1 ? 'Final' : 'Intermediate'}</span></small></li>,
+        <small>{material.mp_id ?? `Local ID ${material.material_id}`} <span className="objectiveRole">{materialIndex === 0 ? 'Source' : materialIndex === chain.materials.length - 1 ? 'Final' : 'Intermediate'}</span>
+          {materialIndex > 0 && (() => { const label = materialAvoidanceLabel(avoidance, material.material_id); return label && <span className="objectiveAvoidance">{label}</span>; })()}</small></li>,
       ...(materialIndex < chain.transitions.length ? [<Relationship key={`relationship-${materialIndex}`} transition={chain.transitions[materialIndex]}/>] : []),
     ])}</ol>
+    <ChainAvoidanceNote detail={avoidance}/>
     <p className="hint">Composition-level relationships only; reaction steps and mechanisms are not established.</p>
     <p className="objectiveChainScore">Chain usefulness rule score: {chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}. <span className="hint">This is separate from the objective rule score.</span></p>
     <details><summary>Relationship details and scoring</summary>
@@ -130,6 +133,7 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
       </details>
     </div>
     {result.warnings.map((warning, n) => <p className="warning" key={n}>{warning}</p>)}
+    <ObjectiveCoveragePanel coverage={result.objective_coverage}/>
     <div className="objectiveColumns">
       <section><h3>Ranked materials</h3><p className="hint">These ranked materials come from a selected cohort of material identities in battery-relevant chemical systems. They do not represent a comprehensive search of materials space.</p><p className="hint">Returned order and objective rule scores. A score does not measure experimental confidence.</p>
         {hasEqualScores && <p className="hint">Some materials have the same objective rule score. Their order follows the API response.</p>}
@@ -139,11 +143,17 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
       </section>
       <section><h3>Returned composition chains</h3><p className="hint">These chains describe composition-level relationships between returned materials. They do not establish that reactions proceed through these steps.</p><p className="hint">“Intermediate” and “final” describe positions within the returned chain and do not denote experimentally established reaction intermediates or products.</p><p className="hint">Shared-element continuity describes a composition-level relationship. It does not establish structural preservation or a validated substitution mechanism.</p>
         {hasUnvalidatedRelationship && <p className="hint">“Not validated” refers to structural preservation or a substitution mechanism for that relationship; the reported shared elements are shown separately.</p>}
-        {result.chains.length ? <ol className="objectivePaths">{result.chains.map((chain, index) => <Pathway key={index} chain={chain} index={index}/>)}</ol> : <p className="empty">No pathways included in this response.</p>}
+        {result.chains.length ? <ol className="objectivePaths">{result.chains.map((chain, index) => <Pathway key={index} chain={chain} index={index} avoidance={result.objective_coverage?.chain_avoidance.find(detail => detail.chain_position === index + 1)}/>)}</ol> : <p className="empty">No pathways included in this response.</p>}
       </section>
     </div>
   </div>;
 }
+
+export const modeHint: Record<ObjectiveDraft['mode'], string> = {
+  strict: 'Avoided elements are excluded from intermediate and final materials in eligible chains. The source material is exempt.',
+  balanced: 'Avoid is a soft preference: avoided elements lower the objective score but are not excluded, so returned materials or chains may still contain them.',
+  exploratory: 'Avoid is a soft preference with a smaller score penalty than Balanced: avoided elements are not excluded, so returned materials or chains may still contain them.',
+};
 
 export function ObjectiveInvestigation({ materialId, onCompare, initialInputs }: { materialId: number; onCompare?: (launch: ComparisonLaunchContext, route: ComparisonRoute) => void; initialInputs?: ObjectiveDraft | null }) {
   const [draft, setDraft] = useState<ObjectiveDraft>(initialInputs ?? initialDraft);
@@ -171,9 +181,7 @@ export function ObjectiveInvestigation({ materialId, onCompare, initialInputs }:
       {draft.objectiveLimit !== undefined && <label>Recorded objective chain limit <input type="number" min="1" max="20" required value={draft.objectiveLimit} onChange={e => set('objectiveLimit', Number(e.target.value))}/></label>}
       <div className="objectiveChecks"><label><input type="checkbox" checked={draft.lowerCriticality} onChange={e => set('lowerCriticality', e.target.checked)}/> Prefer lower criticality</label>
         <label><input type="checkbox" checked={draft.requireStable} onChange={e => set('requireStable', e.target.checked)}/> Require stable intermediate and final materials</label></div>
-      <p className="hint objectiveModeHint">{draft.mode === 'strict'
-        ? 'Avoided elements are excluded from intermediate and final materials in eligible chains. The source material is exempt.'
-        : 'Avoided elements lower the objective score; they are not automatically excluded.'} Preferred elements add a soft bonus.</p>
+      <p className="hint objectiveModeHint">{modeHint[draft.mode]} Preferred elements add a soft bonus.</p>
       {fieldError && <p className="error" role="alert">{fieldError}</p>}
       <button type="submit" disabled={loading}>{loading ? 'Investigating…' : 'Run investigation'}</button>
     </form>
