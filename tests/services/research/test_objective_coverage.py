@@ -475,3 +475,18 @@ def test_explore_adds_coverage_without_changing_existing_fields():
         1, [2],
     )
     ResearchObjectiveExplorationResponse.model_validate(result)
+
+
+def test_partial_objective_object_is_treated_as_terms_not_requested():
+    # Existing callers/test doubles may pass objects without every term.
+    from types import SimpleNamespace
+
+    coverage = _build(
+        SimpleNamespace(avoid_elements=["Li"]),
+        [_candidate(6, "NaFePO4")],
+        [_chain(_material(5, "LiFePO4"), _material(1, "LiFeP2O7"))],
+    )
+    assert coverage["preferred_elements"] == []
+    assert coverage["avoided_elements_in_returned_chains"][0][
+        "containing_chain_count"] == 1
+    assert coverage["terms_not_evaluated"] == []

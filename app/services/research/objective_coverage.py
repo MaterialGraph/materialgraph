@@ -86,8 +86,12 @@ def build_objective_coverage(
     result_truncated: bool,
     search_truncated: bool,
 ) -> dict:
-    avoid_elements: list[str] = list(objective.avoid_elements)
-    prefer_elements: list[str] = list(objective.prefer_elements)
+    # Read objective terms defensively: callers and test doubles may supply a
+    # partial objective object. Missing terms are treated as "not requested".
+    avoid_elements: list[str] = list(getattr(objective, "avoid_elements", None) or [])
+    prefer_elements: list[str] = list(getattr(objective, "prefer_elements", None) or [])
+    preserve_elements = getattr(objective, "preserve_elements", None) or []
+    target_family = getattr(objective, "target_family", None)
 
     ranked_elements = [
         parse_formula_elements_strict(candidate.get("formula"))
@@ -204,9 +208,9 @@ def build_objective_coverage(
     }
 
     terms_not_evaluated: list[str] = []
-    if objective.preserve_elements:
+    if preserve_elements:
         terms_not_evaluated.append("preserve_elements")
-    if objective.target_family is not None:
+    if target_family is not None:
         terms_not_evaluated.append("target_family")
 
     limitations = list(BASE_LIMITATIONS)
