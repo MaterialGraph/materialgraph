@@ -45,6 +45,85 @@ class ResearchObjectiveConstraintPolicy(BaseModel):
     hard_rejection_scope: Literal["none", "all_non_root_chain_materials"]
 
 
+PreferCoverageStatus = Literal["represented", "not_represented", "not_evaluated"]
+AvoidCoverageStatus = Literal["present", "not_observed", "not_evaluated"]
+
+
+class PreferredElementCoverage(BaseModel):
+    element: str
+    unit: Literal["returned_ranked_materials"] = "returned_ranked_materials"
+    containing_count: int = Field(ge=0)
+    evaluated_count: int = Field(ge=0)
+    not_evaluated_count: int = Field(ge=0)
+    total_count: int = Field(ge=0)
+    status: PreferCoverageStatus
+    coverage_complete: bool
+
+
+class AvoidedElementMaterialCoverage(BaseModel):
+    element: str
+    unit: Literal["returned_ranked_materials"] = "returned_ranked_materials"
+    containing_count: int = Field(ge=0)
+    evaluated_count: int = Field(ge=0)
+    not_evaluated_count: int = Field(ge=0)
+    total_count: int = Field(ge=0)
+    status: AvoidCoverageStatus
+    coverage_complete: bool
+
+
+class AvoidedElementChainCoverage(BaseModel):
+    element: str
+    unit: Literal["returned_chains_excluding_source"] = (
+        "returned_chains_excluding_source"
+    )
+    containing_chain_count: int = Field(ge=0)
+    evaluated_chain_count: int = Field(ge=0)
+    not_evaluated_chain_count: int = Field(ge=0)
+    total_chain_count: int = Field(ge=0)
+    chain_positions: list[int]
+    status: AvoidCoverageStatus
+    coverage_complete: bool
+
+
+class ChainMaterialAvoidance(BaseModel):
+    material_id: int
+    chain_material_index: int = Field(ge=1)
+    role: Literal["intermediate", "final"]
+    avoided_elements: list[str]
+
+
+class ChainAvoidanceDetail(BaseModel):
+    chain_position: int = Field(ge=1)
+    materials_with_avoided_elements: list[ChainMaterialAvoidance]
+    not_evaluated_material_ids: list[int]
+
+
+class SourceMaterialDisclosure(BaseModel):
+    material_id: int
+    excluded_from_counts: Literal[True] = True
+    avoided_elements_present: list[str] | None = None
+
+
+class ObjectiveCoverage(BaseModel):
+    contract_version: Literal["1"] = "1"
+    scope: Literal["returned_results_only"] = "returned_results_only"
+    element_evaluation_basis: Literal["formula_symbols_strict_parse"] = (
+        "formula_symbols_strict_parse"
+    )
+    returned_ranked_material_count: int = Field(ge=0)
+    ranked_material_pool_count: int = Field(ge=0)
+    returned_chain_count: int = Field(ge=0)
+    preferred_elements: list[PreferredElementCoverage]
+    avoided_elements_in_ranked_materials: list[AvoidedElementMaterialCoverage]
+    avoided_elements_in_returned_chains: list[AvoidedElementChainCoverage]
+    chain_avoidance: list[ChainAvoidanceDetail]
+    source_material: SourceMaterialDisclosure
+    terms_not_evaluated: list[Literal["preserve_elements", "target_family"]]
+    mode: Literal["balanced", "exploratory", "strict"]
+    avoid_policy_explanation: str
+    limitations: list[str]
+
+
 class ResearchObjectiveExplorationResponse(BaseModel):
     material_id: int
     base_formula: str | None = None
@@ -57,6 +136,7 @@ class ResearchObjectiveExplorationResponse(BaseModel):
     chains: list[DiscoveryChain]
     warnings: list[str]
     explanation: str
+    objective_coverage: ObjectiveCoverage
 
 
 class QualitySummary(BaseModel):

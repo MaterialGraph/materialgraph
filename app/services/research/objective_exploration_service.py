@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.services.material.quality_service import MaterialQualityService
+from app.services.research.objective_coverage import build_objective_coverage
 from app.services.research.objective_service import ResearchObjectiveService
 from app.utils.chemical_formula import contains_element
 
@@ -38,6 +39,19 @@ class ResearchObjectiveExplorationService:
             "result_truncated": len(eligible_chains) > request.limit,
         }
 
+        returned_candidates = candidates[: request.limit]
+        objective_coverage = build_objective_coverage(
+            material_id=material_id,
+            base_formula=chain_result.get("base_formula"),
+            objective=request.objective,
+            mode=request.mode,
+            ranked_candidates=returned_candidates,
+            chains=chains,
+            ranked_material_pool_count=len(candidates),
+            result_truncated=bool(search_metadata.get("result_truncated")),
+            search_truncated=bool(search_metadata.get("search_truncated")),
+        )
+
         return {
             "material_id": material_id,
             "base_formula": chain_result.get("base_formula"),
@@ -46,10 +60,11 @@ class ResearchObjectiveExplorationService:
             "mode": request.mode,
             "constraint_policy": self._build_constraint_policy(request.mode),
             "search_metadata": search_metadata,
-            "ranked_candidates": candidates[: request.limit],
+            "ranked_candidates": returned_candidates,
             "chains": chains,
             "warnings": self._build_global_warnings(request.mode),
             "explanation": self._build_explanation(request.mode),
+            "objective_coverage": objective_coverage,
         }
 
     def _apply_mode_constraints(
