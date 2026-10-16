@@ -155,3 +155,11 @@
 .pilotGuide p{color:var(--muted)}
 .pilotGuide>button{margin-top:8px;background:var(--ink);color:var(--surface);font-weight:600}
 @media(max-width:500px){.pilotGuide{padding:22px}.pilotGuide h2{font-size:21px}}
+.objectiveCoverage{border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:var(--space-3);margin-top:var(--space-3)}
+.objectiveCoverage h4{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+.objectiveCoverageMode{font-size:13px;line-height:1.55;margin:8px 0}
+.objectiveCoverageList{list-style:none;padding:0;margin:0;display:grid;gap:6px;font-size:13px;line-height:1.5}
+.objectiveCoverageStatus{display:inline-block;min-width:118px;margin-right:6px;padding:2px 6px;border:1px solid var(--ink);border-radius:4px;font:600 11px system-ui,sans-serif;text-align:center}
+.objectiveAvoidance{display:inline-block;margin-left:6px;padding:2px 6px;border:1px dashed #735326;border-radius:4px;color:#735326;font:600 10px system-ui,sans-serif}
+.objectiveChainAvoidance{margin:8px 0;padding:8px 10px;border-left:3px solid #735326;background:#fff5e3;color:#735326;font-size:12px;line-height:1.5}
+@media(max-width:850px){.objectiveCoverageStatus{min-width:0}}

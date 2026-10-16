@@ -546,3 +546,32 @@ endpoint alignment, chain structure, and material quality. The returned
 whole-chain total remains authoritative. Original backend chain, relationship,
 and score explanations remain verbatim in a collapsed technical disclosure.
 No scoring rules, API fields, node roles, or missing-chain qualifications change.
+
+## 22. Objective coverage and avoided-element disclosure (2026-10-16)
+
+Issues #52 and #55. The Objective Investigation renders the backend
+`objective_coverage` field (contract version 1,
+`docs/implementation/OBJECTIVE_COVERAGE_CONTRACT.md`) in a compact panel between
+the search scope and the result columns. The client renders backend counts,
+statuses, chain positions, mode explanation and limitations verbatim; it does
+not parse formulas or derive any status.
+
+- Units stay explicit: Prefer and Avoid on materials count *returned ranked
+  materials*; Avoid on pathways counts *returned chains, source material
+  excluded*. Ranked materials are never called "final candidates".
+- Statuses are shown as text labels (Represented / Not represented / Present /
+  Not observed / Not evaluated), not colour alone. There is no overall
+  "satisfied" status.
+- Incomplete coverage shows the evaluated count and the not-evaluated count
+  separately; Not evaluated is never presented as absence.
+- When a returned chain contains an avoided element, a note links to the
+  affected chains, and each flagged non-source material in those chains carries
+  a "Contains avoided element" marker from `chain_avoidance`. The source
+  material is disclosed and never flagged.
+- If the backend predates the field, the panel states that coverage is not
+  available rather than inferring it.
+- Form hints now distinguish Balanced and Exploratory (smaller Avoid penalty)
+  soft preferences from Strict exclusion.
+
+Workbench layout, ranked-material cards, chain disclosures, comparison
+selection, routing and URL state are unchanged.
