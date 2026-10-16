@@ -17,10 +17,18 @@ their generated hash locks:
   production package keeps its exact production version.
   `scripts/check_dependency_contract.py` fails if any production pin differs.
   It is used only by the Backend Tests workflow and local test environments and
-  is never a production installation source.
+  is never a production installation source. Dependency Security audits it
+  with `pip-audit` alongside the production lock.
 
-`requirements.txt` remains the cross-platform developer snapshot. It is not a
-production installation source.
+`requirements.txt` is the cross-platform developer snapshot (Python 3.12). It is
+not a production installation source. It pins every package in
+`requirements-test.lock` at exactly the locked version, except the installer
+tooling `pip`, `setuptools` and `wheel`, and adds only reviewed developer extras:
+`ruff` and the Windows-only runtime dependencies `colorama`, `tzdata` and
+`win32-setctime` (with `sys_platform` markers; `uvloop` is marked non-Windows).
+`scripts/check_dependency_contract.py` fails on any drift or unreviewed extra,
+so Dependabot alerts on `requirements.txt` reflect the locked versions.
+`requirements-dev.txt` only includes `requirements.txt`.
 
 ## Workflow behavior and enforcement boundary
 
@@ -31,7 +39,8 @@ application without dependency resolution or build isolation, and reconciles
 the installed environment with the production lock.
 
 The dependency-security workflow runs on every push and pull request and every
-Monday at 04:17 UTC. `pip-audit` returning a vulnerability makes the job fail.
+Monday at 04:17 UTC. It runs `pip-audit` against both the production lock and the
+test lock; a vulnerability in either makes the job fail.
 The schedule reassesses an unchanged lock against advisories published after
 installation. A scanner result establishes affected installed code, not
 application-path exploitability; reachability is assessed separately.
@@ -79,13 +88,24 @@ scientific regression suite.
    then regenerate the test lock: copy the new `requirements-production.lock` to
    `requirements-test.lock` and compile `requirements-production.in` together
    with `requirements-test.in` into it using the same flags.
-4. Review every direct and transitive version change and the generated hashes.
+4. Review every direct and transitive version change and the generated hashes,
+   then update `requirements.txt` to the new `requirements-test.lock` versions
+   (the contract check lists every difference).
 5. Run the dependency workflow locally or in CI and run the complete test suite.
 6. Capture deterministic scientific baseline and post-change responses when a
    runtime dependency changes behavior or serialization.
 7. Deploy through a fresh virtual environment, verify production-to-lock
    reconciliation, and retain the previous environment until health and
    scientific checks pass.
+
+## Frontend dependencies
+
+`frontend/package-lock.json` is the frontend dependency contract. Only `react`,
+`react-dom` and `scheduler` ship to the browser; build and test tooling is
+development-only. Dependabot watches `frontend/` weekly. There is no frontend CI
+workflow, so a lock change is qualified locally from a clean export with
+`npm ci`, `npm audit`, `npm test` and `npm run build`, recording the built asset
+names; prefer lockfile-only fixes (`npm audit fix` without `--force`).
 
 Ignored advisories require a time-bounded, identifier-specific exception that
 documents reachability, compensating controls, an owner, and an expiry date.

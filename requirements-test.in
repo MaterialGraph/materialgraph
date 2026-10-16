@@ -3,4 +3,4 @@
 # packages keep their exact production versions.
 
 pytest==9.0.3
-httpx2==2.2.0
+httpx2==2.12.0

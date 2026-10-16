@@ -21,6 +21,17 @@ CONTRACTS = (
     ),
 )
 
+DEVELOPER_SNAPSHOT = PROJECT_ROOT / "requirements.txt"
+# Installer tooling pinned in the hash locks but deliberately not in the
+# developer snapshot.
+SNAPSHOT_EXCLUDED = frozenset({"pip", "setuptools", "wheel"})
+# Packages the developer snapshot may add beyond requirements-test.lock:
+# lint tooling and Windows-only runtime dependencies.
+SNAPSHOT_EXTRAS = frozenset({"colorama", "ruff", "tzdata", "win32-setctime"})
+SNAPSHOT_LINE = re.compile(
+    r"^([A-Za-z0-9_.-]+)==([A-Za-z0-9_.+!-]+)(?:\s*;\s*[^#]+)?$"
+)
+
 PIN = re.compile(r"^([A-Za-z0-9_.-]+)(?:\[[^]]+\])?==([^\s;\\]+)")
 HASH = re.compile(r"--hash=sha256:[0-9a-f]{64}")
 UNSAFE_REFERENCE = re.compile(
@@ -83,6 +94,51 @@ def lock_pins(path: Path) -> dict[str, str]:
     return pins
 
 
+def snapshot_pins(path: Path) -> dict[str, str]:
+    pins = {}
+    for line_number, raw_line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        match = SNAPSHOT_LINE.fullmatch(line)
+        if not match:
+            raise ValueError(
+                f"{path.name}:{line_number}: expected name==version "
+                "with an optional environment marker"
+            )
+        name = canonical_name(match.group(1))
+        if name in pins:
+            raise ValueError(f"{path.name}:{line_number}: duplicate pin for {name}")
+        pins[name] = match.group(2)
+    return pins
+
+
+def validate_snapshot(
+    snapshot: dict[str, str], test_locked: dict[str, str]
+) -> list[str]:
+    """The developer snapshot must mirror requirements-test.lock exactly."""
+    errors = []
+    for name, version in sorted(test_locked.items()):
+        if name in SNAPSHOT_EXCLUDED:
+            continue
+        if snapshot.get(name) != version:
+            errors.append(
+                f"requirements.txt: locked pin {name}=={version} differs or is "
+                f"missing (found {snapshot.get(name) or 'absent'})"
+            )
+    for name, version in sorted(snapshot.items()):
+        if name in test_locked:
+            continue
+        if name in SNAPSHOT_EXCLUDED or name not in SNAPSHOT_EXTRAS:
+            errors.append(
+                f"requirements.txt: {name}=={version} is not in "
+                "requirements-test.lock or the reviewed developer extras"
+            )
+    return errors
+
+
 def validate_contracts() -> tuple[dict[str, str], list[str]]:
     errors = []
     production = {}
@@ -118,6 +174,14 @@ def validate_contracts() -> tuple[dict[str, str], list[str]]:
                     f"requirements-test.lock: production pin {name}=={version} "
                     f"differs or is missing (found {test_locked.get(name) or 'absent'})"
                 )
+
+    if test_locked:
+        try:
+            errors.extend(
+                validate_snapshot(snapshot_pins(DEVELOPER_SNAPSHOT), test_locked)
+            )
+        except (OSError, ValueError) as error:
+            errors.append(str(error))
 
     try:
         project = tomllib.loads(
