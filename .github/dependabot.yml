@@ -7,7 +7,11 @@ updates:
       day: "monday"
       time: "05:17"
       timezone: "Etc/UTC"
-    open-pull-requests-limit: 5
+    # Alerts only: Python updates go through reviewed lock regeneration
+    # (docs/security/DEPENDENCY_MANAGEMENT.md). Version-update PRs would edit
+    # requirements.txt alone and fail the dependency contract, so none are
+    # opened. Dependabot alerts and security scanning are unaffected.
+    open-pull-requests-limit: 0
     labels:
       - "dependencies"
       - "security"
@@ -20,6 +24,11 @@ updates:
       time: "05:32"
       timezone: "Etc/UTC"
     open-pull-requests-limit: 5
+    # No frontend CI: major tooling upgrades are planned changes, not
+    # automatic PRs. Patch and minor updates still open.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     labels:
       - "dependencies"
       - "security"

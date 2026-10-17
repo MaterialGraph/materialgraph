@@ -252,6 +252,17 @@ def test_repository_governance_configuration_is_bounded_and_explicit():
     assert dependabot.count('package-ecosystem: "npm"') == 1
     assert 'directory: "/frontend"' in dependabot
     assert dependabot.count('interval: "weekly"') == 3
+    pip_entry, npm_entry, actions_entry = (
+        dependabot.split("- package-ecosystem: ")[1:]
+    )
+    assert pip_entry.startswith('"pip"')
+    assert "open-pull-requests-limit: 0" in pip_entry
+    assert npm_entry.startswith('"npm"')
+    assert "open-pull-requests-limit: 5" in npm_entry
+    assert 'update-types: ["version-update:semver-major"]' in npm_entry
+    assert actions_entry.startswith('"github-actions"')
+    assert "open-pull-requests-limit: 5" in actions_entry
+    assert "ignore:" not in actions_entry
     assert (
         "Do not disclose a suspected vulnerability in a public"
         in security_policy
