@@ -30,6 +30,21 @@ tooling `pip`, `setuptools` and `wheel`, and adds only reviewed developer extras
 so Dependabot alerts on `requirements.txt` reflect the locked versions.
 `requirements-dev.txt` only includes `requirements.txt`.
 
+## Dependabot policy
+
+- **pip: alerts only.** `open-pull-requests-limit: 0` disables Python
+  version-update pull requests. Such a pull request would edit
+  `requirements.txt` alone and fail the dependency contract by design. A
+  Dependabot alert (or a failing `pip-audit`) starts the reviewed update
+  procedure below; the fix is a lock regeneration, and the alert closes when
+  `main` pins a fixed version. A Dependabot security-update pull request that
+  edits only `requirements.txt` is closed as superseded by that fix.
+- **npm (`frontend/`): weekly, patch and minor only.** Major version updates are
+  ignored because there is no frontend CI; they are planned as separate,
+  locally qualified changes. Ignore rules can also suppress a major-version
+  security pull request; the Dependabot alert and `npm audit` still report it.
+- **GitHub Actions: weekly**, all update types.
+
 ## Workflow behavior and enforcement boundary
 
 Every lock entry must use an exact version and at least one SHA-256 distribution
@@ -102,7 +117,8 @@ scientific regression suite.
 
 `frontend/package-lock.json` is the frontend dependency contract. Only `react`,
 `react-dom` and `scheduler` ship to the browser; build and test tooling is
-development-only. Dependabot watches `frontend/` weekly. There is no frontend CI
+development-only. Dependabot watches `frontend/` weekly (patch and minor
+updates; see Dependabot policy). There is no frontend CI
 workflow, so a lock change is qualified locally from a clean export with
 `npm ci`, `npm audit`, `npm test` and `npm run build`, recording the built asset
 names; prefer lockfile-only fixes (`npm audit fix` without `--force`).
