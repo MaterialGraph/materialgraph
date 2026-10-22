@@ -250,14 +250,24 @@ coverage are disclosed rather than fabricated.
 
 The Objective Investigation keeps these response concepts distinct:
 
-- `generated_chain_count`: generated before objective filtering;
+- `generated_chain_count`: generated before the retain, family and stability
+  filters; Avoid and Prefer already shape which chains are generated
+  (admission and step validation), so the count is not objective-independent;
 - `returned_chain_count`: included in the response;
 - `result_truncated`: the returned result set was limited;
-- `search_truncated`: bounded search stopped at its search-state budget; and
+- `search_truncated`: bounded search stopped at its search-state budget. It
+  does not report the per-material expansion limit;
+- `expansion_limit_binding` and the `candidates_*_total` counts: whether the
+  per-material expansion limit discarded eligible candidates, and how many.
+  Totals are summed over expansions, so a candidate can be counted more than
+  once; `distinct_candidates_discarded_by_expansion_limit` counts each
+  material once (#51); and
 - `scientific_completeness_guaranteed`: whether the backend guarantees
   scientific completeness.
 
-`search_truncated: false` is not rendered as “complete.” HTTP 200 is not treated
+The UI shows two statements, “State budget exhausted” and “Neighbour limit
+applied”, and never renders a summed discard figure as a count of unexplored
+candidates. `search_truncated: false` is not rendered as “complete.” HTTP 200 is not treated
 as scientific validation. The submitted structured request is displayed as
 client-observed request context; returned mode, policies, warnings, and metadata
 are identified as backend response fields.

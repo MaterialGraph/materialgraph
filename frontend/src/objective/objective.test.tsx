@@ -66,7 +66,7 @@ it('places cohort coverage beneath the ranked-material heading for populated and
     expect(html.indexOf(scope)).toBeLessThan(html.indexOf('Returned order and objective rule scores.'));
     expect(html).toContain('Search scope');
     expect(html).toContain('The returned results are limited. Scientific completeness is not guaranteed.');
-    expect(html).toContain('Search truncation: No');
+    expect(html).toContain('State budget exhausted: No');
     expect(html).toContain('This does not establish that every scientifically relevant pathway was found.');
   }
   const populated = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
@@ -96,9 +96,26 @@ it('derives intermediate and final roles only from returned chain membership', (
   expect(html.match(/class="objectiveValidation"/g)).toHaveLength(2);
   expect(html).toContain('These chains describe composition-level relationships between returned materials.');
   expect(html).toContain('<details open=""><summary>Returned reasons');
-  expect(html).toContain('Search truncation: No');
+  expect(html).toContain('State budget exhausted: No');
   expect(html).toContain('generated chains are included in this response');
   expect(html).not.toContain('No pathway found');
+});
+
+it('reports the neighbour limit separately from the state budget', () => {
+  const binding = { ...sample.search_metadata, expansion_limit_binding: true, expansions_with_cap_discards: 5, candidates_considered_total: 61, candidates_eligible_total: 61, candidates_admitted_total: 36, candidates_discarded_by_expansion_limit_total: 25, distinct_candidates_discarded_by_expansion_limit: 4 };
+  const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, search_metadata: binding }} submitted="{}"/>);
+  expect(html).toContain('State budget exhausted: No');
+  expect(html).toContain('Neighbour limit applied: Yes — 25 cap discards across 5 expansions (limit 6 per material; a candidate can be counted more than once; 4 distinct materials).');
+  // A summed figure is never presented as a count of unexplored candidates.
+  expect(html).not.toContain('candidates not explored');
+  expect(html).not.toContain('Search truncation: No');
+
+  const notBinding = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, search_metadata: { ...binding, expansion_limit_binding: false, candidates_discarded_by_expansion_limit_total: 0, expansions_with_cap_discards: 0, distinct_candidates_discarded_by_expansion_limit: 0 } }} submitted="{}"/>);
+  expect(notBinding).toContain('Neighbour limit applied: No — every eligible candidate was explored (limit 6 per material).');
+
+  const legacy = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
+  expect(legacy).toContain('Neighbour limit applied: not reported by this backend.');
+  expect(legacy).not.toContain('Neighbour limit applied: No');
 });
 
 it('presents one relationship step without implying a reaction or inventing unknown labels', () => {
@@ -110,7 +127,7 @@ it('presents one relationship step without implying a reaction or inventing unkn
   expect(html).toContain('<code>new_relation</code>');
   expect(html).not.toContain('Reported relationship: new relation');
   expect(html).toContain('Shared elements not supplied');
-  expect(html).toContain('Search truncation: Yes');
+  expect(html).toContain('State budget exhausted: Yes');
   expect(html).not.toContain('→');
   expect(relationshipLabel('alkali_substitution')).toBe('Possible alkali composition substitution');
 });

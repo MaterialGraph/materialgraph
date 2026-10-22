@@ -52,6 +52,14 @@ export type ObjectiveResponse = {
     expanded_state_count: number; generated_chain_count: number;
     returned_chain_count: number; search_truncated: boolean;
     result_truncated: boolean; scientific_completeness_guaranteed: false;
+    /** Expansion-limit reporting (#51). Absent or null when the backend predates it. */
+    expansion_limit_binding?: boolean | null;
+    expansions_with_cap_discards?: number | null;
+    candidates_considered_total?: number | null;
+    candidates_eligible_total?: number | null;
+    candidates_admitted_total?: number | null;
+    candidates_discarded_by_expansion_limit_total?: number | null;
+    distinct_candidates_discarded_by_expansion_limit?: number | null;
   };
   ranked_candidates: ObjectiveCandidate[]; chains: ObjectiveChain[];
   warnings: string[]; explanation: string;

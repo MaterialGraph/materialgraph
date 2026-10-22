@@ -129,6 +129,16 @@ class DiscoveryChainService:
         completed_chains = []
 
         expanded_state_count = 0
+        # Per-expansion admission counts (#51). Recording is additive: it
+        # never changes which candidates are admitted.
+        admission_totals = {
+            "considered": 0,
+            "eligible": 0,
+            "admitted": 0,
+            "cap_discarded": 0,
+        }
+        expansions_with_cap_discards = 0
+        distinct_cap_discarded_ids: set[int] = set()
 
         while queue and expanded_state_count < self.SEARCH_STATE_BUDGET:
             current_chain = queue.popleft()
@@ -143,6 +153,7 @@ class DiscoveryChainService:
                 continue
 
             candidate_start = time.perf_counter()
+            self.__dict__["_last_admission_key"] = None
             next_candidates = self._get_next_candidates(
                 material_id=current_material["material_id"],
                 avoid_elements=avoid_elements,
@@ -157,6 +168,14 @@ class DiscoveryChainService:
                 time.perf_counter() - candidate_start,
                 len(next_candidates),
             )
+            counts = self._last_admission_counts()
+            for key in admission_totals:
+                admission_totals[key] += counts[key]
+            if counts["cap_discarded"]:
+                expansions_with_cap_discards += 1
+                distinct_cap_discarded_ids.update(
+                    counts["cap_discarded_ids"]
+                )
 
             for candidate in next_candidates:
                 candidate_id = candidate["material_id"]
@@ -215,6 +234,55 @@ class DiscoveryChainService:
             "search_truncated": bool(queue),
             "result_truncated": False,
             "scientific_completeness_guaranteed": False,
+            "expansion_limit_binding": admission_totals["cap_discarded"] > 0,
+            "expansions_with_cap_discards": expansions_with_cap_discards,
+            "candidates_considered_total": admission_totals["considered"],
+            "candidates_eligible_total": admission_totals["eligible"],
+            "candidates_admitted_total": admission_totals["admitted"],
+            "candidates_discarded_by_expansion_limit_total": (
+                admission_totals["cap_discarded"]
+            ),
+            "distinct_candidates_discarded_by_expansion_limit": len(
+                distinct_cap_discarded_ids
+            ),
+        }
+
+    def _admission_counts_store(self) -> dict:
+        # Created lazily so services built without __init__ (as some tests
+        # do) still record counts.
+        return self.__dict__.setdefault("_admission_counts", {})
+
+    def _record_admission_counts(
+        self,
+        cache_key: tuple,
+        *,
+        considered: int,
+        eligible: list[dict],
+        admitted: list[dict],
+    ) -> None:
+        admitted_ids = {candidate["material_id"] for candidate in admitted}
+        cap_discarded_ids = [
+            candidate["material_id"]
+            for candidate in eligible
+            if candidate["material_id"] not in admitted_ids
+        ]
+        self._admission_counts_store()[cache_key] = {
+            "considered": considered,
+            "eligible": len(eligible),
+            "admitted": len(admitted),
+            "cap_discarded": len(cap_discarded_ids),
+            "cap_discarded_ids": cap_discarded_ids,
+        }
+        self.__dict__["_last_admission_key"] = cache_key
+
+    def _last_admission_counts(self) -> dict:
+        key = self.__dict__.get("_last_admission_key")
+        return self._admission_counts_store().get(key) or {
+            "considered": 0,
+            "eligible": 0,
+            "admitted": 0,
+            "cap_discarded": 0,
+            "cap_discarded_ids": [],
         }
 
     def _get_next_candidates(
@@ -246,10 +314,16 @@ class DiscoveryChainService:
         )
 
         if cache_key in self._candidate_cache:
+            self.__dict__["_last_admission_key"] = cache_key
             return self._candidate_cache[cache_key]
 
         family_result = self._get_family_result(material_id)
         candidates = []
+        non_test_candidates = [
+            candidate
+            for candidate in family_result["related_materials"]
+            if not (candidate.get("mp_id") or "").startswith("mp-test")
+        ]
 
         # Preserve the legacy bounded admission path for existing callers.
         if not hard_avoid_admission and (
@@ -267,6 +341,12 @@ class DiscoveryChainService:
                 if len(candidates) >= self.EXPANSION_LIMIT:
                     break
 
+            self._record_admission_counts(
+                cache_key,
+                considered=len(non_test_candidates),
+                eligible=non_test_candidates,
+                admitted=candidates,
+            )
             self._candidate_cache[cache_key] = candidates
             return candidates
 
@@ -357,6 +437,12 @@ class DiscoveryChainService:
                 missing_membership_excluded,
             )
 
+        self._record_admission_counts(
+            cache_key,
+            considered=len(non_test_candidates),
+            eligible=eligible_candidates,
+            admitted=candidates,
+        )
         self._candidate_cache[cache_key] = candidates
         return candidates
 
@@ -545,6 +631,13 @@ class DiscoveryChainService:
                 "search_truncated": False,
                 "result_truncated": False,
                 "scientific_completeness_guaranteed": False,
+                "expansion_limit_binding": False,
+                "expansions_with_cap_discards": 0,
+                "candidates_considered_total": 0,
+                "candidates_eligible_total": 0,
+                "candidates_admitted_total": 0,
+                "candidates_discarded_by_expansion_limit_total": 0,
+                "distinct_candidates_discarded_by_expansion_limit": 0,
             },
             "chains": [],
         }

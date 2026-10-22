@@ -113,6 +113,18 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
   </li>;
 }
 
+/** Reports the per-material neighbour limit separately from the state budget.
+ * Totals are summed over expansions, so the same candidate can be counted at
+ * several expansions; the distinct count is shown alongside. */
+export function neighbourLimitText(metadata: ObjectiveResponse['search_metadata']): string {
+  if (metadata.expansion_limit_binding == null) return 'Neighbour limit applied: not reported by this backend.';
+  if (!metadata.expansion_limit_binding) return `Neighbour limit applied: No — every eligible candidate was explored (limit ${metadata.expansion_limit_per_material} per material).`;
+  const discards = metadata.candidates_discarded_by_expansion_limit_total ?? 0;
+  const expansions = metadata.expansions_with_cap_discards ?? 0;
+  const distinct = metadata.distinct_candidates_discarded_by_expansion_limit;
+  return `Neighbour limit applied: Yes — ${discards} cap ${discards === 1 ? 'discard' : 'discards'} across ${expansions} ${expansions === 1 ? 'expansion' : 'expansions'} (limit ${metadata.expansion_limit_per_material} per material; a candidate can be counted more than once${distinct != null ? `; ${distinct} distinct ${distinct === 1 ? 'material' : 'materials'}` : ''}).`;
+}
+
 export function ObjectiveResults({ result, submitted, comparison, toggle, remove, compare }: { result: ObjectiveResponse; submitted: string; comparison?: SelectedMaterial[]; toggle?: (material: SelectedMaterial) => void; remove?: (id: number) => void; compare?: () => void }) {
   const metadata = result.search_metadata;
   const scores = result.ranked_candidates.map(candidate => candidate.score);
@@ -121,13 +133,14 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
   const hasUnvalidatedRelationship = result.chains.some(chain => chain.transitions.some(transition => !transition.structural_preservation_validated || !transition.substitution_mechanism_validated));
   return <div className="objectiveResults">
     <div className="objectiveScope"><h3>Search scope</h3>
-      <p>{metadata.returned_chain_count} of {metadata.generated_chain_count} generated chains are included in this response. The generated count is before objective filtering.</p>
+      <p>{metadata.returned_chain_count} of {metadata.generated_chain_count} generated chains are included in this response. The generated count is before the retain, family and stability filters; Avoid and Prefer already shaped which chains were generated.</p>
       {(metadata.result_truncated || !metadata.scientific_completeness_guaranteed) && <p>The returned results are limited. Scientific completeness is not guaranteed.</p>}
-      <p>Search truncation: {metadata.search_truncated ? 'Yes — search stopped at its state budget' : 'No'}. This does not establish that every scientifically relevant pathway was found.</p>
+      <p>State budget exhausted: {metadata.search_truncated ? 'Yes — search stopped at its state budget' : 'No'}.</p>
+      <p>{neighbourLimitText(metadata)} This does not establish that every scientifically relevant pathway was found.</p>
       <details><summary>Search parameters and returned policies</summary>
         <p>Mode: {result.mode}. Avoid: {result.constraint_policy.avoid_elements.replaceAll('_', ' ')}; Prefer: {result.constraint_policy.prefer_elements.replaceAll('_', ' ')}; hard rejection scope: {result.constraint_policy.hard_rejection_scope.replaceAll('_', ' ')}.</p>
         <p>Stability: {result.objective_policy.stable_materials.replaceAll('_', ' ')}; scope: {result.objective_policy.stability_scope.replaceAll('_', ' ')}. Lower criticality: {result.objective_policy.lower_criticality.replaceAll('_', ' ')}. Unknown criticality: {result.objective_policy.unknown_criticality_evidence.replaceAll('_', ' ')}.</p>
-        <p>Search policy: {metadata.search_policy.replaceAll('_', ' ')}; expansion limit per material: {metadata.expansion_limit_per_material}; state budget: {metadata.search_state_budget}; expanded states: {metadata.expanded_state_count}; generated chains: {metadata.generated_chain_count}; returned chains: {metadata.returned_chain_count}; result limit applied: {metadata.result_truncated ? 'Yes' : 'No'}.</p>
+        <p>Search policy: {metadata.search_policy.replaceAll('_', ' ')}; expansion limit per material: {metadata.expansion_limit_per_material}; state budget: {metadata.search_state_budget}; expanded states: {metadata.expanded_state_count};{metadata.candidates_considered_total != null && <> candidates considered: {metadata.candidates_considered_total}; eligible: {metadata.candidates_eligible_total}; admitted: {metadata.candidates_admitted_total} (summed over expansions);</>} generated chains: {metadata.generated_chain_count}; returned chains: {metadata.returned_chain_count}; result limit applied: {metadata.result_truncated ? 'Yes' : 'No'}.</p>
         <p>Submitted structured request (client-observed):</p><pre>{submitted}</pre>
         <p>Returned explanation: {result.explanation}</p>
       </details>
