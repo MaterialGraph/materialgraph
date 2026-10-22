@@ -42,7 +42,8 @@ def test_rank_path_scores_full_alkali_substitution_path():
         prefer_element="Na",
     )
 
-    assert result["scientific_usefulness_score"] == 85.0
+    # S-2: the alkali step is weighted as phosphate family_expansion (0.85 * 20 = 17).
+    assert result["scientific_usefulness_score"] == 82.0
     assert result["score_breakdown"]["objective_alignment"] == 25.0
 
 

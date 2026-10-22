@@ -4,7 +4,7 @@ import { factorExplanation, factorLabel, presentCandidate } from './candidatePre
 
 const candidate: Candidate = {
   material_id: 6, mp_id: 'mp-19028', pretty_formula: 'Na3Fe(PO4)2', formula: 'Na3Fe(PO4)2',
-  discovery_score: 125, score_breakdown: { family_bonus: 40, substitution_bonus: 35 },
+  discovery_score: 90, score_breakdown: { family_bonus: 40, preferred_element_bonus: 25, avoided_element_removed_bonus: 25 },
   discovery_path: ['alkali_substitution', 'shared_chemistry', 'phosphate_related', 'oxide_related'],
   explanation: 'Na3Fe(PO4)2: composition-heuristic relationship; shares Fe, O, P chemistry with LiFePO4; alkali metals differ: Li → Na; element ratios and structure were not compared; both materials contain phosphorus and oxygen; structural framework similarity is not validated; both materials contain oxygen; oxide structure similarity is not validated.',
   substitution_path: null,

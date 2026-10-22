@@ -19,7 +19,8 @@ def test_path_ranking_preserves_scores_but_qualifies_reason():
         avoid_element="Li",
         prefer_element="Na",
     )
-    assert result["scientific_usefulness_score"]==85.0
+    # S-2: the alkali step is weighted as phosphate family_expansion (0.85 * 20 = 17).
+    assert result["scientific_usefulness_score"]==82.0
     breakdown = result["score_breakdown"]
 
     assert breakdown["shared_element_continuity"] == 30.0

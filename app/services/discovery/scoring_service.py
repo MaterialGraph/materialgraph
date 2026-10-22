@@ -1,5 +1,4 @@
 FAMILY_BONUS = 40.0
-SUBSTITUTION_BONUS = 35.0
 PREFERRED_ELEMENT_BONUS = 25.0
 AVOIDED_ELEMENT_REMOVED_BONUS = 25.0
 AVOIDED_ELEMENT_PRESENT_PENALTY = 50.0
@@ -22,13 +21,10 @@ class DiscoveryScoringService:
         score = 0.0
         score_breakdown: dict[str, float] = {}
 
+        # Contract S-1: the alkali relationship adds no Discovery bonus.
         if "shared_chemistry" in relationships:
             score += FAMILY_BONUS
             score_breakdown["family_bonus"] = FAMILY_BONUS
-
-        if "alkali_substitution" in relationships:
-            score += SUBSTITUTION_BONUS
-            score_breakdown["substitution_bonus"] = SUBSTITUTION_BONUS
 
         return score, score_breakdown
 

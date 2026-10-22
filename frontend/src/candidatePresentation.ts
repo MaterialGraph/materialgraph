@@ -50,11 +50,9 @@ export function presentCandidate(candidate: Candidate, sourceFormula: string, go
   };
 }
 
-export function factorExplanation(name: string, candidate: Candidate, goal: { avoid_element: string | null; prefer_element: string | null }) {
-  const signals = new Set(candidate.discovery_path);
+export function factorExplanation(name: string, _candidate: Candidate, goal: { avoid_element: string | null; prefer_element: string | null }) {
   const reasons: Record<string, string> = {
     family_bonus: 'A composition relationship rule added points; it does not establish a shared structure.',
-    substitution_bonus: signals.has('alkali_substitution') ? 'A composition-based alkali substitution signal added points; the mechanism is unvalidated.' : 'A substitution-related rule added points; consult the original explanation for context.',
     preferred_element_bonus: goal.prefer_element ? `The candidate contains the preferred element ${goal.prefer_element}.` : 'Preferred element rule contributed to this score.',
     avoided_element_removed_bonus: goal.avoid_element ? `The candidate does not contain ${goal.avoid_element}, the element marked Avoid.` : 'Absence of an avoided element added points.',
     avoided_element_present_penalty: goal.avoid_element ? `The candidate contains the avoided element ${goal.avoid_element}; avoidance is a soft penalty.` : 'Avoided element rule reduced this score.',
@@ -64,7 +62,6 @@ export function factorExplanation(name: string, candidate: Candidate, goal: { av
 
 const factorLabels: Record<string, string> = {
   family_bonus: 'Composition relationship',
-  substitution_bonus: 'Substitution signal',
   preferred_element_bonus: 'Preferred element present',
   avoided_element_removed_bonus: 'Avoided element absent',
   avoided_element_present_penalty: 'Avoided element present',

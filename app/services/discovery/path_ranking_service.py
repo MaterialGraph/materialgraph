@@ -197,9 +197,13 @@ class DiscoveryPathRankingService:
             )
             family = transition.get("family")
 
+            # Contract S-2: the alkali label confers no plausibility. An alkali
+            # step always shares >= 3 elements, so without the alkali rule the
+            # classifier yields family_expansion; score it exactly as that.
             if transition_type == "alkali_substitution":
-                transition_scores.append(1.0)
-            elif (
+                transition_type = "family_expansion"
+
+            if (
                 transition_type == "family_expansion"
                 and family
             ):

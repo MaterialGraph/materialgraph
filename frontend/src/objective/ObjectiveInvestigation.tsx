@@ -100,7 +100,7 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
       </div>)}</section>
       {chain.score_breakdown && <section className="objectiveDetailSection" aria-label="Whole-chain score breakdown">
         <h5>Whole-chain score breakdown</h5>
-        <p className="hint">Deterministic rule components for the whole chain; these values do not measure reaction likelihood or synthesis feasibility.</p>
+        <p className="hint">Deterministic rule components for the whole chain; these values do not measure reaction likelihood or synthesis feasibility. Relationship type weights are unvalidated heuristics; a different-alkali step is weighted as a composition family relationship.</p>
         <table className="objectiveScoreTable"><thead><tr><th scope="col">Rule component</th><th scope="col">Contribution</th><th scope="col">Maximum</th></tr></thead><tbody>
           {Object.entries(chain.score_breakdown).map(([name, value]) => <tr key={name}><th scope="row">{chainScoreComponents[name]?.label ?? 'Reported rule component'} <code>{name}</code></th><td>{value.toLocaleString()}</td><td>{chainScoreComponents[name]?.maximum ?? 'Not specified'}</td></tr>)}
           <tr className="objectiveScoreTotal"><th scope="row">Chain usefulness rule score</th><td>{chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}</td><td>100</td></tr>
