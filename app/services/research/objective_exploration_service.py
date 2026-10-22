@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.domain.objective_mode_policy import mode_policy
 from app.domain.relationship_labels import relationship_text
 from app.services.material.quality_service import MaterialQualityService
 from app.services.research.objective_coverage import build_objective_coverage
@@ -14,12 +15,26 @@ class ResearchObjectiveExplorationService:
         self.quality_service = MaterialQualityService(db)
 
     def explore(self, material_id: int, request) -> dict:
+        # Contract P: every avoid and prefer behaviour below is read from the
+        # mode's policy object.
+        policy = mode_policy(request.mode)
+        # Transition validation rejects introduced avoided elements unless told
+        # otherwise; the flag is forwarded only when a mode's policy differs
+        # from that default (no current mode does).
+        transition_policy = (
+            {}
+            if policy.reject_introduced_avoided
+            else {"reject_introduced_avoided": False}
+        )
         chain_result = self.objective_service.generate_chains_for_objective(
             material_id=material_id,
             objective=request.objective,
             include_ranked_pool=True,
-            hard_avoid_admission=request.mode == "strict",
-            objective_aware_prefer_allocation=True,
+            hard_avoid_admission=policy.hard_avoid_admission,
+            objective_aware_prefer_allocation=(
+                policy.objective_aware_prefer_allocation
+            ),
+            **transition_policy,
         )
 
         chains = chain_result.get("chains", [])
@@ -59,7 +74,10 @@ class ResearchObjectiveExplorationService:
             "objective": request.objective,
             "objective_policy": chain_result["objective_policy"],
             "mode": request.mode,
-            "constraint_policy": self._build_constraint_policy(request.mode),
+            "constraint_policy": policy.constraint_policy(),
+            "avoid_policy": policy.avoid_policy(),
+            "prefer_policy": policy.prefer_policy(),
+            "candidate_score_offset": policy.candidate_score_offset,
             "search_metadata": search_metadata,
             "ranked_candidates": returned_candidates,
             "chains": chains,
@@ -74,7 +92,10 @@ class ResearchObjectiveExplorationService:
         objective,
         mode: str,
     ) -> list[dict]:
-        if mode != "strict" or not objective.avoid_elements:
+        if (
+            not mode_policy(mode).applies_final_filter
+            or not objective.avoid_elements
+        ):
             return chains
 
         return [
@@ -105,20 +126,6 @@ class ResearchObjectiveExplorationService:
     ) -> bool:
         formula = material.get("formula") or material.get("pretty_formula") or ""
         return any(contains_element(formula, element) for element in elements)
-
-    def _build_constraint_policy(self, mode: str) -> dict[str, str]:
-        if mode == "strict":
-            return {
-                "avoid_elements": "hard_rejection",
-                "prefer_elements": "soft_bonus",
-                "hard_rejection_scope": "all_non_root_chain_materials",
-            }
-
-        return {
-            "avoid_elements": "soft_penalty",
-            "prefer_elements": "soft_bonus",
-            "hard_rejection_scope": "none",
-        }
 
     def _rank_candidates_from_chains(
         self,
@@ -200,17 +207,18 @@ class ResearchObjectiveExplorationService:
         mode: str,
         quality: dict | None = None,
     ) -> float:
+        policy = mode_policy(mode)
         score = 50.0
 
         formula = material.get("formula", "")
 
         for element in objective.prefer_elements:
             if contains_element(formula, element):
-                score += 15.0
+                score += policy.prefer.candidate_bonus_per_element
 
         for element in objective.avoid_elements:
             if contains_element(formula, element):
-                score -= 25.0 if mode != "exploratory" else 10.0
+                score -= policy.avoid.candidate_penalty
 
         for transition in transitions:
             preserved = set(transition.get("shared_elements") or transition.get("preserved_framework", []))
@@ -228,8 +236,7 @@ class ResearchObjectiveExplorationService:
         ):
             score += 10.0
 
-        if mode == "exploratory":
-            score += 5.0
+        score += policy.candidate_score_offset
 
         if objective.prefer_lower_criticality:
             score += (quality or {}).get(
@@ -305,19 +312,8 @@ class ResearchObjectiveExplorationService:
         return warnings
 
     def _build_global_warnings(self, mode: str) -> list[str]:
-        if mode == "exploratory":
-            return [
-                "Exploratory mode includes weaker or unusual candidates for broader scientific search."
-            ]
-
-        if mode == "strict":
-            return [
-                "Strict mode is intended for explicit hard constraints and may exclude scientifically interesting candidates."
-            ]
-
-        return [
-            "Balanced mode ranks, explains, and warns without aggressively discarding candidates."
-        ]
+        # Generated from the policy object (contract P-3, P-5).
+        return [mode_policy(mode).warning()]
 
     def _build_explanation(self, mode: str) -> str:
         return (

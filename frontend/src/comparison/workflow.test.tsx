@@ -206,11 +206,15 @@ it('launches Objective from its submitted request and restores only its own sele
 
 it('cold-restores Discovery with fresh details and prefilled inputs without rerunning research', async () => {
   const calls: string[] = [];
+  const requests: string[] = [];
+  // The only permitted /discovery/ request is the static mode-policy read (Release 1, contract P).
+  const modePolicyRead = 'GET /api/v1/discovery/objective-modes';
+  const discoveryRequests = () => requests.filter(request => request.includes('/discovery/'));
   history.replaceState(null,'',serializeComparison({source:5,candidates:[6,8],workflow:'discovery',context:{kind:'discovery',avoid_element:'Li',prefer_element:'Na',limit:10,include_substitution_paths:false}}));
-  vi.stubGlobal('fetch',vi.fn(async (url: string) => { calls.push(url); if (url.includes('/materials?')) return {ok:true,json:async()=>[source]}; const id=Number(url.match(/materials\/(\d+)\/detail/)?.[1]); return {ok:true,json:async()=>({...source,id,band_gap:id === 6 ? 0 : 4})}; }));
+  vi.stubGlobal('fetch',vi.fn(async (url: string, init?: RequestInit) => { calls.push(url); requests.push(`${init?.method ?? 'GET'} ${url}`); if (url.includes('/materials?')) return {ok:true,json:async()=>[source]}; const id=Number(url.match(/materials\/(\d+)\/detail/)?.[1]); return {ok:true,json:async()=>({...source,id,band_gap:id === 6 ? 0 : 4})}; }));
   await render(<App/>);
   expect(calls.filter(url=>url.includes('/detail'))).toEqual(['/api/v1/materials/5/detail','/api/v1/materials/6/detail','/api/v1/materials/8/detail']);
-  expect(calls.some(url=>url.includes('/discovery/'))).toBe(false);
+  expect(discoveryRequests().every(request => request === modePolicyRead)).toBe(true);
   expect(host.textContent).toContain('Property values are fetched again and may have changed');
   expect(host.textContent).toContain('current result membership has not been checked');
   expect(host.querySelector('.comparisonContext')?.textContent).toContain('Applied Avoid: Li');
@@ -218,7 +222,9 @@ it('cold-restores Discovery with fresh details and prefilled inputs without reru
   expect(host.querySelector<HTMLInputElement>('.filters input')?.value).toBe('Li');
   expect(host.querySelector('.discovery .compareTray')).toBeNull();
   expect(host.textContent).toContain('No investigation results are contained in this link');
-  expect(calls.some(url=>url.includes('/discovery/'))).toBe(false);
+  // Exact match, not a prefix: no POST and no other /discovery/ request occurred.
+  expect(new Set(discoveryRequests())).toEqual(new Set([modePolicyRead]));
+  expect(requests.some(request => request.startsWith('POST '))).toBe(false);
 });
 
 it('cold-restores Objective without prior roles and opens prefilled unsent request', async () => {

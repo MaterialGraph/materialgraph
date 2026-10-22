@@ -54,6 +54,8 @@ _ORDINARY_ROUTE_POLICY = frozenset(
         ("GET", "/health"),
         ("GET", "/api/v1/applications"),
         ("GET", "/api/v1/applications/{application_id}"),
+        # Static mode-policy read (Release 1, R1-4); approved 2026-10-22.
+        ("GET", "/api/v1/discovery/objective-modes"),
         ("GET", "/api/v1/elements"),
         ("GET", "/api/v1/elements/{element_id}"),
         ("GET", "/api/v1/health"),

@@ -40,6 +40,7 @@ class DiscoveryTransitionValidator:
         prefer_element: str | None = None,
         avoid_elements: Collection[str] | None = None,
         prefer_elements: Collection[str] | None = None,
+        reject_introduced_avoided: bool = True,
     ) -> dict | None:
         normalized_avoid_elements = self._normalize_elements(
             element=avoid_element,
@@ -53,7 +54,7 @@ class DiscoveryTransitionValidator:
         if not self._has_valid_relationship(relationships):
             return None
 
-        if self._violates_avoid_elements(
+        if reject_introduced_avoided and self._violates_avoid_elements(
             from_elements=from_elements,
             to_elements=to_elements,
             avoid_elements=normalized_avoid_elements,

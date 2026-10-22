@@ -40,6 +40,7 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   }
   return response.json() as Promise<T>;
 }
+export { get as getJson };
 export const listMaterials = (offset: number, signal?: AbortSignal) =>
   get<Material[]>(`/materials?limit=100&offset=${offset}`, signal);
 export const materialDetail = (id: number, signal?: AbortSignal) =>

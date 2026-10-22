@@ -461,8 +461,9 @@ def test_strict_exploration_rejects_avoided_element_candidates(db_session):
         202
     ]
     assert result["constraint_policy"] == {
-        "avoid_elements": "hard_rejection",
-        "prefer_elements": "soft_bonus",
+        # P-2: generated from the Strict policy.
+        "avoid_elements": "exclude_non_source",
+        "prefer_elements": "reserved_slot_and_bonus",
         "hard_rejection_scope": "all_non_root_chain_materials",
     }
 
@@ -490,7 +491,8 @@ def test_balanced_exploration_retains_avoided_element_with_penalty(db_session):
     assert [item["material_id"] for item in result["ranked_candidates"]] == [203]
     assert result["ranked_candidates"][0]["score"] == 25.0
     assert result["constraint_policy"] == {
-        "avoid_elements": "soft_penalty",
-        "prefer_elements": "soft_bonus",
+        # P-2: generated from the Balanced policy; no longer "soft_penalty".
+        "avoid_elements": "reject_introduced_penalize_inherited",
+        "prefer_elements": "reserved_slot_and_bonus",
         "hard_rejection_scope": "none",
     }

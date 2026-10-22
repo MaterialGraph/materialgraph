@@ -3,9 +3,9 @@ import { ChemicalFormula } from '../ChemicalFormula';
 import { STRUCTURE_NOT_ASSESSED, STRUCTURE_NOT_ASSESSED_DETAIL } from '../structureStatus';
 import { CompareTray } from '../comparison/CompareTray';
 import { objectiveLaunch, objectiveRole, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from '../comparison/launch';
-import type { ChainAvoidanceDetail, ObjectiveCandidate, ObjectiveChain, ObjectiveResponse, ObjectiveTransition } from './contract';
+import type { ChainAvoidanceDetail, ObjectiveCandidate, ObjectiveChain, ObjectiveModePolicy, ObjectiveResponse, ObjectiveTransition } from './contract';
 import { ChainAvoidanceNote, ObjectiveCoveragePanel, materialAvoidanceLabel } from './ObjectiveCoverage';
-import { buildObjectiveRequest, initialDraft, type ObjectiveDraft } from './request';
+import { buildObjectiveRequest, initialDraft, objectiveModes, type ObjectiveDraft } from './request';
 import { useObjectiveInvestigation } from './useObjectiveInvestigation';
 import { routeFromObjective, type ComparisonRoute } from '../comparison/routing';
 
@@ -165,17 +165,39 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
   </div>;
 }
 
-export const modeHint: Record<ObjectiveDraft['mode'], string> = {
-  strict: 'Avoided elements are excluded from intermediate and final materials in eligible chains. The source material is exempt.',
-  balanced: 'Avoid is a soft preference: avoided elements lower the objective score but are not excluded, so returned materials or chains may still contain them.',
-  exploratory: 'Avoid is a soft preference with a smaller score penalty than Balanced: avoided elements are not excluded, so returned materials or chains may still contain them.',
-};
+/** Mode descriptions come from the backend policy (contract P, D3); the client keeps no copy. */
+export type ObjectiveModesState =
+  | { status: 'loading' }
+  | { status: 'unavailable' }
+  | { status: 'ready'; modes: Partial<Record<ObjectiveDraft['mode'], ObjectiveModePolicy>> };
+
+export const modeDescriptionLoading = 'Loading the mode description…';
+export const modeDescriptionUnavailable = 'Mode description unavailable: the server did not provide the current mode policy. The policy applied to a run is reported with its results.';
+
+export function modeDescriptionText(state: ObjectiveModesState, mode: ObjectiveDraft['mode']): string {
+  if (state.status === 'loading') return modeDescriptionLoading;
+  if (state.status === 'unavailable') return modeDescriptionUnavailable;
+  return state.modes[mode]?.description ?? modeDescriptionUnavailable;
+}
+
+function useObjectiveModes(): ObjectiveModesState {
+  const [state, setState] = useState<ObjectiveModesState>({ status: 'loading' });
+  useEffect(() => {
+    const controller = new AbortController();
+    objectiveModes(controller.signal)
+      .then(response => setState({ status: 'ready', modes: Object.fromEntries(response.modes.map(policy => [policy.mode, policy])) }))
+      .catch(() => { if (!controller.signal.aborted) setState({ status: 'unavailable' }); });
+    return () => controller.abort();
+  }, []);
+  return state;
+}
 
 export function ObjectiveInvestigation({ materialId, onCompare, initialInputs }: { materialId: number; onCompare?: (launch: ComparisonLaunchContext, route: ComparisonRoute) => void; initialInputs?: ObjectiveDraft | null }) {
   const [draft, setDraft] = useState<ObjectiveDraft>(initialInputs ?? initialDraft);
   const [comparison, setComparison] = useState<SelectedMaterial[]>([]);
   const [fieldError, setFieldError] = useState('');
   const { submitted, result, loading, errors, run, retry } = useObjectiveInvestigation(materialId);
+  const modes = useObjectiveModes();
   useEffect(() => { setComparison([]); }, [result]);
   const set = <K extends keyof ObjectiveDraft>(key: K, value: ObjectiveDraft[K]) => setDraft(previous => ({ ...previous, [key]: value }));
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -197,7 +219,7 @@ export function ObjectiveInvestigation({ materialId, onCompare, initialInputs }:
       {draft.objectiveLimit !== undefined && <label>Recorded objective chain limit <input type="number" min="1" max="20" required value={draft.objectiveLimit} onChange={e => set('objectiveLimit', Number(e.target.value))}/></label>}
       <div className="objectiveChecks"><label><input type="checkbox" checked={draft.lowerCriticality} onChange={e => set('lowerCriticality', e.target.checked)}/> Prefer lower criticality</label>
         <label><input type="checkbox" checked={draft.requireStable} onChange={e => set('requireStable', e.target.checked)}/> Require stable intermediate and final materials</label></div>
-      <p className="hint objectiveModeHint">{modeHint[draft.mode]} Preferred elements add a soft bonus.</p>
+      <p className="hint objectiveModeHint" aria-live="polite">{modeDescriptionText(modes, draft.mode)}</p>
       {fieldError && <p className="error" role="alert">{fieldError}</p>}
       <button type="submit" disabled={loading}>{loading ? 'Investigating…' : 'Run investigation'}</button>
     </form>

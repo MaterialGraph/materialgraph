@@ -20,6 +20,7 @@ class ResearchObjectiveService:
         include_ranked_pool: bool = False,
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
+        reject_introduced_avoided: bool = True,
     ) -> dict:
         result = self.chain_service.get_discovery_chains(
             material_id=material_id,
@@ -30,6 +31,7 @@ class ResearchObjectiveService:
             include_search_pool=True,
             hard_avoid_admission=hard_avoid_admission,
             objective_aware_prefer_allocation=objective_aware_prefer_allocation,
+            reject_introduced_avoided=reject_introduced_avoided,
         )
 
         filtered_chains = self._filter_chains(

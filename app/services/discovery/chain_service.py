@@ -49,6 +49,7 @@ class DiscoveryChainService:
         include_search_pool: bool = False,
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
+        reject_introduced_avoided: bool = True,
     ) -> dict:
         max_hops = min(max_hops, self.MAX_ALLOWED_HOPS)
 
@@ -81,6 +82,7 @@ class DiscoveryChainService:
             max_hops=max_hops,
             hard_avoid_admission=hard_avoid_admission,
             objective_aware_prefer_allocation=objective_aware_prefer_allocation,
+            reject_introduced_avoided=reject_introduced_avoided,
         )
         chains = chain_pool if include_search_pool else chain_pool[:limit]
         search_metadata = {
@@ -116,6 +118,7 @@ class DiscoveryChainService:
         max_hops: int,
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
+        reject_introduced_avoided: bool = True,
     ) -> tuple[list[dict], dict]:
         queue = deque()
 
@@ -191,6 +194,7 @@ class DiscoveryChainService:
                     elements_map=elements_map,
                     avoid_elements=avoid_elements,
                     prefer_elements=prefer_elements,
+                    reject_introduced_avoided=reject_introduced_avoided,
                 )
                 logger.info(
                     "Transition {} -> {} took {:.3f}s",
@@ -454,6 +458,7 @@ class DiscoveryChainService:
         elements_map: dict[int, list[str]],
         avoid_elements: frozenset[str],
         prefer_elements: frozenset[str],
+        reject_introduced_avoided: bool = True,
     ) -> dict | None:
         from_elements = elements_map.get(
             from_material["material_id"],
@@ -477,6 +482,7 @@ class DiscoveryChainService:
             relationships=relationships,
             avoid_elements=avoid_elements,
             prefer_elements=prefer_elements,
+            reject_introduced_avoided=reject_introduced_avoided,
         )
 
     def _get_relationships_between(
