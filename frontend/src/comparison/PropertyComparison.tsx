@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { ApiError, materialDetail, type MaterialDetail } from '../api';
 import { ChemicalFormula } from '../ChemicalFormula';
 import { MaterialsProjectAttribution, recordSourceLabel } from '../MaterialsProjectAttribution';
+import { STRUCTURE_NOT_ASSESSED, STRUCTURE_NOT_ASSESSED_DETAIL } from '../structureStatus';
 import { arithmeticDifference, formatNumber, parseSelection, properties, type ColumnState } from './model';
 import type { ComparisonLaunchContext } from './launch';
 
@@ -58,6 +59,7 @@ export function ComparisonTable({ source, candidates, launchContext }: Props) {
     <div className="comparisonScroll" role="region" aria-label="Property comparison table" tabIndex={0}>
       <table><caption>Source-first property comparison. Numerical differences are candidate minus source.</caption><thead><tr><th scope="col">Property</th>{columns.map((column, index) => <th scope="col" key={index}>{identity(column, index ? 'Candidate' : 'Source')}</th>)}</tr></thead>
         <tbody>{properties.map(({ field, label, unit }) => <tr key={field}><th scope="row">{label}<small>{unit}</small></th>{columns.map((column, index) => <td key={index}>{numericCell(column, sourceMaterial, field, unit, index > 0)}</td>)}</tr>)}
+          <tr className="structureStatus"><th scope="row">Crystal structure<small>{STRUCTURE_NOT_ASSESSED_DETAIL}</small></th>{columns.map((_, index) => <td key={index}><span className="comparisonState">{STRUCTURE_NOT_ASSESSED}</span></td>)}</tr>
           <tr><th scope="row">Stored stability classification<small>Basis not supplied by this endpoint.</small></th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? <><span>{column.material.is_stable ? 'Yes' : 'No'}</span><span className="comparisonState">Available stored classification</span></> : <span className="comparisonState">{columnFailure(column)}</span>}</td>)}</tr>
           <tr><th scope="row">Material type</th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? column.material.material_type ?? 'Unknown' : columnFailure(column)}</td>)}</tr>
           <tr><th scope="row">Elements listed</th>{columns.map((column, index) => <td key={index}>{column.status === 'success' ? column.material.elements.length ? column.material.elements.map(element => element.symbol).join(', ') : 'No elements listed' : columnFailure(column)}</td>)}</tr>

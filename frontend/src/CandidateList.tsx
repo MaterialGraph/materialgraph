@@ -3,6 +3,7 @@ import type { CandidateResponse, MaterialDetail } from './api';
 import { ChemicalFormula, FormulaInText } from './ChemicalFormula';
 import { factorExplanation, factorLabel, presentCandidate } from './candidatePresentation';
 import { CompareTray } from './comparison/CompareTray';
+import { STRUCTURE_NOT_ASSESSED_DETAIL } from './structureStatus';
 import { discoveryLaunch, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from './comparison/launch';
 import { routeFromDiscovery, type ComparisonRoute } from './comparison/routing';
 
@@ -72,6 +73,7 @@ export function CandidateList({ select, detail, avoid, setAvoid, prefer, setPref
           <div className="dossierDetails">
             <section><h4>Why this candidate?</h4>
               {presentation.signals.length ? <ul className="signalList">{presentation.signals.map(signal => <li key={signal.key}>{signal.label}</li>)}</ul> : <p className="hint">No individual matching signals were provided.</p>}
+              <p className="hint structureStatus">{STRUCTURE_NOT_ASSESSED_DETAIL}</p>
             </section>
             <section><h4>How the rule score was calculated</h4>
               {Object.entries(inspected.score_breakdown).length ? <dl className="scoreFactors">{Object.entries(inspected.score_breakdown).map(([name, amount]) => <div key={name}><dt>{factorLabel(name)}</dt><dd>{amount > 0 ? '+' : ''}{amount.toLocaleString()}</dd><p>{factorExplanation(name, inspected, result.discovery_goal)}</p></div>)}</dl> : <p className="hint">No factor breakdown was provided.</p>}

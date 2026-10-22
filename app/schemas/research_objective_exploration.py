@@ -33,6 +33,9 @@ class ResearchObjectiveExplorationRequest(BaseModel):
 
 class ResearchObjectiveCandidate(BaseModel):
     material_id: int
+    # Source identifier, so records sharing a formula (polymorphs) are
+    # distinguishable. Additive (Release 1, R1-6).
+    mp_id: str | None = None
     formula: str | None = None
     score: float
     reasons: list[str]

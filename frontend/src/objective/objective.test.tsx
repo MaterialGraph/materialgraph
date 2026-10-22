@@ -222,3 +222,19 @@ it('presents zero ranked materials and zero returned pathways separately', () =>
   expect(rankedWithoutPaths).toContain('No pathways included in this response.');
   expect(rankedWithoutPaths).toContain('No returned chain includes this material.');
 });
+
+it('distinguishes same-formula ranked materials by source ID and states structure is not assessed', () => {
+  const ranked_candidates = [
+    { material_id: 10, mp_id: 'mp-19226', formula: 'NaFePO4', score: 90, reasons: [], warnings: [] },
+    { material_id: 384, mp_id: 'mp-1192859', formula: 'NaFePO4', score: 90, reasons: [], warnings: [] },
+    { material_id: 9, formula: 'NaFeP2O7', score: 80, reasons: [], warnings: [] },
+  ];
+  const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, ranked_candidates }} submitted="{}"/>);
+  expect(html).toContain('Ranked material 1 · mp-19226 · Local ID 10');
+  expect(html).toContain('Ranked material 2 · mp-1192859 · Local ID 384');
+  // Responses recorded before Release 1 carry no mp_id; nothing is invented.
+  expect(html).toContain('Ranked material 3 · source ID unavailable · Local ID 9');
+  expect(html.match(/class="objectiveStructure">Structure not assessed</g)).toHaveLength(2);
+  expect(html).toContain('Structure not assessed: this dataset holds no symmetry or structure data.');
+  expect(html).not.toMatch(/olivine|maricite|polymorph/i);
+});

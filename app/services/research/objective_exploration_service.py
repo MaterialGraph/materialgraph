@@ -147,6 +147,8 @@ class ResearchObjectiveExplorationService:
                 if material_id not in candidate_map:
                     candidate_map[material_id] = {
                         "material_id": material_id,
+                        # Distinguishes same-formula records (R1-6).
+                        "mp_id": material.get("mp_id"),
                         "formula": material.get("formula") or material.get("pretty_formula"),
                         "score": 0.0,
                         "reasons": [],

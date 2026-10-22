@@ -32,6 +32,8 @@ export type ObjectiveChain = {
 };
 export type ObjectiveCandidate = {
   material_id: number; formula: string | null; score: number;
+  /** Source identifier; absent in responses recorded before Release 1. */
+  mp_id?: string | null;
   reasons: string[]; warnings: string[];
 };
 export type ObjectiveResponse = {

@@ -123,3 +123,10 @@ it('does not report an older response after its comparison selection was aborted
   expect(report).toHaveBeenCalledTimes(1);
   expect(report).toHaveBeenCalledWith({ status: 'success', id: 7, material: second });
 });
+
+it('states that crystal structure is not assessed for every compared material', () => {
+  const html = view(loaded(source), [loaded(first), loaded(second)]);
+  expect(html).toContain('Crystal structure');
+  expect(html.match(/<span class="comparisonState">Structure not assessed<\/span>/g)).toHaveLength(3);
+  expect(html).not.toMatch(/olivine|maricite|polymorph/i);
+});

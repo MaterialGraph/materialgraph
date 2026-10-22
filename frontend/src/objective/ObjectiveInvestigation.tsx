@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { ChemicalFormula } from '../ChemicalFormula';
+import { STRUCTURE_NOT_ASSESSED, STRUCTURE_NOT_ASSESSED_DETAIL } from '../structureStatus';
 import { CompareTray } from '../comparison/CompareTray';
 import { objectiveLaunch, objectiveRole, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from '../comparison/launch';
 import type { ChainAvoidanceDetail, ObjectiveCandidate, ObjectiveChain, ObjectiveResponse, ObjectiveTransition } from './contract';
@@ -25,14 +26,14 @@ function RankedMaterial({ result, candidate, index, comparison, toggle }: { resu
   const paths = returnedPathways(result, candidate.material_id);
   const selected = comparison?.some(item => item.id === candidate.material_id) ?? false;
   return <li className="objectiveCandidate">
-    <div className="objectiveRowHead"><div><span className="eyebrow">Ranked material {index + 1} · Local ID {candidate.material_id}</span>
+    <div className="objectiveRowHead"><div><span className="eyebrow">Ranked material {index + 1} · {candidate.mp_id ?? 'source ID unavailable'} · Local ID {candidate.material_id}</span>
       <h4><ChemicalFormula formula={candidate.formula || 'Formula unavailable'}/></h4></div>
       <div className="objectiveScore"><strong>{candidate.score.toLocaleString()}</strong><small>objective rule score</small></div></div>
     {paths.length ? <p className="hint">{returnedRole(result, candidate.material_id)} · Returned {paths.length === 1 ? 'chain' : 'chains'}: {paths.map((path, position) => <span key={path}>{position > 0 && ', '}<a href={`#objective-path-${path + 1}`}>{path + 1}</a></span>)}</p>
       : <p className="hint">No returned chain includes this material.</p>}
     {toggle && candidate.material_id !== result.material_id && <button type="button" className="compareSelect" aria-pressed={selected} aria-label={`${selected ? 'Remove' : 'Select'} ${candidate.formula ?? `local ID ${candidate.material_id}`} ${selected ? 'from' : 'for'} comparison`}
       disabled={comparison?.length === 3 && !selected} aria-describedby={comparison?.length === 3 && !selected ? 'objective-selection-limit' : undefined}
-      onClick={() => toggle({ id: candidate.material_id, formula: candidate.formula || `Local ID ${candidate.material_id}`, mpId: result.chains.flatMap(chain => chain.materials).find(material => material.material_id === candidate.material_id)?.mp_id ?? null, role: objectiveRole(result, candidate.material_id) })}>
+      onClick={() => toggle({ id: candidate.material_id, formula: candidate.formula || `Local ID ${candidate.material_id}`, mpId: candidate.mp_id ?? result.chains.flatMap(chain => chain.materials).find(material => material.material_id === candidate.material_id)?.mp_id ?? null, role: objectiveRole(result, candidate.material_id) })}>
       {selected ? 'Selected for comparison' : 'Select for comparison'}
     </button>}
     {candidate.reasons.length > 0 && <details open={index === 0}><summary>Returned reasons</summary><ul>{candidate.reasons.map((reason, n) => <li key={n}>{reason}</li>)}</ul></details>}
@@ -65,6 +66,7 @@ function Relationship({ transition }: { transition: ObjectiveTransition }) {
     <strong>{relationshipLabel(transition.transition_type)}</strong>
     {(!transition.structural_preservation_validated || !transition.substitution_mechanism_validated) && <span className="objectiveValidation">Not validated</span>}
     <small>{transition.shared_elements.length ? `Shared elements: ${transition.shared_elements.join(', ')}` : 'Shared elements not supplied'}</small>
+    <small className="objectiveStructure">{STRUCTURE_NOT_ASSESSED}</small>
   </li>;
 }
 
@@ -90,6 +92,7 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
           <div><dt>Preservation/continuity basis</dt><dd>{basisLabel(transition.preservation_basis)} <code>{transition.preservation_basis}</code></dd></div>
           <div><dt>Structural preservation</dt><dd>{transition.structural_preservation_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
           <div><dt>Substitution mechanism</dt><dd>{transition.substitution_mechanism_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
+          <div><dt>Structure</dt><dd>{STRUCTURE_NOT_ASSESSED_DETAIL}</dd></div>
           <div><dt>Shared elements</dt><dd>{transition.shared_elements.length ? transition.shared_elements.join(', ') : 'None supplied'}</dd></div>
           {transition.removed_elements && <div><dt>Elements absent in next composition</dt><dd>{transition.removed_elements.length ? transition.removed_elements.join(', ') : 'None reported'}</dd></div>}
           {transition.introduced_elements && <div><dt>Elements present only in next composition</dt><dd>{transition.introduced_elements.length ? transition.introduced_elements.join(', ') : 'None reported'}</dd></div>}
