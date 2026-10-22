@@ -3,7 +3,7 @@ import type { Candidate } from './api';
 const signalLabels: Record<string, string> = {
   family_related: 'Related composition',
   shared_chemistry: 'Shared elements',
-  alkali_substitution: 'Possible alkali substitution',
+  alkali_substitution: 'Different alkali metal (composition not compared)',
   transition_metal_related: 'Shared transition metal',
   phosphate_related: 'Both contain P and O',
   oxide_related: 'Both contain O',
@@ -13,15 +13,16 @@ type DiscoveryGoal = { avoid_element: string | null; prefer_element: string | nu
 
 export function presentCandidate(candidate: Candidate, sourceFormula: string, goal: DiscoveryGoal = { avoid_element: null, prefer_element: null }) {
   const signals = new Set(candidate.discovery_path);
-  const substitution = candidate.explanation.match(/composition-level alkali-substitution hypothesis from ([A-Z][a-z]?(?:, [A-Z][a-z]?)*) to ([A-Z][a-z]?(?:, [A-Z][a-z]?)*)/);
+  // Alkali metals are reported as sets, so a retained source alkali appears on both sides.
+  const alkali = candidate.explanation.match(/alkali metals differ: ([A-Z][a-z]?(?:, [A-Z][a-z]?)*) → ([A-Z][a-z]?(?:, [A-Z][a-z]?)*)/);
   const shared = candidate.explanation.match(/shares ([A-Z][a-z]?(?:, [A-Z][a-z]?)*) chemistry with /);
   const sharedElements = shared?.[1].split(', ') ?? [];
   const source = sourceFormula || 'the source material';
   let hypothesis = `Composition-based rules rank this material as a candidate to investigate alongside ${source}.`;
   if (signals.has('alkali_substitution')) {
-    hypothesis = substitution
-      ? `The ranking flags a possible ${substitution[1]}-to-${substitution[2]} alkali substitution relative to ${source}, based on composition alone.`
-      : `The ranking flags a possible alkali substitution relative to ${source}, based on composition alone.`;
+    hypothesis = alkali
+      ? `Composition rules flag a different alkali metal (${alkali[1]} in ${source}; ${alkali[2]} in this material), based on composition alone. Element ratios and structure were not compared.`
+      : `Composition rules flag a different alkali metal relative to ${source}, based on composition alone. Element ratios and structure were not compared.`;
   } else if (signals.has('shared_chemistry')) {
     hypothesis = `This candidate shares elemental chemistry with ${source}.`;
   }
@@ -39,7 +40,7 @@ export function presentCandidate(candidate: Candidate, sourceFormula: string, go
     contains_avoided_element: goal.avoid_element ? `Contains ${goal.avoid_element} (avoided)` : undefined,
   };
   const caveats = [];
-  if (signals.has('alkali_substitution')) caveats.push('A substitution mechanism has not been demonstrated.');
+  if (signals.has('alkali_substitution')) caveats.push('Only alkali-metal membership was compared; element ratios and structure were not.');
   caveats.push('Composition-based signals do not establish structural similarity, synthesis feasibility, or performance.');
   return {
     hypothesis,

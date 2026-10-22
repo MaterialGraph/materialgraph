@@ -105,7 +105,7 @@ def test_eligible_chain_reason_when_supporting_chain_is_not_returned():
     )
     assert candidate["reasons"] == [
         "Appears in an eligible composition chain with relationship type "
-        "alkali_substitution.",
+        "different alkali metal (composition not compared).",
         "Shares elements across the composition relationship: Fe, P, O. "
         "Structural preservation is not validated.",
     ]
@@ -366,7 +366,8 @@ def test_candidate_attribution_excludes_future_transitions(db_session):
         in intermediate["reasons"]
     )
     assert (
-        "Appears in an eligible composition chain with relationship type alkali_substitution."
+        "Appears in an eligible composition chain with relationship type "
+        "different alkali metal (composition not compared)."
         not in intermediate["reasons"]
     )
     assert endpoint["score"] == 60.0
@@ -375,7 +376,8 @@ def test_candidate_attribution_excludes_future_transitions(db_session):
         in endpoint["reasons"]
     )
     assert (
-        "Appears in an eligible composition chain with relationship type alkali_substitution."
+        "Appears in an eligible composition chain with relationship type "
+        "different alkali metal (composition not compared)."
         in endpoint["reasons"]
     )
 

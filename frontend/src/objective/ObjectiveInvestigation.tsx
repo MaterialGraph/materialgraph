@@ -41,7 +41,7 @@ function RankedMaterial({ result, candidate, index, comparison, toggle }: { resu
 }
 
 export function relationshipLabel(type: string): string {
-  if (type === 'alkali_substitution') return 'Possible alkali composition substitution';
+  if (type === 'alkali_substitution') return 'Different alkali metal (composition not compared)';
   if (type === 'family_expansion') return 'Composition family relationship';
   return 'Reported composition relationship';
 }

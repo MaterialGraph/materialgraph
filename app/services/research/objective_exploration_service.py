@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.domain.relationship_labels import relationship_text
 from app.services.material.quality_service import MaterialQualityService
 from app.services.research.objective_coverage import build_objective_coverage
 from app.services.research.objective_service import ResearchObjectiveService
@@ -259,7 +260,7 @@ class ResearchObjectiveExplorationService:
             if transition_type:
                 reasons.append(
                     "Appears in an eligible composition chain with relationship "
-                    f"type {transition_type}."
+                    f"type {relationship_text(transition_type)}."
                 )
 
             shared_elements = transition.get("shared_elements") or transition.get("preserved_framework", [])

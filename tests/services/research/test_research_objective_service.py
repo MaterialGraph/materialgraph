@@ -184,7 +184,10 @@ def test_objective_chain_explains_relationships_without_claiming_a_route(db_sess
         "shared-element continuity (Fe, O, P) across reported "
         "composition relationships"
     ) in reason
-    assert "reported relationship types: alkali_substitution" in reason
+    assert (
+        "reported relationship types: different alkali metal "
+        "(composition not compared)"
+    ) in reason
     assert "Criticality is excluded from the composition-chain rule score." in reason
     assert "scientifically useful" not in reason
     assert "during the path" not in reason

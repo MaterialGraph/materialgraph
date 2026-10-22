@@ -3,6 +3,7 @@ from math import sqrt
 
 from sqlalchemy.orm import Session
 
+from app.domain.relationship_labels import relationship_text
 from app.utils.chemical_formula import extract_elements
 from app.services.material.quality_service import MaterialQualityService
 
@@ -425,7 +426,7 @@ class DiscoveryPathRankingService:
             )
 
         valid_transition_types = [
-            item
+            relationship_text(item)
             for item in transition_types
             if item
         ]

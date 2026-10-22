@@ -129,7 +129,7 @@ it('presents one relationship step without implying a reaction or inventing unkn
   expect(html).toContain('Shared elements not supplied');
   expect(html).toContain('State budget exhausted: Yes');
   expect(html).not.toContain('→');
-  expect(relationshipLabel('alkali_substitution')).toBe('Possible alkali composition substitution');
+  expect(relationshipLabel('alkali_substitution')).toBe('Different alkali metal (composition not compared)');
 });
 
 it('keeps chain position, metadata, and score scopes explicit', () => {
@@ -138,7 +138,7 @@ it('keeps chain position, metadata, and score scopes explicit', () => {
   expect(html).toContain('mp-19017 <span class="objectiveRole">Source</span>');
   expect(html).toContain('mp-26003 <span class="objectiveRole">Intermediate</span>');
   expect(html).toContain('mp-19028 <span class="objectiveRole">Final</span>');
-  expect(html).toContain('Possible alkali composition substitution');
+  expect(html).toContain('Different alkali metal (composition not compared)');
   expect(html).toContain('Composition family relationship');
   expect(html).toContain('<code>alkali_substitution</code>');
   expect(html).toContain('Composition heuristic <code>composition_heuristic</code>');
@@ -176,7 +176,7 @@ it('separates relationship facts, the whole-chain score, and verbatim backend ex
   const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [chain] }} submitted="{}"/>);
   expect(html.indexOf('Chain usefulness rule score: 93.75')).toBeLessThan(html.indexOf('<summary>Relationship details and scoring'));
   expect(html).toContain('<section class="objectiveDetailSection" aria-label="Relationship details">');
-  expect(html).toContain('Relationship 2: Possible alkali composition substitution');
+  expect(html).toContain('Relationship 2: Different alkali metal (composition not compared)');
   expect(html).toContain('Composition heuristic <code>composition_heuristic</code>');
   expect(html).toContain('Element overlap <code>element_overlap</code>');
   expect(html).toContain('Structural preservation</dt><dd>Not validated');

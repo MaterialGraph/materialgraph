@@ -32,4 +32,4 @@ def test_transition_exposes_shared_elements_with_legacy_alias():
     assert result["relationship_basis"] == "composition_heuristic"
     assert result["substitution_mechanism_validated"] is False
     assert "structural preservation is not validated" in result["reason"]
-    assert "substitution mechanism is not validated" in result["reason"]
+    assert "element ratios and structure were not compared" in result["reason"]

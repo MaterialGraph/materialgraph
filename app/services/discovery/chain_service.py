@@ -5,6 +5,7 @@ from collections.abc import Collection
 from loguru import logger
 from sqlalchemy.orm import Session
 
+from app.domain.relationship_labels import relationship_text
 from app.models.element import Element
 from app.models.material import Material
 from app.models.material_element import MaterialElement
@@ -517,7 +518,7 @@ class DiscoveryChainService:
             return "No discovery transition was generated."
 
         transition_types = [
-            transition["transition_type"]
+            relationship_text(transition["transition_type"])
             for transition in transitions
         ]
 
