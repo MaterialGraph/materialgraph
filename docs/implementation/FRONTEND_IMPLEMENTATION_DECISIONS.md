@@ -612,3 +612,32 @@ under long role text.
   long role text wraps inside its column instead of pushing the button down.
 
 No contract, API, data or routing change.
+
+## 23. Full-dataset material search (Release 1, R1-5; 2026-10-22)
+
+The sidebar keeps two clearly separate tools:
+
+- **Filter loaded materials** filters only the rows already loaded. When it
+  finds nothing it says so and points to the dataset search; it never implies
+  that the material is absent from the dataset.
+- **Search the full dataset** calls `GET /api/v1/materials/search` with an
+  explicit mode: Formula (composition equality on normalised fractions within
+  1e-6), MP ID (exact), Chemical system (exact element set) or Contains
+  elements (supersets). The client may suggest a mode for the typed text but
+  never switches mode or rewrites the query.
+
+Results state the interpretation, the number of matches and the dataset size.
+A match that is not among the loaded rows is marked "in the dataset, not yet
+loaded in the list" and can be selected directly. Zero results show the
+backend message, which names the dataset; formula searches may list materials
+with the same elements in different proportions, labelled as such and never as
+matches. Invalid input shows the backend explanation and code; it is never
+shown as "no results". Element symbols are case-sensitive, and hydrate notation
+is rejected rather than combined.
+
+Queries are limited to 100 characters and pages to 100 results; longer input
+is rejected with an explanation before any parsing.
+
+The composition index is built read-only from `raw_data["composition"]` and
+cached per process (rebuilt when the material count or highest ID changes).
+pymatgen is imported on the first formula search, not at startup.

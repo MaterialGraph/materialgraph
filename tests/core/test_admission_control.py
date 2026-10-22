@@ -61,6 +61,10 @@ _ORDINARY_ROUTE_POLICY = frozenset(
         ("GET", "/api/v1/health"),
         ("GET", "/api/v1/material-risks/{material_id}"),
         ("GET", "/api/v1/materials"),
+        # Bounded full-dataset search (Release 1, R1-5): query <= 100
+        # characters and limit <= 100, checked before parsing. Approved
+        # 2026-10-22.
+        ("GET", "/api/v1/materials/search"),
         ("GET", "/api/v1/materials/{material_id}"),
         ("GET", "/api/v1/materials/{material_id}/detail"),
         ("GET", "/api/v1/materials/{material_id}/families"),
