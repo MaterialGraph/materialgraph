@@ -14,8 +14,9 @@ def test_edge_intelligence_scores_alkali_substitution():
         scientific_reason="Li is replaced by Na while preserving phosphate chemistry.",
     )
 
-    assert result["scientific_plausibility"] == 1.0
-    assert result["edge_score"] == 100.0
+    # S-2: scored as phosphate family_expansion (0.75): 0.75*80 + 10 + 5 + 5.
+    assert result["scientific_plausibility"] == 0.75
+    assert result["edge_score"] == 80.0
     assert result["plausibility_basis"] == "internal_composition_heuristic"
     assert result["substitution_mechanism_validated"] is False
     assert "scientific_reason" in result
@@ -82,7 +83,8 @@ def test_edge_score_preserves_framework_and_exchange_distinctions():
         scientific_reason="Baseline evidence.",
     )
 
-    assert strong["edge_score"] == 100.0
-    assert partial["edge_score"] == 85.0
-    assert baseline["edge_score"] == 80.0
+    # S-2: alkali edges are scored as phosphate family_expansion (0.75 * 80 = 60).
+    assert strong["edge_score"] == 80.0
+    assert partial["edge_score"] == 65.0
+    assert baseline["edge_score"] == 60.0
     assert strong["edge_score"] > partial["edge_score"] > baseline["edge_score"]

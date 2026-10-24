@@ -62,3 +62,10 @@ it('shows missing optional candidate context without inventing a signal or a fac
   expect(html).toContain('No individual matching signals were provided.');
   expect(html).toContain('No factor breakdown was provided.');
 });
+
+it('states that structure is not assessed in the candidate investigation', () => {
+  const html = render();
+  expect(html).toContain('Structure not assessed: this dataset holds no symmetry or structure data.');
+  expect(html).toContain('mp-19028');
+  expect(html).not.toMatch(/olivine|maricite|polymorph/i);
+});

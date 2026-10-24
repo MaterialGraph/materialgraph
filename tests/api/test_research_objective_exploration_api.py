@@ -27,8 +27,9 @@ def test_research_objective_exploration_api(client):
     assert data["material_id"] == 5
     assert data["mode"] == "balanced"
     assert data["constraint_policy"] == {
-        "avoid_elements": "soft_penalty",
-        "prefer_elements": "soft_bonus",
+        # P-2: generated from the Balanced policy; no longer "soft_penalty".
+        "avoid_elements": "reject_introduced_penalize_inherited",
+        "prefer_elements": "reserved_slot_and_bonus",
         "hard_rejection_scope": "none",
     }
     assert "ranked_candidates" in data
@@ -83,8 +84,9 @@ def test_strict_research_objective_exploration_enforces_hard_avoidance(client):
     assert response.status_code == 200
     data = response.json()
     assert data["constraint_policy"] == {
-        "avoid_elements": "hard_rejection",
-        "prefer_elements": "soft_bonus",
+        # P-2: generated from the Strict policy.
+        "avoid_elements": "exclude_non_source",
+        "prefer_elements": "reserved_slot_and_bonus",
         "hard_rejection_scope": "all_non_root_chain_materials",
     }
     assert all(

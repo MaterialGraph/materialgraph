@@ -67,6 +67,70 @@ def _chain(*, material_id: int, formula: str, score: float = 0.0) -> dict:
 
 
 def test_eligible_chain_reason_when_supporting_chain_is_not_returned():
+    # Release 1 (S-3): this scenario originally relied on the +10 per-alkali-
+    # step candidate bonus to rank material 8 above material 6. That bonus is
+    # removed, so the setup now uses a retain objective instead: material 8's
+    # step shares Fe, P and O (+20 retain credit); material 6's chain has no
+    # steps. No alkali-keyed score term is involved. The test's purpose and
+    # assertions are unchanged; the S-3 consequence of the original setup is
+    # pinned in test_without_alkali_bonus_original_setup_ranks_returned_chain_first.
+    service = ResearchObjectiveExplorationService.__new__(
+        ResearchObjectiveExplorationService
+    )
+    returned_chain = _chain(material_id=6, formula="NaFePO4")
+    eligible_only_chain = _chain(material_id=8, formula="Na3Fe(PO4)2")
+    eligible_only_chain["transitions"] = [{
+        "transition_type": "alkali_substitution",
+        "shared_elements": ["Fe", "P", "O"],
+    }]
+    service.objective_service = _ObjectiveServiceStub(
+        [returned_chain, eligible_only_chain]
+    )
+    request = ResearchObjectiveExplorationRequest(
+        objective=ResearchObjective(
+            avoid_elements=[],
+            prefer_elements=[],
+            preserve_elements=["Fe", "P", "O"],
+            target_family=None,
+            max_hops=1,
+            limit=2,
+            prefer_lower_criticality=False,
+        ),
+        mode="balanced",
+        limit=1,
+    )
+
+    result = service.explore(material_id=5, request=request)
+    candidate = next(
+        item for item in result["ranked_candidates"]
+        if item["material_id"] == 8
+    )
+    assert result["search_metadata"]["result_truncated"] is True
+    assert all(
+        all(material["material_id"] != 8 for material in chain["materials"])
+        for chain in result["chains"]
+    )
+    assert candidate["reasons"] == [
+        "Appears in an eligible composition chain with relationship type "
+        "different alkali metal (composition not compared).",
+        "Shares elements across the composition relationship: Fe, P, O. "
+        "Structural preservation is not validated.",
+    ]
+    assert not any(
+        word in reason.lower()
+        for reason in candidate["reasons"]
+        for word in ("pathway", "reaction", "synthesis route", "returned chain")
+    )
+
+
+def test_without_alkali_bonus_original_setup_ranks_returned_chain_first():
+    """S-3 consequence: the original setup of the eligible-chain reason test.
+
+    With no retain objective, materials 6 and 8 now tie at 50.0 because the
+    +10 per-alkali-step bonus is removed. The tie keeps first-appearance
+    order, so material 6 is returned and material 8 (whose only advantage was
+    the alkali bonus) falls outside limit=1.
+    """
     service = ResearchObjectiveExplorationService.__new__(
         ResearchObjectiveExplorationService
     )
@@ -94,25 +158,11 @@ def test_eligible_chain_reason_when_supporting_chain_is_not_returned():
     )
 
     result = service.explore(material_id=5, request=request)
-    candidate = next(
-        item for item in result["ranked_candidates"]
-        if item["material_id"] == 8
-    )
-    assert result["search_metadata"]["result_truncated"] is True
+
+    assert [item["material_id"] for item in result["ranked_candidates"]] == [6]
+    assert result["ranked_candidates"][0]["score"] == 50.0
     assert all(
-        all(material["material_id"] != 8 for material in chain["materials"])
-        for chain in result["chains"]
-    )
-    assert candidate["reasons"] == [
-        "Appears in an eligible composition chain with relationship type "
-        "alkali_substitution.",
-        "Shares elements across the composition relationship: Fe, P, O. "
-        "Structural preservation is not validated.",
-    ]
-    assert not any(
-        word in reason.lower()
-        for reason in candidate["reasons"]
-        for word in ("pathway", "reaction", "synthesis route", "returned chain")
+        item["material_id"] != 8 for item in result["ranked_candidates"]
     )
 
 
@@ -366,16 +416,19 @@ def test_candidate_attribution_excludes_future_transitions(db_session):
         in intermediate["reasons"]
     )
     assert (
-        "Appears in an eligible composition chain with relationship type alkali_substitution."
+        "Appears in an eligible composition chain with relationship type "
+        "different alkali metal (composition not compared)."
         not in intermediate["reasons"]
     )
-    assert endpoint["score"] == 60.0
+    # S-3: the +10 per-alkali-step candidate bonus is removed.
+    assert endpoint["score"] == 50.0
     assert (
         "Appears in an eligible composition chain with relationship type shared_chemistry."
         in endpoint["reasons"]
     )
     assert (
-        "Appears in an eligible composition chain with relationship type alkali_substitution."
+        "Appears in an eligible composition chain with relationship type "
+        "different alkali metal (composition not compared)."
         in endpoint["reasons"]
     )
 
@@ -408,8 +461,9 @@ def test_strict_exploration_rejects_avoided_element_candidates(db_session):
         202
     ]
     assert result["constraint_policy"] == {
-        "avoid_elements": "hard_rejection",
-        "prefer_elements": "soft_bonus",
+        # P-2: generated from the Strict policy.
+        "avoid_elements": "exclude_non_source",
+        "prefer_elements": "reserved_slot_and_bonus",
         "hard_rejection_scope": "all_non_root_chain_materials",
     }
 
@@ -437,7 +491,8 @@ def test_balanced_exploration_retains_avoided_element_with_penalty(db_session):
     assert [item["material_id"] for item in result["ranked_candidates"]] == [203]
     assert result["ranked_candidates"][0]["score"] == 25.0
     assert result["constraint_policy"] == {
-        "avoid_elements": "soft_penalty",
-        "prefer_elements": "soft_bonus",
+        # P-2: generated from the Balanced policy; no longer "soft_penalty".
+        "avoid_elements": "reject_introduced_penalize_inherited",
+        "prefer_elements": "reserved_slot_and_bonus",
         "hard_rejection_scope": "none",
     }

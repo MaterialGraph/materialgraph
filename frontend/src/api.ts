@@ -40,6 +40,7 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   }
   return response.json() as Promise<T>;
 }
+export { get as getJson };
 export const listMaterials = (offset: number, signal?: AbortSignal) =>
   get<Material[]>(`/materials?limit=100&offset=${offset}`, signal);
 export const materialDetail = (id: number, signal?: AbortSignal) =>
@@ -49,6 +50,35 @@ export function candidates(id: number, avoid: string, prefer: string, signal?: A
   if (avoid.trim()) params.set('avoid_element', avoid.trim());
   if (prefer.trim()) params.set('prefer_element', prefer.trim());
   return get<CandidateResponse>(`/materials/${id}/discovery/candidates?${params}`, signal);
+}
+
+/** Full-dataset search (contract M). The mode is always explicit. */
+export type SearchMode = 'formula' | 'mp_id' | 'chemsys' | 'contains';
+export type SearchResult = { material_id: number; mp_id: string; formula: string; pretty_formula: string };
+export type MaterialSearchResponse = {
+  interpretation: { mode: SearchMode; input: string; elements: string[] | null; amounts: Record<string, number> | null; normalized_fractions: Record<string, number> | null; reduced_formula: string | null; mp_id: string | null };
+  dataset: { source: 'materials_project'; source_release: string | null; dataset_total: number; provenance_note: string; composition_exclusion_count: number };
+  total_matches: number; dataset_total: number; limit: number; offset: number;
+  results: SearchResult[];
+  suggestions: { basis: 'same_chemical_system'; explanation: string; results: SearchResult[] } | null;
+  message: string | null;
+};
+export type SearchQueryProblem = { code: string; mode: SearchMode; input: string; explanation: string };
+
+export async function searchMaterials(mode: SearchMode, q: string, offset = 0, signal?: AbortSignal): Promise<MaterialSearchResponse> {
+  const params = new URLSearchParams({ mode, q, limit: '20', offset: String(offset) });
+  let response: Response;
+  try { response = await fetch(`${base}/materials/search?${params}`, { signal }); }
+  catch (error) { if (signal?.aborted) throw error; throw new ApiError(0, 'Cannot reach the API. Check the local backend connection.'); }
+  if (response.status === 422) {
+    const payload = await response.json().catch(() => null) as { detail?: unknown } | null;
+    const detail = payload?.detail;
+    // Backend explanations are shown as given; the query is never corrected client-side.
+    if (detail && typeof detail === 'object' && 'explanation' in detail) throw new ApiError(422, String((detail as SearchQueryProblem).explanation), detail);
+    throw new ApiError(422, 'The search request was not valid.', payload);
+  }
+  if (!response.ok) throw new ApiError(response.status, response.status === 429 ? 'Too many requests. Please try again shortly.' : `Search failed (${response.status}).`);
+  return response.json() as Promise<MaterialSearchResponse>;
 }
 
 export async function postJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {

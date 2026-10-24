@@ -101,8 +101,8 @@ def test_alkali_reason_is_a_composition_hypothesis(db_session):
         candidate_elements=["Na", "Fe", "P", "O"],
     )
 
-    assert "composition-level alkali-substitution hypothesis" in reason
-    assert "substitution mechanism is not validated" in reason
+    assert "alkali metals differ: Li → Na" in reason
+    assert "element ratios and structure were not compared" in reason
 
 
 def test_family_order_ignores_correlated_relationship_label_count(db_session):

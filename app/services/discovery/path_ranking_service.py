@@ -3,6 +3,7 @@ from math import sqrt
 
 from sqlalchemy.orm import Session
 
+from app.domain.relationship_labels import relationship_text
 from app.utils.chemical_formula import extract_elements
 from app.services.material.quality_service import MaterialQualityService
 
@@ -196,9 +197,13 @@ class DiscoveryPathRankingService:
             )
             family = transition.get("family")
 
+            # Contract S-2: the alkali label confers no plausibility. An alkali
+            # step always shares >= 3 elements, so without the alkali rule the
+            # classifier yields family_expansion; score it exactly as that.
             if transition_type == "alkali_substitution":
-                transition_scores.append(1.0)
-            elif (
+                transition_type = "family_expansion"
+
+            if (
                 transition_type == "family_expansion"
                 and family
             ):
@@ -425,7 +430,7 @@ class DiscoveryPathRankingService:
             )
 
         valid_transition_types = [
-            item
+            relationship_text(item)
             for item in transition_types
             if item
         ]

@@ -37,7 +37,9 @@ class DiscoveryWarningService:
         if total_candidate_count > limit:
             warnings.append(
                 f"Results were limited to {limit} candidates from "
-                f"{total_candidate_count} generated candidates."
+                f"{total_candidate_count} candidates: composition-related "
+                "materials plus recommendation and scenario candidates, before "
+                "the limit was applied."
             )
 
         return warnings

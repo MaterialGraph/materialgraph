@@ -66,7 +66,7 @@ it('places cohort coverage beneath the ranked-material heading for populated and
     expect(html.indexOf(scope)).toBeLessThan(html.indexOf('Returned order and objective rule scores.'));
     expect(html).toContain('Search scope');
     expect(html).toContain('The returned results are limited. Scientific completeness is not guaranteed.');
-    expect(html).toContain('Search truncation: No');
+    expect(html).toContain('State budget exhausted: No');
     expect(html).toContain('This does not establish that every scientifically relevant pathway was found.');
   }
   const populated = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
@@ -96,9 +96,26 @@ it('derives intermediate and final roles only from returned chain membership', (
   expect(html.match(/class="objectiveValidation"/g)).toHaveLength(2);
   expect(html).toContain('These chains describe composition-level relationships between returned materials.');
   expect(html).toContain('<details open=""><summary>Returned reasons');
-  expect(html).toContain('Search truncation: No');
+  expect(html).toContain('State budget exhausted: No');
   expect(html).toContain('generated chains are included in this response');
   expect(html).not.toContain('No pathway found');
+});
+
+it('reports the neighbour limit separately from the state budget', () => {
+  const binding = { ...sample.search_metadata, expansion_limit_binding: true, expansions_with_cap_discards: 5, candidates_considered_total: 61, candidates_eligible_total: 61, candidates_admitted_total: 36, candidates_discarded_by_expansion_limit_total: 25, distinct_candidates_discarded_by_expansion_limit: 4 };
+  const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, search_metadata: binding }} submitted="{}"/>);
+  expect(html).toContain('State budget exhausted: No');
+  expect(html).toContain('Neighbour limit applied: Yes — 25 cap discards across 5 expansions (limit 6 per material; a candidate can be counted more than once; 4 distinct materials).');
+  // A summed figure is never presented as a count of unexplored candidates.
+  expect(html).not.toContain('candidates not explored');
+  expect(html).not.toContain('Search truncation: No');
+
+  const notBinding = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, search_metadata: { ...binding, expansion_limit_binding: false, candidates_discarded_by_expansion_limit_total: 0, expansions_with_cap_discards: 0, distinct_candidates_discarded_by_expansion_limit: 0 } }} submitted="{}"/>);
+  expect(notBinding).toContain('Neighbour limit applied: No — every eligible candidate was admitted (limit 6 per material).');
+
+  const legacy = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
+  expect(legacy).toContain('Neighbour limit applied: not reported by this backend.');
+  expect(legacy).not.toContain('Neighbour limit applied: No');
 });
 
 it('presents one relationship step without implying a reaction or inventing unknown labels', () => {
@@ -110,9 +127,9 @@ it('presents one relationship step without implying a reaction or inventing unkn
   expect(html).toContain('<code>new_relation</code>');
   expect(html).not.toContain('Reported relationship: new relation');
   expect(html).toContain('Shared elements not supplied');
-  expect(html).toContain('Search truncation: Yes');
+  expect(html).toContain('State budget exhausted: Yes');
   expect(html).not.toContain('→');
-  expect(relationshipLabel('alkali_substitution')).toBe('Possible alkali composition substitution');
+  expect(relationshipLabel('alkali_substitution')).toBe('Different alkali metal (composition not compared)');
 });
 
 it('keeps chain position, metadata, and score scopes explicit', () => {
@@ -121,7 +138,7 @@ it('keeps chain position, metadata, and score scopes explicit', () => {
   expect(html).toContain('mp-19017 <span class="objectiveRole">Source</span>');
   expect(html).toContain('mp-26003 <span class="objectiveRole">Intermediate</span>');
   expect(html).toContain('mp-19028 <span class="objectiveRole">Final</span>');
-  expect(html).toContain('Possible alkali composition substitution');
+  expect(html).toContain('Different alkali metal (composition not compared)');
   expect(html).toContain('Composition family relationship');
   expect(html).toContain('<code>alkali_substitution</code>');
   expect(html).toContain('Composition heuristic <code>composition_heuristic</code>');
@@ -159,7 +176,7 @@ it('separates relationship facts, the whole-chain score, and verbatim backend ex
   const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [chain] }} submitted="{}"/>);
   expect(html.indexOf('Chain usefulness rule score: 93.75')).toBeLessThan(html.indexOf('<summary>Relationship details and scoring'));
   expect(html).toContain('<section class="objectiveDetailSection" aria-label="Relationship details">');
-  expect(html).toContain('Relationship 2: Possible alkali composition substitution');
+  expect(html).toContain('Relationship 2: Different alkali metal (composition not compared)');
   expect(html).toContain('Composition heuristic <code>composition_heuristic</code>');
   expect(html).toContain('Element overlap <code>element_overlap</code>');
   expect(html).toContain('Structural preservation</dt><dd>Not validated');
@@ -204,4 +221,20 @@ it('presents zero ranked materials and zero returned pathways separately', () =>
   const rankedWithoutPaths = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, chains: [] }} submitted="{}"/>);
   expect(rankedWithoutPaths).toContain('No pathways included in this response.');
   expect(rankedWithoutPaths).toContain('No returned chain includes this material.');
+});
+
+it('distinguishes same-formula ranked materials by source ID and states structure is not assessed', () => {
+  const ranked_candidates = [
+    { material_id: 10, mp_id: 'mp-19226', formula: 'NaFePO4', score: 90, reasons: [], warnings: [] },
+    { material_id: 384, mp_id: 'mp-1192859', formula: 'NaFePO4', score: 90, reasons: [], warnings: [] },
+    { material_id: 9, formula: 'NaFeP2O7', score: 80, reasons: [], warnings: [] },
+  ];
+  const html = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, ranked_candidates }} submitted="{}"/>);
+  expect(html).toContain('Ranked material 1 · mp-19226 · Local ID 10');
+  expect(html).toContain('Ranked material 2 · mp-1192859 · Local ID 384');
+  // Responses recorded before Release 1 carry no mp_id; nothing is invented.
+  expect(html).toContain('Ranked material 3 · source ID unavailable · Local ID 9');
+  expect(html.match(/class="objectiveStructure">Structure not assessed</g)).toHaveLength(2);
+  expect(html).toContain('Structure not assessed: this dataset holds no symmetry or structure data.');
+  expect(html).not.toMatch(/olivine|maricite|polymorph/i);
 });

@@ -1,8 +1,12 @@
-import { postJson } from '../api';
-import type { ObjectiveRequest, ObjectiveResponse } from './contract';
+import { getJson, postJson } from '../api';
+import type { ObjectiveModesResponse, ObjectiveRequest, ObjectiveResponse } from './contract';
 
 export const exploreObjective = (materialId: number, request: ObjectiveRequest, signal?: AbortSignal) =>
   postJson<ObjectiveResponse>(`/materials/${materialId}/discovery/objective/explore`, request, signal);
+
+/** Mode policies served by the backend, generated from the same objects that drive the search (contract P). */
+export const objectiveModes = (signal?: AbortSignal) =>
+  getJson<ObjectiveModesResponse>('/discovery/objective-modes', signal);
 
 export type ObjectiveDraft = {
   avoid: string; prefer: string; preserve: string; family: '' | 'phosphate';

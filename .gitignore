@@ -31,3 +31,6 @@ repository-files.txt
 /objective-reference-headers.txt
 /objective-reference-request.json
 /objective-reference-response.json
+
+# Local Claude Code working notes and reports
+/claude/

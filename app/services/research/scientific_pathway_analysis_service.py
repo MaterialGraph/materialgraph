@@ -443,23 +443,20 @@ class ScientificPathwayAnalysisService:
 
         if removed:
             strengths.append(
-                f"Removes avoided or replaced element(s): {', '.join(removed)}."
+                "Element(s) absent from a later composition in the pathway: "
+                f"{', '.join(removed)}."
             )
 
         if introduced:
             strengths.append(
-                f"Introduces target or alternative element(s): {', '.join(introduced)}."
+                "Element(s) introduced along the pathway: "
+                f"{', '.join(introduced)}."
             )
 
         if shared_elements:
             strengths.append(
                 f"Maintains shared-element continuity: {'-'.join(shared_elements)}. "
                 "Structural preservation is not validated."
-            )
-
-        if "alkali_substitution" in transition_types:
-            strengths.append(
-                "Includes alkali substitution logic, which is chemically interpretable for Li/Na-style alternatives."
             )
 
         if "family_expansion" in transition_types:
@@ -488,6 +485,12 @@ class ScientificPathwayAnalysisService:
 
         if self._average_quality(quality) < 10:
             tradeoffs.append("Material quality signals are mixed.")
+
+        if "alkali_substitution" in self._transition_types(transitions):
+            tradeoffs.append(
+                "Includes a different-alkali step; element ratios and "
+                "structure were not compared."
+            )
 
         return tradeoffs or ["No major deterministic trade-off was identified."]
 

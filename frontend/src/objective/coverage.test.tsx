@@ -1,6 +1,8 @@
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { ObjectiveResults, modeHint } from './ObjectiveInvestigation';
+import { ObjectiveResults, modeDescriptionLoading, modeDescriptionText, modeDescriptionUnavailable } from './ObjectiveInvestigation';
+import type { ObjectiveModePolicy } from './contract';
+import { objectiveModes } from './request';
 import { ObjectiveCoveragePanel, avoidChainCell, avoidMaterialCell, materialAvoidanceLabel, preferCell } from './ObjectiveCoverage';
 import { CompareTray } from '../comparison/CompareTray';
 import type { ObjectiveCoverage, ObjectiveResponse } from './contract';
@@ -100,14 +102,31 @@ it('shows the backend Strict explanation and the unevaluated-source wording', ()
   expect(html).toContain('Source material (local ID 5): composition not evaluated; excluded from chain counts.');
 });
 
-it('gives Balanced and Exploratory distinct, accurate form hints', () => {
-  expect(modeHint.balanced).not.toBe(modeHint.exploratory);
-  expect(modeHint.exploratory).toContain('smaller score penalty than Balanced');
-  for (const mode of ['balanced', 'exploratory'] as const) {
-    expect(modeHint[mode]).toContain('soft preference');
-    expect(modeHint[mode]).toContain('may still contain them');
-  }
-  expect(modeHint.strict).toContain('The source material is exempt.');
+const servedPolicy = (mode: ObjectiveModePolicy['mode'], description: string): ObjectiveModePolicy => ({
+  mode, label: mode, description, avoid_policy_explanation: description, warning: '',
+  avoid_policy: { introduced: 'rejected_at_transition', inherited: 'allowed_with_penalty', candidate_penalty: 25, admission: 'not_used', admission_evidence: null, missing_element_records: null, final_filter: null, final_filter_evidence: null, applies_to: 'non_source' },
+  prefer_policy: { admission: 'one_reserved_slot_per_element', reservation_order: 'alphabetical', candidate_bonus_per_element: 15 },
+  candidate_score_offset: 0,
+  constraint_policy: { avoid_elements: 'reject_introduced_penalize_inherited', prefer_elements: 'reserved_slot_and_bonus', hard_rejection_scope: 'none' },
+});
+
+it('shows mode descriptions served by the backend policy, never a client copy', () => {
+  const modes = { balanced: servedPolicy('balanced', 'Served Balanced policy.'), exploratory: servedPolicy('exploratory', 'Served Exploratory policy.') };
+  expect(modeDescriptionText({ status: 'ready', modes }, 'balanced')).toBe('Served Balanced policy.');
+  expect(modeDescriptionText({ status: 'ready', modes }, 'exploratory')).toBe('Served Exploratory policy.');
+  // A mode the backend did not serve is reported as unavailable, not invented.
+  expect(modeDescriptionText({ status: 'ready', modes }, 'strict')).toBe(modeDescriptionUnavailable);
+  expect(modeDescriptionText({ status: 'loading' }, 'balanced')).toBe(modeDescriptionLoading);
+  expect(modeDescriptionText({ status: 'unavailable' }, 'strict')).toBe(modeDescriptionUnavailable);
+  expect(modeDescriptionUnavailable).not.toMatch(/soft preference|soft penalty/i);
+});
+
+it('requests mode policies from the objective-modes endpoint', async () => {
+  const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ scope: 'objective_explore', modes: [] }) });
+  vi.stubGlobal('fetch', fetchMock);
+  await objectiveModes();
+  expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/discovery/objective-modes');
+  vi.unstubAllGlobals();
 });
 
 it('keeps each compare-tray selection and its Remove button on one row', () => {

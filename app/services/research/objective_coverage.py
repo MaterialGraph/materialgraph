@@ -7,27 +7,16 @@ selection. See docs/implementation/OBJECTIVE_COVERAGE_CONTRACT.md.
 
 from collections.abc import Mapping, Sequence
 
+from app.domain.objective_mode_policy import MODE_POLICIES
 from app.utils.chemical_formula import parse_formula_elements_strict
 
 CONTRACT_VERSION = "1"
 
+# Generated from the mode policy objects (contract P-3); never maintained
+# separately from the behaviour they describe.
 AVOID_POLICY_EXPLANATIONS: dict[str, str] = {
-    "balanced": (
-        "Avoid is a soft preference in Balanced mode. Returned ranked "
-        "materials or composition chains may still contain avoided elements."
-    ),
-    "exploratory": (
-        "Avoid is a soft preference in Exploratory mode, with a smaller score "
-        "penalty than Balanced. Returned ranked materials or composition "
-        "chains may still contain avoided elements."
-    ),
-    "strict": (
-        "Strict mode excludes materials containing avoided elements during "
-        "search, using recorded element membership; materials without "
-        "membership records are also excluded. It then removes returned chains "
-        "in which any material other than the source contains an avoided "
-        "element, read from formula symbols. The source material is exempt."
-    ),
+    mode: policy.avoid_explanation()
+    for mode, policy in MODE_POLICIES.items()
 }
 
 BASE_LIMITATIONS: tuple[str, ...] = (

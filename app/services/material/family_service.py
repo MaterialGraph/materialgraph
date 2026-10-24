@@ -4,6 +4,7 @@ from sqlalchemy import func, select, union
 from sqlalchemy.orm import Session
 
 from app.domain.element_groups import ALKALI_METALS
+from app.domain.relationship_labels import alkali_difference_text
 from app.models.element import Element
 from app.models.material import Material
 from app.models.material_element import MaterialElement
@@ -301,13 +302,11 @@ class MaterialFamilyService:
             )
 
         if "alkali_substitution" in relationships:
-            base_alkali = sorted(base_set & self.ALKALI_ELEMENTS)
-            candidate_alkali = sorted(candidate_set & self.ALKALI_ELEMENTS)
-
             reasons.append(
-                "composition-level alkali-substitution hypothesis from "
-                f"{', '.join(base_alkali)} to {', '.join(candidate_alkali)}; "
-                "a substitution mechanism is not validated"
+                alkali_difference_text(
+                    source_elements=base_set,
+                    target_elements=candidate_set,
+                )
             )
 
         if "transition_metal_related" in relationships:

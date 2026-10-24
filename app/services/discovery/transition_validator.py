@@ -1,5 +1,9 @@
 from collections.abc import Collection
 
+from app.domain.relationship_labels import (
+    alkali_difference_text,
+    relationship_text,
+)
 from app.services.discovery.substitution_path_service import (
     DiscoverySubstitutionPathService,
 )
@@ -36,6 +40,7 @@ class DiscoveryTransitionValidator:
         prefer_element: str | None = None,
         avoid_elements: Collection[str] | None = None,
         prefer_elements: Collection[str] | None = None,
+        reject_introduced_avoided: bool = True,
     ) -> dict | None:
         normalized_avoid_elements = self._normalize_elements(
             element=avoid_element,
@@ -49,7 +54,7 @@ class DiscoveryTransitionValidator:
         if not self._has_valid_relationship(relationships):
             return None
 
-        if self._violates_avoid_elements(
+        if reject_introduced_avoided and self._violates_avoid_elements(
             from_elements=from_elements,
             to_elements=to_elements,
             avoid_elements=normalized_avoid_elements,
@@ -195,10 +200,20 @@ class DiscoveryTransitionValidator:
     ) -> str:
         parts = []
 
+        # Element-set differences are reported as such; they do not show
+        # that one element replaces another.
         if removed_elements and introduced_elements:
             parts.append(
-                f"{', '.join(removed_elements)} is replaced by "
-                f"{', '.join(introduced_elements)}"
+                f"{', '.join(removed_elements)} absent in target; "
+                f"{', '.join(introduced_elements)} introduced"
+            )
+
+        if transition_type == "alkali_substitution":
+            parts.append(
+                alkali_difference_text(
+                    source_elements=[*shared_elements, *removed_elements],
+                    target_elements=[*shared_elements, *introduced_elements],
+                )
             )
 
         if shared_elements:
@@ -215,12 +230,6 @@ class DiscoveryTransitionValidator:
                 "structural family membership is not validated"
             )
 
-        if transition_type == "alkali_substitution":
-            parts.append(
-                "the alkali-substitution label is a composition-level "
-                "hypothesis; a substitution mechanism is not validated"
-            )
-
         introduced_preferred = sorted(
             set(introduced_elements) & prefer_elements
         )
@@ -234,7 +243,7 @@ class DiscoveryTransitionValidator:
         if not parts:
             return (
                 f"{from_formula} transitions to {to_formula} "
-                f"through {transition_type}."
+                f"through {relationship_text(transition_type)}."
             )
 
         return (

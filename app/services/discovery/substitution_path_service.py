@@ -1,4 +1,5 @@
 from app.domain.element_groups import ALKALI_METALS
+from app.domain.relationship_labels import alkali_difference_text
 
 
 ALKALI_ELEMENTS = ALKALI_METALS
@@ -46,8 +47,8 @@ class DiscoverySubstitutionPathService:
                 "reason": self._build_alkali_reason(
                     base_formula=base_formula,
                     candidate_formula=candidate_formula,
-                    replaced_elements=replaced_elements,
-                    introduced_elements=introduced_elements,
+                    base_set=base_set,
+                    candidate_set=candidate_set,
                     shared_elements=shared_elements,
                 ),
             }
@@ -124,41 +125,17 @@ class DiscoverySubstitutionPathService:
         self,
         base_formula: str,
         candidate_formula: str,
-        replaced_elements: list[str],
-        introduced_elements: list[str],
+        base_set: set[str],
+        candidate_set: set[str],
         shared_elements: list[str],
     ) -> str:
-        replaced_alkali = [
-            element for element in replaced_elements if element in ALKALI_ELEMENTS
-        ]
-        introduced_alkali = [
-            element for element in introduced_elements if element in ALKALI_ELEMENTS
-        ]
-
-        if replaced_alkali and introduced_alkali:
-            return (
-                f"{candidate_formula} is a composition-level substitution candidate "
-                f"relative to {base_formula}, replacing "
-                f"{', '.join(replaced_alkali)} with {', '.join(introduced_alkali)} "
-                f"in the element-set comparison while sharing "
-                f"{', '.join(shared_elements)} elements; neither a substitution "
-                "mechanism nor structural preservation is validated."
-            )
-
-        if introduced_alkali:
-            return (
-                f"{candidate_formula} is a composition-level candidate introducing "
-                f"{', '.join(introduced_alkali)} "
-                f"while sharing {', '.join(shared_elements)} elements with "
-                f"{base_formula}; a substitution mechanism is not validated."
-            )
-
+        difference = alkali_difference_text(
+            source_elements=base_set,
+            target_elements=candidate_set,
+        )
         return (
-            f"{candidate_formula} has a composition-heuristic alkali-substitution "
-            "relationship with "
-            f"{base_formula} while sharing "
-            f"{', '.join(shared_elements)} elements; neither a substitution mechanism "
-            "nor structural preservation is validated."
+            f"{candidate_formula} relative to {base_formula}: {difference}. "
+            f"Shared elements: {', '.join(shared_elements)}."
         )
 
     def _build_transition_metal_reason(
@@ -177,9 +154,9 @@ class DiscoverySubstitutionPathService:
         ]
 
         return (
-            f"{candidate_formula} is related to {base_formula} through "
-            f"transition-metal substitution, replacing "
-            f"{', '.join(replaced_transition_metals) or 'none'} with "
-            f"{', '.join(introduced_transition_metals) or 'none'} while sharing "
-            f"{', '.join(shared_elements)} elements; structural preservation is not validated."
+            f"{candidate_formula} differs from {base_formula} in transition "
+            f"metals: {', '.join(replaced_transition_metals) or 'none'} absent "
+            f"in target; {', '.join(introduced_transition_metals) or 'none'} "
+            f"introduced, while sharing {', '.join(shared_elements)} elements; "
+            "element ratios and structure were not compared."
         )

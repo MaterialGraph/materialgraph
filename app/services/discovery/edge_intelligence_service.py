@@ -41,8 +41,14 @@ class DiscoveryEdgeIntelligenceService:
     ) -> float:
         framework = set(preserved_framework)
 
+        # Contract S-2: the alkali label confers no plausibility. Without the
+        # alkali rule the edge is family_expansion, and the graph builder's
+        # "alkali" family label (kept in the response for compatibility, D1)
+        # would not exist, so it is scored as no family.
         if transition_type == "alkali_substitution":
-            return 1.0
+            transition_type = "family_expansion"
+            if family == "alkali":
+                family = None
 
         if transition_type == "shared_element_continuity":
             return 0.85

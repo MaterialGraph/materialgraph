@@ -460,8 +460,10 @@ def test_explore_adds_coverage_without_changing_existing_fields():
 
     assert list(result)[:-1] == [
         "material_id", "base_formula", "objective", "objective_policy", "mode",
-        "constraint_policy", "search_metadata", "ranked_candidates", "chains",
-        "warnings", "explanation",
+        # P-2: the structured policy follows constraint_policy.
+        "constraint_policy", "avoid_policy", "prefer_policy",
+        "candidate_score_offset", "search_metadata", "ranked_candidates",
+        "chains", "warnings", "explanation",
     ]
     coverage = result["objective_coverage"]
     assert coverage["returned_ranked_material_count"] == len(

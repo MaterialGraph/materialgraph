@@ -28,3 +28,9 @@ it('does not infer Materials Project provenance from a source ID or missing deta
   expect(view({ ...detail, source: 'other_provider' })).not.toContain('materialsAttribution');
   expect(view(null)).not.toContain('materialsAttribution');
 });
+
+it('shows an element name only when it adds information', () => {
+  const html = view({ ...detail, elements: [{ id: 1, symbol: 'Li', name: 'Lithium' }, { id: 2, symbol: 'K', name: 'K' }] });
+  expect(html).toContain('Li (Lithium), K');
+  expect(html).not.toContain('K (K)');
+});

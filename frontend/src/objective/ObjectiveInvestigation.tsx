@@ -1,10 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { ChemicalFormula } from '../ChemicalFormula';
+import { STRUCTURE_NOT_ASSESSED, STRUCTURE_NOT_ASSESSED_DETAIL } from '../structureStatus';
 import { CompareTray } from '../comparison/CompareTray';
 import { objectiveLaunch, objectiveRole, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from '../comparison/launch';
-import type { ChainAvoidanceDetail, ObjectiveCandidate, ObjectiveChain, ObjectiveResponse, ObjectiveTransition } from './contract';
+import type { ChainAvoidanceDetail, ObjectiveCandidate, ObjectiveChain, ObjectiveModePolicy, ObjectiveResponse, ObjectiveTransition } from './contract';
 import { ChainAvoidanceNote, ObjectiveCoveragePanel, materialAvoidanceLabel } from './ObjectiveCoverage';
-import { buildObjectiveRequest, initialDraft, type ObjectiveDraft } from './request';
+import { buildObjectiveRequest, initialDraft, objectiveModes, type ObjectiveDraft } from './request';
 import { useObjectiveInvestigation } from './useObjectiveInvestigation';
 import { routeFromObjective, type ComparisonRoute } from '../comparison/routing';
 
@@ -25,14 +26,14 @@ function RankedMaterial({ result, candidate, index, comparison, toggle }: { resu
   const paths = returnedPathways(result, candidate.material_id);
   const selected = comparison?.some(item => item.id === candidate.material_id) ?? false;
   return <li className="objectiveCandidate">
-    <div className="objectiveRowHead"><div><span className="eyebrow">Ranked material {index + 1} · Local ID {candidate.material_id}</span>
+    <div className="objectiveRowHead"><div><span className="eyebrow">Ranked material {index + 1} · {candidate.mp_id ?? 'source ID unavailable'} · Local ID {candidate.material_id}</span>
       <h4><ChemicalFormula formula={candidate.formula || 'Formula unavailable'}/></h4></div>
       <div className="objectiveScore"><strong>{candidate.score.toLocaleString()}</strong><small>objective rule score</small></div></div>
     {paths.length ? <p className="hint">{returnedRole(result, candidate.material_id)} · Returned {paths.length === 1 ? 'chain' : 'chains'}: {paths.map((path, position) => <span key={path}>{position > 0 && ', '}<a href={`#objective-path-${path + 1}`}>{path + 1}</a></span>)}</p>
       : <p className="hint">No returned chain includes this material.</p>}
     {toggle && candidate.material_id !== result.material_id && <button type="button" className="compareSelect" aria-pressed={selected} aria-label={`${selected ? 'Remove' : 'Select'} ${candidate.formula ?? `local ID ${candidate.material_id}`} ${selected ? 'from' : 'for'} comparison`}
       disabled={comparison?.length === 3 && !selected} aria-describedby={comparison?.length === 3 && !selected ? 'objective-selection-limit' : undefined}
-      onClick={() => toggle({ id: candidate.material_id, formula: candidate.formula || `Local ID ${candidate.material_id}`, mpId: result.chains.flatMap(chain => chain.materials).find(material => material.material_id === candidate.material_id)?.mp_id ?? null, role: objectiveRole(result, candidate.material_id) })}>
+      onClick={() => toggle({ id: candidate.material_id, formula: candidate.formula || `Local ID ${candidate.material_id}`, mpId: candidate.mp_id ?? result.chains.flatMap(chain => chain.materials).find(material => material.material_id === candidate.material_id)?.mp_id ?? null, role: objectiveRole(result, candidate.material_id) })}>
       {selected ? 'Selected for comparison' : 'Select for comparison'}
     </button>}
     {candidate.reasons.length > 0 && <details open={index === 0}><summary>Returned reasons</summary><ul>{candidate.reasons.map((reason, n) => <li key={n}>{reason}</li>)}</ul></details>}
@@ -41,7 +42,7 @@ function RankedMaterial({ result, candidate, index, comparison, toggle }: { resu
 }
 
 export function relationshipLabel(type: string): string {
-  if (type === 'alkali_substitution') return 'Possible alkali composition substitution';
+  if (type === 'alkali_substitution') return 'Different alkali metal (composition not compared)';
   if (type === 'family_expansion') return 'Composition family relationship';
   return 'Reported composition relationship';
 }
@@ -65,6 +66,7 @@ function Relationship({ transition }: { transition: ObjectiveTransition }) {
     <strong>{relationshipLabel(transition.transition_type)}</strong>
     {(!transition.structural_preservation_validated || !transition.substitution_mechanism_validated) && <span className="objectiveValidation">Not validated</span>}
     <small>{transition.shared_elements.length ? `Shared elements: ${transition.shared_elements.join(', ')}` : 'Shared elements not supplied'}</small>
+    <small className="objectiveStructure">{STRUCTURE_NOT_ASSESSED}</small>
   </li>;
 }
 
@@ -90,6 +92,7 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
           <div><dt>Preservation/continuity basis</dt><dd>{basisLabel(transition.preservation_basis)} <code>{transition.preservation_basis}</code></dd></div>
           <div><dt>Structural preservation</dt><dd>{transition.structural_preservation_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
           <div><dt>Substitution mechanism</dt><dd>{transition.substitution_mechanism_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
+          <div><dt>Structure</dt><dd>{STRUCTURE_NOT_ASSESSED_DETAIL}</dd></div>
           <div><dt>Shared elements</dt><dd>{transition.shared_elements.length ? transition.shared_elements.join(', ') : 'None supplied'}</dd></div>
           {transition.removed_elements && <div><dt>Elements absent in next composition</dt><dd>{transition.removed_elements.length ? transition.removed_elements.join(', ') : 'None reported'}</dd></div>}
           {transition.introduced_elements && <div><dt>Elements present only in next composition</dt><dd>{transition.introduced_elements.length ? transition.introduced_elements.join(', ') : 'None reported'}</dd></div>}
@@ -97,7 +100,7 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
       </div>)}</section>
       {chain.score_breakdown && <section className="objectiveDetailSection" aria-label="Whole-chain score breakdown">
         <h5>Whole-chain score breakdown</h5>
-        <p className="hint">Deterministic rule components for the whole chain; these values do not measure reaction likelihood or synthesis feasibility.</p>
+        <p className="hint">Deterministic rule components for the whole chain; these values do not measure reaction likelihood or synthesis feasibility. Relationship type weights are unvalidated heuristics; a different-alkali step is weighted as a composition family relationship.</p>
         <table className="objectiveScoreTable"><thead><tr><th scope="col">Rule component</th><th scope="col">Contribution</th><th scope="col">Maximum</th></tr></thead><tbody>
           {Object.entries(chain.score_breakdown).map(([name, value]) => <tr key={name}><th scope="row">{chainScoreComponents[name]?.label ?? 'Reported rule component'} <code>{name}</code></th><td>{value.toLocaleString()}</td><td>{chainScoreComponents[name]?.maximum ?? 'Not specified'}</td></tr>)}
           <tr className="objectiveScoreTotal"><th scope="row">Chain usefulness rule score</th><td>{chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}</td><td>100</td></tr>
@@ -113,6 +116,18 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
   </li>;
 }
 
+/** Reports the per-material neighbour limit separately from the state budget.
+ * Totals are summed over expansions, so the same candidate can be counted at
+ * several expansions; the distinct count is shown alongside. */
+export function neighbourLimitText(metadata: ObjectiveResponse['search_metadata']): string {
+  if (metadata.expansion_limit_binding == null) return 'Neighbour limit applied: not reported by this backend.';
+  if (!metadata.expansion_limit_binding) return `Neighbour limit applied: No — every eligible candidate was admitted (limit ${metadata.expansion_limit_per_material} per material).`;
+  const discards = metadata.candidates_discarded_by_expansion_limit_total ?? 0;
+  const expansions = metadata.expansions_with_cap_discards ?? 0;
+  const distinct = metadata.distinct_candidates_discarded_by_expansion_limit;
+  return `Neighbour limit applied: Yes — ${discards} cap ${discards === 1 ? 'discard' : 'discards'} across ${expansions} ${expansions === 1 ? 'expansion' : 'expansions'} (limit ${metadata.expansion_limit_per_material} per material; a candidate can be counted more than once${distinct != null ? `; ${distinct} distinct ${distinct === 1 ? 'material' : 'materials'}` : ''}).`;
+}
+
 export function ObjectiveResults({ result, submitted, comparison, toggle, remove, compare }: { result: ObjectiveResponse; submitted: string; comparison?: SelectedMaterial[]; toggle?: (material: SelectedMaterial) => void; remove?: (id: number) => void; compare?: () => void }) {
   const metadata = result.search_metadata;
   const scores = result.ranked_candidates.map(candidate => candidate.score);
@@ -121,13 +136,14 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
   const hasUnvalidatedRelationship = result.chains.some(chain => chain.transitions.some(transition => !transition.structural_preservation_validated || !transition.substitution_mechanism_validated));
   return <div className="objectiveResults">
     <div className="objectiveScope"><h3>Search scope</h3>
-      <p>{metadata.returned_chain_count} of {metadata.generated_chain_count} generated chains are included in this response. The generated count is before objective filtering.</p>
+      <p>{metadata.returned_chain_count} of {metadata.generated_chain_count} generated chains are included in this response. The generated count is before the retain, family and stability filters; Avoid and Prefer already shaped which chains were generated.</p>
       {(metadata.result_truncated || !metadata.scientific_completeness_guaranteed) && <p>The returned results are limited. Scientific completeness is not guaranteed.</p>}
-      <p>Search truncation: {metadata.search_truncated ? 'Yes — search stopped at its state budget' : 'No'}. This does not establish that every scientifically relevant pathway was found.</p>
+      <p>State budget exhausted: {metadata.search_truncated ? 'Yes — search stopped at its state budget' : 'No'}.</p>
+      <p>{neighbourLimitText(metadata)} This does not establish that every scientifically relevant pathway was found.</p>
       <details><summary>Search parameters and returned policies</summary>
         <p>Mode: {result.mode}. Avoid: {result.constraint_policy.avoid_elements.replaceAll('_', ' ')}; Prefer: {result.constraint_policy.prefer_elements.replaceAll('_', ' ')}; hard rejection scope: {result.constraint_policy.hard_rejection_scope.replaceAll('_', ' ')}.</p>
         <p>Stability: {result.objective_policy.stable_materials.replaceAll('_', ' ')}; scope: {result.objective_policy.stability_scope.replaceAll('_', ' ')}. Lower criticality: {result.objective_policy.lower_criticality.replaceAll('_', ' ')}. Unknown criticality: {result.objective_policy.unknown_criticality_evidence.replaceAll('_', ' ')}.</p>
-        <p>Search policy: {metadata.search_policy.replaceAll('_', ' ')}; expansion limit per material: {metadata.expansion_limit_per_material}; state budget: {metadata.search_state_budget}; expanded states: {metadata.expanded_state_count}; generated chains: {metadata.generated_chain_count}; returned chains: {metadata.returned_chain_count}; result limit applied: {metadata.result_truncated ? 'Yes' : 'No'}.</p>
+        <p>Search policy: {metadata.search_policy.replaceAll('_', ' ')}; expansion limit per material: {metadata.expansion_limit_per_material}; state budget: {metadata.search_state_budget}; expanded states: {metadata.expanded_state_count};{metadata.candidates_considered_total != null && <> candidates considered: {metadata.candidates_considered_total}; eligible: {metadata.candidates_eligible_total}; admitted: {metadata.candidates_admitted_total} (summed over expansions);</>} generated chains: {metadata.generated_chain_count}; returned chains: {metadata.returned_chain_count}; result limit applied: {metadata.result_truncated ? 'Yes' : 'No'}.</p>
         <p>Submitted structured request (client-observed):</p><pre>{submitted}</pre>
         <p>Returned explanation: {result.explanation}</p>
       </details>
@@ -149,17 +165,39 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
   </div>;
 }
 
-export const modeHint: Record<ObjectiveDraft['mode'], string> = {
-  strict: 'Avoided elements are excluded from intermediate and final materials in eligible chains. The source material is exempt.',
-  balanced: 'Avoid is a soft preference: avoided elements lower the objective score but are not excluded, so returned materials or chains may still contain them.',
-  exploratory: 'Avoid is a soft preference with a smaller score penalty than Balanced: avoided elements are not excluded, so returned materials or chains may still contain them.',
-};
+/** Mode descriptions come from the backend policy (contract P, D3); the client keeps no copy. */
+export type ObjectiveModesState =
+  | { status: 'loading' }
+  | { status: 'unavailable' }
+  | { status: 'ready'; modes: Partial<Record<ObjectiveDraft['mode'], ObjectiveModePolicy>> };
+
+export const modeDescriptionLoading = 'Loading the mode description…';
+export const modeDescriptionUnavailable = 'Mode description unavailable: the server did not provide the current mode policy. The policy applied to a run is reported with its results.';
+
+export function modeDescriptionText(state: ObjectiveModesState, mode: ObjectiveDraft['mode']): string {
+  if (state.status === 'loading') return modeDescriptionLoading;
+  if (state.status === 'unavailable') return modeDescriptionUnavailable;
+  return state.modes[mode]?.description ?? modeDescriptionUnavailable;
+}
+
+function useObjectiveModes(): ObjectiveModesState {
+  const [state, setState] = useState<ObjectiveModesState>({ status: 'loading' });
+  useEffect(() => {
+    const controller = new AbortController();
+    objectiveModes(controller.signal)
+      .then(response => setState({ status: 'ready', modes: Object.fromEntries(response.modes.map(policy => [policy.mode, policy])) }))
+      .catch(() => { if (!controller.signal.aborted) setState({ status: 'unavailable' }); });
+    return () => controller.abort();
+  }, []);
+  return state;
+}
 
 export function ObjectiveInvestigation({ materialId, onCompare, initialInputs }: { materialId: number; onCompare?: (launch: ComparisonLaunchContext, route: ComparisonRoute) => void; initialInputs?: ObjectiveDraft | null }) {
   const [draft, setDraft] = useState<ObjectiveDraft>(initialInputs ?? initialDraft);
   const [comparison, setComparison] = useState<SelectedMaterial[]>([]);
   const [fieldError, setFieldError] = useState('');
   const { submitted, result, loading, errors, run, retry } = useObjectiveInvestigation(materialId);
+  const modes = useObjectiveModes();
   useEffect(() => { setComparison([]); }, [result]);
   const set = <K extends keyof ObjectiveDraft>(key: K, value: ObjectiveDraft[K]) => setDraft(previous => ({ ...previous, [key]: value }));
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -181,7 +219,7 @@ export function ObjectiveInvestigation({ materialId, onCompare, initialInputs }:
       {draft.objectiveLimit !== undefined && <label>Recorded objective chain limit <input type="number" min="1" max="20" required value={draft.objectiveLimit} onChange={e => set('objectiveLimit', Number(e.target.value))}/></label>}
       <div className="objectiveChecks"><label><input type="checkbox" checked={draft.lowerCriticality} onChange={e => set('lowerCriticality', e.target.checked)}/> Prefer lower criticality</label>
         <label><input type="checkbox" checked={draft.requireStable} onChange={e => set('requireStable', e.target.checked)}/> Require stable intermediate and final materials</label></div>
-      <p className="hint objectiveModeHint">{modeHint[draft.mode]} Preferred elements add a soft bonus.</p>
+      <p className="hint objectiveModeHint" aria-live="polite">{modeDescriptionText(modes, draft.mode)}</p>
       {fieldError && <p className="error" role="alert">{fieldError}</p>}
       <button type="submit" disabled={loading}>{loading ? 'Investigating…' : 'Run investigation'}</button>
     </form>

@@ -33,6 +33,9 @@ class ResearchObjectiveExplorationRequest(BaseModel):
 
 class ResearchObjectiveCandidate(BaseModel):
     material_id: int
+    # Source identifier, so records sharing a formula (polymorphs) are
+    # distinguishable. Additive (Release 1, R1-6).
+    mp_id: str | None = None
     formula: str | None = None
     score: float
     reasons: list[str]
@@ -40,9 +43,54 @@ class ResearchObjectiveCandidate(BaseModel):
 
 
 class ResearchObjectiveConstraintPolicy(BaseModel):
-    avoid_elements: Literal["soft_penalty", "hard_rejection"]
-    prefer_elements: Literal["soft_bonus"] = "soft_bonus"
+    # Generated from the mode policy (contract P-2). Balanced and Exploratory
+    # reject steps that introduce an avoided element and penalise inherited
+    # ones; they are not described as a soft penalty.
+    avoid_elements: Literal[
+        "reject_introduced_penalize_inherited",
+        "exclude_non_source",
+    ]
+    prefer_elements: Literal["reserved_slot_and_bonus"] = (
+        "reserved_slot_and_bonus"
+    )
     hard_rejection_scope: Literal["none", "all_non_root_chain_materials"]
+
+
+class ObjectiveAvoidPolicy(BaseModel):
+    introduced: Literal["rejected_at_transition"]
+    inherited: Literal["allowed_with_penalty", "excluded_non_source"]
+    candidate_penalty: float
+    admission: Literal["not_used", "exclude_any_avoided"]
+    admission_evidence: Literal["element_records"] | None = None
+    missing_element_records: Literal["excluded"] | None = None
+    final_filter: Literal["exclude_chains_with_avoided_non_source"] | None = None
+    final_filter_evidence: Literal["formula_symbols"] | None = None
+    applies_to: Literal["non_source"]
+
+
+class ObjectivePreferPolicy(BaseModel):
+    admission: Literal["one_reserved_slot_per_element"]
+    reservation_order: Literal["alphabetical"]
+    candidate_bonus_per_element: float
+
+
+class ObjectiveModePolicy(BaseModel):
+    """One mode's executable policy, as served by GET /discovery/objective-modes."""
+
+    mode: Literal["balanced", "exploratory", "strict"]
+    label: str
+    avoid_policy: ObjectiveAvoidPolicy
+    prefer_policy: ObjectivePreferPolicy
+    candidate_score_offset: float
+    constraint_policy: "ResearchObjectiveConstraintPolicy"
+    description: str
+    avoid_policy_explanation: str
+    warning: str
+
+
+class ObjectiveModesResponse(BaseModel):
+    scope: Literal["objective_explore"] = "objective_explore"
+    modes: list[ObjectiveModePolicy]
 
 
 PreferCoverageStatus = Literal["represented", "not_represented", "not_evaluated"]
@@ -131,6 +179,9 @@ class ResearchObjectiveExplorationResponse(BaseModel):
     objective_policy: ResearchObjectiveExecutionPolicy
     mode: Literal["balanced", "exploratory", "strict"]
     constraint_policy: ResearchObjectiveConstraintPolicy
+    avoid_policy: ObjectiveAvoidPolicy
+    prefer_policy: ObjectivePreferPolicy
+    candidate_score_offset: float
     search_metadata: DiscoverySearchMetadata
     ranked_candidates: list[ResearchObjectiveCandidate]
     chains: list[DiscoveryChain]

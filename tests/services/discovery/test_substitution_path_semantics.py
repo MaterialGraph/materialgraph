@@ -8,5 +8,5 @@ def test_substitution_path_qualifies_element_overlap():
     assert result["structural_preservation_validated"] is False
     assert result["relationship_basis"] == "composition_heuristic"
     assert result["substitution_mechanism_validated"] is False
-    assert "composition-level substitution candidate" in result["reason"]
-    assert "substitution mechanism" in result["reason"]
+    assert "alkali metals differ: Li → Na" in result["reason"]
+    assert "element ratios and structure were not compared" in result["reason"]

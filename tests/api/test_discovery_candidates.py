@@ -222,7 +222,10 @@ def test_discovery_candidates_include_substitution_path_for_alkali_candidates(cl
     assert "O" in substitution_path["preserved_framework"]
     assert substitution_path["relationship_basis"] == "composition_heuristic"
     assert substitution_path["substitution_mechanism_validated"] is False
-    assert "substitution mechanism" in substitution_path["reason"]
+    assert (
+        "element ratios and structure were not compared"
+        in substitution_path["reason"]
+    )
     assert len(substitution_path["reason"]) > 0
 
 def test_discovery_candidates_merged_sources_keep_score_breakdown_consistent(client):

@@ -2,6 +2,7 @@ from collections import deque
 
 from sqlalchemy.orm import Session
 
+from app.domain.relationship_labels import relationship_text
 from app.models.material import Material
 from app.services.discovery.graph_builder import DiscoveryGraphBuilder
 from app.services.discovery.path_ranking_service import DiscoveryPathRankingService
@@ -383,7 +384,7 @@ class DiscoveryTraversalService:
             return "No discovery path was generated."
 
         transition_types = [
-            transition["transition_type"]
+            relationship_text(transition["transition_type"])
             for transition in transitions
         ]
 

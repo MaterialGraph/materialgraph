@@ -83,4 +83,4 @@ def test_scalar_transition_contract_remains_supported():
     assert "Na" in result["reason"]
     assert result["relationship_basis"] == "composition_heuristic"
     assert result["substitution_mechanism_validated"] is False
-    assert "substitution mechanism is not validated" in result["reason"]
+    assert "element ratios and structure were not compared" in result["reason"]

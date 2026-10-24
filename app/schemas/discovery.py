@@ -108,9 +108,21 @@ class DiscoverySearchMetadata(BaseModel):
     expanded_state_count: int
     generated_chain_count: int
     returned_chain_count: int
+    # Budget exhaustion only. Candidates discarded by the per-material
+    # expansion limit are reported by the fields below, not by this flag.
     search_truncated: bool
     result_truncated: bool
     scientific_completeness_guaranteed: Literal[False] = False
+    # Expansion-limit reporting (#51). Totals are summed over expansions, so
+    # a candidate discarded at several expansions is counted each time; the
+    # distinct count counts each material once. None means "not reported".
+    expansion_limit_binding: bool | None = None
+    expansions_with_cap_discards: int | None = None
+    candidates_considered_total: int | None = None
+    candidates_eligible_total: int | None = None
+    candidates_admitted_total: int | None = None
+    candidates_discarded_by_expansion_limit_total: int | None = None
+    distinct_candidates_discarded_by_expansion_limit: int | None = None
 
 
 class DiscoveryChainsResponse(BaseModel):

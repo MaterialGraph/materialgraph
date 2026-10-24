@@ -4,21 +4,23 @@ import { factorExplanation, factorLabel, presentCandidate } from './candidatePre
 
 const candidate: Candidate = {
   material_id: 6, mp_id: 'mp-19028', pretty_formula: 'Na3Fe(PO4)2', formula: 'Na3Fe(PO4)2',
-  discovery_score: 125, score_breakdown: { family_bonus: 40, substitution_bonus: 35 },
+  discovery_score: 90, score_breakdown: { family_bonus: 40, preferred_element_bonus: 25, avoided_element_removed_bonus: 25 },
   discovery_path: ['alkali_substitution', 'shared_chemistry', 'phosphate_related', 'oxide_related'],
-  explanation: 'Na3Fe(PO4)2: composition-heuristic relationship; shares Fe, O, P chemistry with LiFePO4; composition-level alkali-substitution hypothesis from Li to Na; a substitution mechanism is not validated; both materials contain phosphorus and oxygen; structural framework similarity is not validated; both materials contain oxygen; oxide structure similarity is not validated.',
+  explanation: 'Na3Fe(PO4)2: composition-heuristic relationship; shares Fe, O, P chemistry with LiFePO4; alkali metals differ: Li → Na; element ratios and structure were not compared; both materials contain phosphorus and oxygen; structural framework similarity is not validated; both materials contain oxygen; oxide structure similarity is not validated.',
   substitution_path: null,
 };
 
 it('summarizes a composition hypothesis without asserting structural preservation or duplicating element overlap', () => {
   const presentation = presentCandidate(candidate, 'LiFePO4');
-  expect(presentation.hypothesis).toContain('possible Li-to-Na alkali substitution');
+  expect(presentation.hypothesis).toContain('different alkali metal (Li in LiFePO4; Na in this material)');
+  expect(presentation.hypothesis).toContain('Element ratios and structure were not compared.');
+  expect(presentation.hypothesis).not.toMatch(/replac|substitution|mechanism/i);
   expect(presentation.hypothesis).toContain('Shared elements: Fe, O, P');
   expect(presentation.hypothesis).toContain('based on composition alone');
   expect(presentation.hypothesis).not.toContain('structural');
   expect(presentation.signals.map(signal => signal.key)).toEqual(['alkali_substitution', 'shared_chemistry']);
   expect(presentation.caveats).toEqual([
-    'A substitution mechanism has not been demonstrated.',
+    'Only alkali-metal membership was compared; element ratios and structure were not.',
     'Composition-based signals do not establish structural similarity, synthesis feasibility, or performance.',
   ]);
 });

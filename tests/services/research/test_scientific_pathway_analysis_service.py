@@ -411,7 +411,10 @@ def test_scientific_pathway_analysis_exposes_partial_objective_satisfaction(
         sum(opportunity["score_breakdown"].values()),
         2,
     )
-    assert opportunity["scientific_usefulness_score"] == 93.75
+    # S-2 (Release 1): the top pathway (LiFePO4 -> Na3Fe(PO4)2, one alkali
+    # step, phosphate family) keeps its rank; transition plausibility falls
+    # from 20 * 1.0 to 20 * 0.85, so 93.75 -> 90.75.
+    assert opportunity["scientific_usefulness_score"] == 90.75
 
 
 def test_scientific_pathway_analysis_assigns_unique_pathway_identity(

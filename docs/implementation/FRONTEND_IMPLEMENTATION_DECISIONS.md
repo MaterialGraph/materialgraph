@@ -250,14 +250,24 @@ coverage are disclosed rather than fabricated.
 
 The Objective Investigation keeps these response concepts distinct:
 
-- `generated_chain_count`: generated before objective filtering;
+- `generated_chain_count`: generated before the retain, family and stability
+  filters; Avoid and Prefer already shape which chains are generated
+  (admission and step validation), so the count is not objective-independent;
 - `returned_chain_count`: included in the response;
 - `result_truncated`: the returned result set was limited;
-- `search_truncated`: bounded search stopped at its search-state budget; and
+- `search_truncated`: bounded search stopped at its search-state budget. It
+  does not report the per-material expansion limit;
+- `expansion_limit_binding` and the `candidates_*_total` counts: whether the
+  per-material expansion limit discarded eligible candidates, and how many.
+  Totals are summed over expansions, so a candidate can be counted more than
+  once; `distinct_candidates_discarded_by_expansion_limit` counts each
+  material once (#51); and
 - `scientific_completeness_guaranteed`: whether the backend guarantees
   scientific completeness.
 
-`search_truncated: false` is not rendered as “complete.” HTTP 200 is not treated
+The UI shows two statements, “State budget exhausted” and “Neighbour limit
+applied”, and never renders a summed discard figure as a count of unexplored
+candidates. `search_truncated: false` is not rendered as “complete.” HTTP 200 is not treated
 as scientific validation. The submitted structured request is displayed as
 client-observed request context; returned mode, policies, warnings, and metadata
 are identified as backend response fields.
@@ -602,3 +612,32 @@ under long role text.
   long role text wraps inside its column instead of pushing the button down.
 
 No contract, API, data or routing change.
+
+## 23. Full-dataset material search (Release 1, R1-5; 2026-10-22)
+
+The sidebar keeps two clearly separate tools:
+
+- **Filter loaded materials** filters only the rows already loaded. When it
+  finds nothing it says so and points to the dataset search; it never implies
+  that the material is absent from the dataset.
+- **Search the full dataset** calls `GET /api/v1/materials/search` with an
+  explicit mode: Formula (composition equality on normalised fractions within
+  1e-6), MP ID (exact), Chemical system (exact element set) or Contains
+  elements (supersets). The client may suggest a mode for the typed text but
+  never switches mode or rewrites the query.
+
+Results state the interpretation, the number of matches and the dataset size.
+A match that is not among the loaded rows is marked "in the dataset, not yet
+loaded in the list" and can be selected directly. Zero results show the
+backend message, which names the dataset; formula searches may list materials
+with the same elements in different proportions, labelled as such and never as
+matches. Invalid input shows the backend explanation and code; it is never
+shown as "no results". Element symbols are case-sensitive, and hydrate notation
+is rejected rather than combined.
+
+Queries are limited to 100 characters and pages to 100 results; longer input
+is rejected with an explanation before any parsing.
+
+The composition index is built read-only from `raw_data["composition"]` and
+cached per process (rebuilt when the material count or highest ID changes).
+pymatgen is imported on the first formula search, not at startup.
