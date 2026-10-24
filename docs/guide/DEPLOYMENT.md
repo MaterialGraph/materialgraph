@@ -258,6 +258,10 @@ Verify history:
 
 alembic history
 
+The material search index refreshes only when the material count or the
+highest material ID changes, so restart the backend
+(`sudo systemctl restart materialgraph`) after any data import.
+
 ---
 
 # FastAPI Verification

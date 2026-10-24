@@ -111,7 +111,7 @@ it('reports the neighbour limit separately from the state budget', () => {
   expect(html).not.toContain('Search truncation: No');
 
   const notBinding = renderToStaticMarkup(<ObjectiveResults result={{ ...sample, search_metadata: { ...binding, expansion_limit_binding: false, candidates_discarded_by_expansion_limit_total: 0, expansions_with_cap_discards: 0, distinct_candidates_discarded_by_expansion_limit: 0 } }} submitted="{}"/>);
-  expect(notBinding).toContain('Neighbour limit applied: No — every eligible candidate was explored (limit 6 per material).');
+  expect(notBinding).toContain('Neighbour limit applied: No — every eligible candidate was admitted (limit 6 per material).');
 
   const legacy = renderToStaticMarkup(<ObjectiveResults result={sample} submitted="{}"/>);
   expect(legacy).toContain('Neighbour limit applied: not reported by this backend.');

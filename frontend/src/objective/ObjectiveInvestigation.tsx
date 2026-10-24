@@ -121,7 +121,7 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
  * several expansions; the distinct count is shown alongside. */
 export function neighbourLimitText(metadata: ObjectiveResponse['search_metadata']): string {
   if (metadata.expansion_limit_binding == null) return 'Neighbour limit applied: not reported by this backend.';
-  if (!metadata.expansion_limit_binding) return `Neighbour limit applied: No — every eligible candidate was explored (limit ${metadata.expansion_limit_per_material} per material).`;
+  if (!metadata.expansion_limit_binding) return `Neighbour limit applied: No — every eligible candidate was admitted (limit ${metadata.expansion_limit_per_material} per material).`;
   const discards = metadata.candidates_discarded_by_expansion_limit_total ?? 0;
   const expansions = metadata.expansions_with_cap_discards ?? 0;
   const distinct = metadata.distinct_candidates_discarded_by_expansion_limit;
