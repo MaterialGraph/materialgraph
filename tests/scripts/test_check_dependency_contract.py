@@ -23,7 +23,7 @@ def test_repository_dependency_contract_is_complete_and_hashed():
     production, errors = validate_contracts()
 
     assert errors == []
-    assert production["pillow"] == "12.3.0"
+    assert production["pillow"] == "13.0.0"
     assert production["pydantic-settings"] == "2.14.2"
     assert production["starlette"] == "1.3.1"
 

@@ -179,7 +179,8 @@ def test_production_dependencies_are_locked_audited_and_reconcilable():
     assert "--no-index" in workflow
     assert "--check-installed" in workflow
     assert "pip-audit==2.10.1" in audit_lock
-    assert "pillow==12.3.0" in production_input
+    assert "pillow==13.0.0" in production_input
+    assert "certifi==2026.10.19" in production_input
     assert "pydantic-settings==2.14.2" in production_input
     assert "starlette==1.3.1" in production_input
     assert production_lock.count("--hash=sha256:") > 2_000
