@@ -27,7 +27,7 @@ export function suggestedMode(mode: SearchMode, text: string): SearchMode | null
 type State =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'error'; message: string; code?: string }
+  | { status: 'error'; message: string; code?: string; input?: string }
   | { status: 'done'; response: MaterialSearchResponse; results: SearchResult[] };
 
 function interpretationText(response: MaterialSearchResponse): string {
@@ -52,8 +52,8 @@ export function DatasetSearch({ select, loadedIds }: { select: (id: number) => v
       setState({ status: 'done', response, results: [...previous, ...response.results] });
     } catch (error) {
       if (error instanceof ApiError) {
-        const detail = error.details as { code?: string } | undefined;
-        setState({ status: 'error', message: error.message, code: detail?.code });
+        const detail = error.details as { code?: string; input?: string } | undefined;
+        setState({ status: 'error', message: error.message, code: detail?.code, input: detail?.input });
       } else setState({ status: 'error', message: 'Search failed.' });
     }
   }
@@ -72,7 +72,11 @@ export function DatasetSearch({ select, loadedIds }: { select: (id: number) => v
       {suggestion && <p className="hint">This looks like a search by {modeLabels[suggestion]}. <button type="button" className="textButton" onClick={() => setMode(suggestion)}>Use {modeLabels[suggestion]} mode</button></p>}
     </form>
     {state.status === 'loading' && <p role="status">Searching the full dataset…</p>}
-    {state.status === 'error' && <p className="error" role="alert">{state.message}{state.code && <small> ({state.code})</small>}</p>}
+    {state.status === 'error' && <div className="error" role="alert">
+      {/* The input as the server received it, shown beside the explanation; never rewritten. */}
+      {state.input !== undefined && <p className="searchInput">Input: <code>{state.input}</code></p>}
+      <p>{state.message}{state.code && <small> ({state.code})</small>}</p>
+    </div>}
     {state.status === 'done' && <div className="datasetSearchResults">
       <p className="hint">Interpreted as {interpretationText(state.response)}. {state.response.total_matches} {state.response.total_matches === 1 ? 'match' : 'matches'} among {state.response.dataset_total} materials in the dataset.</p>
       {state.response.message && <p>{state.response.message}</p>}

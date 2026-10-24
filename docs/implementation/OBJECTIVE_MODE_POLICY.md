@@ -5,6 +5,15 @@ register entry 37, condition d). Discovery candidates, the Objective Chains
 API (`/discovery/objective/chains`) and Scientific Pathway Analysis keep their
 own behaviour and are not governed by this policy.
 
+Contract P governs the Objective Explore endpoint only. Other endpoints do not
+consume its mode-policy configuration and keep their own endpoint-specific
+contracts. However, some endpoints share lower-level services, including
+transition validation and relationship classification, so they may show
+common behaviour; for example, steps that would introduce an avoided element
+are rejected on every surface. Changes to shared services therefore need
+cross-surface regression assessment. The absence of Contract P governance
+does not imply behavioural independence.
+
 ## One executable source
 
 `app/domain/objective_mode_policy.py` defines one `ModePolicy` per mode

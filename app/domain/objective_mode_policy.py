@@ -8,7 +8,10 @@ generated from them.
 
 Scope: Objective Explore only (register entry 37, condition d). Discovery
 candidates, the Objective Chains API and Scientific Pathway Analysis keep
-their own behaviour.
+their own behaviour. Other endpoints do not consume this configuration, but
+they share lower-level services such as transition validation and
+relationship classification, so not being governed by contract P does not
+make them behaviourally independent of it.
 
 The values encode the behaviour verified at the Release 1 baseline (P-6):
 Balanced and Exploratory generate the same chains and differ only in the

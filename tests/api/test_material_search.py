@@ -166,6 +166,8 @@ def test_mp_id_is_exact(client):
     [("formula", "lifepo4", "invalid_formula"),
      ("formula", "Xx2O", "invalid_formula"),
      ("formula", "LiFe(PO4", "invalid_formula"),
+     ("formula", "Li)Fe(", "invalid_formula"),
+     ("formula", "Li()", "invalid_formula"),
      ("formula", "Fe2+", "invalid_formula"),
      ("formula", "2LiFePO4", "invalid_formula"),
      ("formula", "Fe1e3O", "invalid_formula"),
@@ -294,3 +296,161 @@ def test_service_rejects_an_out_of_range_page_size(db_session):
             mode="contains", query="O", limit=101, offset=0,
         )
     assert error.value.code == "invalid_limit"
+
+
+# Task 1a-fix (2026-10-24): M-6 no-correction spy and explanation quality ---
+
+@pytest.mark.parametrize("query", ["LIFEPO4", "Lifepo4", "lifepo4"])
+def test_case_variants_are_rejected_and_parsed_only_as_typed(
+    client, monkeypatch, query,
+):
+    from app.services.material import search_service
+
+    received: list[str] = []
+    real_query_parser = search_service.parse_formula_query
+    real_syntax_parser = search_service.parse_formula_elements_strict
+
+    def spy_query_parser(text, *args, **kwargs):
+        received.append(text)
+        return real_query_parser(text, *args, **kwargs)
+
+    def spy_syntax_parser(text, *args, **kwargs):
+        received.append(text)
+        return real_syntax_parser(text, *args, **kwargs)
+
+    monkeypatch.setattr(search_service, "parse_formula_query", spy_query_parser)
+    monkeypatch.setattr(
+        search_service, "parse_formula_elements_strict", spy_syntax_parser,
+    )
+
+    response = _search(client, "formula", query)
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["code"] == "invalid_formula"
+    # Every parser call saw the query exactly as typed: no case-altered or
+    # otherwise modified retry was attempted.
+    assert received, "the formula parser was not called"
+    assert all(text == query for text in received), received
+
+
+def test_lowercase_explanation_states_category_and_case_sensitivity(client):
+    detail = _search(client, "formula", "lifepo4").json()["detail"]
+    explanation = detail["explanation"].lower()
+
+    # The input itself is returned in detail["input"] and shown beside the
+    # explanation by the frontend (DatasetSearch.test.tsx).
+    assert detail["input"] == "lifepo4"
+    assert detail["code"] == "invalid_formula"
+    assert "not a formula" in explanation
+    assert "case-sensitive" in explanation
+
+
+@pytest.mark.parametrize(
+    ("mode", "query"), [("formula", "Xx2O"), ("chemsys", "Li-Xx")],
+)
+def test_unknown_symbol_explanation_names_the_symbol(client, mode, query):
+    detail = _search(client, mode, query).json()["detail"]
+    assert "Xx" in detail["explanation"]
+
+
+# Task 1a-fix: M-2 exact tolerance boundary and API-level tolerance -------
+
+def test_tolerance_comparison_is_inclusive_at_an_exact_boundary():
+    """compositions_equal uses `<= tau`: a difference of exactly tau matches.
+
+    tau is set to 2**-20 for this test so the boundary is exactly
+    representable; 0.5 +/- multiples of 2**-40 are exact in binary64.
+    """
+    tau = 2**-20
+    base = {"Li": 0.5, "O": 0.5}
+
+    def shifted(delta):
+        return {"Li": 0.5 + delta, "O": 0.5 - delta}
+
+    assert (0.5 + tau) - 0.5 == tau  # no rounding at the boundary
+    assert compositions_equal(base, shifted(tau / 2), tau=tau)          # inside
+    assert compositions_equal(base, shifted(tau), tau=tau)              # at
+    assert not compositions_equal(base, shifted(tau + 2**-40), tau=tau)  # outside
+
+
+def test_endpoint_matches_exactly_as_compositions_equal_does(
+    client, monkeypatch,
+):
+    from app.services.material import search_service
+
+    query = parse_formula_query("LiFePO4")["normalized_fractions"]
+
+    def lithium_shift(target):
+        # Li fraction (1 + d) / (7 + d) - 1/7 = 6d / (7 (7 + d)) ~ 6d / 49.
+        return 49 / 6 * target
+
+    rows = [
+        (9001, "mp-9001", "LiFePO4", "LiFePO4",
+         {"Li": 1.0 + lithium_shift(0.5 * TAU), "Fe": 1.0, "P": 1.0, "O": 4.0}),
+        (9002, "mp-9002", "LiFePO4", "LiFePO4",
+         {"Li": 1.0 + lithium_shift(2.0 * TAU), "Fe": 1.0, "P": 1.0, "O": 4.0}),
+        (9003, "mp-9003", "LiFePO4", "LiFePO4",
+         {"Li": 4.0, "Fe": 4.0, "P": 4.0, "O": 16.0}),
+    ]
+    index = index_from_rows(rows, (3, 9003))
+    gaps = {
+        item.material_id: max(
+            abs(item.fractions[s] - query[s]) for s in query
+        )
+        for item in index.materials
+    }
+    assert gaps[9001] < TAU < gaps[9002]  # the fixtures straddle tau
+
+    monkeypatch.setattr(search_service._CACHE, "get", lambda db: index)
+    response = _search(client, "formula", "LiFePO4")
+
+    expected = [
+        item.material_id for item in index.materials
+        if compositions_equal(item.fractions, query)
+    ]
+    assert expected == [9001, 9003]
+    assert _ids(response) == expected
+
+
+# Task 1a-fix: M-2 query-level invalid amounts ---------------------------
+
+@pytest.mark.parametrize(
+    "query",
+    ["Fe-1O2",      # negative amount
+     # Non-finite: pymatgen 2026.5.4 alone parses these with Fe = inf; the
+     # strict syntax gate must reject them before pymatgen is reached.
+     "Fe1e400O",
+     "Fe1e999",
+     "Fe1.2.3O",    # malformed numeric expression
+     "Fe1..5O",     # malformed numeric expression
+     ],
+)
+def test_query_level_invalid_amounts_return_422_not_zero_results(
+    client, query,
+):
+    response = _search(client, "formula", query)
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert detail["code"] in {"invalid_formula", "zero_amount"}
+    assert detail["explanation"]
+    assert "total_matches" not in response.json()
+
+
+def test_non_finite_amount_is_rejected_even_if_the_syntax_check_is_bypassed(
+    monkeypatch,
+):
+    """Defense in depth: pymatgen parses "Fe1e400O" with Fe = inf."""
+    from app.services.material import search_service
+
+    monkeypatch.setattr(
+        search_service,
+        "parse_formula_elements_strict",
+        lambda text: frozenset({"Fe", "O"}),
+    )
+
+    with pytest.raises(SearchQueryError) as error:
+        search_service.parse_formula_query("Fe1e400O")
+
+    assert error.value.code == "non_finite_amount"
+    assert "Fe" in error.value.explanation
+    assert "finite" in error.value.explanation

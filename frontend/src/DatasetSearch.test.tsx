@@ -99,3 +99,16 @@ it('only suggests a mode; the explicit mode is what is sent (M-1)', async () => 
   expect(host.textContent).toContain('This looks like a search by MP ID.');
   expect(fetchMock.mock.calls[0][0]).toContain('mode=formula');
 });
+
+it('shows the input as received beside the explanation for a 422', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 422, json: async () => ({ detail: { code: 'invalid_formula', mode: 'formula', input: 'lifepo4', explanation: 'Element symbols are case-sensitive.' } }) }));
+  renderPicker();
+
+  await search('formula', 'lifepo4');
+
+  const alert = host.querySelector('[role="alert"]')!;
+  expect(alert.querySelector('.searchInput')?.textContent).toBe('Input: lifepo4');
+  expect(alert.textContent).toContain('Element symbols are case-sensitive.');
+  // The displayed input is the server's echo, not a corrected version.
+  expect(alert.textContent).not.toContain('LiFePO4');
+});

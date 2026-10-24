@@ -128,6 +128,40 @@ def compositions_equal(
     )
 
 
+_CAPITALISED_TOKEN = re.compile(r"[A-Z][a-z]?")
+_GENERIC_FORMULA_EXPLANATION = (
+    "This is not a formula this search can read. Element symbols are "
+    "case-sensitive (for example 'Co' is cobalt, 'CO' is carbon and "
+    "oxygen); amounts are plain numbers after a symbol or closing "
+    "parenthesis; charges, brackets and leading counts are not supported."
+)
+
+
+def _formula_syntax_explanation(text: str) -> str:
+    """Explain why the syntax check rejected a formula; never suggest a fix.
+
+    Only the wording varies: every input reaching this function is rejected.
+    """
+    tokens = _CAPITALISED_TOKEN.findall(text)
+    unknown = list(dict.fromkeys(
+        token for token in tokens if token not in ELEMENT_SYMBOLS
+    ))
+    if unknown:
+        return (
+            "This is not a formula this search can read. Not recognised as "
+            f"element symbol(s): {', '.join(unknown)}. Element symbols are "
+            "case-sensitive (for example 'Co' is cobalt, 'CO' is carbon and "
+            "oxygen)."
+        )
+    if not tokens and any(ch.isalpha() for ch in text) and text == text.lower():
+        return (
+            "This is not a formula this search can read: it contains no "
+            "element symbol. Element symbols are case-sensitive and start "
+            "with a capital letter (for example 'LiFePO4', not 'lifepo4')."
+        )
+    return _GENERIC_FORMULA_EXPLANATION
+
+
 def parse_formula_query(query: str) -> dict:
     """Parse a formula query into amounts and fractions, without correction."""
     text = query.strip()
@@ -149,11 +183,7 @@ def parse_formula_query(query: str) -> dict:
             "invalid_formula",
             "formula",
             query,
-            "This is not a formula this search can read. Element symbols are "
-            "case-sensitive (for example 'Co' is cobalt, 'CO' is carbon and "
-            "oxygen); amounts are plain numbers after a symbol or closing "
-            "parenthesis; charges, brackets and leading counts are not "
-            "supported.",
+            _formula_syntax_explanation(text),
         )
     # Imported on first use: loading pymatgen at startup costs every worker
     # about 1.4 s and 16 MiB, whether or not it ever searches by formula.
@@ -171,6 +201,17 @@ def parse_formula_query(query: str) -> dict:
         str(symbol): float(amount)
         for symbol, amount in composition.get_el_amt_dict().items()
     }
+    # Defense in depth: the syntax check already rejects exponent notation,
+    # but pymatgen alone parses forms such as "Fe1e400" as an infinite amount.
+    non_finite = sorted(s for s, a in amounts.items() if not math.isfinite(a))
+    if non_finite:
+        raise SearchQueryError(
+            "non_finite_amount",
+            "formula",
+            query,
+            f"Element(s) {', '.join(non_finite)} have an amount that is not a "
+            "finite number. Give each element a plain, finite amount.",
+        )
     dropped = sorted(set(elements) - {s for s, a in amounts.items() if a > 0})
     if dropped:
         raise SearchQueryError(

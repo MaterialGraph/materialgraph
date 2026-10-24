@@ -14,7 +14,10 @@ router = APIRouter(prefix="/discovery", tags=["Discovery"])
         "Returns the executable avoid and prefer policy for each Objective "
         "Explore mode, with descriptions generated from the same policy "
         "objects that drive admission, transition validation, the returned-"
-        "chain filter and candidate scoring. Scope: Objective Explore only."
+        "chain filter and candidate scoring. Scope: Objective Explore only; "
+        "other endpoints do not consume this policy but share lower-level "
+        "services such as transition validation, so they may show common "
+        "behaviour."
     ),
 )
 def get_objective_modes():
