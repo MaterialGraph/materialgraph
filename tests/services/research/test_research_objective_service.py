@@ -165,7 +165,11 @@ def test_objective_chain_explains_relationships_without_claiming_a_route(db_sess
 
     assert ranked["scientific_usefulness_score"] == discovery_ranking["scientific_usefulness_score"]
     assert ranked["score_breakdown"] == discovery_ranking["score_breakdown"]
-    assert "removes Li during the path" in discovery_ranking["usefulness_reason"]
+    # R1-fix-21: element differences are stated as composition facts.
+    assert (
+        "Li is absent from a later composition along the chain"
+        in discovery_ranking["usefulness_reason"]
+    )
 
     assert "Composition-chain rule score evidence:" in reason
     assert "reports removal of Li across composition relationships" in reason

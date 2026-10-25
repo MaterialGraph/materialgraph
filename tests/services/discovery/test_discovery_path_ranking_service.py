@@ -127,8 +127,9 @@ def test_reason_separates_path_events_from_satisfied_endpoint_objectives():
 
     reason = result["usefulness_reason"]
 
-    assert "removes Li during the path" in reason
-    assert "introduces Na during the path" in reason
+    # R1-fix-21: element differences are stated as composition facts.
+    assert "Li is absent from a later composition along the chain" in reason
+    assert "Na appears along the chain" in reason
     assert "endpoint excludes requested avoided element(s) Li" in reason
     assert "endpoint contains requested preferred element(s) Na" in reason
 
@@ -152,8 +153,9 @@ def test_reason_reports_endpoint_reversal_separately_from_path_events():
 
     reason = result["usefulness_reason"]
 
-    assert "removes Li during the path" in reason
-    assert "introduces Na during the path" in reason
+    # R1-fix-21: element differences are stated as composition facts.
+    assert "Li is absent from a later composition along the chain" in reason
+    assert "Na appears along the chain" in reason
     assert "endpoint still contains requested avoided element(s) Li" in reason
     assert "endpoint does not contain requested preferred element(s) Na" in reason
 
@@ -197,8 +199,9 @@ def test_reason_reports_unavailable_endpoint_composition():
 
     reason = result["usefulness_reason"]
 
-    assert "removes Li during the path" in reason
-    assert "introduces Na during the path" in reason
+    # R1-fix-21: element differences are stated as composition facts.
+    assert "Li is absent from a later composition along the chain" in reason
+    assert "Na appears along the chain" in reason
     assert "endpoint composition is unavailable" in reason
     assert "endpoint excludes requested avoided element(s)" not in reason
     assert "endpoint contains requested preferred element(s)" not in reason

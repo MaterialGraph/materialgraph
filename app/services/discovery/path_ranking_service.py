@@ -328,38 +328,48 @@ class DiscoveryPathRankingService:
             prefer_elements - introduced_elements
         )
 
+        # Path explanations state element differences as composition facts
+        # (R1-fix-21); only endpoint matches are attributed to the objective.
+        objective_matches = []
+
         if path_removed:
             reasons.append(
-                ("reports removal of " if composition_chain_reason else "removes ")
-                + ", ".join(path_removed)
-                + (" across composition relationships" if composition_chain_reason
-                   else " during the path")
+                ("reports removal of " + ", ".join(path_removed)
+                 + " across composition relationships")
+                if composition_chain_reason else
+                (", ".join(path_removed)
+                 + (" is" if len(path_removed) == 1 else " are")
+                 + " absent from a later composition along the chain")
             )
 
         if path_not_removed:
             reasons.append(
                 ("does not report removal across composition relationships for "
-                 if composition_chain_reason else
-                 "does not show removal events during the path for ")
-                + "requested avoided element(s) "
-                + ", ".join(path_not_removed)
+                 "requested avoided element(s) " + ", ".join(path_not_removed))
+                if composition_chain_reason else
+                ("no step along the chain goes from a composition with "
+                 "requested avoided element(s) " + ", ".join(path_not_removed)
+                 + " to one without")
             )
 
         if path_introduced:
             reasons.append(
-                ("reports introduction of " if composition_chain_reason else "introduces ")
-                + ", ".join(path_introduced)
-                + (" across composition relationships" if composition_chain_reason
-                   else " during the path")
+                ("reports introduction of " + ", ".join(path_introduced)
+                 + " across composition relationships")
+                if composition_chain_reason else
+                (", ".join(path_introduced)
+                 + (" appears" if len(path_introduced) == 1 else " appear")
+                 + " along the chain")
             )
 
         if path_not_introduced:
             reasons.append(
                 ("does not report introduction across composition relationships for "
-                 if composition_chain_reason else
-                 "does not show introduction events during the path for ")
-                + "requested preferred element(s) "
-                + ", ".join(path_not_introduced)
+                 "requested preferred element(s) " + ", ".join(path_not_introduced))
+                if composition_chain_reason else
+                ("no step along the chain goes from a composition without "
+                 "requested preferred element(s) " + ", ".join(path_not_introduced)
+                 + " to one with")
             )
 
         # Determine whether authoritative endpoint-composition evidence exists.
@@ -393,7 +403,7 @@ class DiscoveryPathRankingService:
             )
 
             if excluded_avoided:
-                reasons.append(
+                (reasons if composition_chain_reason else objective_matches).append(
                     "endpoint excludes requested avoided element(s) "
                     + ", ".join(excluded_avoided)
                 )
@@ -405,7 +415,7 @@ class DiscoveryPathRankingService:
                 )
 
             if contained_preferred:
-                reasons.append(
+                (reasons if composition_chain_reason else objective_matches).append(
                     "endpoint contains requested preferred element(s) "
                     + ", ".join(contained_preferred)
                 )
@@ -442,20 +452,22 @@ class DiscoveryPathRankingService:
                 + ("" if composition_chain_reason else " transition logic")
             )
 
-        if not reasons:
-            return (
-                "The composition-chain rule score uses the available "
-                "encoded relationship evidence."
-                if composition_chain_reason else
-                "This path is scientifically useful under the "
-                "available deterministic transition evidence."
-            )
+        if composition_chain_reason:
+            if not reasons:
+                return (
+                    "The composition-chain rule score uses the available "
+                    "encoded relationship evidence."
+                )
+            return "Composition-chain rule score evidence: " + "; ".join(reasons) + "."
 
         return (
-            ("Composition-chain rule score evidence: " if composition_chain_reason
-             else "This path is scientifically useful because it ")
-            + "; ".join(reasons)
-            + "."
+            ("In line with the stated objective: " + "; ".join(objective_matches) + ". "
+             if objective_matches else "")
+            + "Composition-level relationships along this path: "
+            + ("; ".join(reasons) if reasons
+               else "none reported beyond the listed steps")
+            + ". These are composition-level relationships, not evidence of a "
+            "feasible chemical transformation."
         )
 
     def _score_material_quality(
