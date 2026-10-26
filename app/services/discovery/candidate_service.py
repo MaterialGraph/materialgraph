@@ -66,11 +66,19 @@ class DiscoveryCandidateService:
                     include_substitution_paths=include_substitution_paths,
                 )
 
+            # What each source supplied, before deduplication, for the
+            # result-limit warning (R1-fix-839). None: source not requested.
+            pool_basis = {
+                "composition": len(family_result["related_materials"]),
+                "recommendation": None,
+                "scenario": None,
+            }
+
             if include_recommendations:
                 with timed_block(
                     f"DiscoveryCandidateService.recommendations material_id={material_id}"
                 ):
-                    self._add_recommendation_candidates(
+                    pool_basis["recommendation"] = self._add_recommendation_candidates(
                         candidates_by_id=candidates_by_id,
                         material_id=material_id,
                         avoid_element=avoid_element,
@@ -83,7 +91,7 @@ class DiscoveryCandidateService:
                 with timed_block(
                     f"DiscoveryCandidateService.scenarios material_id={material_id}"
                 ):
-                    self._add_scenario_candidates(
+                    pool_basis["scenario"] = self._add_scenario_candidates(
                         candidates_by_id=candidates_by_id,
                         material_id=material_id,
                         avoid_element=avoid_element,
@@ -114,6 +122,7 @@ class DiscoveryCandidateService:
                     prefer_element=prefer_element,
                     limit=limit,
                     total_candidate_count=len(all_candidates),
+                    pool_basis=pool_basis,
                 )
 
             for candidate in candidates:
@@ -235,7 +244,7 @@ class DiscoveryCandidateService:
         avoid_element: str | None,
         prefer_element: str | None,
         elements_map: dict[int, list[str]],
-    ) -> None:
+    ) -> dict:
         recommendation_limit = min(limit * 3, 20)
         recommendation_result = self.recommendation_service.get_recommendations(
             material_id=material_id,
@@ -244,7 +253,7 @@ class DiscoveryCandidateService:
         )
 
         if recommendation_result["mp_id"] is None:
-            return
+            return {"supplied": 0, "cap": recommendation_limit}
 
         self._extend_material_elements_map(
             [
@@ -279,6 +288,11 @@ class DiscoveryCandidateService:
                 ),
             )
 
+        return {
+            "supplied": len(recommendation_result["recommendations"]),
+            "cap": recommendation_limit,
+        }
+
     def _add_scenario_candidates(
         self,
         candidates_by_id: dict[int, dict],
@@ -287,15 +301,15 @@ class DiscoveryCandidateService:
         avoid_element: str | None,
         prefer_element: str | None,
         elements_map: dict[int, list[str]],
-    ) -> None:
+    ) -> dict:
         recommendation_limit = min(limit * 3, 20)
         if not avoid_element and not prefer_element:
-            return
+            return {"supplied": 0, "cap": recommendation_limit, "needs_element": True}
 
         scenario_element = avoid_element or prefer_element
 
         if scenario_element is None:
-            return
+            return {"supplied": 0, "cap": recommendation_limit, "needs_element": True}
 
         scenario_result = self.recommendation_service.get_scenario_recommendations(
             material_id=material_id,
@@ -308,7 +322,7 @@ class DiscoveryCandidateService:
         )
 
         if scenario_result["mp_id"] is None:
-            return
+            return {"supplied": 0, "cap": recommendation_limit, "needs_element": False}
 
         self._extend_material_elements_map(
             [
@@ -342,6 +356,12 @@ class DiscoveryCandidateService:
                     elements_map=elements_map,
                 ),
             )
+
+        return {
+            "supplied": len(scenario_result["recommendations"]),
+            "cap": recommendation_limit,
+            "needs_element": False,
+        }
 
     def _upsert_candidate(
         self,
