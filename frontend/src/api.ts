@@ -52,21 +52,31 @@ export function candidates(id: number, avoid: string, prefer: string, signal?: A
   return get<CandidateResponse>(`/materials/${id}/discovery/candidates?${params}`, signal);
 }
 
-/** Full-dataset search (contract M). The mode is always explicit. */
-export type SearchMode = 'formula' | 'mp_id' | 'chemsys' | 'contains';
-export type SearchResult = { material_id: number; mp_id: string; formula: string; pretty_formula: string };
+/** Full-dataset search (contract M; F12). "auto" is resolved by the backend, never here. */
+export type SearchResolvedMode = 'formula' | 'mp_id' | 'chemsys' | 'contains' | 'material_id';
+export type SearchRequestMode = SearchResolvedMode | 'auto';
+export type SearchResult = { material_id: number; mp_id: string; formula: string; pretty_formula: string; energy_above_hull: number | null };
+export type DatasetSummary = {
+  source: 'materials_project'; source_release: string | null; dataset_total: number; provenance_note: string;
+  composition_exclusions: { material_id: number; mp_id: string; reason: string }[]; composition_exclusion_count: number;
+};
 export type MaterialSearchResponse = {
-  interpretation: { mode: SearchMode; input: string; elements: string[] | null; amounts: Record<string, number> | null; normalized_fractions: Record<string, number> | null; reduced_formula: string | null; mp_id: string | null };
-  dataset: { source: 'materials_project'; source_release: string | null; dataset_total: number; provenance_note: string; composition_exclusion_count: number };
+  interpretation: { mode: SearchResolvedMode; input: string; elements: string[] | null; amounts: Record<string, number> | null; normalized_fractions: Record<string, number> | null; reduced_formula: string | null; mp_id: string | null; material_id: number | null };
+  requested_mode: SearchRequestMode;
+  dataset: DatasetSummary;
   total_matches: number; dataset_total: number; limit: number; offset: number;
   results: SearchResult[];
   suggestions: { basis: 'same_chemical_system'; explanation: string; results: SearchResult[] } | null;
+  suggestion_total: number | null;
   message: string | null;
+  scoped_message: string | null;
 };
-export type SearchQueryProblem = { code: string; mode: SearchMode; input: string; explanation: string };
+/** Explained 422 detail. mode is null only for errors raised before an auto request was resolved. */
+export type SearchQueryProblem = { code: string; mode: SearchResolvedMode | null; requested_mode: SearchRequestMode; input: string; explanation: string; hint: string | null };
+export const SEARCH_PAGE_SIZE = 50;
 
-export async function searchMaterials(mode: SearchMode, q: string, offset = 0, signal?: AbortSignal): Promise<MaterialSearchResponse> {
-  const params = new URLSearchParams({ mode, q, limit: '20', offset: String(offset) });
+export async function searchMaterials(mode: SearchRequestMode, q: string, offset = 0, signal?: AbortSignal): Promise<MaterialSearchResponse> {
+  const params = new URLSearchParams({ mode, q, limit: String(SEARCH_PAGE_SIZE), offset: String(offset) });
   let response: Response;
   try { response = await fetch(`${base}/materials/search?${params}`, { signal }); }
   catch (error) { if (signal?.aborted) throw error; throw new ApiError(0, 'Cannot reach the API. Check the local backend connection.'); }
@@ -74,12 +84,17 @@ export async function searchMaterials(mode: SearchMode, q: string, offset = 0, s
     const payload = await response.json().catch(() => null) as { detail?: unknown } | null;
     const detail = payload?.detail;
     // Backend explanations are shown as given; the query is never corrected client-side.
-    if (detail && typeof detail === 'object' && 'explanation' in detail) throw new ApiError(422, String((detail as SearchQueryProblem).explanation), detail);
+    if (detail && typeof detail === 'object' && !Array.isArray(detail) && 'explanation' in detail) throw new ApiError(422, String((detail as SearchQueryProblem).explanation), detail);
     throw new ApiError(422, 'The search request was not valid.', payload);
   }
   if (!response.ok) throw new ApiError(response.status, response.status === 429 ? 'Too many requests. Please try again shortly.' : `Search failed (${response.status}).`);
   return response.json() as Promise<MaterialSearchResponse>;
 }
+/** Browse the whole dataset in local ID order (the list endpoint, unchanged). */
+export const browseMaterials = (offset: number, signal?: AbortSignal) =>
+  get<Material[]>(`/materials?limit=${SEARCH_PAGE_SIZE}&offset=${offset}`, signal);
+export const datasetSummary = (signal?: AbortSignal) =>
+  get<DatasetSummary>('/materials/dataset-summary', signal);
 
 export async function postJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   let response: Response;
