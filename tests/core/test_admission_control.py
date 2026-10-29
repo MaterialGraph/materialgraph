@@ -65,6 +65,8 @@ _ORDINARY_ROUTE_POLICY = frozenset(
         # characters and limit <= 100, checked before parsing. Approved
         # 2026-10-22.
         ("GET", "/api/v1/materials/search"),
+        # Dataset block of a search response; no query input (F12).
+        ("GET", "/api/v1/materials/dataset-summary"),
         ("GET", "/api/v1/materials/{material_id}"),
         ("GET", "/api/v1/materials/{material_id}/detail"),
         ("GET", "/api/v1/materials/{material_id}/families"),

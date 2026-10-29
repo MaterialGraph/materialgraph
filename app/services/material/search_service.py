@@ -1,6 +1,6 @@
-"""Full-dataset material search (Release 1, contract M).
+"""Full-dataset material search (Release 1, contract M; Release 2, F12).
 
-Four explicit modes; nothing is auto-detected or auto-corrected:
+Five concrete modes; nothing is auto-corrected:
 
 - ``formula``: composition equality. The query is parsed and compared with
   each material's normalised composition from ``raw_data["composition"]``
@@ -10,6 +10,11 @@ Four explicit modes; nothing is auto-detected or auto-corrected:
 - ``mp_id``: exact identifier, one record or none.
 - ``chemsys``: exact element set (``Li-Fe-P-O``).
 - ``contains``: materials containing every listed element (supersets).
+- ``material_id``: exact local ID (``5`` or ``#5``), one record or none.
+
+``auto`` is not a mode of its own: ``detect_mode`` resolves it to one of the
+concrete modes from the input's shape, and that mode's branch then runs
+unchanged. There is no fallback from one mode to another.
 
 Element symbols are case-sensitive throughout. Invalid input raises
 ``SearchQueryError`` with an explanation; it is never reread as something
@@ -35,26 +40,41 @@ from app.utils.chemical_formula import parse_formula_elements_strict
 TAU = 1e-6
 MAX_QUERY_LENGTH = 100
 MAX_LIMIT = 100
-SEARCH_MODES = ("formula", "mp_id", "chemsys", "contains")
+SEARCH_MODES = ("formula", "mp_id", "chemsys", "contains", "material_id")
 MAX_SUGGESTIONS = 10
+MAX_MATERIAL_ID = 2_147_483_647
 _MP_ID = re.compile(r"^mp-\d+$")
+_MATERIAL_ID = re.compile(r"#?([0-9]+)")
+_CHEMSYS_SHAPE = re.compile(r"[A-Za-z]+(?:-[A-Za-z]+)+")
+AUTO_HINT = (
+    "Accepted inputs: a local material ID (5 or #5), a Materials Project ID "
+    "(mp-19017), a chemical system of element symbols joined by hyphens "
+    "(Li-Fe-P-O) or a chemical formula (LiFePO4)."
+)
 _ADDUCT = re.compile(r"[·•∙*]|\.(?=[A-Z(\[])")
 
 
 class SearchQueryError(ValueError):
-    def __init__(self, code: str, mode: str, query: str, explanation: str):
+    def __init__(
+        self, code: str, mode: str | None, query: str, explanation: str,
+    ):
         super().__init__(explanation)
         self.code = code
         self.mode = mode
         self.query = query
         self.explanation = explanation
+        # Set by MaterialSearchService.search for the request as sent.
+        self.requested_mode = mode
+        self.hint: str | None = None
 
     def detail(self) -> dict:
         return {
             "code": self.code,
             "mode": self.mode,
+            "requested_mode": self.requested_mode,
             "input": self.query,
             "explanation": self.explanation,
+            "hint": self.hint,
         }
 
 
@@ -66,6 +86,7 @@ class IndexedMaterial:
     pretty_formula: str
     elements: frozenset[str]
     fractions: dict[str, float]
+    energy_above_hull: float | None = None
 
     def result(self) -> dict:
         return {
@@ -73,6 +94,7 @@ class IndexedMaterial:
             "mp_id": self.mp_id,
             "formula": self.formula,
             "pretty_formula": self.pretty_formula,
+            "energy_above_hull": self.energy_above_hull,
         }
 
 
@@ -234,6 +256,36 @@ def parse_formula_query(query: str) -> dict:
     }
 
 
+def detect_mode(query: str) -> str:
+    """Resolve an ``auto`` query to a concrete mode from its shape alone.
+
+    Rules, first match wins: ASCII digits with an optional leading '#' are a
+    local material ID; a leading 'mp-' in any case is an MP ID; two or more
+    letter tokens joined by hyphens are a chemical system; anything else is
+    a formula. Validity is left to the resolved mode's own branch.
+    """
+    if _MATERIAL_ID.fullmatch(query):
+        return "material_id"
+    if query[:3].lower() == "mp-":
+        return "mp_id"
+    if _CHEMSYS_SHAPE.fullmatch(query):
+        return "chemsys"
+    return "formula"
+
+
+def parse_material_id(query: str) -> int:
+    text = query.strip()
+    match = _MATERIAL_ID.fullmatch(text)
+    value = int(match.group(1)) if match else 0
+    if not 1 <= value <= MAX_MATERIAL_ID:
+        raise SearchQueryError(
+            "invalid_material_id", "material_id", query,
+            "Local material IDs are whole numbers from 1 to "
+            f"{MAX_MATERIAL_ID}, written as '5' or '#5'.",
+        )
+    return value
+
+
 def parse_element_list(query: str, mode: str) -> list[str]:
     separator = r"-" if mode == "chemsys" else r"[,\s]+"
     tokens = [token.strip() for token in re.split(separator, query.strip())]
@@ -291,6 +343,7 @@ def build_composition_index(
             Material.formula,
             Material.pretty_formula,
             Material.raw_data["composition"],
+            Material.energy_above_hull,
         ).order_by(Material.id)
     ).all()
     return index_from_rows(rows, fingerprint)
@@ -300,7 +353,10 @@ def index_from_rows(rows, fingerprint) -> CompositionIndex:
     materials: list[IndexedMaterial] = []
     exclusions: list[CompositionExclusion] = []
     by_element_set: dict[frozenset[str], list[IndexedMaterial]] = {}
-    for material_id, mp_id, formula, pretty_formula, composition in rows:
+    for row in rows:
+        # energy_above_hull is optional so hand-built rows may omit it.
+        material_id, mp_id, formula, pretty_formula, composition, *rest = row
+        energy_above_hull = rest[0] if rest else None
         try:
             fractions = normalise_stored_composition(composition)
         except ValueError as error:
@@ -315,6 +371,7 @@ def index_from_rows(rows, fingerprint) -> CompositionIndex:
             pretty_formula=pretty_formula,
             elements=frozenset(fractions),
             fractions=fractions,
+            energy_above_hull=energy_above_hull,
         )
         materials.append(item)
         by_element_set.setdefault(item.elements, []).append(item)
@@ -337,13 +394,35 @@ class MaterialSearchService:
         self.cache = cache
 
     def search(self, *, mode: str, query: str, limit: int, offset: int) -> dict:
+        try:
+            return self._search(
+                requested_mode=mode, query=query, limit=limit, offset=offset,
+            )
+        except SearchQueryError as error:
+            error.requested_mode = mode
+            if mode == "auto":
+                error.hint = AUTO_HINT
+            raise
+
+    def dataset_summary(self) -> dict:
+        return self._dataset(self.cache.get(self.db))
+
+    def _search(
+        self, *, requested_mode: str, query: str, limit: int, offset: int,
+    ) -> dict:
         # Bounded before any parsing or index access (route approval condition).
         if len(query) > MAX_QUERY_LENGTH:
             raise SearchQueryError(
-                "query_too_long", mode, query[:MAX_QUERY_LENGTH],
+                "query_too_long",
+                None if requested_mode == "auto" else requested_mode,
+                query[:MAX_QUERY_LENGTH],
                 f"Queries are limited to {MAX_QUERY_LENGTH} characters; this one "
                 f"has {len(query)}.",
             )
+        mode = (
+            detect_mode(query.strip()) if requested_mode == "auto"
+            else requested_mode
+        )
         if not 1 <= limit <= MAX_LIMIT:
             raise SearchQueryError(
                 "invalid_limit", mode, query,
@@ -351,6 +430,7 @@ class MaterialSearchService:
             )
         index = self.cache.get(self.db)
         suggestions = None
+        suggestion_total = None
 
         if mode == "formula":
             interpretation = parse_formula_query(query)
@@ -373,6 +453,7 @@ class MaterialSearchService:
                         item.result() for item in same_system[:MAX_SUGGESTIONS]
                     ],
                 }
+                suggestion_total = len(same_system)
         elif mode == "mp_id":
             text = query.strip()
             if not _MP_ID.match(text):
@@ -388,16 +469,18 @@ class MaterialSearchService:
             matches = [item for item in index.materials if item.mp_id == text]
             # Identity search does not depend on a readable composition.
             if not matches:
-                row = self.db.execute(
-                    select(
-                        Material.id, Material.mp_id, Material.formula,
-                        Material.pretty_formula,
-                    ).where(Material.mp_id == text)
-                ).first()
-                if row is not None:
-                    matches = [IndexedMaterial(
-                        row[0], row[1], row[2], row[3], frozenset(), {},
-                    )]
+                matches = self._identity_lookup(Material.mp_id == text)
+        elif mode == "material_id":
+            material_id = parse_material_id(query)
+            interpretation = {
+                "mode": mode, "input": query, "elements": None,
+                "amounts": None, "normalized_fractions": None,
+                "reduced_formula": None, "mp_id": None,
+                "material_id": material_id,
+            }
+            # The same population as the mp_id fallback: every stored
+            # material, including those excluded from the composition index.
+            matches = self._identity_lookup(Material.id == material_id)
         elif mode in ("chemsys", "contains"):
             elements = parse_element_list(query, mode)
             interpretation = {
@@ -415,7 +498,7 @@ class MaterialSearchService:
         else:
             raise SearchQueryError(
                 "invalid_mode", mode, query,
-                f"Choose one of: {', '.join(SEARCH_MODES)}.",
+                f"Choose one of: {', '.join(SEARCH_MODES)}, or auto.",
             )
 
         matches.sort(key=lambda item: item.material_id)
@@ -423,6 +506,7 @@ class MaterialSearchService:
         page = matches[offset: offset + limit]
         return {
             "interpretation": interpretation,
+            "requested_mode": requested_mode,
             "dataset": dataset,
             "total_matches": len(matches),
             "dataset_total": dataset["dataset_total"],
@@ -430,8 +514,27 @@ class MaterialSearchService:
             "offset": offset,
             "results": [item.result() for item in page],
             "suggestions": suggestions,
+            "suggestion_total": suggestion_total,
             "message": None if matches else self._zero_message(dataset),
+            "scoped_message": (
+                None if matches
+                else self._scoped_message(interpretation, dataset)
+            ),
         }
+
+    def _identity_lookup(self, condition) -> list[IndexedMaterial]:
+        row = self.db.execute(
+            select(
+                Material.id, Material.mp_id, Material.formula,
+                Material.pretty_formula, Material.energy_above_hull,
+            ).where(condition)
+        ).first()
+        if row is None:
+            return []
+        return [IndexedMaterial(
+            row[0], row[1], row[2], row[3], frozenset(), {},
+            energy_above_hull=row[4],
+        )]
 
     def _dataset(self, index: CompositionIndex) -> dict:
         total = self.db.execute(select(func.count(Material.id))).scalar_one()
@@ -478,4 +581,40 @@ class MaterialSearchService:
             f"No match in this dataset ({release}, "
             f"{dataset['dataset_total']} materials). The material is not in "
             "this dataset; this does not mean it does not exist."
+        )
+
+    @staticmethod
+    def _scoped_message(interpretation: dict, dataset: dict) -> str:
+        """State what was searched for, where, and what absence means."""
+        mode = interpretation["mode"]
+        elements = "{" + ", ".join(interpretation["elements"] or ()) + "}"
+        if mode == "formula":
+            subject = (
+                "No material with reduced formula "
+                f"{interpretation['reduced_formula']} in this dataset"
+            )
+        elif mode == "chemsys":
+            subject = (
+                f"No material with exactly the elements {elements} in this "
+                "dataset"
+            )
+        elif mode == "contains":
+            subject = (
+                f"No material containing all of {elements} in this dataset"
+            )
+        elif mode == "mp_id":
+            subject = f"{interpretation['mp_id']} is not in this dataset"
+        else:
+            subject = (
+                f"No material with local ID {interpretation['material_id']} "
+                "in this dataset"
+            )
+        release = (
+            f"Materials Project release {dataset['source_release']}"
+            if dataset["source_release"]
+            else "Materials Project, release not recorded in this database"
+        )
+        return (
+            f"{subject} ({release}, {dataset['dataset_total']} materials). "
+            "Absence here does not mean the material does not exist."
         )
