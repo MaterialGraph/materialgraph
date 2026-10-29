@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   ApiError, browseMaterials, datasetSummary, searchMaterials, SEARCH_PAGE_SIZE,
   type DatasetSummary, type Material, type MaterialSearchResponse, type SearchQueryProblem,
-  type SearchRequestMode, type SearchResult,
+  type SearchRequestMode, type SearchResolvedMode, type SearchResult,
 } from './api';
 import { ChemicalFormula } from './ChemicalFormula';
 
@@ -30,7 +30,7 @@ type Draft = { query: string; mode: SearchRequestMode };
 /** The last submitted search, or null for browsing the whole dataset. */
 type Committed = Draft | null;
 type Pages = { rows: SearchResult[]; response: MaterialSearchResponse | null; lastPageSize: number };
-type Problem = { message: string; code?: string; input?: string; hint?: string | null };
+type Problem = { message: string; code?: string; input?: string; hint?: string | null; mode?: SearchResolvedMode | null; requestedMode?: SearchRequestMode };
 
 const initialDraft: Draft = { query: '', mode: 'auto' };
 const noPages: Pages = { rows: [], response: null, lastPageSize: 0 };
@@ -62,7 +62,7 @@ function toProblem(error: unknown): Problem {
   if (error instanceof ApiError) {
     const detail = error.details as Partial<SearchQueryProblem> | undefined;
     if (error.status === 422 && detail && typeof detail === 'object' && 'explanation' in detail) {
-      return { message: error.message, code: detail.code, input: detail.input, hint: detail.hint };
+      return { message: error.message, code: detail.code, input: detail.input, hint: detail.hint, mode: detail.mode, requestedMode: detail.requested_mode };
     }
     return { message: error.message };
   }
@@ -234,6 +234,7 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
       {/* The input as the server received it, shown beside the explanation; never rewritten. */}
       {error.input !== undefined && <p className="searchInput">Input: <code>{error.input}</code></p>}
       <p>{error.message}{error.code && <small> ({error.code})</small>}</p>
+      {error.requestedMode === 'auto' && error.mode && <p className="searchHint">Searched as {modeLabels[error.mode]} (detected automatically).</p>}
       {error.hint && <p className="searchHint">{error.hint}</p>}
       {!error.code && <button type="button" onClick={() => void fetchPage(committed, 0)}>Retry</button>}
     </div>}

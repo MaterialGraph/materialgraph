@@ -386,6 +386,7 @@ it('shows the backend explanation, hint and input for invalid input (invalid; M-
   const alert = host.querySelector('[role="alert"]')!;
   expect(alert.textContent).toContain('Element symbols are case-sensitive.');
   expect(alert.textContent).toContain('Accepted inputs: a local material ID (5 or #5).');
+  expect(alert.textContent).toContain('Searched as Formula (detected automatically).');
   expect(alert.textContent).toContain('invalid_formula');
   // The displayed input is the server's echo, not a corrected version.
   expect(alert.querySelector('.searchInput')?.textContent).toBe('Input: lifepo4');
