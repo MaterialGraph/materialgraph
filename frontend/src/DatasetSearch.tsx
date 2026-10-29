@@ -217,14 +217,9 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
       <p className="visuallyHidden" role="status" aria-live="polite">{announcement}</p>
       {committed && status === 'ready' && response && <>
         <p className="hint" aria-hidden="true">Interpreted as {interpretationText(response)}. {countText(response)}</p>
-        <p className="hint">Ordered by local ID.</p>
-        <Provenance dataset={response.dataset}/>
-        {compositionModes.has(response.interpretation.mode) && response.dataset.composition_exclusion_count > 0 &&
-          <p className="hint">{response.dataset.composition_exclusion_count} materials could not be searched by composition; MP ID and local ID search still find them.</p>}
       </>}
       {!committed && status !== 'error' && <>
         <p className="hint">All materials in the dataset, ordered by local ID.{showing && ` ${showing}`}</p>
-        {summaryStatus === 'ready' && summary && <Provenance dataset={summary}/>}
         {summaryStatus === 'error' && <div className="error summaryError" role="alert">Dataset information unavailable <button type="button" onClick={() => void fetchSummary()}>Retry</button></div>}
       </>}
       {committed && <p className="hint">{status === 'ready' && showing && `${showing}. `}<button type="button" className="textButton" onClick={browse}>Clear search</button></p>}
@@ -239,6 +234,13 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
       {!error.code && <button type="button" onClick={() => void fetchPage(committed, 0)}>Retry</button>}
     </div>}
     <div className="datasetSearchScroll">
+      {committed && status === 'ready' && response && <div className="resultContext">
+        <p className="hint">Ordered by local ID.</p>
+        <Provenance dataset={response.dataset}/>
+        {compositionModes.has(response.interpretation.mode) && response.dataset.composition_exclusion_count > 0 &&
+          <p className="hint">{response.dataset.composition_exclusion_count} materials could not be searched by composition; MP ID and local ID search still find them.</p>}
+      </div>}
+      {!committed && status !== 'error' && summaryStatus === 'ready' && summary && <div className="resultContext"><Provenance dataset={summary}/></div>}
       {status === 'ready' && committed && response && response.total_matches === 0 && response.scoped_message && <p className="scopedMessage">{response.scoped_message}</p>}
       {status === 'ready' && !committed && pages.rows.length === 0 && <p className="hint">No materials in the dataset.</p>}
       {pages.rows.length > 0 && <div className="materialList">{pages.rows.map((item, index) =>
