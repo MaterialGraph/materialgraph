@@ -49,7 +49,9 @@ _CHEMSYS_SHAPE = re.compile(r"[A-Za-z]+(?:-[A-Za-z]+)+")
 AUTO_HINT = (
     "Accepted inputs: a local material ID (5 or #5), a Materials Project ID "
     "(mp-19017), a chemical system of element symbols joined by hyphens "
-    "(Li-Fe-P-O) or a chemical formula (LiFePO4)."
+    "(Li-Fe-P-O) or a chemical formula (LiFePO4). To find materials "
+    "containing several elements, choose \"Contains elements\" as the "
+    "search mode."
 )
 _ADDUCT = re.compile(r"[·•∙*]|\.(?=[A-Z(\[])")
 
@@ -354,9 +356,9 @@ def index_from_rows(rows, fingerprint) -> CompositionIndex:
     exclusions: list[CompositionExclusion] = []
     by_element_set: dict[frozenset[str], list[IndexedMaterial]] = {}
     for row in rows:
-        # energy_above_hull is optional so hand-built rows may omit it.
-        material_id, mp_id, formula, pretty_formula, composition, *rest = row
-        energy_above_hull = rest[0] if rest else None
+        # Every row must carry energy_above_hull; a short row is an error.
+        (material_id, mp_id, formula, pretty_formula, composition,
+         energy_above_hull) = row
         try:
             fractions = normalise_stored_composition(composition)
         except ValueError as error:

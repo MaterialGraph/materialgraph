@@ -84,7 +84,7 @@ def dataset_summary(db: Session = Depends(get_db)):
     return MaterialSearchService(db).dataset_summary()
 
 
-@router.get("/{material_id}",response_model=MaterialRead)
+@router.get("/{material_id}", response_model=MaterialRead)
 def get_material(material_id: int, db: Session = Depends(get_db)):
     material = db.query(Material).filter(Material.id == material_id).first()
 

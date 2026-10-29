@@ -58,9 +58,9 @@ def test_formula_equality_is_composition_equality(client, query, expected):
 def test_identical_compositions_of_distinct_identities_are_separate_matches():
     rows = [
         (10, "mp-19226", "NaFePO4", "NaFePO4",
-         {"Na": 4.0, "Fe": 4.0, "P": 4.0, "O": 16.0}),
+         {"Na": 4.0, "Fe": 4.0, "P": 4.0, "O": 16.0}, None),
         (384, "mp-1192859", "NaFePO4", "NaFePO4",
-         {"Fe": 4.0, "Na": 4.0, "O": 16.0, "P": 4.0}),
+         {"Fe": 4.0, "Na": 4.0, "O": 16.0, "P": 4.0}, None),
     ]
     index = index_from_rows(rows, (2, 384))
     query = parse_formula_query("NaFePO4")["normalized_fractions"]
@@ -97,7 +97,7 @@ def test_invalid_stored_amounts_are_excluded_with_an_explanation(raw, reason):
     with pytest.raises(ValueError, match=reason):
         normalise_stored_composition(raw)
 
-    index = index_from_rows([(1, "mp-1", "X", "X", raw)], (1, 1))
+    index = index_from_rows([(1, "mp-1", "X", "X", raw, None)], (1, 1))
     assert index.materials == ()
     assert index.exclusions[0].material_id == 1
     assert reason in index.exclusions[0].reason
@@ -386,11 +386,13 @@ def test_endpoint_matches_exactly_as_compositions_equal_does(
 
     rows = [
         (9001, "mp-9001", "LiFePO4", "LiFePO4",
-         {"Li": 1.0 + lithium_shift(0.5 * TAU), "Fe": 1.0, "P": 1.0, "O": 4.0}),
+         {"Li": 1.0 + lithium_shift(0.5 * TAU), "Fe": 1.0, "P": 1.0, "O": 4.0},
+         None),
         (9002, "mp-9002", "LiFePO4", "LiFePO4",
-         {"Li": 1.0 + lithium_shift(2.0 * TAU), "Fe": 1.0, "P": 1.0, "O": 4.0}),
+         {"Li": 1.0 + lithium_shift(2.0 * TAU), "Fe": 1.0, "P": 1.0, "O": 4.0},
+         None),
         (9003, "mp-9003", "LiFePO4", "LiFePO4",
-         {"Li": 4.0, "Fe": 4.0, "P": 4.0, "O": 16.0}),
+         {"Li": 4.0, "Fe": 4.0, "P": 4.0, "O": 16.0}, None),
     ]
     index = index_from_rows(rows, (3, 9003))
     gaps = {
