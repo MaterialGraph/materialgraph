@@ -4,7 +4,7 @@
   "source_release": "2026.04.13",
   "dataset_total": 1727,
   "composition_exclusion_count": 0,
-  "fingerprint": null,
+  "fingerprint": "8b325cead6aff54b3c992246ffe7b5e2107ce4d861ae02ffd28365dca0f257e2",
   "cases": {
     "formula_fepo4li": {"query": "FePO4Li", "total_matches": 20, "includes_material_id": 5},
     "formula_nafepo4": {"query": "NaFePO4", "material_ids": [10, 384, 1094, 1147]},
