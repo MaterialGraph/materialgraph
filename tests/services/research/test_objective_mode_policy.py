@@ -117,6 +117,23 @@ def test_inherited_avoided_element_is_penalised_by_the_stated_amount(
         )
 
 
+@pytest.mark.parametrize(("mode", "points"), [("balanced", 25), ("exploratory", 10)])
+def test_explanation_text_states_the_configured_penalty(client, mode, points):
+    """R1-fix-21: the stated penalty is the policy object's value."""
+    penalty = mode_policy(mode).avoid.candidate_penalty
+    assert penalty == points
+
+    data = client.post(
+        EXPLORE,
+        json={"objective": _objective(), "mode": mode, "limit": 20},
+    ).json()
+
+    stated = f"lower a material's objective score by {int(penalty)} points"
+    assert stated in mode_policy(mode).avoid_explanation()
+    assert stated in AVOID_POLICY_EXPLANATIONS[mode]
+    assert stated in data["objective_coverage"]["avoid_policy_explanation"]
+
+
 def test_strict_excludes_avoided_non_source_materials_and_exempts_the_source(
     client,
 ):

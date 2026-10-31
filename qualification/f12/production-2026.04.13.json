@@ -1,0 +1,17 @@
+{
+  "description": "F12 qualification expectations for production, Materials Project release 2026.04.13.",
+  "note": "material_id values are production local IDs. Change this file only through a reviewed change.",
+  "source_release": "2026.04.13",
+  "dataset_total": 1727,
+  "composition_exclusion_count": 0,
+  "fingerprint": "8b325cead6aff54b3c992246ffe7b5e2107ce4d861ae02ffd28365dca0f257e2",
+  "cases": {
+    "formula_fepo4li": {"query": "FePO4Li", "total_matches": 20, "includes_material_id": 5},
+    "formula_nafepo4": {"query": "NaFePO4", "material_ids": [10, 384, 1094, 1147]},
+    "chemsys_li_fe_p_o": {"query": "Li-Fe-P-O", "total_matches": 148, "elements": ["Fe", "Li", "O", "P"]},
+    "formula_ti2c": {"query": "Ti2C", "total_matches": 0},
+    "formula_lifepo4_invalid": {"query": "lifepo4", "status": 422, "code": "invalid_formula"},
+    "mp_id_mp_19017": {"query": "mp-19017", "material_ids": [5]},
+    "auto_local_id": {"query": "#5", "interpretation_mode": "material_id", "requested_mode": "auto", "mp_ids": ["mp-19017"]}
+  }
+}

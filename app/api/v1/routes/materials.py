@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.material import Material
 from app.schemas.material import MaterialDetail, MaterialRead
-from app.schemas.material_search import MaterialSearchResponse, SearchMode
+from app.schemas.material_search import (
+    MaterialDatasetSummaryResponse,
+    MaterialSearchErrorDetail,
+    MaterialSearchResponse,
+    SearchRequestMode,
+)
 from app.services.material.query_service import MaterialQueryService
 from app.services.material.search_service import (
     MaterialSearchService,
@@ -40,15 +45,17 @@ def list_materials(
     summary="Search the full dataset",
     description=(
         "Searches every material in the dataset, not only loaded rows. The "
-        "mode is explicit: formula (composition equality within 1e-6 on "
-        "normalised fractions), mp_id (exact), chemsys (exact element set) "
-        "or contains (supersets). Element symbols are case-sensitive. "
-        "Invalid input returns 422 with an explanation; it is never "
-        "corrected or reinterpreted."
+        "mode is required: formula (composition equality within 1e-6 on "
+        "normalised fractions), mp_id (exact), chemsys (exact element set), "
+        "contains (supersets), material_id (exact local ID) or auto, which "
+        "resolves to one of these from the input's shape and is reported in "
+        "the interpretation. Element symbols are case-sensitive. Invalid "
+        "input returns 422 with an explanation; it is never corrected or "
+        "reinterpreted."
     ),
 )
 def search_materials(
-    mode: SearchMode = Query(...),
+    mode: SearchRequestMode = Query(...),
     q: str = Query(...),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
@@ -62,7 +69,19 @@ def search_materials(
             offset=offset,
         )
     except SearchQueryError as error:
-        raise HTTPException(status_code=422, detail=error.detail()) from error
+        detail = MaterialSearchErrorDetail(**error.detail()).model_dump()
+        raise HTTPException(status_code=422, detail=detail) from error
+
+
+# Registered before /{material_id} so the ID route does not capture it.
+@router.get(
+    "/dataset-summary",
+    response_model=MaterialDatasetSummaryResponse,
+    summary="Describe the searchable dataset",
+    description="Returns the same dataset block as a search response.",
+)
+def dataset_summary(db: Session = Depends(get_db)):
+    return MaterialSearchService(db).dataset_summary()
 
 
 @router.get("/{material_id}", response_model=MaterialRead)

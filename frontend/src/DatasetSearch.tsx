@@ -1,94 +1,260 @@
-import { useState, type FormEvent } from 'react';
-import { ApiError, searchMaterials, type MaterialSearchResponse, type SearchMode, type SearchResult } from './api';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import {
+  ApiError, browseMaterials, datasetSummary, searchMaterials, SEARCH_PAGE_SIZE,
+  type DatasetSummary, type Material, type MaterialSearchResponse, type SearchQueryProblem,
+  type SearchRequestMode, type SearchResolvedMode, type SearchResult,
+} from './api';
 import { ChemicalFormula } from './ChemicalFormula';
 
-const modeLabels: Record<SearchMode, string> = {
+export const modeLabels: Record<SearchRequestMode, string> = {
+  auto: 'Auto',
   formula: 'Formula',
-  mp_id: 'MP ID',
   chemsys: 'Chemical system',
   contains: 'Contains elements',
+  mp_id: 'MP ID',
+  material_id: 'Local ID',
 };
 
-const placeholders: Record<SearchMode, string> = {
+const placeholders: Record<SearchRequestMode, string> = {
+  auto: 'Formula, Li-Fe-P-O, mp-19017 or #5',
   formula: 'e.g. LiFePO4 (case-sensitive)',
-  mp_id: 'e.g. mp-19017',
   chemsys: 'e.g. Li-Fe-P-O (exactly these elements)',
   contains: 'e.g. Na, Fe (at least these elements)',
+  mp_id: 'e.g. mp-19017',
+  material_id: 'e.g. 5 or #5',
 };
 
-/** Suggests a mode for the typed text. It never switches mode or rewrites the query. */
-export function suggestedMode(mode: SearchMode, text: string): SearchMode | null {
-  const value = text.trim();
-  if (mode !== 'mp_id' && /^mp-\d+$/.test(value)) return 'mp_id';
-  if (mode === 'formula' && /^[A-Z][a-z]?(-[A-Z][a-z]?)+$/.test(value)) return 'chemsys';
-  return null;
+const compositionModes = new Set(['formula', 'chemsys', 'contains']);
+
+type Draft = { query: string; mode: SearchRequestMode };
+/** The last submitted search, or null for browsing the whole dataset. */
+type Committed = Draft | null;
+type Pages = { rows: SearchResult[]; response: MaterialSearchResponse | null; lastPageSize: number };
+type Problem = { message: string; code?: string; input?: string; hint?: string | null; mode?: SearchResolvedMode | null; requestedMode?: SearchRequestMode };
+
+const initialDraft: Draft = { query: '', mode: 'auto' };
+const noPages: Pages = { rows: [], response: null, lastPageSize: 0 };
+
+/** Energy above hull as given by the API, at three decimals; never styled by value. */
+export function formatEnergy(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return 'Energy above hull: not supplied';
+  let text: string;
+  if (value === 0) text = '0.000';
+  else if (value > 0) text = value < 0.0005 ? '<0.001' : value.toFixed(3);
+  else text = value > -0.0005 ? '>−0.001' : `−${(-value).toFixed(3)}`;
+  return `Energy above hull: ${text} eV/atom`;
 }
 
-type State =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'error'; message: string; code?: string; input?: string }
-  | { status: 'done'; response: MaterialSearchResponse; results: SearchResult[] };
-
-function interpretationText(response: MaterialSearchResponse): string {
+export function interpretationText(response: MaterialSearchResponse): string {
   const { interpretation } = response;
+  if (interpretation.mode === 'material_id') return `local material ID ${interpretation.material_id}`;
   if (interpretation.mode === 'mp_id') return `MP ID ${interpretation.mp_id}`;
   if (interpretation.mode === 'formula') return `formula ${interpretation.reduced_formula} (elements: ${(interpretation.elements ?? []).join(', ')})`;
   if (interpretation.mode === 'chemsys') return `exactly the elements ${(interpretation.elements ?? []).join(', ')}`;
   return `at least the elements ${(interpretation.elements ?? []).join(', ')}`;
 }
 
-export function DatasetSearch({ select, loadedIds }: { select: (id: number) => void; loadedIds: Set<number> }) {
-  const [mode, setMode] = useState<SearchMode>('formula');
-  const [query, setQuery] = useState('');
-  const [state, setState] = useState<State>({ status: 'idle' });
-  const suggestion = suggestedMode(mode, query);
+function countText(response: MaterialSearchResponse): string {
+  return `${response.total_matches} ${response.total_matches === 1 ? 'match' : 'matches'} among ${response.dataset_total} materials in the dataset.`;
+}
 
-  async function run(offset: number) {
-    const previous = state.status === 'done' && offset > 0 ? state.results : [];
-    setState({ status: 'loading' });
+function toProblem(error: unknown): Problem {
+  if (error instanceof ApiError) {
+    const detail = error.details as Partial<SearchQueryProblem> | undefined;
+    if (error.status === 422 && detail && typeof detail === 'object' && 'explanation' in detail) {
+      return { message: error.message, code: detail.code, input: detail.input, hint: detail.hint, mode: detail.mode, requestedMode: detail.requested_mode };
+    }
+    return { message: error.message };
+  }
+  return { message: 'Search failed.' };
+}
+
+const toRow = (item: Material): SearchResult => ({
+  material_id: item.id, mp_id: item.mp_id, formula: item.formula,
+  pretty_formula: item.pretty_formula, energy_above_hull: item.energy_above_hull,
+});
+
+function Provenance({ dataset }: { dataset: DatasetSummary }) {
+  return <p className="hint">Values computed by Materials Project. {dataset.provenance_note}{' '}
+    {dataset.source_release
+      ? `Most recent recorded import: Materials Project release ${dataset.source_release}.`
+      : 'The Materials Project release is not recorded in this database.'}</p>;
+}
+
+type RowProps = { item: SearchResult; selected: number; select: (id: number) => void; rowRef?: (node: HTMLButtonElement | null) => void };
+function MaterialRow({ item, selected, select, rowRef }: RowProps) {
+  const active = item.material_id === selected;
+  return <button type="button" ref={rowRef} className={active ? 'materialRow active' : 'materialRow'} aria-current={active ? 'true' : undefined} onClick={() => select(item.material_id)}>
+    <strong><ChemicalFormula formula={item.pretty_formula || item.formula}/></strong>
+    <small>{item.mp_id} · #{item.material_id}</small>
+    <small className="energy">{formatEnergy(item.energy_above_hull)}</small>
+  </button>;
+}
+
+type Active = { id: number; controller: AbortController };
+
+export function DatasetSearch({ selected, select }: { selected: number; select: (id: number) => void }) {
+  const [draft, setDraft] = useState<Draft>(initialDraft);
+  const [committed, setCommitted] = useState<Committed>(null);
+  const [pages, setPages] = useState<Pages>(noPages);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [error, setError] = useState<Problem | null>(null);
+  const [pageStatus, setPageStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [pageError, setPageError] = useState('');
+  const [summary, setSummary] = useState<DatasetSummary | null>(null);
+  const [summaryStatus, setSummaryStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [focusIndex, setFocusIndex] = useState<number | null>(null);
+  const counter = useRef(0);
+  const listRequest = useRef<Active | null>(null);
+  const summaryRequest = useRef<Active | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const rows = useRef<(HTMLButtonElement | null)[]>([]);
+
+  function begin(slot: { current: Active | null }): Active {
+    slot.current?.controller.abort();
+    const next = { id: ++counter.current, controller: new AbortController() };
+    slot.current = next;
+    return next;
+  }
+
+  async function fetchPage(target: Committed, offset: number) {
+    const request = begin(listRequest);
+    if (offset === 0) { setStatus('loading'); setError(null); setPageStatus('idle'); }
+    else { setPageStatus('loading'); setPageError(''); }
     try {
-      const response = await searchMaterials(mode, query, offset);
-      setState({ status: 'done', response, results: [...previous, ...response.results] });
-    } catch (error) {
-      if (error instanceof ApiError) {
-        const detail = error.details as { code?: string; input?: string } | undefined;
-        setState({ status: 'error', message: error.message, code: detail?.code, input: detail?.input });
-      } else setState({ status: 'error', message: 'Search failed.' });
+      const page = target
+        ? await searchMaterials(target.mode, target.query, offset, request.controller.signal).then(response => ({ rows: response.results, response }))
+        : await browseMaterials(offset, request.controller.signal).then(items => ({ rows: items.map(toRow), response: null }));
+      if (listRequest.current?.id !== request.id) return;
+      setPages(previous => offset === 0
+        ? { rows: page.rows, response: page.response, lastPageSize: page.rows.length }
+        : { rows: [...previous.rows, ...page.rows], response: previous.response, lastPageSize: page.rows.length });
+      if (offset === 0) setStatus('ready');
+      else { setPageStatus('idle'); setFocusIndex(offset); }
+    } catch (failure) {
+      // An aborted or superseded request is never shown.
+      if (request.controller.signal.aborted || listRequest.current?.id !== request.id) return;
+      if (offset === 0) { setStatus('error'); setError(toProblem(failure)); }
+      else { setPageStatus('error'); setPageError(toProblem(failure).message); }
     }
   }
-  function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (query.trim()) void run(0); }
+
+  async function fetchSummary() {
+    const request = begin(summaryRequest);
+    setSummary(null); setSummaryStatus('loading');
+    try {
+      const next = await datasetSummary(request.controller.signal);
+      if (summaryRequest.current?.id !== request.id) return;
+      setSummary(next); setSummaryStatus('ready');
+    } catch {
+      if (request.controller.signal.aborted || summaryRequest.current?.id !== request.id) return;
+      setSummaryStatus('error');
+    }
+  }
+
+  function browse() {
+    setCommitted(null); setDraft(initialDraft); setPages(noPages);
+    void fetchPage(null, 0);
+    void fetchSummary();
+  }
+
+  useEffect(() => {
+    void fetchPage(null, 0);
+    void fetchSummary();
+    return () => { listRequest.current?.controller.abort(); summaryRequest.current?.controller.abort(); };
+    // Initial entry into browse only; later requests are started by user actions.
+  }, []);
+
+  useEffect(() => {
+    if (focusIndex === null) return;
+    rows.current[focusIndex]?.focus();
+    setFocusIndex(null);
+  }, [focusIndex, pages]);
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    input.current?.focus();
+    if (!draft.query.trim()) { browse(); return; }
+    const next = { ...draft };
+    setCommitted(next); setPages(noPages);
+    void fetchPage(next, 0);
+  }
+
+  function showMore() {
+    if (pageStatus !== 'idle') return;
+    void fetchPage(committed, pages.rows.length);
+  }
+  /** Refetches the failed page of the committed search at the same offset. */
+  function retryPage() {
+    if (pageStatus === 'error') void fetchPage(committed, pages.rows.length);
+  }
+
+  const response = pages.response;
+  const stale = committed !== null && (draft.query !== committed.query || draft.mode !== committed.mode);
+  const total = committed ? response?.total_matches : summary?.dataset_total;
+  const hasMore = status === 'ready' && (committed
+    ? response !== null && pages.rows.length < response.total_matches
+    : pages.lastPageSize === SEARCH_PAGE_SIZE && (summary === null || pages.rows.length < summary.dataset_total));
+  const showing = pages.rows.length > 0 ? `Showing 1–${pages.rows.length}${total !== undefined ? ` of ${total}` : ''}` : '';
+  const announcement = status === 'loading'
+    ? (committed ? 'Searching the full dataset…' : 'Loading materials…')
+    : status === 'ready' && committed && response ? `Interpreted as ${interpretationText(response)}. ${countText(response)}` : '';
+  rows.current = [];
 
   return <section className="datasetSearch" aria-label="Search the full dataset">
-    <form onSubmit={submit}>
-      <label htmlFor="datasetSearchMode">Search the full dataset by</label>
-      <div className="inline">
-        <select id="datasetSearchMode" value={mode} onChange={event => setMode(event.target.value as SearchMode)}>
-          {(Object.keys(modeLabels) as SearchMode[]).map(key => <option key={key} value={key}>{modeLabels[key]}</option>)}
+    <form onSubmit={submit} className="datasetSearchForm">
+      <label htmlFor="datasetSearchQuery">Search the full dataset</label>
+      <input id="datasetSearchQuery" ref={input} aria-label="Dataset search query" maxLength={100} value={draft.query}
+        onChange={event => setDraft({ ...draft, query: event.target.value })} placeholder={placeholders[draft.mode]}/>
+      <div className="datasetSearchControls">
+        <select id="datasetSearchMode" aria-label="Search mode" value={draft.mode} onChange={event => setDraft({ ...draft, mode: event.target.value as SearchRequestMode })}>
+          {(Object.keys(modeLabels) as SearchRequestMode[]).map(key => <option key={key} value={key}>{modeLabels[key]}</option>)}
         </select>
-        <input aria-label="Dataset search query" maxLength={100} value={query} onChange={event => setQuery(event.target.value)} placeholder={placeholders[mode]}/>
-        <button type="submit" disabled={state.status === 'loading'}>Search</button>
+        <button type="submit">Search</button>
       </div>
-      {suggestion && <p className="hint">This looks like a search by {modeLabels[suggestion]}. <button type="button" className="textButton" onClick={() => setMode(suggestion)}>Use {modeLabels[suggestion]} mode</button></p>}
     </form>
-    {state.status === 'loading' && <p role="status">Searching the full dataset…</p>}
-    {state.status === 'error' && <div className="error" role="alert">
+    <div className="datasetSearchHeader">
+      <p className="visuallyHidden" role="status" aria-live="polite">{announcement}</p>
+      {committed && status === 'ready' && response && <>
+        <p className="hint" aria-hidden="true">Interpreted as {interpretationText(response)}. {countText(response)}</p>
+      </>}
+      {!committed && status !== 'error' && <>
+        <p className="hint">All materials in the dataset, ordered by local ID.{showing && ` ${showing}`}</p>
+        {summaryStatus === 'error' && <div className="error summaryError" role="alert">Dataset information unavailable <button type="button" onClick={() => void fetchSummary()}>Retry</button></div>}
+      </>}
+      {committed && <p className="hint">{status === 'ready' && showing && `${showing}. `}<button type="button" className="textButton" onClick={browse}>Clear search</button></p>}
+      {stale && <p className="hint stale">These results belong to the previous search: <code>{committed.query}</code> ({modeLabels[committed.mode]}).</p>}
+    </div>
+    {status === 'error' && error && <div className="error" role="alert">
       {/* The input as the server received it, shown beside the explanation; never rewritten. */}
-      {state.input !== undefined && <p className="searchInput">Input: <code>{state.input}</code></p>}
-      <p>{state.message}{state.code && <small> ({state.code})</small>}</p>
+      {error.input !== undefined && <p className="searchInput">Input: <code>{error.input}</code></p>}
+      <p>{error.message}{error.code && <small> ({error.code})</small>}</p>
+      {error.requestedMode === 'auto' && error.mode && <p className="searchHint">Searched as {modeLabels[error.mode]} (detected automatically).</p>}
+      {error.hint && <p className="searchHint">{error.hint}</p>}
+      {!error.code && <button type="button" onClick={() => void fetchPage(committed, 0)}>Retry</button>}
     </div>}
-    {state.status === 'done' && <div className="datasetSearchResults">
-      <p className="hint">Interpreted as {interpretationText(state.response)}. {state.response.total_matches} {state.response.total_matches === 1 ? 'match' : 'matches'} among {state.response.dataset_total} materials in the dataset.</p>
-      {state.response.message && <p>{state.response.message}</p>}
-      {state.results.length > 0 && <div className="materialList">{state.results.map(item => <button key={item.material_id} onClick={() => select(item.material_id)}>
-        <strong><ChemicalFormula formula={item.pretty_formula || item.formula}/></strong>
-        <small>{item.mp_id} · #{item.material_id}{!loadedIds.has(item.material_id) && ' · in the dataset, not yet loaded in the list'}</small>
-      </button>)}</div>}
-      {state.results.length < state.response.total_matches && <button type="button" className="secondary" onClick={() => void run(state.results.length)}>Show more matches</button>}
-      {state.response.suggestions && <div className="datasetSearchSuggestions"><p className="hint">{state.response.suggestions.explanation}</p>
-        <div className="materialList">{state.response.suggestions.results.map(item => <button key={item.material_id} onClick={() => select(item.material_id)}>
-          <strong><ChemicalFormula formula={item.pretty_formula || item.formula}/></strong><small>Same elements, different proportions · {item.mp_id} · #{item.material_id}</small>
-        </button>)}</div></div>}
-    </div>}
+    <div className="datasetSearchScroll">
+      {committed && status === 'ready' && response && <div className="resultContext">
+        <p className="hint">Ordered by local ID.</p>
+        <Provenance dataset={response.dataset}/>
+        {compositionModes.has(response.interpretation.mode) && response.dataset.composition_exclusion_count > 0 &&
+          <p className="hint">{response.dataset.composition_exclusion_count} materials could not be searched by composition; MP ID and local ID search still find them.</p>}
+      </div>}
+      {!committed && status !== 'error' && summaryStatus === 'ready' && summary && <div className="resultContext"><Provenance dataset={summary}/></div>}
+      {status === 'ready' && committed && response && response.total_matches === 0 && response.scoped_message && <p className="scopedMessage">{response.scoped_message}</p>}
+      {status === 'ready' && !committed && pages.rows.length === 0 && <p className="hint">No materials in the dataset.</p>}
+      {pages.rows.length > 0 && <div className="materialList">{pages.rows.map((item, index) =>
+        <MaterialRow key={item.material_id} item={item} selected={selected} select={select} rowRef={node => { rows.current[index] = node; }}/>)}</div>}
+      {pageStatus === 'error' && <div className="error" role="alert">{pageError} <button type="button" onClick={retryPage}>Retry</button></div>}
+      {hasMore && pageStatus !== 'error' && <button type="button" className="secondary" disabled={pageStatus === 'loading'} onClick={showMore}>{pageStatus === 'loading' ? 'Loading…' : 'Show more'}</button>}
+      {status === 'ready' && response?.suggestions && <div className="datasetSearchSuggestions">
+        <p className="suggestionLabel">Same elements, different proportions</p>
+        <p className="hint">{response.suggestions.explanation}</p>
+        {response.suggestion_total !== null && response.suggestion_total > response.suggestions.results.length &&
+          <p className="hint">Showing {response.suggestions.results.length} of {response.suggestion_total}</p>}
+        <div className="materialList">{response.suggestions.results.map(item =>
+          <MaterialRow key={item.material_id} item={item} selected={selected} select={select}/>)}</div>
+      </div>}
+    </div>
   </section>;
 }
