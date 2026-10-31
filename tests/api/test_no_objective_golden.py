@@ -71,6 +71,13 @@ CASES = [
      {"objective": AVOID_ONLY_CS01, "mode": "balanced", "limit": 10}),
     ("objective_explore_28_exploratory_avoid_only", "POST", "/api/v1/materials/28/discovery/objective/explore",
      {"objective": AVOID_ONLY_Q6, "mode": "exploratory", "limit": 10}),
+    # Strict with neither avoided nor preferred elements already runs the
+    # objective-aware admission branch, but is frozen in its current behaviour
+    # (spec rev 3.3, 4.0; PR-0 part 2).
+    ("objective_explore_5_strict_no_objective", "POST", "/api/v1/materials/5/discovery/objective/explore",
+     {"objective": NO_OBJECTIVE, "mode": "strict", "limit": 10}),
+    ("objective_explore_28_strict_no_objective", "POST", "/api/v1/materials/28/discovery/objective/explore",
+     {"objective": NO_OBJECTIVE, "mode": "strict", "limit": 10}),
     # Objective Chains API: legacy admission, no objective.
     ("objective_chains_5_no_objective", "POST", "/api/v1/materials/5/discovery/objective/chains",
      {"objective": NO_OBJECTIVE}),
