@@ -1,8 +1,10 @@
-"""SRQ-01 PR-A: baseline of objective-aware Objective Explore responses.
+"""SRQ-01 PR-A: objective-aware Objective Explore responses.
 
-Freezes today's objective-aware responses (spec rev 3.7, 4.0) on the CI
-reference dataset before the formula-correspondence report is added, so the
-integration can be shown to change nothing else.
+The baseline snapshots in tests/fixtures/golden/srq01_pra/ were captured before
+the formula-correspondence report existed (spec rev 3.7, 4.0). Each response
+minus the new ``formula_correspondence`` key, serialized exactly as the API
+serializes JSON, must still equal its baseline byte for byte. The full current
+responses are frozen separately under srq01_pra/full/.
 
 Snapshots live in tests/fixtures/golden/srq01_pra/. Regeneration is off by
 default and never silent: set ``MATERIALGRAPH_REGENERATE_GOLDEN=srq01_pra``;
@@ -70,14 +72,44 @@ def _check(snapshot: Path, content: bytes) -> None:
         pytest.fail(f"{snapshot.name}: response bytes differ from the golden snapshot")
 
 
+def _serialize(data) -> bytes:
+    """Starlette's JSONResponse rendering, so bytes compare like for like."""
+    return json.dumps(
+        data, ensure_ascii=False, allow_nan=False, indent=None, separators=(",", ":"),
+    ).encode("utf-8")
+
+
 @pytest.mark.parametrize(("name", "source", "body"), CASES, ids=[case[0] for case in CASES])
-def test_objective_aware_response_bytes_match_baseline(client, name, source, body):
+def test_response_without_the_report_matches_the_pre_integration_baseline(client, name, source, body):
     response = client.post(EXPLORE.format(source), json=body)
     assert response.status_code == 200, response.text
-    _check(GOLDEN_DIR / f"{name}.json", response.content)
+    data = response.json()
+    assert "formula_correspondence" in data
+    baseline = GOLDEN_DIR / f"{name}.json"
+    assert baseline.exists(), baseline.name
+    expected = baseline.read_bytes()
+
+    # The response minus the new key, serialized like the API, equals the
+    # pre-integration bytes.
+    data.pop("formula_correspondence")
+    assert _serialize(data) == expected, (
+        f"{name}: the response changed beyond the additive formula_correspondence key"
+    )
+    # On the served bytes themselves: the new key is the model's last field,
+    # so the response is the baseline with only that member appended.
+    prefix = expected[:-1] + b',"formula_correspondence":'
+    assert response.content.startswith(prefix), name
+    assert response.content.endswith(b"}}"), name
 
 
-def test_baseline_snapshots_have_no_line_ending_conversion():
-    for snapshot in GOLDEN_DIR.glob("*.json"):
+@pytest.mark.parametrize(("name", "source", "body"), CASES, ids=[case[0] for case in CASES])
+def test_full_objective_aware_response_bytes_match_golden(client, name, source, body):
+    response = client.post(EXPLORE.format(source), json=body)
+    assert response.status_code == 200, response.text
+    _check(GOLDEN_DIR / "full" / f"{name}.json", response.content)
+
+
+def test_snapshots_have_no_line_ending_conversion():
+    for snapshot in GOLDEN_DIR.rglob("*.json"):
         assert b"\r" not in snapshot.read_bytes(), snapshot.name
         json.loads(snapshot.read_bytes())

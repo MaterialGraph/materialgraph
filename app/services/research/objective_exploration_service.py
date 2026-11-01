@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from app.domain.objective_mode_policy import mode_policy
 from app.domain.relationship_labels import relationship_text
 from app.services.material.quality_service import MaterialQualityService
+from app.services.research.formula_correspondence_report import (
+    build_formula_correspondence_report,
+)
 from app.services.research.objective_coverage import build_objective_coverage
 from app.services.research.objective_service import ResearchObjectiveService
 from app.utils.chemical_formula import contains_element
@@ -68,7 +71,7 @@ class ResearchObjectiveExplorationService:
             search_truncated=bool(search_metadata.get("search_truncated")),
         )
 
-        return {
+        response = {
             "material_id": material_id,
             "base_formula": chain_result.get("base_formula"),
             "objective": request.objective,
@@ -85,6 +88,29 @@ class ResearchObjectiveExplorationService:
             "explanation": self._build_explanation(request.mode),
             "objective_coverage": objective_coverage,
         }
+        # Read-only report on what was already returned (SRQ-01 R7.1); frozen
+        # requests carry no key at all.
+        if self.is_objective_aware(request):
+            response["formula_correspondence"] = build_formula_correspondence_report(
+                self.db,
+                source_material_id=material_id,
+                chains=chains,
+                ranked_candidates=returned_candidates,
+            )
+        return response
+
+    @staticmethod
+    def is_objective_aware(request) -> bool:
+        """Spec rev 3.7, 4.0: at least one preferred element, or Strict with
+        at least one avoided element. Every other request is frozen."""
+        # Partial objective objects (test doubles, older callers) count a
+        # missing term as not requested, as objective coverage does.
+        objective = request.objective
+        prefer_elements = getattr(objective, "prefer_elements", None) or ()
+        avoid_elements = getattr(objective, "avoid_elements", None) or ()
+        return bool(prefer_elements) or (
+            request.mode == "strict" and bool(avoid_elements)
+        )
 
     def _apply_mode_constraints(
         self,
