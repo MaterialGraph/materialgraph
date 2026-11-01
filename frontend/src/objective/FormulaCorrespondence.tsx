@@ -36,7 +36,7 @@ export function correspondenceDetail(correspondence: FormulaCorrespondence): str
 }
 
 export function sourceAnalogText(baseFormula: string | null, correspondence: FormulaCorrespondence): string {
-  return `Exact formula analog of ${baseFormula || 'the starting material'}: ${replacement(correspondence)}; all other element ratios unchanged. This compares formulas with the starting material directly; it is not a returned chain step.`;
+  return `Exact formula analog of ${baseFormula || 'the starting material'}: ${replacement(correspondence)}; all other element ratios unchanged. This compares formulas with the starting material directly, independently of the returned chains.`;
 }
 
 export const sourceNotEvaluatedText = 'Formula correspondence not evaluated.';
@@ -45,7 +45,7 @@ export function SourceAnalogNote({ report, baseFormula, materialId }: { report?:
   if (!report) return null;
   const entry = report.source_correspondence.find(item => item.material_id === materialId);
   if (entry) return <p className="objectiveCorrespondence" role="note">
-    Exact formula analog of {baseFormula ? <ChemicalFormula formula={baseFormula}/> : 'the starting material'}: {replacement(entry.correspondence)}; all other element ratios unchanged. This compares formulas with the starting material directly; it is not a returned chain step. <span className="objectiveStructure">Structure not assessed.</span>
+    Exact formula analog of {baseFormula ? <ChemicalFormula formula={baseFormula}/> : 'the starting material'}: {replacement(entry.correspondence)}; all other element ratios unchanged. This compares formulas with the starting material directly, independently of the returned chains. <span className="objectiveStructure">Structure not assessed.</span>
   </p>;
   if (report.not_evaluated_material_ids.includes(materialId)) return <p className="hint">{sourceNotEvaluatedText}</p>;
   return null;

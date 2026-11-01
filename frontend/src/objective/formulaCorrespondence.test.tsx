@@ -86,7 +86,7 @@ it('notes an exact formula analog on its ranked card, even when no returned chai
   const nafepo4 = plain(card(html, 3));
   expect(nafepo4).toContain('No returned chain includes this material.');
   expect(nafepo4).toContain('Exact formula analog of LiFePO4: Li replaced by Na; all other element ratios unchanged.');
-  expect(nafepo4).toContain('it is not a returned chain step');
+  expect(nafepo4).toContain('independently of the returned chains');
   expect(nafepo4).toContain('Structure not assessed.');
   expect(card(html, 3).split('class="objectiveCorrespondence"')[1].split('</p>')[0]).toContain('<sub>4</sub>');
   // No chain-step label is invented for it.
