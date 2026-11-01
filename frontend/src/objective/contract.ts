@@ -96,6 +96,8 @@ export type ObjectiveResponse = {
   warnings: string[]; explanation: string;
   /** Absent when the backend predates objective coverage contract version 1. */
   objective_coverage?: ObjectiveCoverage;
+  /** Absent on frozen requests and on backends that predate SRQ-01 PR-A. */
+  formula_correspondence?: FormulaCorrespondenceReport;
 };
 
 export type PreferCoverageStatus = 'represented' | 'not_represented' | 'not_evaluated';
@@ -126,4 +128,31 @@ export type ObjectiveCoverage = {
   source_material: { material_id: number; excluded_from_counts: true; avoided_elements_present: string[] | null };
   terms_not_evaluated: ('preserve_elements' | 'target_family')[];
   mode: 'balanced' | 'exploratory' | 'strict'; avoid_policy_explanation: string; limitations: string[];
+};
+
+/** Formula-correspondence report (SRQ-01 spec R7.1, contract version 1). Present only on
+ * objective-aware Objective Explore responses; absent on all others. The client renders it
+ * and never re-derives it. */
+export type CorrespondenceClass = 'exact_alkali_replacement' | 'not_exact_replacement' | 'not_evaluated';
+export type CorrespondenceReason = 'ratios_differ' | 'non_alkali_elements_differ' | 'replacement_alkali_in_source'
+  | 'replaced_alkali_in_candidate' | 'multiple_alkali_changes' | 'formula_unparsed';
+export type FormulaCorrespondence = {
+  correspondence_class: CorrespondenceClass; reason: CorrespondenceReason | null;
+  replaced_from: string | null; replaced_to: string | null;
+};
+export type TransitionCorrespondence = {
+  chain_position: number; transition_index: number; from_material_id: number; to_material_id: number;
+  correspondence: FormulaCorrespondence;
+};
+export type FormulaGroupMember = { material_id: number; mp_id: string | null; energy_above_hull: number | null; traversed: boolean };
+export type CandidateSourceCorrespondence = {
+  candidate_rank: number; material_id: number; correspondence: FormulaCorrespondence; formula_group: FormulaGroupMember[];
+};
+export type ExpansionEfaCounts = { expanded_material_id: number; groups_found: number; groups_admitted: number; excluded: Record<string, unknown>[] };
+export type FormulaCorrespondenceReport = {
+  contract_version: '1'; basis: 'stored_composition_fractions'; tolerance: number;
+  transitions: TransitionCorrespondence[]; source_correspondence: CandidateSourceCorrespondence[];
+  expansions: ExpansionEfaCounts[];
+  formula_grouping_available: boolean; admission_reporting_available: boolean;
+  not_evaluated_material_ids: number[]; not_evaluated_count: number; limitations: string[];
 };

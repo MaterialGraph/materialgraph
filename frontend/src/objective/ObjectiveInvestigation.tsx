@@ -3,8 +3,9 @@ import { ChemicalFormula } from '../ChemicalFormula';
 import { STRUCTURE_NOT_ASSESSED, STRUCTURE_NOT_ASSESSED_DETAIL } from '../structureStatus';
 import { CompareTray } from '../comparison/CompareTray';
 import { objectiveLaunch, objectiveRole, toggleComparisonSelection, type ComparisonLaunchContext, type SelectedMaterial } from '../comparison/launch';
-import type { ChainAvoidanceDetail, ObjectiveCandidate, ObjectiveChain, ObjectiveModePolicy, ObjectiveResponse, ObjectiveTransition } from './contract';
+import type { ChainAvoidanceDetail, FormulaCorrespondence, FormulaCorrespondenceReport, ObjectiveCandidate, ObjectiveChain, ObjectiveModePolicy, ObjectiveResponse, ObjectiveTransition } from './contract';
 import { ChainAvoidanceNote, ObjectiveCoveragePanel, materialAvoidanceLabel } from './ObjectiveCoverage';
+import { FormulaCorrespondencePanel, SourceAnalogNote, correspondenceDetail, correspondenceHeading, stepCorrespondence } from './FormulaCorrespondence';
 import { buildObjectiveRequest, initialDraft, objectiveModes, type ObjectiveDraft } from './request';
 import { useObjectiveInvestigation } from './useObjectiveInvestigation';
 import { routeFromObjective, type ComparisonRoute } from '../comparison/routing';
@@ -31,6 +32,7 @@ function RankedMaterial({ result, candidate, index, comparison, toggle }: { resu
       <div className="objectiveScore"><strong>{candidate.score.toLocaleString()}</strong><small>objective rule score</small></div></div>
     {paths.length ? <p className="hint">{returnedRole(result, candidate.material_id)} · Returned {paths.length === 1 ? 'chain' : 'chains'}: {paths.map((path, position) => <span key={path}>{position > 0 && ', '}<a href={`#objective-path-${path + 1}`}>{path + 1}</a></span>)}</p>
       : <p className="hint">No returned chain includes this material.</p>}
+    <SourceAnalogNote report={result.formula_correspondence} baseFormula={result.base_formula} materialId={candidate.material_id}/>
     {toggle && candidate.material_id !== result.material_id && <button type="button" className="compareSelect" aria-pressed={selected} aria-label={`${selected ? 'Remove' : 'Select'} ${candidate.formula ?? `local ID ${candidate.material_id}`} ${selected ? 'from' : 'for'} comparison`}
       disabled={comparison?.length === 3 && !selected} aria-describedby={comparison?.length === 3 && !selected ? 'objective-selection-limit' : undefined}
       onClick={() => toggle({ id: candidate.material_id, formula: candidate.formula || `Local ID ${candidate.material_id}`, mpId: candidate.mp_id ?? result.chains.flatMap(chain => chain.materials).find(material => material.material_id === candidate.material_id)?.mp_id ?? null, role: objectiveRole(result, candidate.material_id) })}>
@@ -61,33 +63,36 @@ const chainScoreComponents: Record<string, { label: string; maximum: number }> =
   material_quality: { label: 'Endpoint/bottleneck material quality', maximum: 15 },
 };
 
-function Relationship({ transition }: { transition: ObjectiveTransition }) {
+function Relationship({ transition, correspondence }: { transition: ObjectiveTransition; correspondence?: FormulaCorrespondence }) {
   return <li className="objectiveRelationship">
-    <strong>{relationshipLabel(transition.transition_type)}</strong>
+    <strong>{correspondence ? correspondenceHeading(correspondence) : relationshipLabel(transition.transition_type)}</strong>
     {(!transition.structural_preservation_validated || !transition.substitution_mechanism_validated) && <span className="objectiveValidation">Not validated</span>}
+    {correspondence && <small className="objectiveCorrespondence">{correspondenceDetail(correspondence)}</small>}
     <small>{transition.shared_elements.length ? `Shared elements: ${transition.shared_elements.join(', ')}` : 'Shared elements not supplied'}</small>
     <small className="objectiveStructure">{STRUCTURE_NOT_ASSESSED}</small>
   </li>;
 }
 
-function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: number; avoidance?: ChainAvoidanceDetail }) {
+function Pathway({ chain, index, avoidance, correspondence }: { chain: ObjectiveChain; index: number; avoidance?: ChainAvoidanceDetail; correspondence?: FormulaCorrespondenceReport }) {
+  const stepOf = (n: number) => stepCorrespondence(correspondence, index + 1, n);
   return <li className="objectivePath" id={`objective-path-${index + 1}`}>
     <h4>Returned composition chain {index + 1} · {chain.transitions.length} relationship {chain.transitions.length === 1 ? 'step' : 'steps'}</h4>
     <ol className="objectivePathMaterials">{chain.materials.flatMap((material, materialIndex) => [
       <li className="objectiveMaterialRecord" key={`material-${materialIndex}`}><ChemicalFormula formula={material.pretty_formula || material.formula}/>
         <small>{material.mp_id ?? `Local ID ${material.material_id}`} <span className="objectiveRole">{materialIndex === 0 ? 'Source' : materialIndex === chain.materials.length - 1 ? 'Final' : 'Intermediate'}</span>
           {materialIndex > 0 && (() => { const label = materialAvoidanceLabel(avoidance, material.material_id); return label && <span className="objectiveAvoidance">{label}</span>; })()}</small></li>,
-      ...(materialIndex < chain.transitions.length ? [<Relationship key={`relationship-${materialIndex}`} transition={chain.transitions[materialIndex]}/>] : []),
+      ...(materialIndex < chain.transitions.length ? [<Relationship key={`relationship-${materialIndex}`} transition={chain.transitions[materialIndex]} correspondence={stepOf(materialIndex)}/>] : []),
     ])}</ol>
     <ChainAvoidanceNote detail={avoidance}/>
     <p className="hint">Composition-level relationships only; reaction steps and mechanisms are not established.</p>
     <p className="objectiveChainScore">Chain usefulness rule score: {chain.scientific_usefulness_score?.toLocaleString() ?? 'Not supplied'}. <span className="hint">This is separate from the objective rule score.</span></p>
     <details><summary>Relationship details and scoring</summary>
       <section className="objectiveDetailSection" aria-label="Relationship details"><h5>Relationship details</h5>
-      {chain.transitions.map((transition, n) => <div className="objectiveTransition" key={n}>
-        <h6>Relationship {n + 1}: {relationshipLabel(transition.transition_type)}</h6>
+      {chain.transitions.map((transition, n) => { const step = stepOf(n); return <div className="objectiveTransition" key={n}>
+        <h6>Relationship {n + 1}: {step ? correspondenceHeading(step) : relationshipLabel(transition.transition_type)}</h6>
         <dl className="objectiveMetadata">
           <div><dt>Backend relationship identifier</dt><dd><code>{transition.transition_type}</code></dd></div>
+          {step && <div><dt>Formula correspondence</dt><dd>{correspondenceDetail(step)} <code>{step.correspondence_class}</code></dd></div>}
           <div><dt>Relationship basis</dt><dd>{basisLabel(transition.relationship_basis)} <code>{transition.relationship_basis}</code></dd></div>
           <div><dt>Preservation/continuity basis</dt><dd>{basisLabel(transition.preservation_basis)} <code>{transition.preservation_basis}</code></dd></div>
           <div><dt>Structural preservation</dt><dd>{transition.structural_preservation_validated ? 'Reported as validated' : 'Not validated'}</dd></div>
@@ -97,7 +102,7 @@ function Pathway({ chain, index, avoidance }: { chain: ObjectiveChain; index: nu
           {transition.removed_elements && <div><dt>Elements absent in next composition</dt><dd>{transition.removed_elements.length ? transition.removed_elements.join(', ') : 'None reported'}</dd></div>}
           {transition.introduced_elements && <div><dt>Elements present only in next composition</dt><dd>{transition.introduced_elements.length ? transition.introduced_elements.join(', ') : 'None reported'}</dd></div>}
         </dl>
-      </div>)}</section>
+      </div>; })}</section>
       {chain.score_breakdown && <section className="objectiveDetailSection" aria-label="Whole-chain score breakdown">
         <h5>Whole-chain score breakdown</h5>
         <p className="hint">Deterministic rule components for the whole chain; these values do not measure reaction likelihood or synthesis feasibility. Relationship type weights are unvalidated heuristics; a different-alkali step is weighted as a composition family relationship.</p>
@@ -150,6 +155,7 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
     </div>
     {result.warnings.map((warning, n) => <p className="warning" key={n}>{warning}</p>)}
     <ObjectiveCoveragePanel coverage={result.objective_coverage}/>
+    <FormulaCorrespondencePanel report={result.formula_correspondence}/>
     <div className="objectiveColumns">
       <section><h3>Ranked materials</h3><p className="hint">These ranked materials come from a selected cohort of material identities in battery-relevant chemical systems. They do not represent a comprehensive search of materials space.</p><p className="hint">Returned order and objective rule scores. A score does not measure experimental confidence.</p>
         {hasEqualScores && <p className="hint">Some materials have the same objective rule score. Their order follows the API response.</p>}
@@ -159,7 +165,7 @@ export function ObjectiveResults({ result, submitted, comparison, toggle, remove
       </section>
       <section><h3>Returned composition chains</h3><p className="hint">These chains describe composition-level relationships between returned materials. They do not establish that reactions proceed through these steps.</p><p className="hint">“Intermediate” and “final” describe positions within the returned chain and do not denote experimentally established reaction intermediates or products.</p><p className="hint">Shared-element continuity describes a composition-level relationship. It does not establish structural preservation or a validated substitution mechanism.</p>
         {hasUnvalidatedRelationship && <p className="hint">“Not validated” refers to structural preservation or a substitution mechanism for that relationship; the reported shared elements are shown separately.</p>}
-        {result.chains.length ? <ol className="objectivePaths">{result.chains.map((chain, index) => <Pathway key={index} chain={chain} index={index} avoidance={result.objective_coverage?.chain_avoidance.find(detail => detail.chain_position === index + 1)}/>)}</ol> : <p className="empty">No pathways included in this response.</p>}
+        {result.chains.length ? <ol className="objectivePaths">{result.chains.map((chain, index) => <Pathway key={index} chain={chain} index={index} avoidance={result.objective_coverage?.chain_avoidance.find(detail => detail.chain_position === index + 1)} correspondence={result.formula_correspondence}/>)}</ol> : <p className="empty">No pathways included in this response.</p>}
       </section>
     </div>
   </div>;
