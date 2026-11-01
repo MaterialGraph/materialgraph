@@ -314,15 +314,18 @@ class ResearchObjectiveExplorationService:
                     if pair_correspondence
                     else None
                 )
-                relationship = (
-                    correspondence_relationship_text(entry)
-                    if entry
-                    else relationship_text(transition_type)
-                )
-                reasons.append(
-                    "Appears in an eligible composition chain with relationship "
-                    f"type {relationship}."
-                )
+                # A classified step describes that step, which may come before
+                # this material in the chain; the wording says so.
+                if entry:
+                    reasons.append(
+                        "Appears in an eligible composition chain containing a step "
+                        f"classified as {correspondence_relationship_text(entry)}."
+                    )
+                else:
+                    reasons.append(
+                        "Appears in an eligible composition chain with relationship "
+                        f"type {relationship_text(transition_type)}."
+                    )
 
             shared_elements = transition.get("shared_elements") or transition.get("preserved_framework", [])
             if shared_elements:

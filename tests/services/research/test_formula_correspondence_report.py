@@ -380,11 +380,11 @@ def test_limitations_state_sections_2_3_and_2_5():
 
 STRICT_AVOID_LI = {"objective": {**_BASE, "avoid_elements": ["Li"]}, "mode": "strict", "limit": 10}
 EXACT_LI_NA_REASON = (
-    "Appears in an eligible composition chain with relationship type exact formula analog "
+    "Appears in an eligible composition chain containing a step classified as exact formula analog "
     "(alkali metal Li \u2192 Na; all other element ratios unchanged)."
 )
 RATIOS_DIFFER_REASON = (
-    "Appears in an eligible composition chain with relationship type "
+    "Appears in an eligible composition chain containing a step classified as "
     "different alkali metal (element ratios differ)."
 )
 
