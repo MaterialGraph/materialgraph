@@ -209,6 +209,72 @@ def test_not_evaluated_ids_are_ordered_by_numeric_mp_id(db_session):
     assert mp_id_sort_key(None, 3) < mp_id_sort_key(None, 4)
 
 
+# Element-set fallback (rev 3.8): applicability only, never a classification -----
+
+_NOT_EVALUATED = {
+    "correspondence_class": "not_evaluated", "reason": "formula_unparsed",
+    "replaced_from": None, "replaced_to": None,
+}
+# Recorded element sets of LiFePO4 (5) -> NaFePO4 (10): they look exactly like
+# a Li -> Na replacement, which stored compositions would classify as exact.
+_EXACT_LOOKING = _transition(5, 10, ["Fe", "O", "P"], ["Li"], ["Na"])
+
+
+@pytest.mark.parametrize(
+    ("unusable_id", "side"), [(10, "candidate"), (5, "source")], ids=["candidate_side", "source_side"],
+)
+def test_exact_looking_element_sets_never_yield_a_classification(db_session, unusable_id, side):
+    # Control: with both compositions usable this pair is exact.
+    usable = build_formula_correspondence_report(
+        db_session, source_material_id=5,
+        chains=[{"materials": [{"material_id": 5}, {"material_id": 10}], "transitions": [_EXACT_LOOKING]}],
+        ranked_candidates=[{"material_id": 10}],
+    )
+    assert usable["transitions"][0]["correspondence"]["correspondence_class"] == "exact_alkali_replacement"
+    assert [entry["material_id"] for entry in usable["source_correspondence"]] == [10]
+
+    _break_composition(db_session, unusable_id)
+    report = build_formula_correspondence_report(
+        db_session, source_material_id=5,
+        chains=[{"materials": [{"material_id": 5}, {"material_id": 10}], "transitions": [_EXACT_LOOKING]}],
+        ranked_candidates=[{"material_id": 10}],
+    )
+    assert report["transitions"] == [{
+        "chain_position": 1, "transition_index": 0, "from_material_id": 5, "to_material_id": 10,
+        "correspondence": _NOT_EVALUATED,
+    }], side
+    assert report["source_correspondence"] == [], side
+    assert 10 not in [entry["material_id"] for entry in report["source_correspondence"]]
+    assert report["not_evaluated_material_ids"] == [unusable_id]
+
+
+@pytest.mark.parametrize("side", ["source", "candidate"])
+def test_fallback_transitions_are_only_ever_not_evaluated(db_session, side):
+    # Alkali-changing pairs by recorded element sets, each with one unusable
+    # side; their stored compositions would give exact (5->10), ratios_differ
+    # (5->6, 5->7) and ratios_differ (10->1, Na -> Li).
+    transitions = [
+        _EXACT_LOOKING,
+        _transition(5, 6, ["Fe", "O", "P"], ["Li"], ["Na"]),
+        _transition(5, 7, ["Fe", "O", "P"], ["Li"], ["Na"]),
+        _transition(10, 1, ["Fe", "O", "P"], ["Na"], ["Li"]),
+    ]
+    unusable = {5, 10} if side == "source" else {10, 6, 7, 1}
+    for material_id in unusable:
+        _break_composition(db_session, material_id)
+    chains = [{"materials": [{"material_id": t["from_material_id"]}, {"material_id": t["to_material_id"]}],
+               "transitions": [t]} for t in transitions]
+    report = build_formula_correspondence_report(
+        db_session, source_material_id=5, chains=chains,
+        ranked_candidates=[{"material_id": material_id} for material_id in (10, 6, 7, 1)],
+    )
+    assert len(report["transitions"]) == len(transitions)
+    for entry in report["transitions"]:
+        assert entry["correspondence"] == _NOT_EVALUATED, entry
+    assert report["source_correspondence"] == []
+    assert set(report["not_evaluated_material_ids"]) == unusable
+
+
 # Compositions: one query, always normalised (AC13) -----------------------------------
 
 def test_compositions_load_in_one_query(db_session):
