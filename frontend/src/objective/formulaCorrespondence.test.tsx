@@ -8,6 +8,8 @@ import { buildObjectiveRequest, initialDraft } from './request';
 // Synthetic response for display tests only (SRQ-01 PR-A3). The chain is
 // LiFePO4 -> LiFe(PO3)3 -> Na3Fe(PO4)2; ranked material 10 (NaFePO4) is in no returned chain.
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/&#x27;/g, "'").replace(/\s+/g, ' ');
+// Formulas render with <sub>; drop inline tags without adding spaces so "LiFePO<sub>4</sub>" reads "LiFePO4".
+const plain = (html: string) => text(html.replace(/<\/?(sub|span)[^>]*>/g, ''));
 
 const base: ObjectiveResponse = {
   material_id: 5, base_formula: 'LiFePO4', objective: buildObjectiveRequest(initialDraft).objective,
@@ -81,11 +83,12 @@ it('gives every class and reason its own wording', () => {
 
 it('notes an exact formula analog on its ranked card, even when no returned chain includes it', () => {
   const html = render(withReport);
-  const nafepo4 = text(card(html, 3));
+  const nafepo4 = plain(card(html, 3));
   expect(nafepo4).toContain('No returned chain includes this material.');
   expect(nafepo4).toContain('Exact formula analog of LiFePO4: Li replaced by Na; all other element ratios unchanged.');
   expect(nafepo4).toContain('it is not a returned chain step');
   expect(nafepo4).toContain('Structure not assessed.');
+  expect(card(html, 3).split('class="objectiveCorrespondence"')[1].split('</p>')[0]).toContain('<sub>4</sub>');
   // No chain-step label is invented for it.
   expect(text(paths(html))).not.toContain('Exact formula analog');
 });

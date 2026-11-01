@@ -1,3 +1,4 @@
+import { ChemicalFormula } from '../ChemicalFormula';
 import type { CorrespondenceReason, FormulaCorrespondence, FormulaCorrespondenceReport } from './contract';
 
 // Renders the backend formula-correspondence report (SRQ-01 spec R7.1, contract
@@ -43,7 +44,9 @@ export const sourceNotEvaluatedText = 'Formula correspondence not evaluated.';
 export function SourceAnalogNote({ report, baseFormula, materialId }: { report?: FormulaCorrespondenceReport; baseFormula: string | null; materialId: number }) {
   if (!report) return null;
   const entry = report.source_correspondence.find(item => item.material_id === materialId);
-  if (entry) return <p className="objectiveCorrespondence" role="note">{sourceAnalogText(baseFormula, entry.correspondence)} <span className="objectiveStructure">Structure not assessed.</span></p>;
+  if (entry) return <p className="objectiveCorrespondence" role="note">
+    Exact formula analog of {baseFormula ? <ChemicalFormula formula={baseFormula}/> : 'the starting material'}: {replacement(entry.correspondence)}; all other element ratios unchanged. This compares formulas with the starting material directly; it is not a returned chain step. <span className="objectiveStructure">Structure not assessed.</span>
+  </p>;
   if (report.not_evaluated_material_ids.includes(materialId)) return <p className="hint">{sourceNotEvaluatedText}</p>;
   return null;
 }

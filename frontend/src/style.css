@@ -205,3 +205,4 @@
 .scopedMessage{font-size:13px;line-height:1.5;margin:8px 0}
 .suggestionLabel{font-size:12px;font-weight:700;margin:16px 0 0}
 @media(max-width:850px){.datasetSearchScroll{max-height:60vh}}
+p.objectiveCorrespondence{margin:8px 0;padding:8px 10px;border-left:3px solid var(--border);background:var(--canvas);color:var(--ink);font-size:12px;line-height:1.6}
