@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_serializer
 
 from app.schemas.discovery import (
     DiscoveryChain,
@@ -172,6 +172,78 @@ class ObjectiveCoverage(BaseModel):
     limitations: list[str]
 
 
+# Formula-correspondence report (SRQ-01 spec rev 3.7, R7.1). Values mirror
+# app/services/material/formula_correspondence.py; a test keeps them equal.
+CorrespondenceClass = Literal[
+    "exact_alkali_replacement",
+    "not_exact_replacement",
+    "not_evaluated",
+]
+CorrespondenceReason = Literal[
+    "ratios_differ",
+    "non_alkali_elements_differ",
+    "replacement_alkali_in_source",
+    "replaced_alkali_in_candidate",
+    "multiple_alkali_changes",
+    "formula_unparsed",
+]
+
+
+class FormulaCorrespondence(BaseModel):
+    correspondence_class: CorrespondenceClass
+    # None only for exact_alkali_replacement.
+    reason: CorrespondenceReason | None
+    # Set only when exactly one alkali differs on each side.
+    replaced_from: str | None
+    replaced_to: str | None
+
+
+class TransitionCorrespondence(BaseModel):
+    # One per alkali-changing transition in the returned chains.
+    chain_position: int = Field(ge=1)
+    transition_index: int = Field(ge=0)
+    from_material_id: int
+    to_material_id: int
+    correspondence: FormulaCorrespondence
+
+
+class FormulaGroupMember(BaseModel):
+    material_id: int
+    mp_id: str | None
+    energy_above_hull: float | None
+    traversed: bool
+
+
+class CandidateSourceCorrespondence(BaseModel):
+    # Only ranked candidates that are exact alkali formula analogs of the source.
+    candidate_rank: int = Field(ge=1)
+    material_id: int
+    correspondence: FormulaCorrespondence
+    formula_group: list[FormulaGroupMember]
+
+
+class ExpansionEfaCounts(BaseModel):
+    expanded_material_id: int
+    groups_found: int
+    groups_admitted: int
+    excluded: list[dict]
+
+
+class FormulaCorrespondenceReport(BaseModel):
+    contract_version: Literal["1"] = "1"
+    basis: Literal["stored_composition_fractions"] = "stored_composition_fractions"
+    tolerance: float = 1e-6
+    transitions: list[TransitionCorrespondence]
+    source_correspondence: list[CandidateSourceCorrespondence]
+    expansions: list[ExpansionEfaCounts]
+    # Both False in PR-A: empty lists then mean "not yet reported".
+    formula_grouping_available: bool
+    admission_reporting_available: bool
+    not_evaluated_material_ids: list[int]
+    not_evaluated_count: int = Field(ge=0)
+    limitations: list[str]
+
+
 class ResearchObjectiveExplorationResponse(BaseModel):
     material_id: int
     base_formula: str | None = None
@@ -188,6 +260,16 @@ class ResearchObjectiveExplorationResponse(BaseModel):
     warnings: list[str]
     explanation: str
     objective_coverage: ObjectiveCoverage
+    # Objective-aware requests only (rev 3.7, 4.0). On every other request the
+    # key is absent from the JSON, not null, so frozen responses keep their bytes.
+    formula_correspondence: FormulaCorrespondenceReport | None = None
+
+    @model_serializer(mode="wrap")
+    def _omit_absent_formula_correspondence(self, handler):
+        data = handler(self)
+        if self.formula_correspondence is None:
+            data.pop("formula_correspondence", None)
+        return data
 
 
 class QualitySummary(BaseModel):

@@ -430,13 +430,22 @@ def _stub_chain(*materials):
     return chain
 
 
-def test_explore_adds_coverage_without_changing_existing_fields():
+def test_explore_adds_coverage_without_changing_existing_fields(monkeypatch):
     from app.schemas.research_objective_exploration import (
         ResearchObjectiveExplorationRequest,
         ResearchObjectiveExplorationResponse,
     )
+    from app.services.research import objective_exploration_service
     from app.services.research.objective_exploration_service import (
         ResearchObjectiveExplorationService,
+    )
+
+    # This service double has no database; the SRQ-01 formula-correspondence
+    # report (added after coverage) is covered by its own tests.
+    monkeypatch.setattr(
+        objective_exploration_service,
+        "build_formula_correspondence_report",
+        lambda db, **_: None,
     )
 
     source = _material(5, "LiFePO4")
@@ -449,6 +458,7 @@ def test_explore_adds_coverage_without_changing_existing_fields():
         ResearchObjectiveExplorationService
     )
     service.objective_service = _StubObjectiveService(chains)
+    service.db = None
     request = ResearchObjectiveExplorationRequest(
         objective=_objective(avoid_elements=["Li"], prefer_elements=["Na"],
                              limit=2),
@@ -458,7 +468,10 @@ def test_explore_adds_coverage_without_changing_existing_fields():
 
     result = service.explore(material_id=5, request=request)
 
-    assert list(result)[:-1] == [
+    # SRQ-01 PR-A appends formula_correspondence after coverage on
+    # objective-aware requests; every earlier field is unchanged.
+    assert list(result)[-2:] == ["objective_coverage", "formula_correspondence"]
+    assert list(result)[:-2] == [
         "material_id", "base_formula", "objective", "objective_policy", "mode",
         # P-2: the structured policy follows constraint_policy.
         "constraint_policy", "avoid_policy", "prefer_policy",
