@@ -1,8 +1,11 @@
-"""Formula correspondence between two stored compositions (SRQ-01, spec rev 3.6).
+"""Formula correspondence between two stored compositions (SRQ-01, spec rev 3.7).
 
-Classifies an alkali-changing pair as an exact alkali formula analog (EFA) or
-not, following the classification algorithm in section 3 of the SRQ-01 S2
-specification. The comparison uses stored composition fractions only (2.1,
+Classifies a one-alkali replacement pair as an exact alkali formula analog
+(EFA) or not, following the classification algorithm in section 3 of the
+SRQ-01 S2 specification. Only pairs where both materials contain an alkali
+metal and their alkali sets differ are classified; alkali insertion or
+removal (one side without any alkali) is not a replacement and produces no
+classification. The comparison uses stored composition fractions only (2.1,
 D8): no formula-string parsing and no pymatgen.
 
 An EFA establishes only that two reduced formulas correspond under one alkali
@@ -64,17 +67,18 @@ def classify_formula_correspondence(
 
     Both arguments are normalised composition fractions (as returned by
     ``normalise_stored_composition``), or None when the stored composition is
-    unusable. Returns None when the alkali sets are equal: the pair is not
-    alkali-changing and no classification is produced (step 2).
+    unusable; inputs are trusted and not re-validated. Returns None when the
+    alkali sets are equal or either side has no alkali: the pair is not a
+    one-alkali replacement pair and no classification is produced (step 2).
     """
     # Step 1: an unusable stored composition is never compared.
     if not source or not candidate:
         return FormulaCorrespondence("not_evaluated", "formula_unparsed")
 
-    # Step 2.
+    # Step 2: equal alkali sets, or alkali insertion or removal.
     source_alkali = EFA_ALKALI_METALS.intersection(source)
     candidate_alkali = EFA_ALKALI_METALS.intersection(candidate)
-    if source_alkali == candidate_alkali:
+    if source_alkali == candidate_alkali or not source_alkali or not candidate_alkali:
         return None
 
     # Step 3.

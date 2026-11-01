@@ -116,10 +116,17 @@ def test_step_1_unusable_composition_is_not_evaluated(source, candidate):
         (fractions(Li=1, K=1, **X), fractions(Li=2, K=1, **X)),  # same alkali set {Li, K}
         (fractions(Fe=1, P=1, O=4), fractions(Fe=2, O=3)),   # no alkali on either side
         (LIFEPO4, LIFEPO4),
+        # Rev 3.7: one side without any alkali is insertion or removal, not a
+        # one-alkali replacement.
+        (fractions(Fe=1, P=1, O=4), fractions(Na=1, Fe=1, P=1, O=4)),  # FePO4 -> NaFePO4
+        (LIFEPO4, fractions(Fe=1, P=1, O=4)),                          # LiFePO4 -> FePO4
+        (fractions(Li=1, K=1, **X), fractions(**X)),                   # two alkalis removed, none left
+        (fractions(**X), fractions(Na=1, K=1, **X)),                   # two alkalis inserted
     ],
-    ids=["same_single_alkali", "same_two_alkalis", "no_alkali", "identical"],
+    ids=["same_single_alkali", "same_two_alkalis", "no_alkali", "identical",
+         "FePO4->NaFePO4", "LiFePO4->FePO4", "all_alkalis_removed", "alkalis_inserted"],
 )
-def test_step_2_equal_alkali_sets_produce_no_classification(source, candidate):
+def test_step_2_produces_no_classification(source, candidate):
     assert classify(source, candidate) is None
 
 
@@ -128,7 +135,7 @@ def test_step_2_equal_alkali_sets_produce_no_classification(source, candidate):
     [
         (fractions(Li=1, K=1, **X), fractions(Na=1, Rb=1, **X)),  # two removed, two added
         (fractions(Li=1, **X), fractions(Li=1, Na=1, K=1, **X)),  # none removed, two added
-        (fractions(Li=1, K=1, **X), fractions(**X)),              # two removed, none added
+        (fractions(Li=1, K=1, Na=1, **X), fractions(Na=1, **X)),  # two removed, none added
         (fractions(Li=1, K=1, **X), fractions(Na=1, **X)),        # two removed, one added
     ],
     ids=["two_for_two", "two_added", "two_removed", "two_removed_one_added"],
@@ -146,10 +153,9 @@ def test_step_4_precedes_steps_5_and_6():
     ("source", "candidate"),
     [
         (LIFEPO4, fractions(Li=1, Na=1, Fe=2, P=2, O=8)),
-        # A source without any alkali: every (zero) source alkali "remains".
-        (fractions(Fe=1, P=1, O=4), fractions(Na=1, Fe=1, P=1, O=4)),
+        (fractions(Li=1, **X), fractions(Li=1, K=1, **X)),
     ],
-    ids=["alkali_added_source_kept", "source_has_no_alkali"],
+    ids=["LiFePO4->LiNaFe2(PO4)2", "LiX->LiKX"],
 )
 def test_step_5_alkali_added_while_source_alkalis_remain(source, candidate):
     assert classify(source, candidate) == not_exact("replaced_alkali_in_candidate")
@@ -159,10 +165,9 @@ def test_step_5_alkali_added_while_source_alkalis_remain(source, candidate):
     ("source", "candidate"),
     [
         (fractions(Li=1, Na=1, **X), fractions(Na=2, **X)),
-        # A candidate without any alkali: no replacement alkali is added.
-        (LIFEPO4, fractions(Fe=1, P=1, O=4)),
+        (fractions(Li=1, K=1, **X), fractions(K=1, **X)),
     ],
-    ids=["remaining_alkali_in_source", "candidate_has_no_alkali"],
+    ids=["LiNaX->Na2X", "LiKX->KX"],
 )
 def test_step_6_alkali_removed_without_a_new_one(source, candidate):
     assert classify(source, candidate) == not_exact("replacement_alkali_in_source")
@@ -237,10 +242,12 @@ def test_replaced_alkalis_are_set_only_in_steps_7_and_8():
 
 
 def test_francium_and_hydrogen_are_not_alkali_metals_here():
-    # Fr is outside the EFA set (D6): Li -> Fr is "Li removed, nothing added".
-    assert classify(fractions(Li=1, **X), fractions(Fr=1, **X)) == not_exact("replacement_alkali_in_source")
-    # H is an ordinary element.
-    assert classify(fractions(Li=1, **X), fractions(H=1, **X)) == not_exact("replacement_alkali_in_source")
+    # Fr and H are outside the EFA set (D6): the candidate has no alkali, so
+    # the pair is not a one-alkali replacement (step 2).
+    assert classify(fractions(Li=1, **X), fractions(Fr=1, **X)) is None
+    assert classify(fractions(Li=1, **X), fractions(H=1, **X)) is None
+    # With an alkali retained on both sides, Fr is an ordinary other element.
+    assert classify(fractions(Li=1, Fr=1, **X), fractions(Na=1, Fr=1, **X)) == exact("Li", "Na")
 
 
 # Stored-style scaled cell compositions (2.1, AC1 reduction) ------------------------
