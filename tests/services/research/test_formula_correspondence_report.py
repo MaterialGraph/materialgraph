@@ -17,6 +17,7 @@ from app.services.research import formula_correspondence_report as report_module
 from app.services.research.formula_correspondence_report import (
     LIMITATIONS,
     build_formula_correspondence_report,
+    correspondence_relationship_text,
     load_compositions,
     mp_id_sort_key,
 )
@@ -373,3 +374,60 @@ def test_limitations_state_sections_2_3_and_2_5():
     assert "crystal structure" in joined and "oxidation states" in joined
     assert "distinct materials" in joined
     assert "not reachable" in joined and "candidate pool" in joined
+
+
+# Reason wording on objective-aware requests (SRQ-01 wording consistency) ----------
+
+STRICT_AVOID_LI = {"objective": {**_BASE, "avoid_elements": ["Li"]}, "mode": "strict", "limit": 10}
+EXACT_LI_NA_REASON = (
+    "Appears in an eligible composition chain with relationship type exact formula analog "
+    "(alkali metal Li \u2192 Na; all other element ratios unchanged)."
+)
+RATIOS_DIFFER_REASON = (
+    "Appears in an eligible composition chain with relationship type "
+    "different alkali metal (element ratios differ)."
+)
+
+
+def _all_reasons(data):
+    return [reason for candidate in data["ranked_candidates"] for reason in candidate["reasons"]]
+
+
+@pytest.mark.parametrize(("source", "body"), OBJECTIVE_AWARE)
+def test_objective_aware_reasons_never_say_composition_not_compared(client, source, body):
+    assert not any("composition not compared" in reason for reason in _all_reasons(_explore(client, source, body)))
+
+
+def test_strict_reason_names_the_exact_formula_analog(client):
+    data = _explore(client, 5, STRICT_AVOID_LI)
+    nafepo4 = next(candidate for candidate in data["ranked_candidates"] if candidate["material_id"] == 10)
+    assert EXACT_LI_NA_REASON in nafepo4["reasons"]
+
+
+def test_case_study_01_reason_states_that_ratios_differ(client):
+    data = _explore(client, 5, CS01)
+    na3fe = next(candidate for candidate in data["ranked_candidates"] if candidate["material_id"] == 6)
+    assert RATIOS_DIFFER_REASON in na3fe["reasons"]
+
+
+@pytest.mark.parametrize(("source", "body"), FROZEN)
+def test_frozen_reasons_keep_existing_wording(client, source, body):
+    reasons = " ".join(_all_reasons(_explore(client, source, body)))
+    for new_text in ("exact formula analog", "element ratios differ", "other elements differ",
+                     "single alkali-metal change", "formula correspondence not evaluated"):
+        assert new_text not in reasons
+
+
+def test_reason_wording_follows_section_3_and_neutral_alkali_rules():
+    entries = [{"correspondence_class": "exact_alkali_replacement", "reason": None,
+                "replaced_from": "Li", "replaced_to": "Na"}]
+    entries += [{"correspondence_class": "not_exact_replacement", "reason": reason,
+                 "replaced_from": None, "replaced_to": None}
+                for reason in get_args(classifier.CorrespondenceReason) if reason != "formula_unparsed"]
+    entries.append({"correspondence_class": "not_evaluated", "reason": "formula_unparsed",
+                    "replaced_from": None, "replaced_to": None})
+    for entry in entries:
+        text = correspondence_relationship_text(entry)
+        assert not any(phrase in text.lower() for phrase in SECTION_3_FORBIDDEN), text
+        assert not NEUTRAL_ALKALI_FORBIDDEN.search(text), text
+        assert "composition not compared" not in text
