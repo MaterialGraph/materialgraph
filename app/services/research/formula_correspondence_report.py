@@ -78,6 +78,29 @@ def _correspondence(result) -> dict:
     return dataclasses.asdict(result)
 
 
+# Reason wording for alkali-changing steps on objective-aware requests. It
+# follows the neutral-alkali rule (S-5): it states which alkali metal differs
+# and never implies that one element was exchanged for another.
+_NOT_EXACT_RELATIONSHIP_TEXT = {
+    "ratios_differ": "different alkali metal (element ratios differ)",
+    "non_alkali_elements_differ": "different alkali metal (other elements differ)",
+    "replacement_alkali_in_source": "different alkali metal (not a single alkali-metal change)",
+    "replaced_alkali_in_candidate": "different alkali metal (not a single alkali-metal change)",
+    "multiple_alkali_changes": "different alkali metal (not a single alkali-metal change)",
+    "formula_unparsed": "different alkali metal (formula correspondence not evaluated)",
+}
+
+
+def correspondence_relationship_text(correspondence: dict) -> str:
+    """Relationship wording for a classified alkali-changing step."""
+    if correspondence["correspondence_class"] == "exact_alkali_replacement":
+        return (
+            f"exact formula analog (alkali metal {correspondence['replaced_from']} "
+            f"\u2192 {correspondence['replaced_to']}; all other element ratios unchanged)"
+        )
+    return _NOT_EXACT_RELATIONSHIP_TEXT[correspondence.get("reason") or "formula_unparsed"]
+
+
 def _one_alkali_change_by_elements(transition: dict) -> bool:
     """Step 2 on the transition's recorded element sets.
 
@@ -88,6 +111,36 @@ def _one_alkali_change_by_elements(transition: dict) -> bool:
     source = EFA_ALKALI_METALS & (shared | set(transition.get("removed_elements") or []))
     target = EFA_ALKALI_METALS & (shared | set(transition.get("introduced_elements") or []))
     return bool(source) and bool(target) and source != target
+
+
+def classify_chain_transitions(db: Session, chains: list[dict]) -> dict[tuple[int, int], dict]:
+    """Per-edge classification of every transition in ``chains``.
+
+    Keyed by (from_material_id, to_material_id). Uses the same rules as the
+    report's ``transitions``: unusable compositions yield ``not_evaluated``
+    only where the recorded element sets show a one-alkali change, and pairs
+    the classifier does not classify are omitted. Read-only.
+    """
+    involved = {
+        material["material_id"]
+        for chain in chains
+        for material in chain.get("materials", [])
+    }
+    fractions, _ = load_compositions(db, involved)
+    pairs: dict[tuple[int, int], dict] = {}
+    for chain in chains:
+        for transition in chain.get("transitions", []):
+            key = (transition["from_material_id"], transition["to_material_id"])
+            if key in pairs:
+                continue
+            source = fractions.get(key[0])
+            candidate = fractions.get(key[1])
+            if (source is None or candidate is None) and not _one_alkali_change_by_elements(transition):
+                continue
+            result = classify_formula_correspondence(source, candidate)
+            if result is not None:
+                pairs[key] = _correspondence(result)
+    return pairs
 
 
 def build_formula_correspondence_report(

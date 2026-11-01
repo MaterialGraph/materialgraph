@@ -48,6 +48,8 @@ const paths = (html: string) => html.split('class="objectivePaths"')[1] ?? '';
 
 const reasons: CorrespondenceReason[] = ['ratios_differ', 'non_alkali_elements_differ', 'replacement_alkali_in_source', 'replaced_alkali_in_candidate', 'multiple_alkali_changes', 'formula_unparsed'];
 const forbidden = ['validated', 'same structure', 'equivalent', 'drop-in', 'substitution mechanism'];
+// Neutral-alkali wording rule (S-5), as enforced in the backend test suite.
+const neutralAlkaliForbidden = /replac|substitution candidate|mechanism|chemically interpretable|is replaced by|alkali-substitution hypothesis|alkali substitution logic|possible alkali/i;
 
 it('renders exactly as before when the response has no formula_correspondence key', () => {
   const html = text(render(base));
@@ -70,7 +72,7 @@ it('labels a compared chain step by its class and reason, without the "not compa
 
 it('gives every class and reason its own wording', () => {
   expect(correspondenceHeading(exact)).toBe('Exact formula analog');
-  expect(correspondenceDetail(exact)).toBe('Li replaced by Na; all other element ratios unchanged.');
+  expect(correspondenceDetail(exact)).toBe('Alkali metal Li → Na; all other element ratios unchanged.');
   const seen = new Set<string>();
   for (const reason of reasons) {
     const cls = reason === 'formula_unparsed' ? 'not_evaluated' : 'not_exact_replacement';
@@ -85,7 +87,7 @@ it('notes an exact formula analog on its ranked card, even when no returned chai
   const html = render(withReport);
   const nafepo4 = plain(card(html, 3));
   expect(nafepo4).toContain('No returned chain includes this material.');
-  expect(nafepo4).toContain('Exact formula analog of LiFePO4: Li replaced by Na; all other element ratios unchanged.');
+  expect(nafepo4).toContain('Exact formula analog of LiFePO4: alkali metal Li → Na; all other element ratios unchanged.');
   expect(nafepo4).toContain('independently of the returned chains');
   expect(nafepo4).toContain('Structure not assessed.');
   expect(card(html, 3).split('class="objectiveCorrespondence"')[1].split('</p>')[0]).toContain('<sub>4</sub>');
@@ -125,4 +127,5 @@ it('uses none of the forbidden terms in any new text', () => {
     text(renderToStaticMarkup(<SourceAnalogNote report={report} baseFormula="LiFePO4" materialId={10}/>)),
   ].join(' ').toLowerCase();
   for (const term of forbidden) expect(strings).not.toContain(term);
+  expect(strings).not.toMatch(neutralAlkaliForbidden);
 });

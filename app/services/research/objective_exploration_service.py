@@ -5,6 +5,8 @@ from app.domain.relationship_labels import relationship_text
 from app.services.material.quality_service import MaterialQualityService
 from app.services.research.formula_correspondence_report import (
     build_formula_correspondence_report,
+    classify_chain_transitions,
+    correspondence_relationship_text,
 )
 from app.services.research.objective_coverage import build_objective_coverage
 from app.services.research.objective_service import ResearchObjectiveService
@@ -46,10 +48,19 @@ class ResearchObjectiveExplorationService:
             objective=request.objective,
             mode=request.mode,
         )
+        # Objective-aware requests label classified alkali steps in reasons
+        # (SRQ-01); frozen requests keep today's wording. Read-only: scores,
+        # ranking and ordering are unaffected.
+        pair_correspondence = (
+            classify_chain_transitions(self.db, eligible_chains)
+            if self.is_objective_aware(request) and self.db is not None
+            else None
+        )
         candidates = self._rank_candidates_from_chains(
             chains=eligible_chains,
             objective=request.objective,
             mode=request.mode,
+            pair_correspondence=pair_correspondence,
         )
         chains = eligible_chains[: request.limit]
         search_metadata = {
@@ -158,6 +169,7 @@ class ResearchObjectiveExplorationService:
         chains,
         objective,
         mode: str,
+        pair_correspondence: dict | None = None,
     ) -> list[dict]:
         candidate_map: dict[int, dict] = {}
         quality_by_id = (
@@ -205,6 +217,7 @@ class ResearchObjectiveExplorationService:
                         transitions=attribution_transitions,
                         objective=objective,
                         quality=quality_by_id.get(material_id, {}),
+                        pair_correspondence=pair_correspondence,
                     )
                 )
 
@@ -278,6 +291,7 @@ class ResearchObjectiveExplorationService:
         transitions,
         objective,
         quality: dict | None = None,
+        pair_correspondence: dict | None = None,
     ) -> list[str]:
         reasons = []
 
@@ -290,10 +304,28 @@ class ResearchObjectiveExplorationService:
         for transition in transitions:
             transition_type = transition.get("transition_type")
             if transition_type:
-                reasons.append(
-                    "Appears in an eligible composition chain with relationship "
-                    f"type {relationship_text(transition_type)}."
+                # Classified pairs are exactly the one-alkali-change pairs the
+                # formula-correspondence report labels; any other step keeps
+                # its existing wording.
+                entry = (
+                    pair_correspondence.get(
+                        (transition.get("from_material_id"), transition.get("to_material_id"))
+                    )
+                    if pair_correspondence
+                    else None
                 )
+                # A classified step describes that step, which may come before
+                # this material in the chain; the wording says so.
+                if entry:
+                    reasons.append(
+                        "Appears in an eligible composition chain containing a step "
+                        f"classified as {correspondence_relationship_text(entry)}."
+                    )
+                else:
+                    reasons.append(
+                        "Appears in an eligible composition chain with relationship "
+                        f"type {relationship_text(transition_type)}."
+                    )
 
             shared_elements = transition.get("shared_elements") or transition.get("preserved_framework", [])
             if shared_elements:
