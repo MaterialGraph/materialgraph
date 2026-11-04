@@ -17,6 +17,7 @@ from app.services.discovery import chain_service as chain_module
 from app.services.material.search_service import normalise_stored_composition
 from app.services.research import formula_correspondence_report as report_module
 from app.services.research.formula_correspondence_report import (
+    ADMISSION_LIMITATIONS,
     GROUPING_LIMITATIONS,
     LIMITATIONS,
     build_formula_correspondence_report,
@@ -100,10 +101,13 @@ def test_objective_aware_requests_always_carry_the_report(client, source, body):
     assert report["contract_version"] == "1"
     assert report["basis"] == "stored_composition_fractions"
     assert report["tolerance"] == 1e-6
-    # PR-B2: formula groups are reported; admission counts are not yet.
+    # PR-B2/B3: formula groups and per-expansion admission counts are reported.
     assert report["formula_grouping_available"] is True
-    assert report["admission_reporting_available"] is False
-    assert report["expansions"] == []
+    assert report["admission_reporting_available"] is True
+    assert report["expansions"], "every objective-aware request expands at least the source"
+    for expansion in report["expansions"]:
+        assert expansion["groups_admitted"] + len(expansion["excluded"]) <= expansion["groups_found"]
+        assert all(item["reason"] in ("cap", "efa_budget") for item in expansion["excluded"])
     for entry in report["source_correspondence"]:
         group = entry["formula_group"]
         # Either not reached through an admission group (empty), or the
@@ -111,7 +115,7 @@ def test_objective_aware_requests_always_carry_the_report(client, source, body):
         if group:
             assert [m["material_id"] for m in group if m["traversed"]] == [entry["material_id"]]
     assert report["not_evaluated_count"] == len(report["not_evaluated_material_ids"])
-    assert report["limitations"] == LIMITATIONS[:-1] + GROUPING_LIMITATIONS
+    assert report["limitations"] == LIMITATIONS[:-1] + ADMISSION_LIMITATIONS + GROUPING_LIMITATIONS[1:]
 
 
 def test_schema_literals_match_the_classifier():
@@ -382,7 +386,7 @@ def test_stored_composition_of_lifepo4_normalises_as_expected(db_session):
 # Wording (AC9) ------------------------------------------------------------------
 
 def test_report_strings_use_no_forbidden_wording():
-    for text in LIMITATIONS + GROUPING_LIMITATIONS:
+    for text in LIMITATIONS + GROUPING_LIMITATIONS + ADMISSION_LIMITATIONS:
         lowered = text.lower()
         assert not any(phrase in lowered for phrase in SECTION_3_FORBIDDEN), text
         assert not NEUTRAL_ALKALI_FORBIDDEN.search(text), text

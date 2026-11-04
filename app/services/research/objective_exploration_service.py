@@ -58,9 +58,11 @@ class ResearchObjectiveExplorationService:
         chain_service = getattr(self.objective_service, "chain_service", None)
         compositions = None
         formula_groups = None
+        expansions = None
         if objective_aware and self.db is not None and hasattr(chain_service, "request_compositions"):
             compositions = chain_service.request_compositions()
             formula_groups = chain_service.formula_groups_by_representative()
+            expansions = chain_service.efa_expansions()
 
         chains = chain_result.get("chains", [])
         eligible_chains = self._apply_mode_constraints(
@@ -131,6 +133,7 @@ class ResearchObjectiveExplorationService:
                 ranked_candidates=returned_candidates,
                 compositions=compositions,
                 formula_groups=formula_groups,
+                expansions=expansions,
             )
         return response
 

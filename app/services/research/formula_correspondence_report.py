@@ -53,6 +53,14 @@ GROUPING_LIMITATIONS = [
     "admission group; it does not mean that no other records share its formula.",
 ]
 
+# Replaces the first GROUPING_LIMITATIONS entry once admission counts are reported (PR-B3).
+ADMISSION_LIMITATIONS = [
+    "Exact alkali formula analogs of each expanded material are admitted before "
+    "other candidates, after preferred-element reservations and up to four "
+    "groups per expansion. This prioritises formula correspondence during "
+    "exploration; it does not change any score.",
+]
+
 Compositions = tuple[dict, dict, dict]
 
 
@@ -198,6 +206,7 @@ def build_formula_correspondence_report(
     ranked_candidates: list[dict],
     compositions: Compositions | None = None,
     formula_groups: dict[int, list[dict]] | None = None,
+    expansions: list[dict] | None = None,
 ) -> dict:
     """``formula_groups`` (PR-B2) maps a representative's material ID to its
     admission-group members; when supplied, formula groups are reported."""
@@ -263,17 +272,21 @@ def build_formula_correspondence_report(
         "tolerance": TAU,
         "transitions": transitions,
         "source_correspondence": source_correspondence,
-        "expansions": [],
+        "expansions": list(expansions) if expansions is not None else [],
         "formula_grouping_available": formula_groups is not None,
-        "admission_reporting_available": False,
+        "admission_reporting_available": expansions is not None,
         "not_evaluated_material_ids": not_evaluated_ids,
         "not_evaluated_count": len(not_evaluated_ids),
-        "limitations": (
-            LIMITATIONS[:-1] + GROUPING_LIMITATIONS
-            if formula_groups is not None
-            else list(LIMITATIONS)
-        ),
+        "limitations": _limitations(formula_groups is not None, expansions is not None),
     }
+
+
+def _limitations(grouping: bool, admission: bool) -> list[str]:
+    if not grouping:
+        return list(LIMITATIONS)
+    if not admission:
+        return LIMITATIONS[:-1] + GROUPING_LIMITATIONS
+    return LIMITATIONS[:-1] + ADMISSION_LIMITATIONS + GROUPING_LIMITATIONS[1:]
 
 
 def _formula_group(formula_groups: dict[int, list[dict]] | None, material_id: int) -> list[dict]:

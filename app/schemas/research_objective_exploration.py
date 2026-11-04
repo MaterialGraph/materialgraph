@@ -222,11 +222,19 @@ class CandidateSourceCorrespondence(BaseModel):
     formula_group: list[FormulaGroupMember]
 
 
+class ExcludedEfaGroup(BaseModel):
+    """An eligible exact-analog group not admitted at one expansion (SRQ-01 R2, PR-B3)."""
+
+    display_formula: str
+    member_mp_ids: list[str]
+    reason: Literal["cap", "efa_budget"]
+
+
 class ExpansionEfaCounts(BaseModel):
     expanded_material_id: int
     groups_found: int
     groups_admitted: int
-    excluded: list[dict]
+    excluded: list[ExcludedEfaGroup]
 
 
 class FormulaCorrespondenceReport(BaseModel):
