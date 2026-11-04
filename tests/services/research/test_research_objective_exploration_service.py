@@ -19,6 +19,8 @@ class _ObjectiveServiceStub:
         include_ranked_pool: bool = False,
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
+        objective_aware_ordering: bool = False,
+        chain_tie_key=None,
     ) -> dict:
         return {
             "material_id": material_id,

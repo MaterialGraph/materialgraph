@@ -12,6 +12,7 @@ from app.models.material_element import MaterialElement
 from app.services.discovery.candidate_service import DiscoveryCandidateService
 from app.services.discovery.transition_validator import DiscoveryTransitionValidator
 from app.services.material.family_service import MaterialFamilyService
+from app.services.research.formula_correspondence_report import mp_id_sort_key
 
 
 class DiscoveryChainService:
@@ -27,12 +28,12 @@ class DiscoveryChainService:
         self.family_service = MaterialFamilyService(db)
         self.transition_validator = DiscoveryTransitionValidator()
         self._candidate_cache: dict[
-            tuple[int, tuple[str, ...], tuple[str, ...], bool, bool],
+            tuple[int, tuple[str, ...], tuple[str, ...], bool, bool, bool],
             list[dict],
         ] = {}
         self._relationship_cache: dict[tuple[int, int], list[str]] = {}
         self._admission_diagnostics: dict[
-            tuple[int, tuple[str, ...], tuple[str, ...], bool, bool],
+            tuple[int, tuple[str, ...], tuple[str, ...], bool, bool, bool],
             dict[str, int],
         ] = {}
         self._family_result_cache: dict[int, dict] = {}
@@ -50,6 +51,7 @@ class DiscoveryChainService:
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
         reject_introduced_avoided: bool = True,
+        objective_aware_ordering: bool = False,
     ) -> dict:
         max_hops = min(max_hops, self.MAX_ALLOWED_HOPS)
 
@@ -83,6 +85,7 @@ class DiscoveryChainService:
             hard_avoid_admission=hard_avoid_admission,
             objective_aware_prefer_allocation=objective_aware_prefer_allocation,
             reject_introduced_avoided=reject_introduced_avoided,
+            objective_aware_ordering=objective_aware_ordering,
         )
         chains = chain_pool if include_search_pool else chain_pool[:limit]
         search_metadata = {
@@ -119,6 +122,7 @@ class DiscoveryChainService:
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
         reject_introduced_avoided: bool = True,
+        objective_aware_ordering: bool = False,
     ) -> tuple[list[dict], dict]:
         queue = deque()
 
@@ -165,6 +169,7 @@ class DiscoveryChainService:
                 elements_map=elements_map,
                 hard_avoid_admission=hard_avoid_admission,
                 objective_aware_prefer_allocation=objective_aware_prefer_allocation,
+                objective_aware_ordering=objective_aware_ordering,
             )
             logger.info(
                 "Next candidates for material {} took {:.3f}s count={}",
@@ -300,6 +305,7 @@ class DiscoveryChainService:
         prefer_elements: Collection[str] | None = None,
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
+        objective_aware_ordering: bool = False,
     ) -> list[dict]:
         normalized_avoid_elements = self._normalize_elements(
             element=avoid_element,
@@ -316,6 +322,7 @@ class DiscoveryChainService:
             tuple(sorted(normalized_prefer_elements)),
             hard_avoid_admission,
             objective_aware_prefer_allocation,
+            objective_aware_ordering,
         )
 
         if cache_key in self._candidate_cache:
@@ -387,6 +394,13 @@ class DiscoveryChainService:
 
             eligible_candidates.append(candidate)
 
+        if objective_aware_ordering:
+            # SRQ-01 R5a: on objective-aware requests, ties in the family
+            # order fall to the numeric MP ID instead of the local ID.
+            # Reservation and fill below walk this order, and the admitted
+            # list keeps it.
+            eligible_candidates.sort(key=self._admission_order_key)
+
         selected_indices: set[int] = set()
 
         if objective_aware_prefer_allocation and normalized_prefer_elements:
@@ -450,6 +464,13 @@ class DiscoveryChainService:
         )
         self._candidate_cache[cache_key] = candidates
         return candidates
+
+    @staticmethod
+    def _admission_order_key(candidate: dict) -> tuple:
+        return (
+            -len(candidate.get("shared_elements") or []),
+            mp_id_sort_key(candidate.get("mp_id"), candidate["material_id"]),
+        )
 
     def _build_transition(
         self,

@@ -19,10 +19,10 @@ Integrity and isolation:
 from __future__ import annotations
 
 import random
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 
-from sqlalchemy import text
+from sqlalchemy import Connection, text
 from sqlalchemy.orm import Session
 
 from app.core.database import engine
@@ -85,13 +85,23 @@ def _remap(connection, table: str, column: str, mapping: dict[int, int]) -> None
 
 
 @contextmanager
-def permuted_reference_session(seed: int | str) -> Iterator[tuple[Session, dict[int, int]]]:
-    """Yield (session, old->new ID mapping) with permuted local IDs; roll back after."""
-    before = None
+def permuted_reference_session(
+    seed: int | str,
+    setup: Callable[[Connection], None] | None = None,
+) -> Iterator[tuple[Session, dict[int, int]]]:
+    """Yield (session, old->new ID mapping) with permuted local IDs; roll back after.
+
+    ``setup``, if given, adds rows inside the same rolled-back transaction
+    before the permutation, so the rows it adds are permuted as well.
+    """
+    restored = None
     connection = engine.connect()
     outer = connection.begin()
     session = Session(bind=connection, join_transaction_mode="create_savepoint")
     try:
+        restored = _identity_map(connection)
+        if setup is not None:
+            setup(connection)
         before = _identity_map(connection)
         mapping = permutation(list(before), seed)
         if seed != BASELINE:
@@ -111,6 +121,6 @@ def permuted_reference_session(seed: int | str) -> Iterator[tuple[Session, dict[
         if outer.is_active:
             outer.rollback()
         connection.close()
-        if before is not None:
+        if restored is not None:
             with engine.connect() as check:
-                assert _identity_map(check) == before, "permutation was not rolled back"
+                assert _identity_map(check) == restored, "permutation was not rolled back"

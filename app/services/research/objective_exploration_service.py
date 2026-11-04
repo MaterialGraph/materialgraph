@@ -7,6 +7,8 @@ from app.services.research.formula_correspondence_report import (
     build_formula_correspondence_report,
     classify_chain_transitions,
     correspondence_relationship_text,
+    mp_id_sort_key,
+    source_efa_material_ids,
 )
 from app.services.research.objective_coverage import build_objective_coverage
 from app.services.research.objective_service import ResearchObjectiveService
@@ -31,6 +33,14 @@ class ResearchObjectiveExplorationService:
             if policy.reject_introduced_avoided
             else {"reject_introduced_avoided": False}
         )
+        # SRQ-01 R5: MP-ID ordering on objective-aware requests only. Frozen
+        # requests forward no ordering arguments, so their calls are unchanged.
+        objective_aware = self.is_objective_aware(request)
+        ordering_policy = (
+            {"objective_aware_ordering": True, "chain_tie_key": self.chain_tie_key}
+            if objective_aware
+            else {}
+        )
         chain_result = self.objective_service.generate_chains_for_objective(
             material_id=material_id,
             objective=request.objective,
@@ -40,6 +50,7 @@ class ResearchObjectiveExplorationService:
                 policy.objective_aware_prefer_allocation
             ),
             **transition_policy,
+            **ordering_policy,
         )
 
         chains = chain_result.get("chains", [])
@@ -61,6 +72,7 @@ class ResearchObjectiveExplorationService:
             objective=request.objective,
             mode=request.mode,
             pair_correspondence=pair_correspondence,
+            source_material_id=material_id if objective_aware else None,
         )
         chains = eligible_chains[: request.limit]
         search_metadata = {
@@ -109,6 +121,14 @@ class ResearchObjectiveExplorationService:
                 ranked_candidates=returned_candidates,
             )
         return response
+
+    @staticmethod
+    def chain_tie_key(chain: dict) -> tuple:
+        """R5: MP-ID keys of the chain's ordered materials, source included."""
+        return tuple(
+            mp_id_sort_key(material.get("mp_id"), material["material_id"])
+            for material in chain.get("materials", [])
+        )
 
     @staticmethod
     def is_objective_aware(request) -> bool:
@@ -170,6 +190,7 @@ class ResearchObjectiveExplorationService:
         objective,
         mode: str,
         pair_correspondence: dict | None = None,
+        source_material_id: int | None = None,
     ) -> list[dict]:
         candidate_map: dict[int, dict] = {}
         quality_by_id = (
@@ -232,10 +253,27 @@ class ResearchObjectiveExplorationService:
                 candidate["reasons"] = list(dict.fromkeys(candidate["reasons"]))
                 candidate["warnings"] = list(dict.fromkeys(candidate["warnings"]))
 
+        if source_material_id is None:
+            return sorted(
+                candidate_map.values(),
+                key=lambda item: item["score"],
+                reverse=True,
+            )
+
+        # R5b/R6 on objective-aware requests: among equal scores, source
+        # analogs first, then numeric MP ID. Scores are unchanged.
+        source_analogs = (
+            source_efa_material_ids(self.db, source_material_id, candidate_map)
+            if self.db is not None
+            else set()
+        )
         return sorted(
             candidate_map.values(),
-            key=lambda item: item["score"],
-            reverse=True,
+            key=lambda item: (
+                -item["score"],
+                item["material_id"] not in source_analogs,
+                mp_id_sort_key(item.get("mp_id"), item["material_id"]),
+            ),
         )
 
     def _score_material(

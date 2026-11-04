@@ -393,7 +393,9 @@ class _StubObjectiveService:
     def generate_chains_for_objective(self, material_id, objective,
                                       include_ranked_pool=False,
                                       hard_avoid_admission=False,
-                                      objective_aware_prefer_allocation=False):
+                                      objective_aware_prefer_allocation=False,
+                                      objective_aware_ordering=False,
+                                      chain_tie_key=None):
         from app.services.research.objective_service import (
             ResearchObjectiveService,
         )
