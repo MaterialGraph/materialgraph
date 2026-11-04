@@ -177,6 +177,7 @@ class DiscoveryChainService:
                 hard_avoid_admission=hard_avoid_admission,
                 objective_aware_prefer_allocation=objective_aware_prefer_allocation,
                 objective_aware_ordering=objective_aware_ordering,
+                reject_introduced_avoided=reject_introduced_avoided,
             )
             logger.info(
                 "Next candidates for material {} took {:.3f}s count={}",
@@ -313,6 +314,7 @@ class DiscoveryChainService:
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
         objective_aware_ordering: bool = False,
+        reject_introduced_avoided: bool = True,
     ) -> list[dict]:
         normalized_avoid_elements = self._normalize_elements(
             element=avoid_element,
@@ -330,6 +332,7 @@ class DiscoveryChainService:
             hard_avoid_admission,
             objective_aware_prefer_allocation,
             objective_aware_ordering,
+            reject_introduced_avoided,
         )
 
         if cache_key in self._candidate_cache:
@@ -416,6 +419,32 @@ class DiscoveryChainService:
                 eligible_candidates,
             )
 
+        if objective_aware_ordering:
+            # SRQ-01 R2: four-step admission sequence (exact analogs first).
+            candidates = self._formula_aware_selection(
+                cache_key=cache_key,
+                material_id=material_id,
+                elements_map=elements_map,
+                eligible_candidates=eligible_candidates,
+                prefer_elements=(
+                    normalized_prefer_elements
+                    if objective_aware_prefer_allocation
+                    else set()
+                ),
+                avoid_elements=normalized_avoid_elements,
+                reject_introduced_avoided=reject_introduced_avoided,
+            )
+            self._keep_admitted_groups(cache_key, candidates)
+            return self._finish_objective_admission(
+                cache_key,
+                material_id,
+                family_result,
+                non_test_candidates,
+                eligible_candidates,
+                candidates,
+                missing_membership_excluded,
+            )
+
         selected_indices: set[int] = set()
 
         if objective_aware_prefer_allocation and normalized_prefer_elements:
@@ -459,9 +488,26 @@ class DiscoveryChainService:
             if index in selected_indices
         ]
 
-        if objective_aware_ordering:
-            self._keep_admitted_groups(cache_key, candidates)
+        return self._finish_objective_admission(
+            cache_key,
+            material_id,
+            family_result,
+            non_test_candidates,
+            eligible_candidates,
+            candidates,
+            missing_membership_excluded,
+        )
 
+    def _finish_objective_admission(
+        self,
+        cache_key: tuple,
+        material_id: int,
+        family_result: dict,
+        non_test_candidates: list[dict],
+        eligible_candidates: list[dict],
+        candidates: list[dict],
+        missing_membership_excluded: int,
+    ) -> list[dict]:
         self._admission_diagnostics[cache_key] = {
             "missing_membership_excluded": missing_membership_excluded,
         }
@@ -596,6 +642,124 @@ class DiscoveryChainService:
             for group in store.get(cache_key, [])
             if group["representative_id"] in admitted_ids
         ]
+
+    EFA_GROUP_BUDGET = 4
+
+    def _formula_aware_selection(
+        self,
+        *,
+        cache_key: tuple,
+        material_id: int,
+        elements_map: dict[int, list[str]],
+        eligible_candidates: list[dict],
+        prefer_elements: set[str],
+        avoid_elements: set[str],
+        reject_introduced_avoided: bool,
+    ) -> list[dict]:
+        """SRQ-01 R2 admission sequence, objective-aware requests only.
+
+        1. Preferred exact analogs: for each preferred element (alphabetical,
+           covered rule), the first eligible exact-analog group containing it.
+        2. Preferred reservation for still-uncovered preferred elements.
+        3. Remaining exact-analog groups, up to EFA_GROUP_BUDGET in total.
+        4. General fill in admission order.
+        Exact analogs that would introduce an avoided element are not given
+        priority (they remain ordinary candidates). Output is in admission
+        order. Excluded exact-analog groups are recorded with their reason.
+        """
+        limit = self.EXPANSION_LIMIT
+        index_of = {candidate["material_id"]: index for index, candidate in enumerate(eligible_candidates)}
+        groups = self._efa_groups_store().get(cache_key, [])
+        source_elements = set(elements_map.get(material_id, []))
+
+        def elements_of(index: int) -> set[str]:
+            return set(elements_map.get(eligible_candidates[index]["material_id"], []))
+
+        prioritised: list[int] = []
+        for group in groups:
+            index = index_of.get(group["representative_id"])
+            if index is None:
+                continue
+            if reject_introduced_avoided and avoid_elements and self.transition_validator._violates_avoid_elements(
+                from_elements=source_elements,
+                to_elements=elements_of(index),
+                avoid_elements=avoid_elements,
+            ):
+                continue
+            prioritised.append(index)
+
+        selected: list[int] = []
+        chosen: set[int] = set()
+        efa_admitted = 0
+
+        def take(index: int) -> None:
+            selected.append(index)
+            chosen.add(index)
+
+        covered: set[str] = set()
+        for preferred_element in sorted(prefer_elements):  # step 1
+            if preferred_element in covered or len(selected) >= limit:
+                continue
+            for index in prioritised:
+                if index in chosen:
+                    continue
+                candidate_elements = elements_of(index)
+                if preferred_element in candidate_elements:
+                    take(index)
+                    efa_admitted += 1
+                    covered.update(candidate_elements & prefer_elements)
+                    break
+
+        for preferred_element in sorted(prefer_elements):  # step 2
+            if preferred_element in covered or len(selected) >= limit:
+                continue
+            for index in range(len(eligible_candidates)):
+                if index in chosen:
+                    continue
+                candidate_elements = elements_of(index)
+                if preferred_element in candidate_elements:
+                    take(index)
+                    covered.update(candidate_elements & prefer_elements)
+                    break
+
+        for index in prioritised:  # step 3
+            if len(selected) >= limit or efa_admitted >= self.EFA_GROUP_BUDGET:
+                break
+            if index not in chosen:
+                take(index)
+                efa_admitted += 1
+
+        for index in range(len(eligible_candidates)):  # step 4
+            if len(selected) >= limit:
+                break
+            if index not in chosen:
+                take(index)
+
+        excluded = []
+        for index in prioritised:
+            if index in chosen:
+                continue
+            representative_id = eligible_candidates[index]["material_id"]
+            members = next(g["members"] for g in groups if g["representative_id"] == representative_id)
+            excluded.append({
+                "display_formula": eligible_candidates[index].get("pretty_formula")
+                or eligible_candidates[index].get("formula") or "",
+                "member_mp_ids": [member["mp_id"] for member in members if member.get("mp_id")],
+                "reason": "efa_budget" if efa_admitted >= self.EFA_GROUP_BUDGET else "cap",
+            })
+        self.__dict__.setdefault("_efa_expansions", {})[cache_key] = {
+            "expanded_material_id": material_id,
+            "groups_found": len(groups),
+            "groups_admitted": sum(
+                1 for group in groups if index_of.get(group["representative_id"]) in chosen
+            ),
+            "excluded": excluded,
+        }
+        return [eligible_candidates[index] for index in selected]
+
+    def efa_expansions(self) -> list[dict]:
+        """Per-expansion exact-analog counts recorded during this request, in expansion order."""
+        return list(self.__dict__.get("_efa_expansions", {}).values())
 
     def formula_groups_by_representative(self) -> dict[int, list[dict]]:
         """Admission groups recorded during this request, keyed by representative."""
