@@ -41,6 +41,31 @@ LIMITATIONS = [
     "Formula groups and per-expansion admission counts are not yet reported.",
 ]
 
+# Replaces the last LIMITATIONS entry once formula groups are reported (PR-B2).
+GROUPING_LIMITATIONS = [
+    "Per-expansion admission counts are not yet reported.",
+    "Exact alkali formula analogs with the same normalised composition share "
+    "one admission slot; only the group's representative record is traversed "
+    "and scored. The representative is the record with the lowest numeric "
+    "Materials Project ID, a reproducibility convention, not a scientific "
+    "preference.",
+    "An empty formula group means the material was not reached through an "
+    "admission group; it does not mean that no other records share its formula.",
+]
+
+Compositions = tuple[dict, dict, dict]
+
+
+def _fractions_for(
+    db: Session,
+    material_ids: Iterable[int],
+    compositions: Compositions | None,
+) -> tuple[dict[int, dict[str, float] | None], dict[int, str | None]]:
+    """Request-scoped compositions when supplied (D11), otherwise one query."""
+    if compositions is not None:
+        return compositions[0], compositions[1]
+    return load_compositions(db, material_ids)
+
 
 def load_compositions(
     db: Session,
@@ -73,6 +98,7 @@ def source_efa_material_ids(
     db: Session,
     source_material_id: int,
     candidate_ids: Iterable[int],
+    compositions: Compositions | None = None,
 ) -> set[int]:
     """Candidates that are exact alkali formula analogs of the request source.
 
@@ -80,7 +106,7 @@ def source_efa_material_ids(
     unusable compositions are simply not source analogs here.
     """
     candidate_ids = set(candidate_ids)
-    fractions, _ = load_compositions(db, {source_material_id} | candidate_ids)
+    fractions, _ = _fractions_for(db, {source_material_id} | candidate_ids, compositions)
     source = fractions.get(source_material_id)
     if source is None:
         return set()
@@ -130,7 +156,11 @@ def _one_alkali_change_by_elements(transition: dict) -> bool:
     return bool(source) and bool(target) and source != target
 
 
-def classify_chain_transitions(db: Session, chains: list[dict]) -> dict[tuple[int, int], dict]:
+def classify_chain_transitions(
+    db: Session,
+    chains: list[dict],
+    compositions: Compositions | None = None,
+) -> dict[tuple[int, int], dict]:
     """Per-edge classification of every transition in ``chains``.
 
     Keyed by (from_material_id, to_material_id). Uses the same rules as the
@@ -143,7 +173,7 @@ def classify_chain_transitions(db: Session, chains: list[dict]) -> dict[tuple[in
         for chain in chains
         for material in chain.get("materials", [])
     }
-    fractions, _ = load_compositions(db, involved)
+    fractions, _ = _fractions_for(db, involved, compositions)
     pairs: dict[tuple[int, int], dict] = {}
     for chain in chains:
         for transition in chain.get("transitions", []):
@@ -166,12 +196,16 @@ def build_formula_correspondence_report(
     source_material_id: int,
     chains: list[dict],
     ranked_candidates: list[dict],
+    compositions: Compositions | None = None,
+    formula_groups: dict[int, list[dict]] | None = None,
 ) -> dict:
+    """``formula_groups`` (PR-B2) maps a representative's material ID to its
+    admission-group members; when supplied, formula groups are reported."""
     involved = {source_material_id}
     for chain in chains:
         involved.update(material["material_id"] for material in chain.get("materials", []))
     involved.update(candidate["material_id"] for candidate in ranked_candidates)
-    fractions, mp_ids = load_compositions(db, involved)
+    fractions, mp_ids = _fractions_for(db, involved, compositions)
     not_evaluated: set[int] = set()
 
     transitions = []
@@ -216,7 +250,7 @@ def build_formula_correspondence_report(
                 "candidate_rank": candidate_rank,
                 "material_id": material_id,
                 "correspondence": _correspondence(result),
-                "formula_group": [],
+                "formula_group": _formula_group(formula_groups, material_id),
             })
 
     not_evaluated_ids = sorted(
@@ -230,9 +264,36 @@ def build_formula_correspondence_report(
         "transitions": transitions,
         "source_correspondence": source_correspondence,
         "expansions": [],
-        "formula_grouping_available": False,
+        "formula_grouping_available": formula_groups is not None,
         "admission_reporting_available": False,
         "not_evaluated_material_ids": not_evaluated_ids,
         "not_evaluated_count": len(not_evaluated_ids),
-        "limitations": list(LIMITATIONS),
+        "limitations": (
+            LIMITATIONS[:-1] + GROUPING_LIMITATIONS
+            if formula_groups is not None
+            else list(LIMITATIONS)
+        ),
     }
+
+
+def _formula_group(formula_groups: dict[int, list[dict]] | None, material_id: int) -> list[dict]:
+    """Members of the admission group a source analog came from (R3, D12).
+
+    Empty when grouping is not reported, or when the material was not reached
+    through an admission group (it is not that group's representative).
+    """
+    if not formula_groups:
+        return []
+    members = formula_groups.get(material_id) or []
+    return [
+        {
+            "material_id": member["material_id"],
+            "mp_id": member.get("mp_id"),
+            "energy_above_hull": member.get("energy_above_hull"),
+            "traversed": member["material_id"] == material_id,
+        }
+        for member in sorted(
+            members,
+            key=lambda item: mp_id_sort_key(item.get("mp_id"), item["material_id"]),
+        )
+    ]

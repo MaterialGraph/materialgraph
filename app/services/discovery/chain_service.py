@@ -3,8 +3,10 @@ from collections import deque
 from collections.abc import Collection
 
 from loguru import logger
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.domain import ordering
 from app.domain.ordering import mp_id_sort_key
 from app.domain.relationship_labels import relationship_text
 from app.models.element import Element
@@ -13,6 +15,11 @@ from app.models.material_element import MaterialElement
 from app.services.discovery.candidate_service import DiscoveryCandidateService
 from app.services.discovery.transition_validator import DiscoveryTransitionValidator
 from app.services.material.family_service import MaterialFamilyService
+from app.services.material.formula_correspondence import classify_formula_correspondence
+from app.services.material.search_service import (
+    compositions_equal,
+    normalise_stored_composition,
+)
 
 
 class DiscoveryChainService:
@@ -400,6 +407,14 @@ class DiscoveryChainService:
             # Reservation and fill below walk this order, and the admitted
             # list keeps it.
             eligible_candidates.sort(key=self._admission_order_key)
+            # SRQ-01 R3: exact alkali formula analogs of the expanding material
+            # that share a normalised composition use one admission slot;
+            # only the group's representative stays eligible.
+            eligible_candidates = self._group_exact_analogs(
+                cache_key,
+                material_id,
+                eligible_candidates,
+            )
 
         selected_indices: set[int] = set()
 
@@ -464,6 +479,109 @@ class DiscoveryChainService:
         )
         self._candidate_cache[cache_key] = candidates
         return candidates
+
+    def request_compositions(
+        self,
+    ) -> tuple[dict[int, dict[str, float] | None], dict[int, str | None], dict[int, float | None]]:
+        """Stored compositions for every material, loaded once per request (D11).
+
+        Returns (fractions, mp_ids, energy_above_hull) keyed by material ID.
+        Each composition passes through normalise_stored_composition; a value
+        it rejects maps to None (not evaluated). The process-wide composition
+        cache is deliberately not used.
+        """
+        store = self.__dict__.get("_request_compositions")
+        if store is None:
+            rows = self.db.execute(
+                select(
+                    Material.id,
+                    Material.mp_id,
+                    Material.raw_data["composition"],
+                    Material.energy_above_hull,
+                )
+            ).all()
+            fractions: dict[int, dict[str, float] | None] = {}
+            mp_ids: dict[int, str | None] = {}
+            energies: dict[int, float | None] = {}
+            for material_id, mp_id, raw, energy_above_hull in rows:
+                mp_ids[material_id] = mp_id
+                energies[material_id] = energy_above_hull
+                try:
+                    fractions[material_id] = normalise_stored_composition(raw)
+                except ValueError:
+                    fractions[material_id] = None
+            store = (fractions, mp_ids, energies)
+            self.__dict__["_request_compositions"] = store
+        return store
+
+    def _efa_groups_store(self) -> dict:
+        return self.__dict__.setdefault("_efa_groups", {})
+
+    def _group_exact_analogs(
+        self,
+        cache_key: tuple,
+        material_id: int,
+        eligible_candidates: list[dict],
+    ) -> list[dict]:
+        """SRQ-01 R3, objective-aware admission only.
+
+        Classifies each eligible candidate against the expanding material,
+        groups exact alkali formula analogs by normalised composition, keeps
+        only each group's representative and records every group's members.
+        Order of the remaining candidates is unchanged.
+        """
+        fractions, _, energies = self.request_compositions()
+        source = fractions.get(material_id)
+        groups: list[dict] = []
+        if source is not None:
+            for candidate in eligible_candidates:
+                candidate_fractions = fractions.get(candidate["material_id"])
+                if candidate_fractions is None:
+                    continue
+                result = classify_formula_correspondence(source, candidate_fractions)
+                if result is None or result.correspondence_class != "exact_alkali_replacement":
+                    continue
+                for group in groups:
+                    if compositions_equal(group["composition"], candidate_fractions):
+                        group["members"].append(candidate)
+                        break
+                else:
+                    groups.append({"composition": candidate_fractions, "members": [candidate]})
+
+        grouped_out: set[int] = set()
+        recorded: list[dict] = []
+        for group in groups:
+            representative = ordering.choose_representative(group["members"])
+            grouped_out.update(
+                member["material_id"]
+                for member in group["members"]
+                if member["material_id"] != representative["material_id"]
+            )
+            recorded.append({
+                "representative_id": representative["material_id"],
+                "members": [
+                    {
+                        "material_id": member["material_id"],
+                        "mp_id": member.get("mp_id"),
+                        "energy_above_hull": energies.get(member["material_id"]),
+                    }
+                    for member in group["members"]
+                ],
+            })
+        self._efa_groups_store()[cache_key] = recorded
+        return [
+            candidate
+            for candidate in eligible_candidates
+            if candidate["material_id"] not in grouped_out
+        ]
+
+    def formula_groups_by_representative(self) -> dict[int, list[dict]]:
+        """Admission groups recorded during this request, keyed by representative."""
+        groups: dict[int, list[dict]] = {}
+        for recorded in self._efa_groups_store().values():
+            for group in recorded:
+                groups.setdefault(group["representative_id"], group["members"])
+        return groups
 
     @staticmethod
     def _admission_order_key(candidate: dict) -> tuple:

@@ -53,6 +53,15 @@ class ResearchObjectiveExplorationService:
             **ordering_policy,
         )
 
+        # PR-B2: one request-scoped composition load and the admission groups
+        # recorded during traversal, on objective-aware requests only.
+        chain_service = getattr(self.objective_service, "chain_service", None)
+        compositions = None
+        formula_groups = None
+        if objective_aware and self.db is not None and hasattr(chain_service, "request_compositions"):
+            compositions = chain_service.request_compositions()
+            formula_groups = chain_service.formula_groups_by_representative()
+
         chains = chain_result.get("chains", [])
         eligible_chains = self._apply_mode_constraints(
             chains=chains,
@@ -63,7 +72,7 @@ class ResearchObjectiveExplorationService:
         # (SRQ-01); frozen requests keep today's wording. Read-only: scores,
         # ranking and ordering are unaffected.
         pair_correspondence = (
-            classify_chain_transitions(self.db, eligible_chains)
+            classify_chain_transitions(self.db, eligible_chains, compositions=compositions)
             if self.is_objective_aware(request) and self.db is not None
             else None
         )
@@ -73,6 +82,7 @@ class ResearchObjectiveExplorationService:
             mode=request.mode,
             pair_correspondence=pair_correspondence,
             source_material_id=material_id if objective_aware else None,
+            compositions=compositions,
         )
         chains = eligible_chains[: request.limit]
         search_metadata = {
@@ -119,6 +129,8 @@ class ResearchObjectiveExplorationService:
                 source_material_id=material_id,
                 chains=chains,
                 ranked_candidates=returned_candidates,
+                compositions=compositions,
+                formula_groups=formula_groups,
             )
         return response
 
@@ -132,7 +144,7 @@ class ResearchObjectiveExplorationService:
 
     @staticmethod
     def is_objective_aware(request) -> bool:
-        """Spec rev 3.7, 4.0: at least one preferred element, or Strict with
+        """Spec rev 3.11, 4.0: at least one preferred element, or Strict with
         at least one avoided element. Every other request is frozen."""
         # Partial objective objects (test doubles, older callers) count a
         # missing term as not requested, as objective coverage does.
@@ -191,6 +203,7 @@ class ResearchObjectiveExplorationService:
         mode: str,
         pair_correspondence: dict | None = None,
         source_material_id: int | None = None,
+        compositions: tuple | None = None,
     ) -> list[dict]:
         candidate_map: dict[int, dict] = {}
         quality_by_id = (
@@ -263,7 +276,7 @@ class ResearchObjectiveExplorationService:
         # R5b/R6 on objective-aware requests: among equal scores, source
         # analogs first, then numeric MP ID. Scores are unchanged.
         source_analogs = (
-            source_efa_material_ids(self.db, source_material_id, candidate_map)
+            source_efa_material_ids(self.db, source_material_id, candidate_map, compositions=compositions)
             if self.db is not None
             else set()
         )

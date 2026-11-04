@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 from sqlalchemy.orm import Session
 
 from app.services.discovery.chain_service import DiscoveryChainService
@@ -22,7 +24,7 @@ class ResearchObjectiveService:
         objective_aware_prefer_allocation: bool = False,
         reject_introduced_avoided: bool = True,
         objective_aware_ordering: bool = False,
-        chain_tie_key=None,
+        chain_tie_key: Callable[[dict], tuple] | None = None,
     ) -> dict:
         # objective_aware_ordering and chain_tie_key are set only by
         # objective-aware Objective Explore (SRQ-01 R5); every other caller
@@ -191,7 +193,7 @@ class ResearchObjectiveService:
         self,
         chains: list[dict],
         objective,
-        chain_tie_key=None,
+        chain_tie_key: Callable[[dict], tuple] | None = None,
     ) -> list[dict]:
         ranked_chains = []
 
