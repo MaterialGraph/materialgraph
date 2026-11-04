@@ -1,0 +1,2270 @@
+{
+  "request": {
+    "name": "q6_source28_balanced",
+    "source_material_id": 28,
+    "body": {
+      "objective": {
+        "avoid_elements": [
+          "Li"
+        ],
+        "prefer_elements": [
+          "Na"
+        ],
+        "preserve_elements": [],
+        "target_family": null,
+        "max_hops": 2,
+        "limit": 10,
+        "prefer_lower_criticality": true,
+        "require_stable_materials": false
+      },
+      "mode": "balanced",
+      "limit": 10
+    }
+  },
+  "pre_pr_b1_revision": "f792826",
+  "validation": {
+    "0_baseline_matches_pre_pr_b1_snapshot": true,
+    "4_all_matches_current_snapshot": true
+  },
+  "configurations": {
+    "0_baseline": {
+      "admission": false,
+      "ranked": false,
+      "chains": false
+    },
+    "1_admission": {
+      "admission": true,
+      "ranked": false,
+      "chains": false
+    },
+    "2_ranked": {
+      "admission": false,
+      "ranked": true,
+      "chains": false
+    },
+    "3_chains": {
+      "admission": false,
+      "ranked": false,
+      "chains": true
+    },
+    "4_all": {
+      "admission": true,
+      "ranked": true,
+      "chains": true
+    },
+    "5_admission_and_chains": {
+      "admission": true,
+      "ranked": false,
+      "chains": true
+    }
+  },
+  "results": {
+    "0_baseline": {
+      "ranked": [
+        {
+          "mp_id": "mp-18988",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-691115",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-530177",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-1272804",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ]
+    },
+    "1_admission": {
+      "ranked": [
+        {
+          "mp_id": "mp-18988",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-530177",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-691115",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-1272804",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ]
+    },
+    "2_ranked": {
+      "ranked": [
+        {
+          "mp_id": "mp-18988",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-530177",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-691115",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-1272804",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ]
+    },
+    "3_chains": {
+      "ranked": [
+        {
+          "mp_id": "mp-18988",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-530177",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-691115",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-1272804",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ]
+    },
+    "4_all": {
+      "ranked": [
+        {
+          "mp_id": "mp-18988",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-530177",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-691115",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-1272804",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ]
+    },
+    "5_admission_and_chains": {
+      "ranked": [
+        {
+          "mp_id": "mp-18988",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-530177",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-691115",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        },
+        {
+          "mp_id": "mp-1272804",
+          "score": 27.25,
+          "reasons": [
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Li, Mn, O. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-754656/mp-18988",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804",
+          "score": 61.95,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-18988/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-530177/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-691115/mp-1272804",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-18988",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-530177",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        },
+        {
+          "path": "mp-754656/mp-1272804/mp-691115",
+          "score": 59.45,
+          "score_breakdown": {
+            "shared_element_continuity": 21.0,
+            "objective_alignment": 0.0,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 13.95
+          }
+        }
+      ]
+    }
+  },
+  "attribution": {
+    "ranked_position_changes": [
+      {
+        "position": 2,
+        "before": "mp-691115",
+        "after": "mp-530177",
+        "score": 27.25,
+        "single_configurations": [
+          "1_admission",
+          "2_ranked",
+          "3_chains"
+        ]
+      },
+      {
+        "position": 3,
+        "before": "mp-530177",
+        "after": "mp-691115",
+        "score": 27.25,
+        "single_configurations": [
+          "1_admission",
+          "2_ranked",
+          "3_chains"
+        ]
+      }
+    ],
+    "chain_membership_changes": [
+      {
+        "path": "mp-754656/mp-530177/mp-1272804",
+        "change": "added",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "1_admission",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-530177/mp-18988",
+        "change": "added",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "1_admission",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-530177/mp-691115",
+        "change": "added",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "1_admission",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-691115/mp-1272804",
+        "change": "dropped",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "0_baseline",
+          "2_ranked"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-691115/mp-18988",
+        "change": "dropped",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "0_baseline",
+          "2_ranked"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-691115/mp-530177",
+        "change": "dropped",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "0_baseline",
+          "2_ranked"
+        ]
+      }
+    ],
+    "chain_reorderings_within_returned": [
+      {
+        "path": "mp-754656/mp-530177",
+        "position_before": 3,
+        "position_after": 2,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-691115",
+        "position_before": 2,
+        "position_after": 3,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-18988/mp-530177",
+        "position_before": 6,
+        "position_after": 5,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-754656/mp-18988/mp-691115",
+        "position_before": 5,
+        "position_after": 6,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      }
+    ],
+    "reason_changes": [],
+    "ac8b_score_check": {
+      "1_admission": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "2_ranked": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "3_chains": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "4_all": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "5_admission_and_chains": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      }
+    },
+    "not_explained_by_a_single_configuration": []
+  }
+}
