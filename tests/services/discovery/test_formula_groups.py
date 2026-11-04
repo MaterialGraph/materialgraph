@@ -100,3 +100,14 @@ def test_forced_representative_takes_the_earliest_member_slot(monkeypatch):
                         lambda members: next(m for m in members if m["mp_id"] == "mp-746030"))
     kept = service._group_exact_analogs(("key",), 5, candidates)
     assert [c["material_id"] for c in kept] == [1094, 6]
+
+
+def test_groups_whose_representative_missed_the_cap_are_not_reported():
+    """AC11 finding: a group formed before the cap is reported only if admitted."""
+    service, candidates = _fixture()
+    service._group_exact_analogs(("key",), 5, candidates)
+    service._keep_admitted_groups(("key",), [candidates[0]])  # only Na3Fe(PO4)2 admitted
+    assert service.formula_groups_by_representative() == {}
+    service._group_exact_analogs(("key",), 5, candidates)
+    service._keep_admitted_groups(("key",), [candidates[0], candidates[1]])  # NaFePO4 admitted
+    assert set(service.formula_groups_by_representative()) == {10}

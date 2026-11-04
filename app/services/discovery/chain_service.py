@@ -459,6 +459,9 @@ class DiscoveryChainService:
             if index in selected_indices
         ]
 
+        if objective_aware_ordering:
+            self._keep_admitted_groups(cache_key, candidates)
+
         self._admission_diagnostics[cache_key] = {
             "missing_membership_excluded": missing_membership_excluded,
         }
@@ -578,6 +581,21 @@ class DiscoveryChainService:
             elif material_id not in grouped_ids:
                 kept.append(candidate)
         return kept
+
+    def _keep_admitted_groups(self, cache_key: tuple, admitted: list[dict]) -> None:
+        """Keep only groups whose representative was actually admitted (D12).
+
+        Groups are formed before the expansion cap; a group whose
+        representative did not win a slot is not an admission group, so its
+        members must not be reported for a material reached another way.
+        """
+        admitted_ids = {candidate["material_id"] for candidate in admitted}
+        store = self._efa_groups_store()
+        store[cache_key] = [
+            group
+            for group in store.get(cache_key, [])
+            if group["representative_id"] in admitted_ids
+        ]
 
     def formula_groups_by_representative(self) -> dict[int, list[dict]]:
         """Admission groups recorded during this request, keyed by representative."""
