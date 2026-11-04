@@ -21,7 +21,12 @@ class ResearchObjectiveService:
         hard_avoid_admission: bool = False,
         objective_aware_prefer_allocation: bool = False,
         reject_introduced_avoided: bool = True,
+        objective_aware_ordering: bool = False,
+        chain_tie_key=None,
     ) -> dict:
+        # objective_aware_ordering and chain_tie_key are set only by
+        # objective-aware Objective Explore (SRQ-01 R5); every other caller
+        # keeps the defaults and today's ordering.
         result = self.chain_service.get_discovery_chains(
             material_id=material_id,
             avoid_elements=objective.avoid_elements,
@@ -32,6 +37,7 @@ class ResearchObjectiveService:
             hard_avoid_admission=hard_avoid_admission,
             objective_aware_prefer_allocation=objective_aware_prefer_allocation,
             reject_introduced_avoided=reject_introduced_avoided,
+            objective_aware_ordering=objective_aware_ordering,
         )
 
         filtered_chains = self._filter_chains(
@@ -42,6 +48,7 @@ class ResearchObjectiveService:
         ranked_chains = self._rank_chains(
             chains=filtered_chains,
             objective=objective,
+            chain_tie_key=chain_tie_key,
         )
         chains = (
             ranked_chains
@@ -184,6 +191,7 @@ class ResearchObjectiveService:
         self,
         chains: list[dict],
         objective,
+        chain_tie_key=None,
     ) -> list[dict]:
         ranked_chains = []
 
@@ -204,10 +212,20 @@ class ResearchObjectiveService:
                 **ranking,
             })
 
-        ranked_chains.sort(
-            key=lambda item: item["scientific_usefulness_score"],
-            reverse=True,
-        )
+        if chain_tie_key is None:
+            ranked_chains.sort(
+                key=lambda item: item["scientific_usefulness_score"],
+                reverse=True,
+            )
+        else:
+            # Equal scores are ordered by the caller's key instead of by
+            # generation order; scores themselves are unchanged.
+            ranked_chains.sort(
+                key=lambda item: (
+                    -item["scientific_usefulness_score"],
+                    chain_tie_key(item),
+                ),
+            )
 
         return ranked_chains
 

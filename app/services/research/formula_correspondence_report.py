@@ -78,6 +78,32 @@ def _correspondence(result) -> dict:
     return dataclasses.asdict(result)
 
 
+def source_efa_material_ids(
+    db: Session,
+    source_material_id: int,
+    candidate_ids: Iterable[int],
+) -> set[int]:
+    """Candidates that are exact alkali formula analogs of the request source.
+
+    R6 tie presentation only: one composition query, stored compositions only;
+    unusable compositions are simply not source analogs here.
+    """
+    candidate_ids = set(candidate_ids)
+    fractions, _ = load_compositions(db, {source_material_id} | candidate_ids)
+    source = fractions.get(source_material_id)
+    if source is None:
+        return set()
+    analogs = set()
+    for material_id in candidate_ids:
+        candidate = fractions.get(material_id)
+        if candidate is None:
+            continue
+        result = classify_formula_correspondence(source, candidate)
+        if result is not None and result.correspondence_class == "exact_alkali_replacement":
+            analogs.add(material_id)
+    return analogs
+
+
 # Reason wording for alkali-changing steps on objective-aware requests. It
 # follows the neutral-alkali rule (S-5): it states which alkali metal differs
 # and never implies that one element was exchanged for another.

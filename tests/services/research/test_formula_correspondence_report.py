@@ -337,10 +337,13 @@ def test_case_study_01_report_on_reference_data(client, db_session):
          t["correspondence"]["correspondence_class"], t["correspondence"]["reason"])
         for t in report["transitions"]
     }
+    # PR-B1 (R5): MP-ID admission and chain ordering changed which chains are
+    # returned at limit 10. The one-step LiFePO4 -> NaFePO4 chain is now among
+    # them; before PR-B1 the returned alkali steps were ten ratios_differ pairs
+    # from the five Li phosphates to mp-19028 and mp-556540.
     assert pairs == {
-        (source, target, "not_exact_replacement", "ratios_differ")
-        for source in ("mp-19017", "mp-26003", "mp-25977", "mp-27007", "mp-19294")
-        for target in ("mp-19028", "mp-556540")
+        ("mp-19017", "mp-19028", "not_exact_replacement", "ratios_differ"),
+        ("mp-19017", "mp-19226", "exact_alkali_replacement", None),
     }
     assert report["not_evaluated_material_ids"] == []
 
