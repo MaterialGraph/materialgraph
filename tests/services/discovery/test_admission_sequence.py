@@ -92,3 +92,13 @@ def test_without_exact_analogs_admission_is_reservation_then_order():
     elements = {SOURCE: LI, **{c: LI for c in [1, 2, 3, 4, 6, 7]}, 20: K}
     selected = _ids(_select(_service([]), candidates, elements, prefer=["K"]))
     assert selected == [20, 1, 2, 3, 4, 6]
+
+
+def test_exact_analog_introducing_an_avoided_element_stays_a_general_candidate():
+    """No priority is not exclusion: with a general slot free, step 4 still admits it (D10 unchanged)."""
+    candidates = [1, 2, 40]
+    elements = {SOURCE: NA, 1: NA, 2: NA, 40: LI}
+    service = _service([40])
+    selected = _ids(_select(service, candidates, elements, avoid=["Li"]))
+    assert selected == [1, 2, 40]
+    assert service.efa_expansions()[0]["excluded"] == []
