@@ -5,6 +5,7 @@ from collections.abc import Collection
 from loguru import logger
 from sqlalchemy.orm import Session
 
+from app.domain.ordering import mp_id_sort_key
 from app.domain.relationship_labels import relationship_text
 from app.models.element import Element
 from app.models.material import Material
@@ -12,7 +13,6 @@ from app.models.material_element import MaterialElement
 from app.services.discovery.candidate_service import DiscoveryCandidateService
 from app.services.discovery.transition_validator import DiscoveryTransitionValidator
 from app.services.material.family_service import MaterialFamilyService
-from app.services.research.formula_correspondence_report import mp_id_sort_key
 
 
 class DiscoveryChainService:

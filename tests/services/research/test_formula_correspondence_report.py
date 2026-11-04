@@ -8,6 +8,7 @@ import pytest
 from sqlalchemy import event, select
 
 from app.core.database import engine
+from app.domain.ordering import mp_id_sort_key
 from app.models.material import Material
 from app.schemas import research_objective_exploration as schema
 from app.services.material import formula_correspondence as classifier
@@ -19,7 +20,6 @@ from app.services.research.formula_correspondence_report import (
     build_formula_correspondence_report,
     correspondence_relationship_text,
     load_compositions,
-    mp_id_sort_key,
 )
 from app.services.research.objective_exploration_service import ResearchObjectiveExplorationService
 

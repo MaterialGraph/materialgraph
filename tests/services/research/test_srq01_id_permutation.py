@@ -23,12 +23,12 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy import select, text
 
+from app.domain.ordering import mp_id_sort_key
 from app.models.material import Material
 from app.schemas.research_objective_exploration import ResearchObjectiveExplorationRequest
 from app.services.discovery import chain_service as chain_service_module
 from app.services.discovery.chain_service import DiscoveryChainService
 from app.services.research import objective_exploration_service as explore_module
-from app.services.research.formula_correspondence_report import mp_id_sort_key
 from app.services.research.objective_exploration_service import ResearchObjectiveExplorationService
 from tests.support.id_permutation import BASELINE, REVERSED, permutation, permuted_reference_session
 

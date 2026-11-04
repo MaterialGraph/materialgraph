@@ -1,0 +1,2963 @@
+{
+  "request": {
+    "name": "strict_source5_avoid_li",
+    "source_material_id": 5,
+    "body": {
+      "objective": {
+        "avoid_elements": [
+          "Li"
+        ],
+        "prefer_elements": [],
+        "preserve_elements": [],
+        "target_family": null,
+        "max_hops": 2,
+        "limit": 10,
+        "prefer_lower_criticality": true,
+        "require_stable_materials": false
+      },
+      "mode": "strict",
+      "limit": 10
+    }
+  },
+  "pre_pr_b1_revision": "f792826",
+  "validation": {
+    "0_baseline_matches_pre_pr_b1_snapshot": true,
+    "4_all_matches_current_snapshot": true
+  },
+  "configurations": {
+    "0_baseline": {
+      "admission": false,
+      "ranked": false,
+      "chains": false
+    },
+    "1_admission": {
+      "admission": true,
+      "ranked": false,
+      "chains": false
+    },
+    "2_ranked": {
+      "admission": false,
+      "ranked": true,
+      "chains": false
+    },
+    "3_chains": {
+      "admission": false,
+      "ranked": false,
+      "chains": true
+    },
+    "4_all": {
+      "admission": true,
+      "ranked": true,
+      "chains": true
+    },
+    "5_admission_and_chains": {
+      "admission": true,
+      "ranked": false,
+      "chains": true
+    }
+  },
+  "results": {
+    "0_baseline": {
+      "ranked": [
+        {
+          "mp_id": "mp-19028",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-556540",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-761065",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-752506",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-19226",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ]
+    },
+    "1_admission": {
+      "ranked": [
+        {
+          "mp_id": "mp-19028",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-19226",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-556540",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-752506",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-761065",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ]
+    },
+    "2_ranked": {
+      "ranked": [
+        {
+          "mp_id": "mp-19226",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-19028",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-556540",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-752506",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-761065",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ]
+    },
+    "3_chains": {
+      "ranked": [
+        {
+          "mp_id": "mp-19028",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-19226",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-556540",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-752506",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-761065",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ]
+    },
+    "4_all": {
+      "ranked": [
+        {
+          "mp_id": "mp-19226",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-19028",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-556540",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-752506",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-761065",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ]
+    },
+    "5_admission_and_chains": {
+      "ranked": [
+        {
+          "mp_id": "mp-19028",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-19226",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated."
+          ]
+        },
+        {
+          "mp_id": "mp-556540",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-752506",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        },
+        {
+          "mp_id": "mp-761065",
+          "score": 52.25,
+          "reasons": [
+            "Appears in an eligible composition chain containing a step classified as different alkali metal (element ratios differ).",
+            "Shares elements across the composition relationship: Fe, O, P. Structural preservation is not validated.",
+            "Lower-criticality preference contributes 2.2 through canonical material quality evidence.",
+            "Appears in an eligible composition chain with relationship type family_expansion.",
+            "Shares elements across the composition relationship: Fe, Na, O, P. Structural preservation is not validated.",
+            "Appears in an eligible composition chain containing a step classified as exact formula analog (alkali metal Li → Na; all other element ratios unchanged)."
+          ]
+        }
+      ],
+      "chains": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ],
+      "pool": [
+        {
+          "path": "mp-19017/mp-19028",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065",
+          "score": 84.5,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 10.0,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19028/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-19226/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-556540/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-752506/mp-761065",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19028",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-19226",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-556540",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        },
+        {
+          "path": "mp-19017/mp-761065/mp-752506",
+          "score": 82.0,
+          "score_breakdown": {
+            "shared_element_continuity": 30.0,
+            "objective_alignment": 12.5,
+            "transition_plausibility": 17.0,
+            "path_efficiency": 7.5,
+            "material_quality": 15.0
+          }
+        }
+      ]
+    }
+  },
+  "attribution": {
+    "ranked_position_changes": [
+      {
+        "position": 1,
+        "before": "mp-19028",
+        "after": "mp-19226",
+        "score": 52.25,
+        "single_configurations": [
+          "2_ranked"
+        ]
+      },
+      {
+        "position": 2,
+        "before": "mp-556540",
+        "after": "mp-19028",
+        "score": 52.25,
+        "single_configurations": [
+          "2_ranked"
+        ]
+      },
+      {
+        "position": 3,
+        "before": "mp-761065",
+        "after": "mp-556540",
+        "score": 52.25,
+        "single_configurations": [
+          "1_admission",
+          "2_ranked",
+          "3_chains"
+        ]
+      },
+      {
+        "position": 5,
+        "before": "mp-19226",
+        "after": "mp-761065",
+        "score": 52.25,
+        "single_configurations": [
+          "1_admission",
+          "2_ranked",
+          "3_chains"
+        ]
+      }
+    ],
+    "chain_membership_changes": [
+      {
+        "path": "mp-19017/mp-19226/mp-19028",
+        "change": "added",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "1_admission",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ]
+      },
+      {
+        "path": "mp-19017/mp-556540/mp-19028",
+        "change": "dropped",
+        "kind": "crossed the limit boundary",
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ],
+        "in_eligible_pool_of": [
+          "0_baseline",
+          "1_admission",
+          "2_ranked",
+          "3_chains",
+          "4_all",
+          "5_admission_and_chains"
+        ],
+        "returned_in": [
+          "0_baseline",
+          "2_ranked"
+        ]
+      }
+    ],
+    "chain_reorderings_within_returned": [
+      {
+        "path": "mp-19017/mp-19226",
+        "position_before": 5,
+        "position_after": 2,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-19017/mp-556540",
+        "position_before": 2,
+        "position_after": 3,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-19017/mp-761065",
+        "position_before": 3,
+        "position_after": 5,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-19017/mp-19028/mp-19226",
+        "position_before": 9,
+        "position_after": 6,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-19017/mp-19028/mp-556540",
+        "position_before": 6,
+        "position_after": 7,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      },
+      {
+        "path": "mp-19017/mp-19028/mp-761065",
+        "position_before": 7,
+        "position_after": 9,
+        "single_configurations": [
+          "1_admission",
+          "3_chains"
+        ]
+      }
+    ],
+    "reason_changes": [
+      {
+        "mp_id": "mp-19028",
+        "added": [],
+        "removed": [],
+        "eligible_chains_gained": [],
+        "eligible_chains_lost": [],
+        "classification": "order only: reasons follow eligible-chain order, which changed"
+      }
+    ],
+    "ac8b_score_check": {
+      "1_admission": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "2_ranked": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "3_chains": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "4_all": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      },
+      "5_admission_and_chains": {
+        "ranked": [],
+        "returned_chains": [],
+        "eligible_pool": []
+      }
+    },
+    "not_explained_by_a_single_configuration": []
+  }
+}

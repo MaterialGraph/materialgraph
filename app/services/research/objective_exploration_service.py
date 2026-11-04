@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
 
 from app.domain.objective_mode_policy import mode_policy
+from app.domain.ordering import mp_id_sort_key
 from app.domain.relationship_labels import relationship_text
 from app.services.material.quality_service import MaterialQualityService
 from app.services.research.formula_correspondence_report import (
     build_formula_correspondence_report,
     classify_chain_transitions,
     correspondence_relationship_text,
-    mp_id_sort_key,
     source_efa_material_ids,
 )
 from app.services.research.objective_coverage import build_objective_coverage

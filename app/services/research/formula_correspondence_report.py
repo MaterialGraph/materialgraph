@@ -12,12 +12,12 @@ always pass through ``normalise_stored_composition``; a value it rejects is
 from __future__ import annotations
 
 import dataclasses
-import re
 from collections.abc import Iterable
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.domain.ordering import mp_id_sort_key
 from app.models.material import Material
 from app.services.material.formula_correspondence import (
     EFA_ALKALI_METALS,
@@ -25,7 +25,6 @@ from app.services.material.formula_correspondence import (
 )
 from app.services.material.search_service import TAU, normalise_stored_composition
 
-_MP_ID = re.compile(r"^mp-(\d+)$")
 
 LIMITATIONS = [
     "Formula correspondence compares stored element ratios only. An exact "
@@ -41,14 +40,6 @@ LIMITATIONS = [
     "reported.",
     "Formula groups and per-expansion admission counts are not yet reported.",
 ]
-
-
-def mp_id_sort_key(mp_id: str | None, material_id: int) -> tuple:
-    """R5: numeric MP ID first; other IDs after, by string, then local ID."""
-    match = _MP_ID.match(mp_id or "")
-    if match:
-        return (0, int(match.group(1)), "", material_id)
-    return (1, 0, mp_id or "", material_id)
 
 
 def load_compositions(
