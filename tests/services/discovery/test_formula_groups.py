@@ -86,3 +86,17 @@ def test_formula_group_lists_members_by_mp_id_with_one_traversed():
 def test_formula_group_is_empty_when_not_reached_through_an_admission_group():
     assert _formula_group({10: [{"material_id": 10, "mp_id": "mp-19226"}]}, 384) == []
     assert _formula_group(None, 10) == []
+
+
+def test_forced_representative_takes_the_earliest_member_slot(monkeypatch):
+    """AC11 finding: the representative never loses the group's admission position."""
+    service, _ = _fixture()
+    candidates = [
+        _candidate(10, "mp-19226", "NaFePO4"),
+        _candidate(6, "mp-19028", "Na3Fe(PO4)2"),
+        _candidate(1094, "mp-746030", "Na4Fe4P4O16"),
+    ]
+    monkeypatch.setattr(ordering, "choose_representative",
+                        lambda members: next(m for m in members if m["mp_id"] == "mp-746030"))
+    kept = service._group_exact_analogs(("key",), 5, candidates)
+    assert [c["material_id"] for c in kept] == [1094, 6]

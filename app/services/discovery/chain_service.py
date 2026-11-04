@@ -548,15 +548,16 @@ class DiscoveryChainService:
                 else:
                     groups.append({"composition": candidate_fractions, "members": [candidate]})
 
-        grouped_out: set[int] = set()
+        # The representative takes the admission position of the group's
+        # earliest member, so which record represents a group never decides
+        # whether the group gets a slot (AC11 finding).
+        slot_of_group: dict[int, dict] = {}
+        grouped_ids: set[int] = set()
         recorded: list[dict] = []
         for group in groups:
             representative = ordering.choose_representative(group["members"])
-            grouped_out.update(
-                member["material_id"]
-                for member in group["members"]
-                if member["material_id"] != representative["material_id"]
-            )
+            slot_of_group[group["members"][0]["material_id"]] = representative
+            grouped_ids.update(member["material_id"] for member in group["members"])
             recorded.append({
                 "representative_id": representative["material_id"],
                 "members": [
@@ -569,11 +570,14 @@ class DiscoveryChainService:
                 ],
             })
         self._efa_groups_store()[cache_key] = recorded
-        return [
-            candidate
-            for candidate in eligible_candidates
-            if candidate["material_id"] not in grouped_out
-        ]
+        kept: list[dict] = []
+        for candidate in eligible_candidates:
+            material_id = candidate["material_id"]
+            if material_id in slot_of_group:
+                kept.append(slot_of_group[material_id])
+            elif material_id not in grouped_ids:
+                kept.append(candidate)
+        return kept
 
     def formula_groups_by_representative(self) -> dict[int, list[dict]]:
         """Admission groups recorded during this request, keyed by representative."""
