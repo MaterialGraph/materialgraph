@@ -13,9 +13,11 @@ from app.models.material import Material
 from app.schemas import research_objective_exploration as schema
 from app.services.material import formula_correspondence as classifier
 from app.services.material.formula_correspondence import EFA_ALKALI_METALS
+from app.services.discovery import chain_service as chain_module
 from app.services.material.search_service import normalise_stored_composition
 from app.services.research import formula_correspondence_report as report_module
 from app.services.research.formula_correspondence_report import (
+    GROUPING_LIMITATIONS,
     LIMITATIONS,
     build_formula_correspondence_report,
     correspondence_relationship_text,
@@ -98,12 +100,18 @@ def test_objective_aware_requests_always_carry_the_report(client, source, body):
     assert report["contract_version"] == "1"
     assert report["basis"] == "stored_composition_fractions"
     assert report["tolerance"] == 1e-6
-    assert report["formula_grouping_available"] is False
+    # PR-B2: formula groups are reported; admission counts are not yet.
+    assert report["formula_grouping_available"] is True
     assert report["admission_reporting_available"] is False
     assert report["expansions"] == []
-    assert all(entry["formula_group"] == [] for entry in report["source_correspondence"])
+    for entry in report["source_correspondence"]:
+        group = entry["formula_group"]
+        # Either not reached through an admission group (empty), or the
+        # group with exactly one traversed member: the entry itself.
+        if group:
+            assert [m["material_id"] for m in group if m["traversed"]] == [entry["material_id"]]
     assert report["not_evaluated_count"] == len(report["not_evaluated_material_ids"])
-    assert report["limitations"] == LIMITATIONS
+    assert report["limitations"] == LIMITATIONS[:-1] + GROUPING_LIMITATIONS
 
 
 def test_schema_literals_match_the_classifier():
@@ -310,6 +318,10 @@ def test_every_classified_composition_was_normalised(client, monkeypatch, source
 
     monkeypatch.setattr(report_module, "normalise_stored_composition", spy_normalise)
     monkeypatch.setattr(report_module, "classify_formula_correspondence", spy_classify)
+    # PR-B2 (D11): objective-aware requests load compositions once, in the
+    # chain service; admission also classifies there.
+    monkeypatch.setattr(chain_module, "normalise_stored_composition", spy_normalise)
+    monkeypatch.setattr(chain_module, "classify_formula_correspondence", spy_classify)
     _explore(client, source, body)
     assert seen, "the classifier was not called"
     for fractions in seen:
@@ -325,12 +337,16 @@ def test_case_study_01_report_on_reference_data(client, db_session):
 
     ranked = [mp_by_id[candidate["material_id"]] for candidate in data["ranked_candidates"]]
     assert "mp-19226" in ranked
+    energy_10 = db_session.execute(select(Material.energy_above_hull).where(Material.id == 10)).scalar_one()
     assert report["source_correspondence"] == [{
         "candidate_rank": ranked.index("mp-19226") + 1,
         "material_id": 10,
         "correspondence": {"correspondence_class": "exact_alkali_replacement", "reason": None,
                            "replaced_from": "Li", "replaced_to": "Na"},
-        "formula_group": [],
+        # PR-B2: NaFePO4 was admitted as an exact analog of LiFePO4; the
+        # reference data holds one NaFePO4 record, so its group is itself.
+        "formula_group": [{"material_id": 10, "mp_id": "mp-19226",
+                           "energy_above_hull": energy_10, "traversed": True}],
     }]
     pairs = {
         (mp_by_id[t["from_material_id"]], mp_by_id[t["to_material_id"]],
@@ -366,7 +382,7 @@ def test_stored_composition_of_lifepo4_normalises_as_expected(db_session):
 # Wording (AC9) ------------------------------------------------------------------
 
 def test_report_strings_use_no_forbidden_wording():
-    for text in LIMITATIONS:
+    for text in LIMITATIONS + GROUPING_LIMITATIONS:
         lowered = text.lower()
         assert not any(phrase in lowered for phrase in SECTION_3_FORBIDDEN), text
         assert not NEUTRAL_ALKALI_FORBIDDEN.search(text), text
@@ -434,3 +450,13 @@ def test_reason_wording_follows_section_3_and_neutral_alkali_rules():
         assert not any(phrase in text.lower() for phrase in SECTION_3_FORBIDDEN), text
         assert not NEUTRAL_ALKALI_FORBIDDEN.search(text), text
         assert "composition not compared" not in text
+
+
+@pytest.mark.parametrize(("source", "body"), OBJECTIVE_AWARE)
+def test_objective_aware_report_reuses_the_request_compositions(client, monkeypatch, source, body):
+    """PR-B2 (D11): the report path never runs its own composition query."""
+    def fail(*args, **kwargs):
+        raise AssertionError("load_compositions called on an objective-aware request")
+
+    monkeypatch.setattr(report_module, "load_compositions", fail)
+    _explore(client, source, body)

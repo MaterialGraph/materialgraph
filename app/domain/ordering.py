@@ -1,4 +1,4 @@
-"""Stable ordering keys (SRQ-01 spec, R5).
+"""Stable ordering keys and conventions (SRQ-01 spec, R3, R5).
 
 Pure functions only: no database, model or service imports, so every layer
 can use them without depending on one another.
@@ -20,3 +20,13 @@ def mp_id_sort_key(mp_id: str | None, material_id: int) -> tuple:
     if match:
         return (0, int(match.group(1)), "", material_id)
     return (1, 0, mp_id or "", material_id)
+
+
+def choose_representative(members: list[dict]) -> dict:
+    """R3: the formula-group member that is traversed and scored.
+
+    The record with the lowest MP-ID key. This is a reproducibility
+    convention, not a scientific preference. Kept as a single module-level
+    function so the AC11 sensitivity check can substitute each member in turn.
+    """
+    return min(members, key=lambda member: mp_id_sort_key(member.get("mp_id"), member["material_id"]))
