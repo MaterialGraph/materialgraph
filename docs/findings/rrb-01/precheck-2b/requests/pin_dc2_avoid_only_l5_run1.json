@@ -1,0 +1,1 @@
+{"objective":{"avoid_elements":["Li"],"prefer_elements":[],"preserve_elements":[],"target_family":null,"max_hops":2,"limit":5,"prefer_lower_criticality":true,"require_stable_materials":false},"mode":"balanced","limit":5}

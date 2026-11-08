@@ -1,0 +1,657 @@
+{
+  "base_url": "http://127.0.0.1:18000",
+  "endpoint": "POST /api/v1/materials/{id}/discovery/objective/explore",
+  "canonical_request_rule": "json.dumps(sort_keys=True, separators=(',',':'), ensure_ascii=False) UTF-8",
+  "started_utc": "2026-11-06T16:45:48.471+00:00",
+  "requests": [
+    {
+      "id": "hist_dc1_informed_l5_run1",
+      "set": "historical",
+      "case": "DC1",
+      "arm": "informed",
+      "config": "5,5",
+      "run": 1,
+      "material_id": 5,
+      "body_source": "capture\\cs01_l5.json",
+      "sequence": 1,
+      "request_file": "requests/hist_dc1_informed_l5_run1.json",
+      "request_sent_sha256": "9521f47b58e6bc0e23987c2d33ed63174b6aa8857331fc67e4e7a5c13986bc10",
+      "request_canonical_sha256": "b07e52afb3565562e6b48b90b3c513de66c79aa6520436c4c8f119cf0c29de4a",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:45:48.472+00:00",
+          "elapsed_s": 10.299,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:45:48 GMT",
+            "server": "uvicorn",
+            "content-length": "26105",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "hist_dc1_informed_l5_run1.raw",
+          "response_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22",
+          "response_bytes": 26105
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/hist_dc1_informed_l5_run1.raw",
+      "final_response_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22"
+    },
+    {
+      "id": "hist_dc1_informed_l5_run2",
+      "set": "historical",
+      "case": "DC1",
+      "arm": "informed",
+      "config": "5,5",
+      "run": 2,
+      "material_id": 5,
+      "body_source": "capture\\cs01_l5.json",
+      "sequence": 2,
+      "request_file": "requests/hist_dc1_informed_l5_run2.json",
+      "request_sent_sha256": "9521f47b58e6bc0e23987c2d33ed63174b6aa8857331fc67e4e7a5c13986bc10",
+      "request_canonical_sha256": "b07e52afb3565562e6b48b90b3c513de66c79aa6520436c4c8f119cf0c29de4a",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:45:58.779+00:00",
+          "elapsed_s": 10.213,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:45:58 GMT",
+            "server": "uvicorn",
+            "content-length": "26105",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "hist_dc1_informed_l5_run2.raw",
+          "response_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22",
+          "response_bytes": 26105
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/hist_dc1_informed_l5_run2.raw",
+      "final_response_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22"
+    },
+    {
+      "id": "pin_dc1_informed_l5_run1",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "informed",
+      "config": "5,5",
+      "run": 1,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 3,
+      "request_file": "requests/pin_dc1_informed_l5_run1.json",
+      "request_sent_sha256": "666771b31812392d768db7c29566e1ff40bd3ae04f6a99b0cbb25f555d84f283",
+      "request_canonical_sha256": "1a83343a2306b36b0ff9ab85d12980f7110f6992590dbc929731e07dd09e125c",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:46:08.993+00:00",
+          "elapsed_s": 10.219,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:46:09 GMT",
+            "server": "uvicorn",
+            "content-length": "26046",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_informed_l5_run1.raw",
+          "response_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53",
+          "response_bytes": 26046
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_informed_l5_run1.raw",
+      "final_response_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53"
+    },
+    {
+      "id": "pin_dc1_informed_l10_run1",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "informed",
+      "config": "10,10",
+      "run": 1,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 4,
+      "request_file": "requests/pin_dc1_informed_l10_run1.json",
+      "request_sent_sha256": "ad54113e3c05e8b56c03bd3fb26ae98527299b33e5d7df916f5de8ff7db72925",
+      "request_canonical_sha256": "7aa5aa2c82102b950b0696684b591b0a7eaebeae6839cca24ee50b486cc93f5b",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:46:19.215+00:00",
+          "elapsed_s": 10.108,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:46:19 GMT",
+            "server": "uvicorn",
+            "content-length": "44273",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_informed_l10_run1.raw",
+          "response_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c",
+          "response_bytes": 44273
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_informed_l10_run1.raw",
+      "final_response_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c"
+    },
+    {
+      "id": "pin_dc1_avoid_only_l5_run1",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "avoid_only",
+      "config": "5,5",
+      "run": 1,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 5,
+      "request_file": "requests/pin_dc1_avoid_only_l5_run1.json",
+      "request_sent_sha256": "db22ffc97e5fa83287922738ad01a98b2a9e4ae7dca8b09abd644a5d748143ed",
+      "request_canonical_sha256": "4aec03d76645e8accab12ec5edeb437e1f5e37767859250e67b86efe982538e7",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:46:29.325+00:00",
+          "elapsed_s": 7.54,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:46:29 GMT",
+            "server": "uvicorn",
+            "content-length": "15356",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_avoid_only_l5_run1.raw",
+          "response_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d",
+          "response_bytes": 15356
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_avoid_only_l5_run1.raw",
+      "final_response_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d"
+    },
+    {
+      "id": "pin_dc1_avoid_only_l10_run1",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "avoid_only",
+      "config": "10,10",
+      "run": 1,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 6,
+      "request_file": "requests/pin_dc1_avoid_only_l10_run1.json",
+      "request_sent_sha256": "983a28cc8fc15009d0dced77db80728e816c991c9491b145d5e102ac3fc76cb1",
+      "request_canonical_sha256": "513a70b4e7d136065627f5f50fccba3b1f21410841c77468744809f74e481e91",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:46:36.866+00:00",
+          "elapsed_s": 7.427,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:46:36 GMT",
+            "server": "uvicorn",
+            "content-length": "28404",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_avoid_only_l10_run1.raw",
+          "response_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70",
+          "response_bytes": 28404
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_avoid_only_l10_run1.raw",
+      "final_response_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70"
+    },
+    {
+      "id": "pin_dc2_informed_l5_run1",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "informed",
+      "config": "5,5",
+      "run": 1,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 7,
+      "request_file": "requests/pin_dc2_informed_l5_run1.json",
+      "request_sent_sha256": "b1373fbc0717ba630792d184441a1c3590bf90b77cbe61fa9095ab90c2457807",
+      "request_canonical_sha256": "9a3c64e71519d3d9db3a1c1b1b979c7e6d9fa9712c8a8f6f574a41ca49eb6520",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:46:44.297+00:00",
+          "elapsed_s": 10.267,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:46:44 GMT",
+            "server": "uvicorn",
+            "content-length": "24679",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_informed_l5_run1.raw",
+          "response_sha256": "a925befdc162f0a6de832d9ba44dc973b9408009745e866cca8eb33be341ed0d",
+          "response_bytes": 24679
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_informed_l5_run1.raw",
+      "final_response_sha256": "a925befdc162f0a6de832d9ba44dc973b9408009745e866cca8eb33be341ed0d"
+    },
+    {
+      "id": "pin_dc2_informed_l10_run1",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "informed",
+      "config": "10,10",
+      "run": 1,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 8,
+      "request_file": "requests/pin_dc2_informed_l10_run1.json",
+      "request_sent_sha256": "7a157217845daebffa2ce59dc8dc000c0402c4de7094a742280d93a298ea8a99",
+      "request_canonical_sha256": "f66d8831e8e81dfa26823b9138bdc84e43f56974c1417e7bc67abedba43cfded",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:46:54.567+00:00",
+          "elapsed_s": 10.003,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:46:54 GMT",
+            "server": "uvicorn",
+            "content-length": "42032",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_informed_l10_run1.raw",
+          "response_sha256": "a5a1aa9309379686a2ff4a1ded8b85e6bdfb5c1c12af5ec704f739ec9dae6af6",
+          "response_bytes": 42032
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_informed_l10_run1.raw",
+      "final_response_sha256": "a5a1aa9309379686a2ff4a1ded8b85e6bdfb5c1c12af5ec704f739ec9dae6af6"
+    },
+    {
+      "id": "pin_dc2_avoid_only_l5_run1",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "avoid_only",
+      "config": "5,5",
+      "run": 1,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 9,
+      "request_file": "requests/pin_dc2_avoid_only_l5_run1.json",
+      "request_sent_sha256": "9e65ca03a640e8a58f71dd4d3a3553e3b5d60974b4f585244fcbd9794a348bb1",
+      "request_canonical_sha256": "432394b65939caaf7e437459a72cda94f4e8f67f448bc8dfcbcfa847e83dd63e",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:47:04.572+00:00",
+          "elapsed_s": 7.747,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:47:04 GMT",
+            "server": "uvicorn",
+            "content-length": "14784",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_avoid_only_l5_run1.raw",
+          "response_sha256": "337e2755e86c6960e8f5fb046d8422b4cd078dde54727ae5d23022754ea99bd4",
+          "response_bytes": 14784
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_avoid_only_l5_run1.raw",
+      "final_response_sha256": "337e2755e86c6960e8f5fb046d8422b4cd078dde54727ae5d23022754ea99bd4"
+    },
+    {
+      "id": "pin_dc2_avoid_only_l10_run1",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "avoid_only",
+      "config": "10,10",
+      "run": 1,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 10,
+      "request_file": "requests/pin_dc2_avoid_only_l10_run1.json",
+      "request_sent_sha256": "149c0b4e47a8974500325e635e9381b05231f906c3e236409f5f0e373f3f7fd5",
+      "request_canonical_sha256": "ee83d02bd4ce4f99510cd120d3fa14e40bc95f4bbaa0b02df6e4fb64634b3df9",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:47:12.322+00:00",
+          "elapsed_s": 7.85,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:47:11 GMT",
+            "server": "uvicorn",
+            "content-length": "28005",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_avoid_only_l10_run1.raw",
+          "response_sha256": "3ff9e392a7ff1440e58895083605dcc04ca463cb863a34a23eeb01738767f15f",
+          "response_bytes": 28005
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_avoid_only_l10_run1.raw",
+      "final_response_sha256": "3ff9e392a7ff1440e58895083605dcc04ca463cb863a34a23eeb01738767f15f"
+    },
+    {
+      "id": "pin_dc1_informed_l5_run2",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "informed",
+      "config": "5,5",
+      "run": 2,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 11,
+      "request_file": "requests/pin_dc1_informed_l5_run2.json",
+      "request_sent_sha256": "666771b31812392d768db7c29566e1ff40bd3ae04f6a99b0cbb25f555d84f283",
+      "request_canonical_sha256": "1a83343a2306b36b0ff9ab85d12980f7110f6992590dbc929731e07dd09e125c",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:47:20.175+00:00",
+          "elapsed_s": 8.775,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:47:20 GMT",
+            "server": "uvicorn",
+            "content-length": "26046",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_informed_l5_run2.raw",
+          "response_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53",
+          "response_bytes": 26046
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_informed_l5_run2.raw",
+      "final_response_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53"
+    },
+    {
+      "id": "pin_dc1_informed_l10_run2",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "informed",
+      "config": "10,10",
+      "run": 2,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 12,
+      "request_file": "requests/pin_dc1_informed_l10_run2.json",
+      "request_sent_sha256": "ad54113e3c05e8b56c03bd3fb26ae98527299b33e5d7df916f5de8ff7db72925",
+      "request_canonical_sha256": "7aa5aa2c82102b950b0696684b591b0a7eaebeae6839cca24ee50b486cc93f5b",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:47:28.951+00:00",
+          "elapsed_s": 9.096,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:47:29 GMT",
+            "server": "uvicorn",
+            "content-length": "44273",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_informed_l10_run2.raw",
+          "response_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c",
+          "response_bytes": 44273
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_informed_l10_run2.raw",
+      "final_response_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c"
+    },
+    {
+      "id": "pin_dc1_avoid_only_l5_run2",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "avoid_only",
+      "config": "5,5",
+      "run": 2,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 13,
+      "request_file": "requests/pin_dc1_avoid_only_l5_run2.json",
+      "request_sent_sha256": "db22ffc97e5fa83287922738ad01a98b2a9e4ae7dca8b09abd644a5d748143ed",
+      "request_canonical_sha256": "4aec03d76645e8accab12ec5edeb437e1f5e37767859250e67b86efe982538e7",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:47:38.050+00:00",
+          "elapsed_s": 7.411,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:47:38 GMT",
+            "server": "uvicorn",
+            "content-length": "15356",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_avoid_only_l5_run2.raw",
+          "response_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d",
+          "response_bytes": 15356
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_avoid_only_l5_run2.raw",
+      "final_response_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d"
+    },
+    {
+      "id": "pin_dc1_avoid_only_l10_run2",
+      "set": "pinned",
+      "case": "DC1",
+      "arm": "avoid_only",
+      "config": "10,10",
+      "run": 2,
+      "material_id": 5,
+      "body_source": "generated (pinned field set)",
+      "sequence": 14,
+      "request_file": "requests/pin_dc1_avoid_only_l10_run2.json",
+      "request_sent_sha256": "983a28cc8fc15009d0dced77db80728e816c991c9491b145d5e102ac3fc76cb1",
+      "request_canonical_sha256": "513a70b4e7d136065627f5f50fccba3b1f21410841c77468744809f74e481e91",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:47:45.464+00:00",
+          "elapsed_s": 7.316,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:47:45 GMT",
+            "server": "uvicorn",
+            "content-length": "28404",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc1_avoid_only_l10_run2.raw",
+          "response_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70",
+          "response_bytes": 28404
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc1_avoid_only_l10_run2.raw",
+      "final_response_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70"
+    },
+    {
+      "id": "pin_dc2_informed_l5_run2",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "informed",
+      "config": "5,5",
+      "run": 2,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 15,
+      "request_file": "requests/pin_dc2_informed_l5_run2.json",
+      "request_sent_sha256": "b1373fbc0717ba630792d184441a1c3590bf90b77cbe61fa9095ab90c2457807",
+      "request_canonical_sha256": "9a3c64e71519d3d9db3a1c1b1b979c7e6d9fa9712c8a8f6f574a41ca49eb6520",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:47:52.781+00:00",
+          "elapsed_s": 9.928,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:47:52 GMT",
+            "server": "uvicorn",
+            "content-length": "24679",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_informed_l5_run2.raw",
+          "response_sha256": "a925befdc162f0a6de832d9ba44dc973b9408009745e866cca8eb33be341ed0d",
+          "response_bytes": 24679
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_informed_l5_run2.raw",
+      "final_response_sha256": "a925befdc162f0a6de832d9ba44dc973b9408009745e866cca8eb33be341ed0d"
+    },
+    {
+      "id": "pin_dc2_informed_l10_run2",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "informed",
+      "config": "10,10",
+      "run": 2,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 16,
+      "request_file": "requests/pin_dc2_informed_l10_run2.json",
+      "request_sent_sha256": "7a157217845daebffa2ce59dc8dc000c0402c4de7094a742280d93a298ea8a99",
+      "request_canonical_sha256": "f66d8831e8e81dfa26823b9138bdc84e43f56974c1417e7bc67abedba43cfded",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:48:02.716+00:00",
+          "elapsed_s": 9.686,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:48:02 GMT",
+            "server": "uvicorn",
+            "content-length": "42032",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_informed_l10_run2.raw",
+          "response_sha256": "a5a1aa9309379686a2ff4a1ded8b85e6bdfb5c1c12af5ec704f739ec9dae6af6",
+          "response_bytes": 42032
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_informed_l10_run2.raw",
+      "final_response_sha256": "a5a1aa9309379686a2ff4a1ded8b85e6bdfb5c1c12af5ec704f739ec9dae6af6"
+    },
+    {
+      "id": "pin_dc2_avoid_only_l5_run2",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "avoid_only",
+      "config": "5,5",
+      "run": 2,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 17,
+      "request_file": "requests/pin_dc2_avoid_only_l5_run2.json",
+      "request_sent_sha256": "9e65ca03a640e8a58f71dd4d3a3553e3b5d60974b4f585244fcbd9794a348bb1",
+      "request_canonical_sha256": "432394b65939caaf7e437459a72cda94f4e8f67f448bc8dfcbcfa847e83dd63e",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:48:12.412+00:00",
+          "elapsed_s": 7.795,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:48:12 GMT",
+            "server": "uvicorn",
+            "content-length": "14784",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_avoid_only_l5_run2.raw",
+          "response_sha256": "337e2755e86c6960e8f5fb046d8422b4cd078dde54727ae5d23022754ea99bd4",
+          "response_bytes": 14784
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_avoid_only_l5_run2.raw",
+      "final_response_sha256": "337e2755e86c6960e8f5fb046d8422b4cd078dde54727ae5d23022754ea99bd4"
+    },
+    {
+      "id": "pin_dc2_avoid_only_l10_run2",
+      "set": "pinned",
+      "case": "DC2",
+      "arm": "avoid_only",
+      "config": "10,10",
+      "run": 2,
+      "material_id": 1038,
+      "body_source": "generated (pinned field set)",
+      "sequence": 18,
+      "request_file": "requests/pin_dc2_avoid_only_l10_run2.json",
+      "request_sent_sha256": "149c0b4e47a8974500325e635e9381b05231f906c3e236409f5f0e373f3f7fd5",
+      "request_canonical_sha256": "ee83d02bd4ce4f99510cd120d3fa14e40bc95f4bbaa0b02df6e4fb64634b3df9",
+      "attempts": [
+        {
+          "started_utc": "2026-11-06T16:48:20.208+00:00",
+          "elapsed_s": 8.523,
+          "status": 200,
+          "headers": {
+            "date": "Fri, 06 Nov 2026 16:48:20 GMT",
+            "server": "uvicorn",
+            "content-length": "28005",
+            "content-type": "application/json",
+            "connection": "close"
+          },
+          "error": null,
+          "attempt": 1,
+          "response_file": "pin_dc2_avoid_only_l10_run2.raw",
+          "response_sha256": "3ff9e392a7ff1440e58895083605dcc04ca463cb863a34a23eeb01738767f15f",
+          "response_bytes": 28005
+        }
+      ],
+      "final_status": 200,
+      "final_response_file": "responses/pin_dc2_avoid_only_l10_run2.raw",
+      "final_response_sha256": "3ff9e392a7ff1440e58895083605dcc04ca463cb863a34a23eeb01738767f15f"
+    }
+  ],
+  "finished_utc": "2026-11-06T16:48:28.733+00:00"
+}
