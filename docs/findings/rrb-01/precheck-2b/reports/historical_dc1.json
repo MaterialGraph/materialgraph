@@ -1,0 +1,56 @@
+{
+  "capture_request_file": "capture\\cs01_l5.json",
+  "capture_request_sha256": "9521f47b58e6bc0e23987c2d33ed63174b6aa8857331fc67e4e7a5c13986bc10",
+  "capture_request_canonical_sha256": "b07e52afb3565562e6b48b90b3c513de66c79aa6520436c4c8f119cf0c29de4a",
+  "capture_response_file": "capture\\post_cs01_l5.json",
+  "capture_response_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22",
+  "capture_request_missing_fields": [],
+  "runs": [
+    {
+      "request": "hist_dc1_informed_l5_run1",
+      "request_bytes_identical_to_capture": true,
+      "response_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22",
+      "byte_identical_to_capture": true,
+      "canonical_differences_vs_capture (a=capture, b=run)": [],
+      "result": "PASS"
+    },
+    {
+      "request": "hist_dc1_informed_l5_run2",
+      "request_bytes_identical_to_capture": true,
+      "response_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22",
+      "byte_identical_to_capture": true,
+      "canonical_differences_vs_capture (a=capture, b=run)": [],
+      "result": "PASS"
+    }
+  ],
+  "acceptance": [
+    {
+      "request": "hist_dc1_informed_l5_run1",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "hist_dc1_informed_l5_run2",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    }
+  ],
+  "repeatability": {
+    "run1": "hist_dc1_informed_l5_run1",
+    "run2": "hist_dc1_informed_l5_run2",
+    "run1_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22",
+    "run2_sha256": "8b88ed92b2cd3feea309e09bf7b0fd338f4e6edfc8f1eb9183369e9f53746d22",
+    "byte_identical": true,
+    "canonical_identical": true,
+    "canonical_differences": [],
+    "result": "PASS"
+  }
+}
