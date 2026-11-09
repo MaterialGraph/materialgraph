@@ -3,7 +3,8 @@ import json
 from pathlib import Path
 
 import pytest
-from openpyxl import load_workbook
+openpyxl = pytest.importorskip("openpyxl")
+load_workbook = openpyxl.load_workbook
 
 import rrb01_extract as tool
 
