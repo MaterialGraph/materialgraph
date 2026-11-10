@@ -4,3 +4,4 @@ tests/fixtures/objective_coverage/** -text
 *.pdf binary
 docs/findings/rrb-01/precheck-2b/** -text
 docs/findings/rrb-01/precheck-2b/** -text
+docs/findings/rrb-01/extraction/** -text
