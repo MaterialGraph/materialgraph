@@ -1,0 +1,23 @@
+{
+  "run_a": "run_a.normalized.jsonl",
+  "run_a_sha256": "E866BB2A5A67086498AC32DB07E4F4D093127BA9483462C3802259F148A6CDCA",
+  "run_b": "run_b.normalized.jsonl",
+  "run_b_sha256": "07E4C4DA4A78C934C1CAC7C4A3C40CD9050CD9FA8A4B609847D702921E95A651",
+  "run_a_records": 75,
+  "run_b_records": 33,
+  "matched_includes": 15,
+  "matched_includes_with_field_differences": 4,
+  "jointly_excluded": 0,
+  "jointly_excluded_audit_sample": 0,
+  "jointly_ambiguous": 0,
+  "decision_conflicts": 0,
+  "unmatched_a": 60,
+  "unmatched_b": 18,
+  "workbook_rows_by_category": {
+    "audit_joint_include": 15,
+    "normalization_failure": 10,
+    "unmatched_a": 51,
+    "unmatched_b": 17
+  },
+  "adjudication_xlsx_sha256": "1B7777690497093BDDF48848B6430A79183D00DAB3C80E8E2E3632541B9DC444"
+}
