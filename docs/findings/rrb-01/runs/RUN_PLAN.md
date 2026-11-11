@@ -1,6 +1,6 @@
 # RRB-01 run plan (AMD-001)
 
-Recorded: [date], before either run.
+Recorded: 11/11/2026, before either run.
 Amendment: rrb-01-amd-001 (commit 5f180a07)
 Byte-exact package protection: commit 2985f722
 
