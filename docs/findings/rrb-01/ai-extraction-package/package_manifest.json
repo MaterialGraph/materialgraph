@@ -1,0 +1,24 @@
+{
+  "locked_protocol": "rrb-01-protocol-v0.3.md",
+  "locked_protocol_sha256": "0ED2C4705ECF635F728FE9F3366A03090BBBAC109096544C2F22B759B5227CA9",
+  "page_convention": "pdf_index",
+  "rule_labels": [
+    "Order of operations.",
+    "Explicit-pair requirement.",
+    "Relationship characterization.",
+    "Qualifying relationship types",
+    "Composition rules",
+    "Spatially heterogeneous materials.",
+    "Morphology and surface modifications.",
+    "Directed pairs only.",
+    "Evidence-source record.",
+    "Extraction output schema",
+    "Frozen source snapshots.",
+    "What creates a record.",
+    "Duplicates."
+  ],
+  "files": {
+    "ai_extraction_rules.md": "56BCD2164B5E2A288F616497CE9F66973390A5DC0346DB308D508E1F59C94B05",
+    "ai_extraction_prompt.md": "F78AA9523EDDEA467A753DBB1CD4091B28C7B96D372564DEC50BF44108C4C7A5"
+  }
+}
