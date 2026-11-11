@@ -37,3 +37,4 @@ transcript and the files below. It was not filled in during the run.
 - Embedded sources verified: both PDF hashes equal the frozen sources.
 - Gitleaks: the raw transcript tripped five AWS-key pattern matches inside the embedded Hwang PDF data, which were false positives. The reduced transcript passes.
 - Rules file: the result of the check above.
+- Rules file as received: the copy embedded in the transcript (8,518 bytes, SHA-256 4BEC18DF…) differs from the frozen file (8,451 bytes, 56BCD216…) only in line endings: CRLF instead of LF, and no final newline. After normalizing line endings it is byte-identical to the frozen file (verified 11/11/2026). Whether the conversion happened on upload or in AI Studio’s storage is unknown. Both PDFs as received match the frozen hashes exactly.
