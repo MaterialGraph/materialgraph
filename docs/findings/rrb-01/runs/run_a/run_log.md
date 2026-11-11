@@ -1,6 +1,6 @@
 # RRB-01 Run A (AMD-001)
 
-Note: this log was written after the run, on [date], from the interface, the saved
+Note: this log was written after the run, on 11/11/2026, from the interface, the saved
 transcript and the files below. It was not filled in during the run.
 
 - Interface: Google AI Studio
@@ -32,3 +32,8 @@ transcript and the files below. It was not filled in during the run.
   - NOE21: 10 of 16 pages: 1–7, 9, 10, 11
 - Manual steps: [e.g. "removed ``` fence lines from the copied CSV", or "none"]
 - Problems: [any, or "none"]
+- Raw transcript: C:\mg-validation\rrb01-runs\run_a\transcript_raw.json, 61,506,354 bytes, SHA-256 12DBFA67A1444DB8903D54E3CECB3FC044F2EEBD7977FCD0B63E68CA24B40970, backed up off the laptop.
+- Committed transcript: transcript_reduced.json, SHA-256 0C8C5FBE038D30171533C6C63FC8EB6565B660CA508DF912293042B1786A6DCE, made with tools/reduce_transcript.py, which replaces embedded files with size and SHA-256 placeholders.
+- Embedded sources verified: both PDF hashes equal the frozen sources.
+- Gitleaks: the raw transcript tripped five AWS-key pattern matches inside the embedded Hwang PDF data, which were false positives. The reduced transcript passes.
+- Rules file: the result of the check above.
