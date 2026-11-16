@@ -1,0 +1,614 @@
+[
+  {
+    "parent_normalized": "Fe1Na1O2",
+    "target_normalized": "Co1Fe1Na2O4",
+    "parent_as_published": "NaFeO2",
+    "target_as_published": "NaFe0.5Co0.5O2",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [],
+    "prefer_elements": [
+      "Co"
+    ],
+    "avoid_only_eligible": false,
+    "shared_elements": 3,
+    "family_key": "Fe-Na-O",
+    "parent_in_dataset": true,
+    "target_in_dataset": false,
+    "parent_record": {
+      "id": 687,
+      "mp_id": "mp-19359",
+      "formula": "NaFeO2",
+      "pretty_formula": "NaFeO2"
+    },
+    "parent_matches": [
+      {
+        "id": 687,
+        "mp_id": "mp-19359",
+        "formula": "NaFeO2",
+        "pretty_formula": "NaFeO2"
+      },
+      {
+        "id": 704,
+        "mp_id": "mp-21060",
+        "formula": "NaFeO2",
+        "pretty_formula": "NaFeO2"
+      },
+      {
+        "id": 707,
+        "mp_id": "mp-21880",
+        "formula": "NaFeO2",
+        "pretty_formula": "NaFeO2"
+      }
+    ],
+    "target_matches": [],
+    "earliest_occurrence": "b:HWA17-6-1",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[47] 10.1016/j.elecom.2013.05.029",
+      "ref. 47"
+    ],
+    "occurrences": [
+      {
+        "run": "b",
+        "record_id": "HWA17-6-1",
+        "item_id": "ADJ-079",
+        "source": "HWA17",
+        "page": 6,
+        "parent_as_published": "NaFeO2",
+        "target_as_published": "NaFe0.5Co0.5O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "ref. 47",
+        "evidence": "Partial substitution of Fe sites by Co is interesting in terms of capacity retention and rate performance NaFe0.5Co0.5O2"
+      },
+      {
+        "run": "a",
+        "record_id": "HWA17-6-4",
+        "item_id": "ADJ-079",
+        "source": "HWA17",
+        "page": 6,
+        "parent_as_published": "NaFeO2",
+        "target_as_published": "NaFe0.5Co0.5O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[47] 10.1016/j.elecom.2013.05.029",
+        "evidence": "Partial substitution of Fe sites by Co is interesting in terms of capacity retention and rate performance, NaFe0.5Co0.5O2.47"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-001"
+  },
+  {
+    "parent_normalized": "Fe1Na1O2",
+    "target_normalized": "Fe3Na10Ni7O20",
+    "parent_as_published": "NaFeO2",
+    "target_as_published": "NaFe0.3Ni0.7O2",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [],
+    "prefer_elements": [
+      "Ni"
+    ],
+    "avoid_only_eligible": false,
+    "shared_elements": 3,
+    "family_key": "Fe-Na-O",
+    "parent_in_dataset": true,
+    "target_in_dataset": false,
+    "parent_record": {
+      "id": 687,
+      "mp_id": "mp-19359",
+      "formula": "NaFeO2",
+      "pretty_formula": "NaFeO2"
+    },
+    "parent_matches": [
+      {
+        "id": 687,
+        "mp_id": "mp-19359",
+        "formula": "NaFeO2",
+        "pretty_formula": "NaFeO2"
+      },
+      {
+        "id": 704,
+        "mp_id": "mp-21060",
+        "formula": "NaFeO2",
+        "pretty_formula": "NaFeO2"
+      },
+      {
+        "id": 707,
+        "mp_id": "mp-21880",
+        "formula": "NaFeO2",
+        "pretty_formula": "NaFeO2"
+      }
+    ],
+    "target_matches": [],
+    "earliest_occurrence": "a:HWA17-7-1",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[48] 10.1021/jp507662c",
+      "ref. 48"
+    ],
+    "occurrences": [
+      {
+        "run": "a",
+        "record_id": "HWA17-7-1",
+        "item_id": "ADJ-080",
+        "source": "HWA17",
+        "page": 7,
+        "parent_as_published": "NaFeO2",
+        "target_as_published": "NaFe0.3Ni0.7O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[48] 10.1021/jp507662c",
+        "evidence": "Wang et al.48 stabilized the crystal structure of NaFeO2 by forming a solid solution with NaNiO2, NaFe1−xNixO2 (0 ≤ x ≤ 1). The dilution of the Fe concentration, NaFe0.3Ni0.7O2, effectively increased capacity and retention"
+      },
+      {
+        "run": "b",
+        "record_id": "HWA17-7-1",
+        "item_id": "ADJ-080",
+        "source": "HWA17",
+        "page": 7,
+        "parent_as_published": "NaFeO2",
+        "target_as_published": "NaFe0.3Ni0.7O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "ref. 48",
+        "evidence": "Wang et al. stabilized the crystal structure of NaFeO2 by forming a solid solution with NaNiO2 NaFe0.3Ni0.7O2"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-002"
+  },
+  {
+    "parent_normalized": "Li2Mn1Ni1O4",
+    "target_normalized": "Mn1Na2Ni1O4",
+    "parent_as_published": "Li[Ni0.5Mn0.5]O2",
+    "target_as_published": "Na[Ni0.5Mn0.5]O2",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [
+      "Li"
+    ],
+    "prefer_elements": [
+      "Na"
+    ],
+    "avoid_only_eligible": true,
+    "shared_elements": 3,
+    "family_key": "Mn-Ni-O",
+    "parent_in_dataset": false,
+    "target_in_dataset": false,
+    "parent_record": null,
+    "parent_matches": [],
+    "target_matches": [],
+    "earliest_occurrence": "a:HWA17-12-2",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[83] 10.1021/ic3003498",
+      "ref. 83"
+    ],
+    "occurrences": [
+      {
+        "run": "a",
+        "record_id": "HWA17-12-2",
+        "item_id": "ADJ-083",
+        "source": "HWA17",
+        "page": 12,
+        "parent_as_published": "Li[Ni0.5Mn0.5]O2",
+        "target_as_published": "Na[Ni0.5Mn0.5]O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[83] 10.1021/ic3003498",
+        "evidence": "Komaba et al. applied the findings of research on Li[Ni0.5Mn0.5]O2 to Na[Ni0.5Mn0.5]O2, in which the average oxidation states of Ni and Mn are 2+ and 4+, respectively.83"
+      },
+      {
+        "run": "b",
+        "record_id": "HWA17-12-3",
+        "item_id": "ADJ-083",
+        "source": "HWA17",
+        "page": 12,
+        "parent_as_published": "Li[Ni0.5Mn0.5]O2",
+        "target_as_published": "Na[Ni0.5Mn0.5]O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "ref. 83",
+        "evidence": "Komaba et al. applied findings of research on Li[Ni0.5Mn0.5]O2 to Na[Ni0.5Mn0.5]O2"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-003"
+  },
+  {
+    "parent_normalized": "Mn2Na2Ni1O6",
+    "target_normalized": "Mg10Mn70Na67Ni20O200",
+    "parent_as_published": "Na2/3[Ni1/3Mn2/3]O2",
+    "target_as_published": "Na0.67[Ni0.2Mg0.1Mn0.7]O2",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [],
+    "prefer_elements": [
+      "Mg"
+    ],
+    "avoid_only_eligible": false,
+    "shared_elements": 4,
+    "family_key": "Mn-Na-Ni-O",
+    "parent_in_dataset": false,
+    "target_in_dataset": false,
+    "parent_record": null,
+    "parent_matches": [],
+    "target_matches": [],
+    "earliest_occurrence": "a:HWA17-16-1",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[107] 10.1021/acs.chemmater.6b02534",
+      "ref. 107"
+    ],
+    "occurrences": [
+      {
+        "run": "a",
+        "record_id": "HWA17-16-1",
+        "item_id": "ADJ-086",
+        "source": "HWA17",
+        "page": 16,
+        "parent_as_published": "Na2/3[Ni1/3Mn2/3]O2",
+        "target_as_published": "Na0.67[Ni0.2Mg0.1Mn0.7]O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[107] 10.1021/acs.chemmater.6b02534",
+        "evidence": "Substitution of divalent elements such as Mg2+ and Zn2+ in Ni is effective for diluting the effect of the above-mentioned P2–O2 phase transition.106–113... Compared with Na2/3[Ni1/3Mn2/3]O2, the capacity drop in Na0.67[Ni0.2Mg0.1Mn0.7]O2 was only 6 mA h g−1 for 50 cycles.107"
+      },
+      {
+        "run": "b",
+        "record_id": "HWA17-16-1",
+        "item_id": "ADJ-086",
+        "source": "HWA17",
+        "page": 16,
+        "parent_as_published": "Na2/3[Ni1/3Mn2/3]O2",
+        "target_as_published": "Na0.67[Ni0.2Mg0.1Mn0.7]O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "ref. 107",
+        "evidence": "Substitution of divalent elements such as Mg2+ and Zn2+ in Ni is effective for diluting P2-O2 phase transition"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-004"
+  },
+  {
+    "parent_normalized": "Mn2Na2Ni1O6",
+    "target_normalized": "Mn3Na4Ni2O12Ti1",
+    "parent_as_published": "Na2/3[Ni1/3Mn2/3]O2",
+    "target_as_published": "Na2/3[Ni1/3Mn1/2Ti1/6]O2",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [],
+    "prefer_elements": [
+      "Ti"
+    ],
+    "avoid_only_eligible": false,
+    "shared_elements": 4,
+    "family_key": "Mn-Na-Ni-O",
+    "parent_in_dataset": false,
+    "target_in_dataset": false,
+    "parent_record": null,
+    "parent_matches": [],
+    "target_matches": [],
+    "earliest_occurrence": "b:HWA17-16-4",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[118] 10.1039/c4cc00438h; [119] 10.1016/j.electacta.2015.04.062",
+      "ref. 118"
+    ],
+    "occurrences": [
+      {
+        "run": "b",
+        "record_id": "HWA17-16-4",
+        "item_id": "ADJ-088",
+        "source": "HWA17",
+        "page": 16,
+        "parent_as_published": "Na2/3[Ni1/3Mn2/3]O2",
+        "target_as_published": "Na2/3[Ni1/3Mn1/2Ti1/6]O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "ref. 118",
+        "evidence": "Tetravalent Ti-substituted P2-Na2/3[Ni1/3Mn2/3-xTix]O2 yielded wide solid solution"
+      },
+      {
+        "run": "a",
+        "record_id": "HWA17-16-6",
+        "item_id": "ADJ-088",
+        "source": "HWA17",
+        "page": 16,
+        "parent_as_published": "P2-Na2/3[Ni1/3Mn2/3]O2",
+        "target_as_published": "Na2/3[Ni1/3Mn1/2Ti1/6]O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[118] 10.1039/c4cc00438h; [119] 10.1016/j.electacta.2015.04.062",
+        "evidence": "Tetravalent Ti-substituted P2-Na2/3[Ni1/3Mn2/3−xTix]O2 yielded a wide solid solution range of 0 ≤ x ≤ 2/3.118,119... In particular, Na2/3[Ni1/3Mn2/3−xTix]O2 (x = 1/6) delivered approximately 127 mA h g−1"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-005"
+  },
+  {
+    "parent_normalized": "Fe1Na1O4P1",
+    "target_normalized": "Fe1Mn1Na2O8P2",
+    "parent_as_published": "NaFePO4",
+    "target_as_published": "Na[Fe0.5Mn0.5]PO4",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [],
+    "prefer_elements": [
+      "Mn"
+    ],
+    "avoid_only_eligible": false,
+    "shared_elements": 4,
+    "family_key": "Fe-Na-O-P",
+    "parent_in_dataset": true,
+    "target_in_dataset": false,
+    "parent_record": {
+      "id": 10,
+      "mp_id": "mp-19226",
+      "formula": "NaFePO4",
+      "pretty_formula": "NaFePO4"
+    },
+    "parent_matches": [
+      {
+        "id": 10,
+        "mp_id": "mp-19226",
+        "formula": "NaFePO4",
+        "pretty_formula": "NaFePO4"
+      },
+      {
+        "id": 1094,
+        "mp_id": "mp-746030",
+        "formula": "NaFePO4",
+        "pretty_formula": "NaFePO4"
+      },
+      {
+        "id": 1147,
+        "mp_id": "mp-753672",
+        "formula": "NaFePO4",
+        "pretty_formula": "NaFePO4"
+      },
+      {
+        "id": 384,
+        "mp_id": "mp-1192859",
+        "formula": "NaFePO4",
+        "pretty_formula": "NaFePO4"
+      }
+    ],
+    "target_matches": [],
+    "earliest_occurrence": "a:HWA17-25-2",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[168] 10.1021/cm2027584"
+    ],
+    "occurrences": [
+      {
+        "run": "a",
+        "record_id": "HWA17-25-2",
+        "item_id": "ADJ-016",
+        "source": "HWA17",
+        "page": 25,
+        "parent_as_published": "NaFePO4",
+        "target_as_published": "Na[Fe0.5Mn0.5]PO4",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[168] 10.1021/cm2027584",
+        "evidence": "An extension of NaFePO4, Na[Fe0.5Mn0.5]PO4, could be synthesized;168 however, the electrode did not show voltage plateaus, but rather a sloping curve"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-006"
+  },
+  {
+    "parent_normalized": "Fe3Na4O15P4",
+    "target_normalized": "Co3Na4O15P4",
+    "parent_as_published": "Na4Fe3(PO4)2P2O7",
+    "target_as_published": "Na4Co3(PO4)2P2O7",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [
+      "Fe"
+    ],
+    "prefer_elements": [
+      "Co"
+    ],
+    "avoid_only_eligible": true,
+    "shared_elements": 3,
+    "family_key": "Na-O-P",
+    "parent_in_dataset": false,
+    "target_in_dataset": true,
+    "parent_record": null,
+    "parent_matches": [],
+    "target_matches": [
+      {
+        "id": 1022,
+        "mp_id": "mp-562546",
+        "formula": "Na4Co3P4O15",
+        "pretty_formula": "Na4Co3P4O15"
+      }
+    ],
+    "earliest_occurrence": "a:HWA17-28-1",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[206] 10.1016/j.jpowsour.2013.01.144; [207] 10.1016/j.elecom.2013.07.013"
+    ],
+    "occurrences": [
+      {
+        "run": "a",
+        "record_id": "HWA17-28-1",
+        "item_id": "ADJ-021",
+        "source": "HWA17",
+        "page": 28,
+        "parent_as_published": "Na4Fe3(PO4)2P2O7",
+        "target_as_published": "Na4Co3(PO4)2P2O7",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[206] 10.1016/j.jpowsour.2013.01.144; [207] 10.1016/j.elecom.2013.07.013",
+        "evidence": "Nose et al. investigated Na4Co3(PO4)2P2O7 instead of the compound with Fe to improve the energy density.206 Knowledge obtained from experiments with LiCoPO4, which exhibits a high operating voltage from the Co2+/3+ redox reaction, was applied to Na4Co3(PO4)2P2O7.207"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-007"
+  },
+  {
+    "parent_normalized": "F1Fe1Li1O4P1",
+    "target_normalized": "F1Fe1Li1O4S1",
+    "parent_as_published": "LiFePO4F",
+    "target_as_published": "LiFeSO4F",
+    "classification": "X",
+    "development": null,
+    "avoid_elements": [
+      "P"
+    ],
+    "prefer_elements": [
+      "S"
+    ],
+    "avoid_only_eligible": true,
+    "shared_elements": 4,
+    "family_key": "F-Fe-Li-O",
+    "parent_in_dataset": false,
+    "target_in_dataset": false,
+    "parent_record": null,
+    "parent_matches": [],
+    "target_matches": [],
+    "earliest_occurrence": "a:HWA17-31-1",
+    "sources": [
+      "HWA17"
+    ],
+    "cited_primary_studies": [
+      "[216] 10.1038/nmat2615"
+    ],
+    "occurrences": [
+      {
+        "run": "a",
+        "record_id": "HWA17-31-1",
+        "item_id": "ADJ-022",
+        "source": "HWA17",
+        "page": 31,
+        "parent_as_published": "LiFePO4F",
+        "target_as_published": "LiFeSO4F",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "[216] 10.1038/nmat2615",
+        "evidence": "Substitution of (SO4)2− for the (PO4)3− anion results in a higher operating voltage... leading to an OCV increase of 0.6–0.8 V in LiFeSO4F compared to LiFePO4F.216"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-008"
+  },
+  {
+    "parent_normalized": "Co1Li3Mn1Ni1O6",
+    "target_normalized": "Co1Li5Mn1Ni3O10",
+    "parent_as_published": "LiNi1/3Mn1/3Co1/3O2",
+    "target_as_published": "LiNi0.6Mn0.2Co0.2O2",
+    "classification": "N",
+    "development": null,
+    "avoid_elements": [],
+    "prefer_elements": [],
+    "avoid_only_eligible": false,
+    "shared_elements": 5,
+    "family_key": "Co-Li-Mn-Ni-O",
+    "parent_in_dataset": false,
+    "target_in_dataset": false,
+    "parent_record": null,
+    "parent_matches": [],
+    "target_matches": [],
+    "earliest_occurrence": "b:NOE21-3-1",
+    "sources": [
+      "NOE21"
+    ],
+    "cited_primary_studies": [
+      "ref. 29"
+    ],
+    "occurrences": [
+      {
+        "run": "b",
+        "record_id": "NOE21-3-1",
+        "item_id": "ADJ-061",
+        "source": "NOE21",
+        "page": 3,
+        "parent_as_published": "LiNi1/3Mn1/3Co1/3O2",
+        "target_as_published": "LiNi0.6Mn0.2Co0.2O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "ref. 29",
+        "evidence": "NMC111 was replaced by NMC622 LiNi0.6Mn0.2Co0.2O2 and NMC811 LiNi0.8Mn0.1Co0.1O2"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-009"
+  },
+  {
+    "parent_normalized": "Co1Li3Mn1Ni1O6",
+    "target_normalized": "Co1Li10Mn1Ni8O20",
+    "parent_as_published": "LiNi1/3Mn1/3Co1/3O2",
+    "target_as_published": "LiNi0.8Mn0.1Co0.1O2",
+    "classification": "N",
+    "development": null,
+    "avoid_elements": [],
+    "prefer_elements": [],
+    "avoid_only_eligible": false,
+    "shared_elements": 5,
+    "family_key": "Co-Li-Mn-Ni-O",
+    "parent_in_dataset": false,
+    "target_in_dataset": false,
+    "parent_record": null,
+    "parent_matches": [],
+    "target_matches": [],
+    "earliest_occurrence": "b:NOE21-3-2",
+    "sources": [
+      "NOE21"
+    ],
+    "cited_primary_studies": [
+      "ref. 29"
+    ],
+    "occurrences": [
+      {
+        "run": "b",
+        "record_id": "NOE21-3-2",
+        "item_id": "ADJ-062",
+        "source": "NOE21",
+        "page": 3,
+        "parent_as_published": "LiNi1/3Mn1/3Co1/3O2",
+        "target_as_published": "LiNi0.8Mn0.1Co0.1O2",
+        "ai_decision": "include",
+        "decision": "include",
+        "strict_check1": false,
+        "cited_primary_study": "ref. 29",
+        "evidence": "NMC111 was replaced by NMC622 LiNi0.6Mn0.2Co0.2O2 and NMC811 LiNi0.8Mn0.1Co0.1O2"
+      }
+    ],
+    "non_qualifying_occurrences": [],
+    "case_id": "RRB01-010"
+  }
+]
