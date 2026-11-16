@@ -16,9 +16,11 @@ is empty. Under the protocol's pre-registered rule for an empty cohort, the retr
 questions (Q1, Q1b, Q2, Q3) and the response diagnostics (Q5, Q6) are **not estimable**.
 No benchmark request was sent to release-4. The only reportable result is **coverage (Q4)**.
 
-This result says nothing about whether release-4 retrieves substitutes well or badly. It
-shows that, for these sources, the literature's substitution pairs are almost entirely
-compositions the frozen dataset does not contain.
+This result says nothing about whether release-4 retrieves substitutes well or badly.
+Among the ten provisionally qualifying pairs identified and adjudicated under RRB-01, none
+had both compositions present in the frozen dataset. Extraction completeness and the
+adjudication have not been independently established, so this is not a claim about every
+substitution described in the two reviews.
 
 ## Registration trail
 
@@ -118,11 +120,13 @@ formulas, but not this one. This check is diagnostic only and changes no classif
 
 ## What this result does and does not show
 
-It shows that the frozen 1,727-material dataset does not contain the compositions that
-these two reviews describe as substitutions. That is mainly because the reviews discuss
-doped and mixed-site compositions, while the dataset holds ordered stoichiometric
-compounds. Under these conditions, a retrieval benchmark built from these sources cannot
-score release-4 at all.
+It shows that, among the ten provisionally qualifying pairs identified and adjudicated
+under RRB-01, none had both compositions present in the frozen 1,727-material dataset. A
+plausible explanation is that most of the missing compositions are doped or mixed-site,
+while the dataset is dominated by ordered stoichiometric compounds. This applies to these
+sources and this dataset only. Under these conditions, this benchmark could not score
+release-4 at all. MaterialGraph received no eligible requests, which is different from
+receiving requests and retrieving no targets.
 
 It does not show anything about release-4's ranking or retrieval quality, in either
 direction.
