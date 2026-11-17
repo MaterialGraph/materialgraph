@@ -79,6 +79,13 @@ async function startBrowse(rows = materials(1, 50), select = vi.fn(), selected =
 }
 const queryInput = () => host.querySelector<HTMLInputElement>('input[aria-label="Dataset search query"]')!;
 const modeSelect = () => host.querySelector<HTMLSelectElement>('#datasetSearchMode')!;
+const typeRadio = (label: string) => [...host.querySelectorAll<HTMLInputElement>('[role="radiogroup"] input[type="radio"]')]
+  .find(radio => radio.closest('label')?.textContent === label)!;
+const checkedType = () => host.querySelector<HTMLInputElement>('[role="radiogroup"] input:checked')?.closest('label')?.textContent;
+async function chooseType(label: 'Find a material' | 'Materials containing…') { await act(async () => typeRadio(label).click()); }
+async function pressKey(target: HTMLElement, key: string) {
+  await act(async () => { target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })); });
+}
 async function type(text: string) {
   await act(async () => {
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(queryInput(), text);
@@ -109,10 +116,12 @@ it('enters browse on first render: page 1 of 50 and the dataset summary', async 
   expect(host.querySelectorAll('.materialRow')).toHaveLength(50);
 });
 
-it('offers the six modes, defaults to Auto and keeps the requested mode after an auto search', async () => {
+it('Find a material offers five "Search as" modes without Contains elements, defaults to Auto and keeps the requested mode after an auto search', async () => {
   await startBrowse();
+  expect(checkedType()).toBe('Find a material');
+  expect(host.querySelector('label[for="datasetSearchMode"]')?.textContent).toBe('Search as');
   expect([...modeSelect().options].map(option => [option.value, option.textContent])).toEqual([
-    ['auto', 'Auto'], ['formula', 'Formula'], ['chemsys', 'Chemical system'], ['contains', 'Contains elements'], ['mp_id', 'MP ID'], ['material_id', 'Local ID'],
+    ['auto', 'Auto'], ['formula', 'Formula'], ['chemsys', 'Chemical system'], ['mp_id', 'MP ID'], ['material_id', 'Local ID'],
   ]);
   expect(modeSelect().value).toBe('auto');
   await search('5');
@@ -446,12 +455,15 @@ it('a main-workspace detail 404 shows the error and marks no other material as s
 
 // Layout (rules only: jsdom does not lay out) ----------------------------------
 
-it('stacks the full-width input above the mode select and Search button', async () => {
+it('stacks the search-type switch, the full-width input, then "Search as" and the Search button', async () => {
   await startBrowse();
   const form = host.querySelector('.datasetSearchForm')!;
-  expect([...form.children].map(child => child.tagName)).toEqual(['LABEL', 'INPUT', 'DIV']);
+  expect([...form.children].map(child => child.getAttribute('role') ?? child.tagName)).toEqual(['radiogroup', 'LABEL', 'INPUT', 'DIV']);
   const controls = form.querySelector('.datasetSearchControls')!;
-  expect([...controls.children].map(child => child.tagName)).toEqual(['SELECT', 'BUTTON']);
+  expect([...controls.children].map(child => child.tagName)).toEqual(['SPAN', 'BUTTON']);
+  expect(controls.querySelector('span > select')).not.toBeNull();
+  await chooseType('Materials containing…');
+  expect([...controls.children].map(child => child.tagName)).toEqual(['BUTTON']);
   expect(host.querySelectorAll('.datasetSearchScroll')).toHaveLength(1);
   expect(host.querySelector('.datasetSearchScroll')!.contains(host.querySelector('.materialList'))).toBe(true);
   expect(host.querySelector('#search, #directId')).toBeNull();
@@ -470,5 +482,138 @@ it('sizes the input for at least 24 characters at the minimum content width', ()
   expect(rule('.picker')).toContain('max-height:calc(100vh - 28px)');
   expect(css).toContain('@media(max-width:850px){.datasetSearchScroll{max-height:60vh}}');
   expect(css).not.toContain('max-height:420px');
+});
+
+it('draws the switch as two equal halves whose labels wrap and are never truncated', () => {
+  const rule = (selector: string) => css.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\{([^}]*)\\}`))?.[1] ?? '';
+  expect(rule('.searchTypeSwitch')).toContain('grid-template-columns:1fr 1fr');
+  const label = rule('.searchTypeOption span');
+  expect(label).toContain('white-space:normal');
+  expect(label).not.toContain('text-overflow');
+  expect(label).not.toContain('nowrap');
+  expect(css).toContain('.searchTypeOption input:focus-visible+span{outline:2px solid');
+});
+
+// Search types (Release 3) -----------------------------------------------------
+
+it('the switch is a radio group with two options, Find a material selected by default, and no explanatory text', async () => {
+  await startBrowse();
+  const group = host.querySelector('[role="radiogroup"]')!;
+  expect(group.getAttribute('aria-label')).toBe('Search type');
+  const radios = [...group.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+  expect(radios.map(radio => radio.closest('label')?.textContent)).toEqual(['Find a material', 'Materials containing…']);
+  expect(radios.map(radio => radio.checked)).toEqual([true, false]);
+  expect(group.textContent).toBe('Find a materialMaterials containing…');
+  expect(group.querySelector('[title]')).toBeNull();
+  expect(queryInput().placeholder).toBe('Formula, Li-Fe-P-O, mp-19017 or #5');
+});
+
+it('arrow keys on the radio inputs move the selection and focus, with the selected state exposed', async () => {
+  await startBrowse();
+  const count = calls.length;
+  const find = typeRadio('Find a material');
+  const contains = typeRadio('Materials containing…');
+  act(() => find.focus());
+  await pressKey(find, 'ArrowRight');
+  expect(contains.checked).toBe(true);
+  expect(find.checked).toBe(false);
+  expect(document.activeElement).toBe(contains);
+  expect(modeSelect()).toBeNull();
+  expect(queryInput().placeholder).toBe('Li or Li, Fe');
+  await pressKey(contains, 'ArrowDown');
+  expect(find.checked).toBe(true);
+  expect(document.activeElement).toBe(find);
+  await pressKey(find, 'ArrowLeft');
+  expect(document.activeElement).toBe(contains);
+  expect(checkedType()).toBe('Materials containing…');
+  await pressKey(contains, 'ArrowUp');
+  expect(checkedType()).toBe('Find a material');
+  expect(document.activeElement).toBe(find);
+  // Other keys are left alone.
+  await pressKey(find, 'a');
+  expect(checkedType()).toBe('Find a material');
+  expect(calls.length).toBe(count);
+});
+
+it('Materials containing… sends mode=contains; Find a material sends auto or the chosen override', async () => {
+  await startBrowse();
+  await chooseType('Materials containing…');
+  await type('Li, Fe'); await submit();
+  expect(lastSearch().toString()).toBe('mode=contains&q=Li%2C+Fe&limit=50&offset=0');
+  await chooseType('Find a material');
+  await type('LiFePO4'); await submit();
+  expect(lastSearch().get('mode')).toBe('auto');
+  await chooseMode('chemsys'); await type('Li-Fe'); await submit();
+  expect(lastSearch().toString()).toBe('mode=chemsys&q=Li-Fe&limit=50&offset=0');
+});
+
+it('keeps a separate draft per type across switches in both directions', async () => {
+  await startBrowse();
+  await chooseMode('formula'); await type('LiFePO4');
+  await chooseType('Materials containing…');
+  expect(queryInput().value).toBe('');
+  await type('Li');
+  await chooseType('Find a material');
+  expect(queryInput().value).toBe('LiFePO4');
+  expect(modeSelect().value).toBe('formula');
+  await chooseType('Materials containing…');
+  expect(queryInput().value).toBe('Li');
+});
+
+it('switching type with results shown sends no request and marks them stale; switching back clears it without a request', async () => {
+  await startBrowse();
+  await chooseType('Materials containing…');
+  await type('Li'); await submit();
+  await searchCalls()[0].reply(response({ requested_mode: 'contains', interpretation: { ...response().interpretation, mode: 'contains', elements: ['Li'] }, total_matches: 1, results: [result(1)] }));
+  const count = calls.length;
+  expect(host.querySelector('.stale')).toBeNull();
+  await chooseType('Find a material');
+  expect(calls.length).toBe(count);
+  expect(host.querySelector('.stale')?.textContent).toBe('These results belong to the previous search: Li (Materials containing…).');
+  expect(host.querySelectorAll('.materialRow')).toHaveLength(1);
+  await chooseType('Materials containing…');
+  expect(calls.length).toBe(count);
+  expect(host.querySelector('.stale')).toBeNull();
+
+  // The Find a material form names the mode, as before.
+  await chooseType('Find a material');
+  await type('Fe'); await submit();
+  await searchCalls()[1].reply(response({ total_matches: 1, results: [result(1)] }));
+  await chooseType('Materials containing…');
+  expect(host.querySelector('.stale')?.textContent).toBe('These results belong to the previous search: Fe (Auto).');
+});
+
+it('Show more after a type switch pages the committed search, not the draft', async () => {
+  await startBrowse();
+  await chooseType('Materials containing…');
+  await type('Li'); await submit();
+  await searchCalls()[0].reply(response({ requested_mode: 'contains', total_matches: 120, results: Array.from({ length: 50 }, (_, i) => result(i + 1)) }));
+  await chooseType('Find a material');
+  await type('Fe');
+  await click(button('Show more'));
+  expect(lastSearch().toString()).toBe('mode=contains&q=Li&limit=50&offset=50');
+});
+
+it('empty submit returns to browse and keeps the other type\'s draft; Clear search empties both drafts and keeps the type', async () => {
+  await startBrowse();
+  await chooseMode('formula'); await type('LiFePO4');
+  await chooseType('Materials containing…');
+  await submit();
+  expect(browseCalls()).toHaveLength(2);
+  expect(searchCalls()).toHaveLength(0);
+  await chooseType('Find a material');
+  expect(queryInput().value).toBe('LiFePO4');
+  expect(modeSelect().value).toBe('formula');
+
+  await chooseType('Materials containing…');
+  await type('Li'); await submit();
+  await searchCalls()[0].reply(response({ requested_mode: 'contains', total_matches: 1, results: [result(1)] }));
+  await click(button('Clear search'));
+  expect(browseCalls()).toHaveLength(3);
+  expect(checkedType()).toBe('Materials containing…');
+  expect(queryInput().value).toBe('');
+  await chooseType('Find a material');
+  expect(queryInput().value).toBe('');
+  expect(modeSelect().value).toBe('auto');
 });
 
