@@ -83,9 +83,6 @@ const typeRadio = (label: string) => [...host.querySelectorAll<HTMLInputElement>
   .find(radio => radio.closest('label')?.textContent === label)!;
 const checkedType = () => host.querySelector<HTMLInputElement>('[role="radiogroup"] input:checked')?.closest('label')?.textContent;
 async function chooseType(label: 'Find a material' | 'Materials containing…') { await act(async () => typeRadio(label).click()); }
-async function pressKey(target: HTMLElement, key: string) {
-  await act(async () => { target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })); });
-}
 async function type(text: string) {
   await act(async () => {
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(queryInput(), text);
@@ -508,29 +505,25 @@ it('the switch is a radio group with two options, Find a material selected by de
   expect(queryInput().placeholder).toBe('Formula, Li-Fe-P-O, mp-19017 or #5');
 });
 
-it('arrow keys on the radio inputs move the selection and focus, with the selected state exposed', async () => {
+it('the search type is a native radio group: one shared name; a change event switches type without a request', async () => {
   await startBrowse();
   const count = calls.length;
+  expect(host.querySelector('[role="radiogroup"]')?.getAttribute('aria-label')).toBe('Search type');
   const find = typeRadio('Find a material');
-  const contains = typeRadio('Materials containing…');
-  act(() => find.focus());
-  await pressKey(find, 'ArrowRight');
+  const contains = typeRadio('Materials containing\u2026');
+  expect(find.type).toBe('radio');
+  expect(contains.type).toBe('radio');
+  expect(find.name).toBe('datasetSearchType');
+  expect(contains.name).toBe(find.name);
+  expect(find.checked).toBe(true);
+  // Arrow keys are the browser's native radio behaviour; a selection change reaches the component as a change event.
+  await chooseType('Materials containing\u2026');
   expect(contains.checked).toBe(true);
   expect(find.checked).toBe(false);
-  expect(document.activeElement).toBe(contains);
   expect(modeSelect()).toBeNull();
   expect(queryInput().placeholder).toBe('Li or Li, Fe');
-  await pressKey(contains, 'ArrowDown');
+  await chooseType('Find a material');
   expect(find.checked).toBe(true);
-  expect(document.activeElement).toBe(find);
-  await pressKey(find, 'ArrowLeft');
-  expect(document.activeElement).toBe(contains);
-  expect(checkedType()).toBe('Materials containing…');
-  await pressKey(contains, 'ArrowUp');
-  expect(checkedType()).toBe('Find a material');
-  expect(document.activeElement).toBe(find);
-  // Other keys are left alone.
-  await pressKey(find, 'a');
   expect(checkedType()).toBe('Find a material');
   expect(calls.length).toBe(count);
 });
