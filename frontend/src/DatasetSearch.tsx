@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import {
   ApiError, browseMaterials, datasetSummary, searchMaterials, SEARCH_PAGE_SIZE,
   type DatasetSummary, type Material, type MaterialSearchResponse, type SearchQueryProblem,
@@ -26,13 +26,24 @@ const placeholders: Record<SearchRequestMode, string> = {
 
 const compositionModes = new Set(['formula', 'chemsys', 'contains']);
 
-type Draft = { query: string; mode: SearchRequestMode };
+/** The two visible search intentions. "Materials containing…" always requests mode=contains. */
+export type SearchType = 'find' | 'contains';
+export const searchTypeLabels: Record<SearchType, string> = { find: 'Find a material', contains: 'Materials containing…' };
+const searchTypes: SearchType[] = ['find', 'contains'];
+/** "Search as" options for Find a material; Contains elements is its own search type. */
+export const findModes: SearchRequestMode[] = ['auto', 'formula', 'chemsys', 'mp_id', 'material_id'];
+const containsPlaceholder = 'Li or Li, Fe';
+const arrowSteps: Partial<Record<string, number>> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+
+type FindDraft = { query: string; mode: SearchRequestMode };
+type ContainsDraft = { query: string };
 /** The last submitted search, or null for browsing the whole dataset. */
-type Committed = Draft | null;
+type Committed = { type: SearchType; query: string; mode: SearchRequestMode } | null;
 type Pages = { rows: SearchResult[]; response: MaterialSearchResponse | null; lastPageSize: number };
 type Problem = { message: string; code?: string; input?: string; hint?: string | null; mode?: SearchResolvedMode | null; requestedMode?: SearchRequestMode };
 
-const initialDraft: Draft = { query: '', mode: 'auto' };
+const initialFind: FindDraft = { query: '', mode: 'auto' };
+const initialContains: ContainsDraft = { query: '' };
 const noPages: Pages = { rows: [], response: null, lastPageSize: 0 };
 
 /** Energy above hull as given by the API, at three decimals; never styled by value. */
@@ -94,7 +105,9 @@ function MaterialRow({ item, selected, select, rowRef }: RowProps) {
 type Active = { id: number; controller: AbortController };
 
 export function DatasetSearch({ selected, select }: { selected: number; select: (id: number) => void }) {
-  const [draft, setDraft] = useState<Draft>(initialDraft);
+  const [searchType, setSearchType] = useState<SearchType>('find');
+  const [findDraft, setFindDraft] = useState<FindDraft>(initialFind);
+  const [containsDraft, setContainsDraft] = useState<ContainsDraft>(initialContains);
   const [committed, setCommitted] = useState<Committed>(null);
   const [pages, setPages] = useState<Pages>(noPages);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -109,6 +122,8 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
   const summaryRequest = useRef<Active | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const rows = useRef<(HTMLButtonElement | null)[]>([]);
+  const typeRadios = useRef<Partial<Record<SearchType, HTMLInputElement | null>>>({});
+  const activeQuery = searchType === 'find' ? findDraft.query : containsDraft.query;
 
   function begin(slot: { current: Active | null }): Active {
     slot.current?.controller.abort();
@@ -152,10 +167,29 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
     }
   }
 
+  /** Returns to browse; drafts and the selected search type are left as they are. */
   function browse() {
-    setCommitted(null); setDraft(initialDraft); setPages(noPages);
+    setCommitted(null); setPages(noPages);
     void fetchPage(null, 0);
     void fetchSummary();
+  }
+  /** Clear search: browse with both drafts emptied; the selected search type is kept. */
+  function clearSearch() {
+    setFindDraft(initialFind); setContainsDraft(initialContains);
+    browse();
+  }
+
+  /** Switching type only changes which draft is shown; it never starts a request. */
+  function chooseType(next: SearchType) { setSearchType(next); }
+  function typeKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    const step = arrowSteps[event.key];
+    if (step === undefined) return;
+    // Handled here so that jsdom and browsers behave alike; native radio arrow handling is suppressed.
+    event.preventDefault();
+    const index = searchTypes.indexOf(searchType);
+    const next = searchTypes[(index + step + searchTypes.length) % searchTypes.length];
+    chooseType(next);
+    typeRadios.current[next]?.focus();
   }
 
   useEffect(() => {
@@ -174,8 +208,10 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     input.current?.focus();
-    if (!draft.query.trim()) { browse(); return; }
-    const next = { ...draft };
+    if (!activeQuery.trim()) { browse(); return; }
+    const next: Committed = searchType === 'find'
+      ? { type: 'find', query: findDraft.query, mode: findDraft.mode }
+      : { type: 'contains', query: containsDraft.query, mode: 'contains' };
     setCommitted(next); setPages(noPages);
     void fetchPage(next, 0);
   }
@@ -190,7 +226,8 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
   }
 
   const response = pages.response;
-  const stale = committed !== null && (draft.query !== committed.query || draft.mode !== committed.mode);
+  const stale = committed !== null && (searchType !== committed.type || activeQuery !== committed.query
+    || (searchType === 'find' && findDraft.mode !== committed.mode));
   const total = committed ? response?.total_matches : summary?.dataset_total;
   const hasMore = status === 'ready' && (committed
     ? response !== null && pages.rows.length < response.total_matches
@@ -203,13 +240,27 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
 
   return <section className="datasetSearch" aria-label="Search the full dataset">
     <form onSubmit={submit} className="datasetSearchForm">
+      <div className="searchTypeSwitch" role="radiogroup" aria-label="Search type">
+        {searchTypes.map(key => <label key={key} className="searchTypeOption">
+          <input type="radio" name="datasetSearchType" value={key} checked={searchType === key}
+            ref={node => { typeRadios.current[key] = node; }}
+            onChange={() => chooseType(key)} onKeyDown={typeKeyDown}/>
+          <span>{searchTypeLabels[key]}</span>
+        </label>)}
+      </div>
       <label htmlFor="datasetSearchQuery">Search the full dataset</label>
-      <input id="datasetSearchQuery" ref={input} aria-label="Dataset search query" maxLength={100} value={draft.query}
-        onChange={event => setDraft({ ...draft, query: event.target.value })} placeholder={placeholders[draft.mode]}/>
+      <input id="datasetSearchQuery" ref={input} aria-label="Dataset search query" maxLength={100} value={activeQuery}
+        onChange={event => searchType === 'find'
+          ? setFindDraft({ ...findDraft, query: event.target.value })
+          : setContainsDraft({ query: event.target.value })}
+        placeholder={searchType === 'find' ? placeholders[findDraft.mode] : containsPlaceholder}/>
       <div className="datasetSearchControls">
-        <select id="datasetSearchMode" aria-label="Search mode" value={draft.mode} onChange={event => setDraft({ ...draft, mode: event.target.value as SearchRequestMode })}>
-          {(Object.keys(modeLabels) as SearchRequestMode[]).map(key => <option key={key} value={key}>{modeLabels[key]}</option>)}
-        </select>
+        {searchType === 'find' && <span className="datasetSearchAs">
+          <label htmlFor="datasetSearchMode">Search as</label>
+          <select id="datasetSearchMode" value={findDraft.mode} onChange={event => setFindDraft({ ...findDraft, mode: event.target.value as SearchRequestMode })}>
+            {findModes.map(key => <option key={key} value={key}>{modeLabels[key]}</option>)}
+          </select>
+        </span>}
         <button type="submit">Search</button>
       </div>
     </form>
@@ -222,8 +273,8 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
         <p className="hint">All materials in the dataset, ordered by local ID.{showing && ` ${showing}`}</p>
         {summaryStatus === 'error' && <div className="error summaryError" role="alert">Dataset information unavailable <button type="button" onClick={() => void fetchSummary()}>Retry</button></div>}
       </>}
-      {committed && <p className="hint">{status === 'ready' && showing && `${showing}. `}<button type="button" className="textButton" onClick={browse}>Clear search</button></p>}
-      {stale && <p className="hint stale">These results belong to the previous search: <code>{committed.query}</code> ({modeLabels[committed.mode]}).</p>}
+      {committed && <p className="hint">{status === 'ready' && showing && `${showing}. `}<button type="button" className="textButton" onClick={clearSearch}>Clear search</button></p>}
+      {stale && <p className="hint stale">These results belong to the previous search: <code>{committed.query}</code> ({committed.type === 'find' ? modeLabels[committed.mode] : searchTypeLabels.contains}).</p>}
     </div>
     {status === 'error' && error && <div className="error" role="alert">
       {/* The input as the server received it, shown beside the explanation; never rewritten. */}
