@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   ApiError, browseMaterials, datasetSummary, searchMaterials, SEARCH_PAGE_SIZE,
   type DatasetSummary, type Material, type MaterialSearchResponse, type SearchQueryProblem,
@@ -33,7 +33,6 @@ const searchTypes: SearchType[] = ['find', 'contains'];
 /** "Search as" options for Find a material; Contains elements is its own search type. */
 export const findModes: SearchRequestMode[] = ['auto', 'formula', 'chemsys', 'mp_id', 'material_id'];
 const containsPlaceholder = 'Li or Li, Fe';
-const arrowSteps: Partial<Record<string, number>> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 
 type FindDraft = { query: string; mode: SearchRequestMode };
 type ContainsDraft = { query: string };
@@ -122,7 +121,6 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
   const summaryRequest = useRef<Active | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const rows = useRef<(HTMLButtonElement | null)[]>([]);
-  const typeRadios = useRef<Partial<Record<SearchType, HTMLInputElement | null>>>({});
   const activeQuery = searchType === 'find' ? findDraft.query : containsDraft.query;
 
   function begin(slot: { current: Active | null }): Active {
@@ -181,16 +179,6 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
 
   /** Switching type only changes which draft is shown; it never starts a request. */
   function chooseType(next: SearchType) { setSearchType(next); }
-  function typeKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    const step = arrowSteps[event.key];
-    if (step === undefined) return;
-    // Handled here so that jsdom and browsers behave alike; native radio arrow handling is suppressed.
-    event.preventDefault();
-    const index = searchTypes.indexOf(searchType);
-    const next = searchTypes[(index + step + searchTypes.length) % searchTypes.length];
-    chooseType(next);
-    typeRadios.current[next]?.focus();
-  }
 
   useEffect(() => {
     void fetchPage(null, 0);
@@ -243,8 +231,7 @@ export function DatasetSearch({ selected, select }: { selected: number; select: 
       <div className="searchTypeSwitch" role="radiogroup" aria-label="Search type">
         {searchTypes.map(key => <label key={key} className="searchTypeOption">
           <input type="radio" name="datasetSearchType" value={key} checked={searchType === key}
-            ref={node => { typeRadios.current[key] = node; }}
-            onChange={() => chooseType(key)} onKeyDown={typeKeyDown}/>
+            onChange={() => chooseType(key)}/>
           <span>{searchTypeLabels[key]}</span>
         </label>)}
       </div>
