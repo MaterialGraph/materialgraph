@@ -1,0 +1,115 @@
+{
+  "inputs_sha256": {
+    "adjudication_ai.xlsx": "505A65E382BC12CBF4BD5AC2389EF68F16DE8719E8F7044F8758B0FE2B04198D",
+    "run_a.normalized.jsonl": "E866BB2A5A67086498AC32DB07E4F4D093127BA9483462C3802259F148A6CDCA",
+    "run_b.normalized.jsonl": "07E4C4DA4A78C934C1CAC7C4A3C40CD9050CD9FA8A4B609847D702921E95A651",
+    "materials_50dd3ed.csv": "CF49CAC2F6673BBF47C7425904458EA346743480424446C2F2B6892F3A0E4B51"
+  },
+  "labels_file_used": false,
+  "source_records": {
+    "a": 75,
+    "b": 33
+  },
+  "source_records_by_source": {
+    "a:HWA17": 48,
+    "a:NOE21": 27,
+    "b:HWA17": 21,
+    "b:NOE21": 12
+  },
+  "decisions_after_strict_check1": {
+    "exclude": 35,
+    "ambiguous": 56,
+    "include": 17
+  },
+  "strict_check1_rows": [
+    "ADJ-057",
+    "ADJ-058",
+    "ADJ-059",
+    "ADJ-060",
+    "ADJ-063",
+    "ADJ-065",
+    "ADJ-066",
+    "ADJ-068",
+    "ADJ-070",
+    "ADJ-076"
+  ],
+  "strict_check1_changed_records": [
+    "b:HWA17-18-2 (ADJ-057, AI exclude)",
+    "b:HWA17-19-1 (ADJ-058, AI exclude)",
+    "b:NOE21-1-1 (ADJ-060, AI exclude)",
+    "b:NOE21-11-2 (ADJ-068, AI exclude)",
+    "b:NOE21-4-1 (ADJ-063, AI exclude)",
+    "b:NOE21-8-1 (ADJ-065, AI exclude)",
+    "b:NOE21-9-1 (ADJ-066, AI exclude)"
+  ],
+  "p_records_by_reason": {
+    "ambiguous": 56,
+    "family_no_composition": 5,
+    "label_unresolved": 2,
+    "morphology_or_surface_only": 2,
+    "no_named_parent": 5,
+    "not_directed": 9,
+    "spatially_heterogeneous": 3,
+    "unresolved_variable": 11
+  },
+  "ambiguous_by_source": {
+    "HWA17": 39,
+    "NOE21": 17
+  },
+  "label_unresolved": [
+    "a:NOE21-3-2 (ADJ-032) parent 'NMC111'",
+    "a:NOE21-3-2 (ADJ-032) target 'NMC622 LiNi0.6Mn0.2Co0.2O2'",
+    "a:NOE21-3-3 (ADJ-033) parent 'NMC111'",
+    "a:NOE21-3-3 (ADJ-033) target 'NMC811 LiNi0.8Mn0.1Co0.1O2'"
+  ],
+  "label_resolutions": [],
+  "unique_qualifying_pairs": 10,
+  "classification_all_pairs": {
+    "N": 2,
+    "X": 8
+  },
+  "classification_excluding_development": {
+    "N": 2,
+    "X": 8
+  },
+  "development_cases": [],
+  "primary_cohort_E": [],
+  "primary_cohort_size": 0,
+  "I_cases": [],
+  "avoid_only_eligible": {
+    "E": 0,
+    "E_plus_I": 0
+  },
+  "family_sensitivity": {
+    "E": [],
+    "E_plus_I": []
+  },
+  "dataset_coverage": {
+    "parent_present": 3,
+    "target_present": 1,
+    "both_present": 0,
+    "pairs": 10
+  },
+  "evidence_sources_E_plus_I": {
+    "distinct_primary_studies": 0,
+    "most_frequent": [],
+    "cases_without_cited_study": 0
+  },
+  "dataset": {
+    "rows": 1727,
+    "indexed": 1727,
+    "formula_groups": 651,
+    "column_used": {
+      "formula": 1727
+    },
+    "normalization_failures": 0,
+    "formula_pretty_disagreements": 0
+  },
+  "outputs_sha256": {
+    "cohort.json": "C334ECFAE59E8AA8743B47EFDA6EF5CC4E22491FE044053210B8F1E6380FF96A",
+    "dataset_normalization.json": "B20E630CF20C18C97BC74F19CD9960EE8D8180F39647791EAFA70D730AE20226",
+    "development_cases.json": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+    "label_resolutions_needed.csv": "2FB595242EA60AB56F671FCF546CFBDC65B58C57522EF999D37A8B5F8C100373",
+    "p_records.json": "EE1874542A605089E5E08CD16DD04A3B060F4CC9ECC47EDA0963950D3852DE40"
+  }
+}

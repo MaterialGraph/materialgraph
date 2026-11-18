@@ -1,0 +1,643 @@
+{
+ "historical_dc1": {
+  "acceptance": [
+   "PASS",
+   "PASS"
+  ],
+  "vs_capture": [
+   {
+    "request": "hist_dc1_informed_l5_run1",
+    "result": "PASS",
+    "byte_identical": true,
+    "difference_count": 0
+   },
+   {
+    "request": "hist_dc1_informed_l5_run2",
+    "result": "PASS",
+    "byte_identical": true,
+    "difference_count": 0
+   }
+  ],
+  "repeatability": "PASS"
+ },
+ "DC1": {
+  "check1": {
+   "pin_dc1_informed_l5_run1": "PASS",
+   "pin_dc1_informed_l10_run1": "PASS",
+   "pin_dc1_avoid_only_l5_run1": "PASS",
+   "pin_dc1_avoid_only_l10_run1": "PASS",
+   "pin_dc1_informed_l5_run2": "PASS",
+   "pin_dc1_informed_l10_run2": "PASS",
+   "pin_dc1_avoid_only_l5_run2": "PASS",
+   "pin_dc1_avoid_only_l10_run2": "PASS"
+  },
+  "check2": {
+   "pin_dc1_informed_l5_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   },
+   "pin_dc1_informed_l10_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   },
+   "pin_dc1_avoid_only_l5_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   },
+   "pin_dc1_avoid_only_l10_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   }
+  },
+  "check3": {
+   "informed run1": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      10
+     ],
+     "len(ranked_candidates)": [
+      5,
+      10
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.preferred_elements[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.preferred_elements[1].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   },
+   "informed run2": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      10
+     ],
+     "len(ranked_candidates)": [
+      5,
+      10
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.preferred_elements[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.preferred_elements[1].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   },
+   "avoid_only run1": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      6
+     ],
+     "len(ranked_candidates)": [
+      5,
+      6
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      6
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+      5,
+      6
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   },
+   "avoid_only run2": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      6
+     ],
+     "len(ranked_candidates)": [
+      5,
+      6
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      6
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+      5,
+      6
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   }
+  },
+  "aggregates": {
+   "pin_dc1_informed_l5_run1": "PASS",
+   "pin_dc1_informed_l10_run1": "PASS",
+   "pin_dc1_avoid_only_l5_run1": "PASS",
+   "pin_dc1_avoid_only_l10_run1": "PASS",
+   "pin_dc1_informed_l5_run2": "PASS",
+   "pin_dc1_informed_l10_run2": "PASS",
+   "pin_dc1_avoid_only_l5_run2": "PASS",
+   "pin_dc1_avoid_only_l10_run2": "PASS"
+  }
+ },
+ "DC2": {
+  "check1": {
+   "pin_dc2_informed_l5_run1": "PASS",
+   "pin_dc2_informed_l10_run1": "PASS",
+   "pin_dc2_avoid_only_l5_run1": "PASS",
+   "pin_dc2_avoid_only_l10_run1": "PASS",
+   "pin_dc2_informed_l5_run2": "PASS",
+   "pin_dc2_informed_l10_run2": "PASS",
+   "pin_dc2_avoid_only_l5_run2": "PASS",
+   "pin_dc2_avoid_only_l10_run2": "PASS"
+  },
+  "check2": {
+   "pin_dc2_informed_l5_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   },
+   "pin_dc2_informed_l10_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   },
+   "pin_dc2_avoid_only_l5_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   },
+   "pin_dc2_avoid_only_l10_run1 vs run2": {
+    "result": "PASS",
+    "byte_identical": true,
+    "canonical_difference_count": 0
+   }
+  },
+  "check3": {
+   "informed run1": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      10
+     ],
+     "len(ranked_candidates)": [
+      5,
+      10
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.preferred_elements[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   },
+   "informed run2": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      10
+     ],
+     "len(ranked_candidates)": [
+      5,
+      10
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.preferred_elements[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   },
+   "avoid_only run1": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      7
+     ],
+     "len(ranked_candidates)": [
+      5,
+      7
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      7
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   },
+   "avoid_only run2": {
+    "result": "PASS",
+    "rules": {
+     "EXACT ranked_candidates first 5 (all item fields)": "PASS",
+     "EXACT chains first 5 (all item fields)": "PASS",
+     "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated": "PASS",
+     "EXACT objective_coverage.ranked_material_pool_count": "PASS",
+     "EXACT formula_correspondence.expansions and formula_group entries": "PASS",
+     "EXACT policy fields": "PASS",
+     "EXACT objective fields except objective.limit": "PASS",
+     "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical": "PASS",
+     "PER-POSITION chain_avoidance at chain_position <= 5": "PASS",
+     "PER-POSITION formula_correspondence.transitions at chain_position <= 5": "PASS",
+     "PER-POSITION source_correspondence at candidate_rank <= 5": "PASS",
+     "EXACT other limit-independent fields (pre-check 2a S; added at approval)": "PASS"
+    },
+    "allowed_difference_values": {
+     "objective.limit": [
+      5,
+      10
+     ],
+     "search_metadata.requested_result_limit": [
+      5,
+      10
+     ],
+     "search_metadata.returned_chain_count": [
+      5,
+      10
+     ],
+     "search_metadata.result_truncated": [
+      true,
+      true
+     ],
+     "objective_coverage.returned_chain_count": [
+      5,
+      10
+     ],
+     "objective_coverage.returned_ranked_material_count": [
+      5,
+      7
+     ],
+     "len(ranked_candidates)": [
+      5,
+      7
+     ],
+     "len(chains)": [
+      5,
+      10
+     ],
+     "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+      5,
+      7
+     ],
+     "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+      5,
+      10
+     ]
+    }
+   }
+  },
+  "aggregates": {
+   "pin_dc2_informed_l5_run1": "PASS",
+   "pin_dc2_informed_l10_run1": "PASS",
+   "pin_dc2_avoid_only_l5_run1": "PASS",
+   "pin_dc2_avoid_only_l10_run1": "PASS",
+   "pin_dc2_informed_l5_run2": "PASS",
+   "pin_dc2_informed_l10_run2": "PASS",
+   "pin_dc2_avoid_only_l5_run2": "PASS",
+   "pin_dc2_avoid_only_l10_run2": "PASS"
+  }
+ }
+}

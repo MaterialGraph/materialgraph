@@ -1,0 +1,36 @@
+[01/18] hist_dc1_informed_l5_run1
+      status=200 10.299s sha=8b88ed92b2cd
+[02/18] hist_dc1_informed_l5_run2
+      status=200 10.213s sha=8b88ed92b2cd
+[03/18] pin_dc1_informed_l5_run1
+      status=200 10.219s sha=783263ad14e5
+[04/18] pin_dc1_informed_l10_run1
+      status=200 10.108s sha=4dc48091912a
+[05/18] pin_dc1_avoid_only_l5_run1
+      status=200 7.54s sha=1ff0a2717bbd
+[06/18] pin_dc1_avoid_only_l10_run1
+      status=200 7.427s sha=61860cc75491
+[07/18] pin_dc2_informed_l5_run1
+      status=200 10.267s sha=a925befdc162
+[08/18] pin_dc2_informed_l10_run1
+      status=200 10.003s sha=a5a1aa930937
+[09/18] pin_dc2_avoid_only_l5_run1
+      status=200 7.747s sha=337e2755e86c
+[10/18] pin_dc2_avoid_only_l10_run1
+      status=200 7.85s sha=3ff9e392a7ff
+[11/18] pin_dc1_informed_l5_run2
+      status=200 8.775s sha=783263ad14e5
+[12/18] pin_dc1_informed_l10_run2
+      status=200 9.096s sha=4dc48091912a
+[13/18] pin_dc1_avoid_only_l5_run2
+      status=200 7.411s sha=1ff0a2717bbd
+[14/18] pin_dc1_avoid_only_l10_run2
+      status=200 7.316s sha=61860cc75491
+[15/18] pin_dc2_informed_l5_run2
+      status=200 9.928s sha=a925befdc162
+[16/18] pin_dc2_informed_l10_run2
+      status=200 9.686s sha=a5a1aa930937
+[17/18] pin_dc2_avoid_only_l5_run2
+      status=200 7.795s sha=337e2755e86c
+[18/18] pin_dc2_avoid_only_l10_run2
+      status=200 8.523s sha=3ff9e392a7ff

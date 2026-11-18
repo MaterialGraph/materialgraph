@@ -1,0 +1,18 @@
+{
+  "schema_version": "rrb01-extract-1",
+  "extractor": "founder",
+  "input_xlsx": "founder_extraction.xlsx",
+  "input_xlsx_sha256": "E6CB8B7ADDCBCF7E1F4879DF3A83B6C470AFFD621A6912AF5D5F8DDA41AA525C",
+  "output_jsonl": "founder_extraction.jsonl",
+  "output_jsonl_sha256": "7BDB4C2D13DC492A4AE7999EB3547BB2FA41CB9E0BCA665329A5B350E18FF9FC",
+  "record_count": 59,
+  "decision_counts": {
+    "ambiguous": 2,
+    "exclude": 39,
+    "include": 18
+  },
+  "source_counts": {
+    "HWA17": 25,
+    "NOE21": 34
+  }
+}

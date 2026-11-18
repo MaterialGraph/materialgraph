@@ -1,0 +1,25 @@
+[
+  {
+    "name": "dc2_lookup_formula",
+    "url": "http://127.0.0.1:18000/api/v1/materials/search?mode=formula&q=Li3Fe2%28PO4%293&limit=100",
+    "attempts": [
+      {
+        "started_utc": "2026-11-06T16:45:37.882+00:00",
+        "elapsed_s": 2.051,
+        "status": 200,
+        "headers": {
+          "date": "Fri, 06 Nov 2026 16:45:37 GMT",
+          "server": "uvicorn",
+          "content-length": "2633",
+          "content-type": "application/json",
+          "connection": "close"
+        },
+        "error": null,
+        "attempt": 1,
+        "response_file": "dc2_lookup_formula.raw",
+        "response_sha256": "888f419de7a7bae330650d657663f9b06ea782a4623847e1dc64fd1d1bfd3aa6",
+        "response_bytes": 2633
+      }
+    ]
+  }
+]

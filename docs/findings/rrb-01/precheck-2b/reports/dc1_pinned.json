@@ -1,0 +1,998 @@
+{
+  "case": "DC1",
+  "material_id": 5,
+  "requests": {
+    "pin_dc1_informed_l5_run1": {
+      "sequence": 3,
+      "request_canonical_sha256": "1a83343a2306b36b0ff9ab85d12980f7110f6992590dbc929731e07dd09e125c",
+      "response_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53",
+      "status": 200
+    },
+    "pin_dc1_informed_l10_run1": {
+      "sequence": 4,
+      "request_canonical_sha256": "7aa5aa2c82102b950b0696684b591b0a7eaebeae6839cca24ee50b486cc93f5b",
+      "response_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c",
+      "status": 200
+    },
+    "pin_dc1_avoid_only_l5_run1": {
+      "sequence": 5,
+      "request_canonical_sha256": "4aec03d76645e8accab12ec5edeb437e1f5e37767859250e67b86efe982538e7",
+      "response_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d",
+      "status": 200
+    },
+    "pin_dc1_avoid_only_l10_run1": {
+      "sequence": 6,
+      "request_canonical_sha256": "513a70b4e7d136065627f5f50fccba3b1f21410841c77468744809f74e481e91",
+      "response_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70",
+      "status": 200
+    },
+    "pin_dc1_informed_l5_run2": {
+      "sequence": 11,
+      "request_canonical_sha256": "1a83343a2306b36b0ff9ab85d12980f7110f6992590dbc929731e07dd09e125c",
+      "response_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53",
+      "status": 200
+    },
+    "pin_dc1_informed_l10_run2": {
+      "sequence": 12,
+      "request_canonical_sha256": "7aa5aa2c82102b950b0696684b591b0a7eaebeae6839cca24ee50b486cc93f5b",
+      "response_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c",
+      "status": 200
+    },
+    "pin_dc1_avoid_only_l5_run2": {
+      "sequence": 13,
+      "request_canonical_sha256": "4aec03d76645e8accab12ec5edeb437e1f5e37767859250e67b86efe982538e7",
+      "response_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d",
+      "status": 200
+    },
+    "pin_dc1_avoid_only_l10_run2": {
+      "sequence": 14,
+      "request_canonical_sha256": "513a70b4e7d136065627f5f50fccba3b1f21410841c77468744809f74e481e91",
+      "response_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70",
+      "status": 200
+    }
+  },
+  "check1_explicit_field_acceptance": [
+    {
+      "request": "pin_dc1_informed_l5_run1",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "pin_dc1_informed_l10_run1",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "pin_dc1_avoid_only_l5_run1",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "pin_dc1_avoid_only_l10_run1",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "pin_dc1_informed_l5_run2",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "pin_dc1_informed_l10_run2",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "pin_dc1_avoid_only_l5_run2",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    },
+    {
+      "request": "pin_dc1_avoid_only_l10_run2",
+      "final_status": 200,
+      "attempts": 1,
+      "attempt_errors": [],
+      "objective_echo_differences": [],
+      "mode_echo": "balanced",
+      "result": "PASS"
+    }
+  ],
+  "check2_repeatability": [
+    {
+      "run1": "pin_dc1_informed_l5_run1",
+      "run2": "pin_dc1_informed_l5_run2",
+      "run1_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53",
+      "run2_sha256": "783263ad14e5f1df8881232776f21716d85ca248731bbeffe90a729f1f79ab53",
+      "byte_identical": true,
+      "canonical_identical": true,
+      "canonical_differences": [],
+      "result": "PASS"
+    },
+    {
+      "run1": "pin_dc1_informed_l10_run1",
+      "run2": "pin_dc1_informed_l10_run2",
+      "run1_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c",
+      "run2_sha256": "4dc48091912a327eace94ec31cbf9b303d513c8a403856c40ac74f1c6f61623c",
+      "byte_identical": true,
+      "canonical_identical": true,
+      "canonical_differences": [],
+      "result": "PASS"
+    },
+    {
+      "run1": "pin_dc1_avoid_only_l5_run1",
+      "run2": "pin_dc1_avoid_only_l5_run2",
+      "run1_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d",
+      "run2_sha256": "1ff0a2717bbdb7894c26697b8ddbe377a4d1a6a072aa41af0dc6ac4c4aec838d",
+      "byte_identical": true,
+      "canonical_identical": true,
+      "canonical_differences": [],
+      "result": "PASS"
+    },
+    {
+      "run1": "pin_dc1_avoid_only_l10_run1",
+      "run2": "pin_dc1_avoid_only_l10_run2",
+      "run1_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70",
+      "run2_sha256": "61860cc7549177bf54c648cddbb757ff7f72780ccf454c157d8b7d539d122f70",
+      "byte_identical": true,
+      "canonical_identical": true,
+      "canonical_differences": [],
+      "result": "PASS"
+    }
+  ],
+  "check3_limit_equivalence": [
+    {
+      "l5": "pin_dc1_informed_l5_run1",
+      "l10": "pin_dc1_informed_l10_run1",
+      "result": "PASS",
+      "rules": [
+        {
+          "rule": "EXACT ranked_candidates first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 10
+        },
+        {
+          "rule": "EXACT chains first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 10
+        },
+        {
+          "rule": "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT objective_coverage.ranked_material_pool_count",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT formula_correspondence.expansions and formula_group entries",
+          "result": "PASS",
+          "differences": [],
+          "formula_correspondence_present": [
+            true,
+            true
+          ]
+        },
+        {
+          "rule": "EXACT policy fields",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "objective_policy",
+            "mode",
+            "constraint_policy",
+            "avoid_policy",
+            "prefer_policy",
+            "candidate_score_offset",
+            "warnings",
+            "explanation",
+            "objective_coverage.mode",
+            "objective_coverage.avoid_policy_explanation"
+          ]
+        },
+        {
+          "rule": "EXACT objective fields except objective.limit",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical",
+          "result": "PASS",
+          "differences": [],
+          "truncation_string_present": [
+            true,
+            true
+          ],
+          "search_truncated": [
+            false,
+            false
+          ]
+        },
+        {
+          "rule": "PER-POSITION chain_avoidance at chain_position <= 5",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "PER-POSITION formula_correspondence.transitions at chain_position <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": true
+        },
+        {
+          "rule": "PER-POSITION source_correspondence at candidate_rank <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": true
+        },
+        {
+          "rule": "EXACT other limit-independent fields (pre-check 2a S; added at approval)",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "material_id",
+            "base_formula",
+            "objective_coverage.contract_version",
+            "objective_coverage.scope",
+            "objective_coverage.element_evaluation_basis",
+            "objective_coverage.source_material",
+            "objective_coverage.terms_not_evaluated",
+            "formula_correspondence.contract_version",
+            "formula_correspondence.basis",
+            "formula_correspondence.tolerance",
+            "formula_correspondence.formula_grouping_available",
+            "formula_correspondence.admission_reporting_available",
+            "formula_correspondence.limitations"
+          ]
+        }
+      ],
+      "allowed_difference_values": {
+        "objective.limit": [
+          5,
+          10
+        ],
+        "search_metadata.requested_result_limit": [
+          5,
+          10
+        ],
+        "search_metadata.returned_chain_count": [
+          5,
+          10
+        ],
+        "search_metadata.result_truncated": [
+          true,
+          true
+        ],
+        "objective_coverage.returned_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.returned_ranked_material_count": [
+          5,
+          10
+        ],
+        "len(ranked_candidates)": [
+          5,
+          10
+        ],
+        "len(chains)": [
+          5,
+          10
+        ],
+        "objective_coverage.preferred_elements[0].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.preferred_elements[1].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+          5,
+          10
+        ]
+      },
+      "arm": "informed",
+      "run": 1
+    },
+    {
+      "l5": "pin_dc1_informed_l5_run2",
+      "l10": "pin_dc1_informed_l10_run2",
+      "result": "PASS",
+      "rules": [
+        {
+          "rule": "EXACT ranked_candidates first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 10
+        },
+        {
+          "rule": "EXACT chains first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 10
+        },
+        {
+          "rule": "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT objective_coverage.ranked_material_pool_count",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT formula_correspondence.expansions and formula_group entries",
+          "result": "PASS",
+          "differences": [],
+          "formula_correspondence_present": [
+            true,
+            true
+          ]
+        },
+        {
+          "rule": "EXACT policy fields",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "objective_policy",
+            "mode",
+            "constraint_policy",
+            "avoid_policy",
+            "prefer_policy",
+            "candidate_score_offset",
+            "warnings",
+            "explanation",
+            "objective_coverage.mode",
+            "objective_coverage.avoid_policy_explanation"
+          ]
+        },
+        {
+          "rule": "EXACT objective fields except objective.limit",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical",
+          "result": "PASS",
+          "differences": [],
+          "truncation_string_present": [
+            true,
+            true
+          ],
+          "search_truncated": [
+            false,
+            false
+          ]
+        },
+        {
+          "rule": "PER-POSITION chain_avoidance at chain_position <= 5",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "PER-POSITION formula_correspondence.transitions at chain_position <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": true
+        },
+        {
+          "rule": "PER-POSITION source_correspondence at candidate_rank <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": true
+        },
+        {
+          "rule": "EXACT other limit-independent fields (pre-check 2a S; added at approval)",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "material_id",
+            "base_formula",
+            "objective_coverage.contract_version",
+            "objective_coverage.scope",
+            "objective_coverage.element_evaluation_basis",
+            "objective_coverage.source_material",
+            "objective_coverage.terms_not_evaluated",
+            "formula_correspondence.contract_version",
+            "formula_correspondence.basis",
+            "formula_correspondence.tolerance",
+            "formula_correspondence.formula_grouping_available",
+            "formula_correspondence.admission_reporting_available",
+            "formula_correspondence.limitations"
+          ]
+        }
+      ],
+      "allowed_difference_values": {
+        "objective.limit": [
+          5,
+          10
+        ],
+        "search_metadata.requested_result_limit": [
+          5,
+          10
+        ],
+        "search_metadata.returned_chain_count": [
+          5,
+          10
+        ],
+        "search_metadata.result_truncated": [
+          true,
+          true
+        ],
+        "objective_coverage.returned_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.returned_ranked_material_count": [
+          5,
+          10
+        ],
+        "len(ranked_candidates)": [
+          5,
+          10
+        ],
+        "len(chains)": [
+          5,
+          10
+        ],
+        "objective_coverage.preferred_elements[0].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.preferred_elements[1].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+          5,
+          10
+        ]
+      },
+      "arm": "informed",
+      "run": 2
+    },
+    {
+      "l5": "pin_dc1_avoid_only_l5_run1",
+      "l10": "pin_dc1_avoid_only_l10_run1",
+      "result": "PASS",
+      "rules": [
+        {
+          "rule": "EXACT ranked_candidates first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 6
+        },
+        {
+          "rule": "EXACT chains first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 10
+        },
+        {
+          "rule": "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT objective_coverage.ranked_material_pool_count",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT formula_correspondence.expansions and formula_group entries",
+          "result": "PASS",
+          "differences": [],
+          "formula_correspondence_present": [
+            false,
+            false
+          ]
+        },
+        {
+          "rule": "EXACT policy fields",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "objective_policy",
+            "mode",
+            "constraint_policy",
+            "avoid_policy",
+            "prefer_policy",
+            "candidate_score_offset",
+            "warnings",
+            "explanation",
+            "objective_coverage.mode",
+            "objective_coverage.avoid_policy_explanation"
+          ]
+        },
+        {
+          "rule": "EXACT objective fields except objective.limit",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical",
+          "result": "PASS",
+          "differences": [],
+          "truncation_string_present": [
+            true,
+            true
+          ],
+          "search_truncated": [
+            false,
+            false
+          ]
+        },
+        {
+          "rule": "PER-POSITION chain_avoidance at chain_position <= 5",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "PER-POSITION formula_correspondence.transitions at chain_position <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": false
+        },
+        {
+          "rule": "PER-POSITION source_correspondence at candidate_rank <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": false
+        },
+        {
+          "rule": "EXACT other limit-independent fields (pre-check 2a S; added at approval)",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "material_id",
+            "base_formula",
+            "objective_coverage.contract_version",
+            "objective_coverage.scope",
+            "objective_coverage.element_evaluation_basis",
+            "objective_coverage.source_material",
+            "objective_coverage.terms_not_evaluated",
+            "formula_correspondence.contract_version",
+            "formula_correspondence.basis",
+            "formula_correspondence.tolerance",
+            "formula_correspondence.formula_grouping_available",
+            "formula_correspondence.admission_reporting_available",
+            "formula_correspondence.limitations"
+          ]
+        }
+      ],
+      "allowed_difference_values": {
+        "objective.limit": [
+          5,
+          10
+        ],
+        "search_metadata.requested_result_limit": [
+          5,
+          10
+        ],
+        "search_metadata.returned_chain_count": [
+          5,
+          10
+        ],
+        "search_metadata.result_truncated": [
+          true,
+          true
+        ],
+        "objective_coverage.returned_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.returned_ranked_material_count": [
+          5,
+          6
+        ],
+        "len(ranked_candidates)": [
+          5,
+          6
+        ],
+        "len(chains)": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+          5,
+          6
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+          5,
+          6
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+          5,
+          10
+        ]
+      },
+      "arm": "avoid_only",
+      "run": 1
+    },
+    {
+      "l5": "pin_dc1_avoid_only_l5_run2",
+      "l10": "pin_dc1_avoid_only_l10_run2",
+      "result": "PASS",
+      "rules": [
+        {
+          "rule": "EXACT ranked_candidates first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 6
+        },
+        {
+          "rule": "EXACT chains first 5 (all item fields)",
+          "result": "PASS",
+          "differences": [],
+          "compared_items": 5,
+          "len_l5": 5,
+          "len_l10": 10
+        },
+        {
+          "rule": "EXACT search_metadata except requested_result_limit/returned_chain_count/result_truncated",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT objective_coverage.ranked_material_pool_count",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "EXACT formula_correspondence.expansions and formula_group entries",
+          "result": "PASS",
+          "differences": [],
+          "formula_correspondence_present": [
+            false,
+            false
+          ]
+        },
+        {
+          "rule": "EXACT policy fields",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "objective_policy",
+            "mode",
+            "constraint_policy",
+            "avoid_policy",
+            "prefer_policy",
+            "candidate_score_offset",
+            "warnings",
+            "explanation",
+            "objective_coverage.mode",
+            "objective_coverage.avoid_policy_explanation"
+          ]
+        },
+        {
+          "rule": "EXACT objective fields except objective.limit",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "ALLOWED truncation string in objective_coverage.limitations only if search_truncated identical",
+          "result": "PASS",
+          "differences": [],
+          "truncation_string_present": [
+            true,
+            true
+          ],
+          "search_truncated": [
+            false,
+            false
+          ]
+        },
+        {
+          "rule": "PER-POSITION chain_avoidance at chain_position <= 5",
+          "result": "PASS",
+          "differences": []
+        },
+        {
+          "rule": "PER-POSITION formula_correspondence.transitions at chain_position <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": false
+        },
+        {
+          "rule": "PER-POSITION source_correspondence at candidate_rank <= 5",
+          "result": "PASS",
+          "differences": [],
+          "applicable": false
+        },
+        {
+          "rule": "EXACT other limit-independent fields (pre-check 2a S; added at approval)",
+          "result": "PASS",
+          "differences": [],
+          "paths": [
+            "material_id",
+            "base_formula",
+            "objective_coverage.contract_version",
+            "objective_coverage.scope",
+            "objective_coverage.element_evaluation_basis",
+            "objective_coverage.source_material",
+            "objective_coverage.terms_not_evaluated",
+            "formula_correspondence.contract_version",
+            "formula_correspondence.basis",
+            "formula_correspondence.tolerance",
+            "formula_correspondence.formula_grouping_available",
+            "formula_correspondence.admission_reporting_available",
+            "formula_correspondence.limitations"
+          ]
+        }
+      ],
+      "allowed_difference_values": {
+        "objective.limit": [
+          5,
+          10
+        ],
+        "search_metadata.requested_result_limit": [
+          5,
+          10
+        ],
+        "search_metadata.returned_chain_count": [
+          5,
+          10
+        ],
+        "search_metadata.result_truncated": [
+          true,
+          true
+        ],
+        "objective_coverage.returned_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.returned_ranked_material_count": [
+          5,
+          6
+        ],
+        "len(ranked_candidates)": [
+          5,
+          6
+        ],
+        "len(chains)": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[0].total_count": [
+          5,
+          6
+        ],
+        "objective_coverage.avoided_elements_in_ranked_materials[1].total_count": [
+          5,
+          6
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[0].total_chain_count": [
+          5,
+          10
+        ],
+        "objective_coverage.avoided_elements_in_returned_chains[1].total_chain_count": [
+          5,
+          10
+        ]
+      },
+      "arm": "avoid_only",
+      "run": 2
+    }
+  ],
+  "aggregates_internal_consistency": [
+    {
+      "response": "pin_dc1_informed_l5_run1",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present",
+        "formula_correspondence.not_evaluated_count"
+      ],
+      "inconsistencies": [],
+      "not_determinable": [
+        "formula_correspondence.not_evaluated_material_ids membership: depends on stored raw_data composition validity (DB), not present in the response",
+        "formula_correspondence.not_evaluated_material_ids order: sort key needs MP IDs of materials that may not appear in the response"
+      ]
+    },
+    {
+      "response": "pin_dc1_informed_l10_run1",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present",
+        "formula_correspondence.not_evaluated_count"
+      ],
+      "inconsistencies": [],
+      "not_determinable": [
+        "formula_correspondence.not_evaluated_material_ids membership: depends on stored raw_data composition validity (DB), not present in the response",
+        "formula_correspondence.not_evaluated_material_ids order: sort key needs MP IDs of materials that may not appear in the response"
+      ]
+    },
+    {
+      "response": "pin_dc1_avoid_only_l5_run1",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present"
+      ],
+      "inconsistencies": [],
+      "not_determinable": []
+    },
+    {
+      "response": "pin_dc1_avoid_only_l10_run1",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present"
+      ],
+      "inconsistencies": [],
+      "not_determinable": []
+    },
+    {
+      "response": "pin_dc1_informed_l5_run2",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present",
+        "formula_correspondence.not_evaluated_count"
+      ],
+      "inconsistencies": [],
+      "not_determinable": [
+        "formula_correspondence.not_evaluated_material_ids membership: depends on stored raw_data composition validity (DB), not present in the response",
+        "formula_correspondence.not_evaluated_material_ids order: sort key needs MP IDs of materials that may not appear in the response"
+      ]
+    },
+    {
+      "response": "pin_dc1_informed_l10_run2",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present",
+        "formula_correspondence.not_evaluated_count"
+      ],
+      "inconsistencies": [],
+      "not_determinable": [
+        "formula_correspondence.not_evaluated_material_ids membership: depends on stored raw_data composition validity (DB), not present in the response",
+        "formula_correspondence.not_evaluated_material_ids order: sort key needs MP IDs of materials that may not appear in the response"
+      ]
+    },
+    {
+      "response": "pin_dc1_avoid_only_l5_run2",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present"
+      ],
+      "inconsistencies": [],
+      "not_determinable": []
+    },
+    {
+      "response": "pin_dc1_avoid_only_l10_run2",
+      "result": "PASS",
+      "checked": [
+        "objective_coverage.returned_ranked_material_count",
+        "objective_coverage.returned_chain_count",
+        "search_metadata.returned_chain_count",
+        "objective_coverage.preferred_elements",
+        "objective_coverage.avoided_elements_in_ranked_materials",
+        "objective_coverage.avoided_elements_in_returned_chains",
+        "objective_coverage.chain_avoidance",
+        "objective_coverage.source_material.avoided_elements_present"
+      ],
+      "inconsistencies": [],
+      "not_determinable": []
+    }
+  ]
+}

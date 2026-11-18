@@ -1,0 +1,18 @@
+{
+  "schema_version": "rrb01-extract-1",
+  "extractor": "ai",
+  "input_xlsx": "ai_extraction_v2.xlsx",
+  "input_xlsx_sha256": "9D946958B2E9DD0B1368F79748D9FD6FD6817B0A19D4E1C4B7B24C9D42CD3E39",
+  "output_jsonl": "run_a.jsonl",
+  "output_jsonl_sha256": "4BD46AA7BC7F5E9C9785CE95B52DF1899813B1656094D3C427672FED8A86C05C",
+  "record_count": 75,
+  "decision_counts": {
+    "ambiguous": 0,
+    "exclude": 22,
+    "include": 53
+  },
+  "source_counts": {
+    "HWA17": 48,
+    "NOE21": 27
+  }
+}
